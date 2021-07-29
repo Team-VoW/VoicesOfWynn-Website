@@ -1,0 +1,14 @@
+{
+    "name": "shady/voices-of-wynn-website",
+    "description": "A website for the community project Voices of Wynn - creating a mod for Minecraft MMORPG server Wynncraft",
+    "type": "project",
+    "require": {
+        "phpmailer/phpmailer": "^6.5"
+    },
+    "authors": [
+        {
+            "name": "Jan Štěch",
+            "email": "honza.stech@gmail.com"
+        }
+    ]
+}
