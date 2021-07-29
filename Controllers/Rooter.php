@@ -32,7 +32,9 @@ class Rooter extends Controller
         //Sanitize against XSS attack
         $sanitized = array();
         foreach (self::$data as $key => $value) {
-            $sanitized[$key] = htmlspecialchars($value);
+            if (gettype($value) === 'integer' || gettype($value) === 'double' || gettype($value) === 'string') {
+                $sanitized[$key] = htmlspecialchars($value);
+            }
         }
         extract($sanitized);
         

@@ -15,7 +15,7 @@ function autoloader(string $name): void
     $name = str_replace('\\', '/', $name);
     //Remove the root folder from the path (this file is already in it)
     if (strpos($name, '/') !== false) {
-        $name = substr($name, strpos($name, '/'));
+        $name = substr($name, strpos($name, '/') + 1);
     }
     $name .= '.php';
     require $name;

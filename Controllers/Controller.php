@@ -15,17 +15,17 @@ abstract class Controller
     /**
      * @var $views array List of views to use, from the most outer one to the most inner one
      */
-    protected static array $views = array();
+    protected static array $views = array('base');
     
     /**
      * @var $cssFiles array List of CSS files to include into the final webpage; all CSS files must be in the 'css' folder
      */
-    protected static array $cssFiles = array('classless.css');
+    protected static array $cssFiles = array('classless');
     
     /**
      * @var $jsFiles array List of JS files to include into the final webpage; all JS files must be in the 'js' folder
      */
-    protected static array $jsFiles = array('jquery.js');
+    protected static array $jsFiles = array('jquery');
     
     /**
      * Public method processing passed data, specific for each controller
