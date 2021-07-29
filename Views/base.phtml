@@ -1,1 +1,42 @@
-<?php
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <base href="/" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width" />
+    <title><?= basename(__FILE__, '.phtml').'_'.$title ?></title>
+    <meta name="description" content="<?= basename(__FILE__, '.phtml').'_'.$description ?>" />
+    <meta name="keywords" content="<?= basename(__FILE__, '.phtml').'_'.$keywords ?>" />
+    <!-- Ikony -->
+    <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="mask-icon" href="images/safari-pinned-tab.png" color="#a340c4">
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <meta name="msapplication-TileColor" content="#7b1a9b">
+    <meta name="msapplication-config" content="browserconfig.xml">
+    <meta name="theme-color" content="#7b1a9b">
+    
+    <!-- Styly -->
+    <?php foreach ($cssFiles as $cssFile) : ?>
+        <link rel="stylesheet" type="text/css" href="css/<?= $cssFile ?>">
+    <?php endforeach ?>
+</head>
+<body>
+<div id="overlay"></div>
+<div id="popups"></div>
+<div class="container">
+    <?php require $this->getNextView(); ?>
+    <footer>
+        <a id="help" target='_blank' rel="noopener" href="https://github.com/HonzaSTECH/Poznavacky/wiki">Nápověda</a>
+        <a id="terms" target='_blank' rel="noopener" href='/legal'>Právní informace</a>
+        <span id="about">&copy Shady, <?= basename(__FILE__, '.phtml').'_'.$currentYear ?></span>
+    </footer>
+</div>
+<!-- JavaScript -->
+<?php foreach ($jsFiles as $jsFile) : ?>
+    <script type="text/javascript" src="js/<?= $jsFile ?>"></script>
+<?php endforeach ?>
+</body>
+</html>

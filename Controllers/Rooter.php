@@ -17,6 +17,9 @@ class Rooter extends Controller
     public function process(array $args): bool
     {
         // TODO: Implement process() method.
+        
+        self::$data['base_currentYear'] = date('Y');
+        
         return false;
     }
     
@@ -49,3 +52,4 @@ class Rooter extends Controller
         return self::VIEWS_FOLDER.'/'.array_shift(self::$views).'.phtml';
     }
 }
+

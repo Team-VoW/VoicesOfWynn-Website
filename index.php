@@ -2,6 +2,7 @@
 
 namespace VoicesOfWynn;
 
+use VoicesOfWynn\Controllers\Error404;
 use VoicesOfWynn\Controllers\Rooter;
 
 //Set autoloader for dependencies
@@ -40,9 +41,12 @@ $requestedUrl = $_SERVER['REQUEST_URI'];
 $rooter = new Rooter();
 $result = $rooter->process(array($requestedUrl));
 if ($result !== true) {
-    //TODO - display error website
+    //Display the error webpage, overwrite the page headers (title, description, keywords)
+    $errorController = new Error404();
+    $errorController->process(array());
 }
 
 //Display the generated website
 $website = $rooter->displayView();
 echo $website;
+
