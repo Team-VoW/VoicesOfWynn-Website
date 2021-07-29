@@ -14,6 +14,8 @@ class Error404 extends Controller
      */
     public function process(array $args): bool
     {
+        header("HTTP/1.1 404 Not Found");
+        
         self::$data['base_title'] = 'Page not found';
         self::$data['base_description'] = 'Oops, you probably didn\'t want to end up here.';
         self::$data['base_keywords'] = '';

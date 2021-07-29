@@ -24,18 +24,22 @@
     <?php endforeach ?>
 </head>
 <body>
-<div id="overlay"></div>
-<div id="popups"></div>
-<div class="container">
-    <?php require $this->getNextView(); ?>
+    <header>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/credits">Credits</a>
+        </nav>
+    </header>
+    <main>
+        <?php require $this->getNextView(); ?>
+    </main>
     <footer>
         <a target='_blank' rel="noopener" href="https://discord.gg/7TwxdtVqHq">Join our Discord</a>
         <span id="about">&copy Shady, <?= ${basename(__FILE__, '.phtml').'_currentYear'} ?></span>
     </footer>
-</div>
-<!-- JavaScript -->
-<?php foreach (self::$jsFiles as $jsFile) : ?>
-    <script type="text/javascript" src="js/<?= $jsFile ?>.js"></script>
-<?php endforeach ?>
+    <!-- JavaScript -->
+    <?php foreach (self::$jsFiles as $jsFile) : ?>
+        <script type="text/javascript" src="js/<?= $jsFile ?>.js"></script>
+    <?php endforeach ?>
 </body>
 </html>

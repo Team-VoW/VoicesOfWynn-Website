@@ -9,6 +9,8 @@ class Rooter extends Controller
     
     private const VIEWS_FOLDER = 'Views';
     
+    public int $errorCode = 0;
+    
     /**
      * Method processing the request
      * Decides which controller to call depending on the requested URL
@@ -16,11 +18,17 @@ class Rooter extends Controller
      */
     public function process(array $args): bool
     {
-        // TODO: Implement process() method.
+        $requestedUrl = $args[0];
         
-        self::$data['base_currentYear'] = date('Y');
-        
-        return false;
+        //Find out which controller to call
+        $routes = parse_ini_file('routes.ini');
+        if (!isset($routes[$requestedUrl])) {
+            $this->errorCode = 404;
+            return false;
+        }
+        $controllerName = 'VoicesOfWynn\Controllers\\'.$routes[$requestedUrl];
+        $controller = new $controllerName();
+        return $controller->process(array()); //Pass control to the specific controller
     }
     
     /**

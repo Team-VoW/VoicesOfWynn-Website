@@ -18,7 +18,8 @@ abstract class Controller
     protected static array $views = array('base');
     
     /**
-     * @var $cssFiles array List of CSS files to include into the final webpage; all CSS files must be in the 'css' folder
+     * @var $cssFiles array List of CSS files to include into the final webpage; all CSS files must be in the 'css'
+     *     folder
      */
     protected static array $cssFiles = array('classless');
     
@@ -26,6 +27,16 @@ abstract class Controller
      * @var $jsFiles array List of JS files to include into the final webpage; all JS files must be in the 'js' folder
      */
     protected static array $jsFiles = array('jquery');
+    
+    /**
+     * Controller constructor setting data for the basic view
+     * Since specific controllers don't have a constructor, this will be invoked every time a new constructor is
+     * instantiated
+     */
+    public function __construct()
+    {
+        self::$data['base_currentYear'] = date('Y');
+    }
     
     /**
      * Public method processing passed data, specific for each controller
