@@ -2,13 +2,15 @@
 
 namespace VoicesOfWynn;
 
+use VoicesOfWynn\Controllers\Rooter;
+
 //Set autoloader for dependencies
 require __DIR__.'/vendor/autoload.php';
 
 //Define and set autoloader for custom classes
 function autoloader(string $name): void
 {
-    //Replace '\' (used in namespacves) with '/' (used to navigate through directories)
+    //Replace '\' (used in namespaces) with '/' (used to navigate through directories)
     $name = str_replace('\\', '/', $name);
     //Remove the root folder from the path (this file is already in it)
     if (strpos($name, '/') !== false) {
@@ -27,8 +29,6 @@ mb_internal_encoding('UTF-8');
 /* KEEP THIS COMMENTED ON LOCAL SERVERS - IT'S NOT POSSIBLE TO USE SSL ON THEM
 //Check if HTTPS connection was used and if not (HTTP), redirect the client.
 if (!(isset($_SERVER["HTTP_X_FORWARDED_PROTO"]) && $_SERVER["HTTP_X_FORWARDED_PROTO"] === "https")) {
-    (new Logger(true))->notice('Uživatel se pokusil odeslat požadavek na adresu {uri} z IP adresy {ip}, avšak nepoužil zabezpečené SSL připojení',
-        array('uri' => $_SERVER['REQUEST_URI'], 'ip' => $_SERVER['REMOTE_ADDR']));
     header('Location: https://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
     header('Connection: close');
     exit();
@@ -36,7 +36,13 @@ if (!(isset($_SERVER["HTTP_X_FORWARDED_PROTO"]) && $_SERVER["HTTP_X_FORWARDED_PR
 */
 
 $requestedUrl = $_SERVER['REQUEST_URI'];
-//TODO - process the request
-echo 'Requested URL: '.$requestedUrl;
+//Process the request
+$rooter = new Rooter();
+$result = $rooter->process(array($requestedUrl));
+if ($result !== true) {
+    //TODO - display error website
+}
 
-//TODO - display the generated website
+//Display the generated website
+$website = $rooter->displayView();
+echo $website;
