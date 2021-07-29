@@ -10,12 +10,22 @@ abstract class Controller
     /**
      * @var $data array Data obtained by all controllers in the process
      */
-    protected static $data;
+    protected static array $data = array();
     
     /**
      * @var $views array List of views to use, from the most outer one to the most inner one
      */
-    protected static $views;
+    protected static array $views = array();
+    
+    /**
+     * @var $cssFiles array List of CSS files to include into the final webpage; all CSS files must be in the 'css' folder
+     */
+    protected static array $cssFiles = array('classless.css');
+    
+    /**
+     * @var $jsFiles array List of JS files to include into the final webpage; all JS files must be in the 'js' folder
+     */
+    protected static array $jsFiles = array('jquery.js');
     
     /**
      * Public method processing passed data, specific for each controller
@@ -24,3 +34,4 @@ abstract class Controller
      */
     public abstract function process(array $args): bool;
 }
+
