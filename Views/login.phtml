@@ -1,0 +1,9 @@
+<h1>Voice actor login</h1>
+<form method="post">
+    <label for="name">E-mail or Username</label>
+    <input type="text" name="name" /><br>
+    <label for="password">Password</label>
+    <input type="password" name="password" /><br>
+    <input type="submit" value="Login"/>
+</form>
+<div><?= ${basename(__FILE__, '.phtml').'_error'} ?></div>

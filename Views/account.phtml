@@ -1,0 +1,29 @@
+<h1>Account information</h1>
+<form>
+    <table>
+        <tr>
+            <td>ID</td>
+            <td><?= ${basename(__FILE__, '.phtml').'_id'} ?></td>
+        </tr>
+        <tr>
+            <td><label for="email">E-mail</label></td>
+            <td><input name="email" value="<?= ${basename(__FILE__, '.phtml').'_email'} ?>" /></td>
+        </tr>
+        <tr>
+            <td><label for="name">Display Name</label></td>
+            <td><input name="name" value="<?= ${basename(__FILE__, '.phtml').'_name'} ?>" /></td>
+        </tr>
+        <tr>
+            <td><label for="avatar">Picture</label></td>
+            <td>
+                <img src="dynamic/avatars/<?= ${basename(__FILE__, '.phtml').'_picture'} ?>"  alt="Your Profile Picture"/>
+                <input name="avatar" type="file" />
+            </td>
+        </tr>
+        <tr>
+            <td><label for="bio">Bio</label></td>
+            <td><textarea name="bio"><?= ${basename(__FILE__, '.phtml').'_bio'} ?></textarea></td>
+        </tr>
+        <tr><td colspan="2"><input type="submit" value="Save"></td></tr>
+    </table>
+</form>

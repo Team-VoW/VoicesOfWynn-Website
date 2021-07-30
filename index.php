@@ -24,7 +24,7 @@ function autoloader(string $name): void
 spl_autoload_register('VoicesOfWynn\autoloader');
 
 //Resume session and set character encoding
-# session_start(); //Uncomment this line if sessions are going to be used (probably)
+session_start();
 mb_internal_encoding('UTF-8');
 
 /* KEEP THIS COMMENTED ON LOCAL SERVERS - IT'S NOT POSSIBLE TO USE SSL ON THEM
