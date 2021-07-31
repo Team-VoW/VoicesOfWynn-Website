@@ -17,8 +17,9 @@ class Account extends Controller
         self::$data['base_keywords'] = 'Minecraft,Wynncraft,Mod,Voice,Account,Management';
     
         if (!isset($_SESSION['user'])) {
-            header("HTTP/1.1 403 Forbidden");
-            exit();
+            //No user is logged in
+            $errorController = new Error403();
+            return $errorController->process(array());
         }
         
         self::$data['account_id'] = $_SESSION['user']->getId();
