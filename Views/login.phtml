@@ -1,7 +1,7 @@
 <h1>Voice actor login</h1>
 <form method="post">
     <label for="name">E-mail or Username</label>
-    <input type="text" name="name" /><br>
+    <input type="text" name="name" value="<?= ${basename(__FILE__, '.phtml').'_username'} ?>" /><br>
     <label for="password">Password</label>
     <input type="password" name="password" /><br>
     <input type="submit" value="Login"/>

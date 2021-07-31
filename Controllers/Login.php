@@ -26,7 +26,6 @@ class Login extends Controller
                 return $this->get(array());
             case 'POST':
                 return $this->post(array());
-                break;
         }
     }
     
@@ -41,6 +40,9 @@ class Login extends Controller
         self::$data['base_description'] = 'Did you contribute to this project? Then login here to change your display name, bio or profile picture.';
         self::$data['base_keywords'] = 'Minecraft,Wynncraft,Mod,Voice,Login';
         
+        if (empty(self::$data['login_username'])) {
+            self::$data['login_username'] = '';
+        }
         if (empty(self::$data['login_error'])) {
             self::$data['login_error'] = '';
         }
@@ -68,6 +70,7 @@ class Login extends Controller
             }
         } catch (UserException $e) {
             self::$data['login_error'] = $e->getMessage();
+            self::$data['login_username'] = $name;
             return $this->get(array());
         }
     }
