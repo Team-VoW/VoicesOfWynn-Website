@@ -23,7 +23,7 @@ class User
      */
     public function login(string $name, string $password): bool
     {
-        $userInfo = Db::fetchQuery('SELECT * FROM user WHERE email = ?', array($name));
+        $userInfo = Db::fetchQuery('SELECT * FROM user WHERE email = ? OR display_name = ?', array($name, $name));
         if ($userInfo === false) {
             throw new UserException('The user with this name or e-mail doesn\'t exist');
         }
