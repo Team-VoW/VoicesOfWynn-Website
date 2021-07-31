@@ -28,7 +28,8 @@
         <nav>
             <a href="/">Home</a>
             <a href="/credits">Credits</a>
-            <a href="/login">Login</a>
+            <?php if (!isset($_SESSION['user'])) : ?><a href="/login">Login</a><?php endif ?>
+            <?php if (isset($_SESSION['user'])) : ?><a href="/logout">Logout</a><?php endif ?>
         </nav>
     </header>
     <main>
