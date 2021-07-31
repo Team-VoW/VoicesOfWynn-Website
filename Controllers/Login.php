@@ -15,6 +15,12 @@ class Login extends Controller
      */
     public function process(array $args): bool
     {
+        if (isset($_SESSION['user'])) {
+            //The user is already logged in
+            header('Location: /account');
+            exit();
+        }
+        
         switch ($_SERVER['REQUEST_METHOD']) {
             case 'GET':
                 return $this->get(array());
@@ -54,8 +60,7 @@ class Login extends Controller
         $pass = $_POST['password'];
         
         $user = new User();
-        try
-        {
+        try {
             if ($user->login($name, $pass)) {
                 //Login was successful
                 header('Location: /account');
