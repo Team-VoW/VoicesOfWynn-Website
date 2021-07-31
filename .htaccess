@@ -6,8 +6,8 @@ RewriteEngine On
 # RewriteBase /
 
 # In case it's necessary to allow direct access to all files besides those with extensions listed bellow, uncomment the next two lines
-# RewriteCond %{REQUEST_FILENAME} !-f
-# RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
 
 # Allow dirrect access to browser configuration files
 RewriteCond %{REQUEST_URI} !^/browserconfig\.xml$

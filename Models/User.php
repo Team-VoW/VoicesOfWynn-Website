@@ -63,6 +63,31 @@ class User
         $this->bio = '';
     }
     
+    public function update(string $email, string $password, string $displayName, string $avatarLink, string $bio): bool
+    {
+        if (empty($password)) {
+            $parameters = array($email, $displayName, $avatarLink, $bio, $this->id);
+            $query = 'UPDATE user SET email = ?, display_name = ?, picture = ?, bio = ? WHERE user_id = ?';
+        } else {
+            $hash = password_hash($password, PASSWORD_DEFAULT);
+            $parameters = array($email, $hash, $displayName, $avatarLink, $bio, $this->id);
+            $query = 'UPDATE user SET email = ?, password = ?, display_name = ?, picture = ?, bio = ? WHERE user_id = ?';
+        }
+        
+        try {
+            $result = Db::executeQuery($query, $parameters);
+        } catch (\Exception $e) {
+            return false;
+        }
+        
+        $this->email = $email;
+        if (isset($hash)) { $this->hash = $hash; }
+        $this->displayName = $displayName;
+        $this->avatarLink = $avatarLink;
+        $this->bio = $bio;
+        return $result;
+    }
+    
     /**
      * User ID getter
      * @return int User ID
@@ -85,7 +110,7 @@ class User
      * Display name getter
      * @return string Display name
      */
-    public function getName():string
+    public function getName(): string
     {
         return $this->displayName;
     }

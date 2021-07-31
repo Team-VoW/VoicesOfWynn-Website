@@ -1,5 +1,5 @@
 <h1>Account information</h1>
-<form>
+<form method="post" enctype="multipart/form-data">
     <table>
         <tr>
             <td>ID</td>
@@ -7,17 +7,24 @@
         </tr>
         <tr>
             <td><label for="email">E-mail</label></td>
-            <td><input name="email" value="<?= ${basename(__FILE__, '.phtml').'_email'} ?>" /></td>
+            <td><input name="email" value="<?= ${basename(__FILE__, '.phtml').'_email'} ?>" size="31" /></td>
+        </tr>
+        <tr>
+            <td><label for="password">Password</label></td>
+            <td>
+                <input type="password" name="password" placeholder="Leave empty to keep the old one" size="31" />
+            </td>
         </tr>
         <tr>
             <td><label for="name">Display Name</label></td>
-            <td><input name="name" value="<?= ${basename(__FILE__, '.phtml').'_name'} ?>" /></td>
+            <td><input name="name" value="<?= ${basename(__FILE__, '.phtml').'_name'} ?>" size="31" /></td>
         </tr>
         <tr>
             <td><label for="avatar">Picture</label></td>
             <td>
-                <img src="dynamic/avatars/<?= ${basename(__FILE__, '.phtml').'_picture'} ?>"  alt="Your Profile Picture"/>
-                <input name="avatar" type="file" />
+                <img id="avatar-preview" src="dynamic/avatars/<?= ${basename(__FILE__, '.phtml').'_picture'} ?>"  alt="Your Profile Picture"/>
+                <input type="hidden" name="MAX_FILE_SIZE" value="1048576" />
+                <input id="avatar-input" name="avatar" type="file" />
             </td>
         </tr>
         <tr>
@@ -27,3 +34,4 @@
         <tr><td colspan="2"><input type="submit" value="Save"></td></tr>
     </table>
 </form>
+<div><?= ${basename(__FILE__, '.phtml').'_error'} ?></div>
