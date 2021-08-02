@@ -40,9 +40,7 @@ class Rooter extends Controller
         //Sanitize against XSS attack
         $sanitized = array();
         foreach (self::$data as $key => $value) {
-            if (gettype($value) === 'integer' || gettype($value) === 'double' || gettype($value) === 'string') {
-                $sanitized[$key] = htmlspecialchars($value);
-            }
+            $sanitized[$key] = $this->sanitize($value);
         }
         extract($sanitized);
         
@@ -51,6 +49,32 @@ class Rooter extends Controller
         $result = ob_get_contents();
         ob_end_clean();
         return $result;
+    }
+    
+    /**
+     * Method sanitizing one variable of type int, double, string or array against XSS attack
+     * @param $value Variable to sanitize
+     * @return mixed Sanitized variable of the same type
+     */
+    private function sanitize($value)
+    {
+        $return = null;
+        switch (gettype($value)){
+            case 'string':
+            case 'double':
+            case 'integer':
+                $return = htmlspecialchars($value);
+                break;
+            case 'array':
+                $return = array();
+                for ($i = 0; $i < count($value); $i++) {
+                    $return[$i] = $this->sanitize($value[$i]);
+                }
+                break;
+            default:
+                throw new Exception('Variable of type '.gettype($value).' couldn\'t be sanitized');
+        }
+        return $return;
     }
     
     /**
