@@ -132,4 +132,13 @@ class User
     {
         return $this->bio;
     }
+    
+    /**
+     * System admin getter
+     * @return bool TRUE if this user is system admin
+     */
+    public function isSysAdmin(): bool
+    {
+        return $this->systemAdmin;
+    }
 }
