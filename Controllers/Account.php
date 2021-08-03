@@ -71,32 +71,48 @@ class Account extends Controller
         
         $validator->validateEmail($email);
         $validator->validateName($displayName);
-        $validator->validatePassword($password);
+        if (!empty($password)) {
+            $validator->validatePassword($password);
+        }
         $validator->validateBio($bio);
-        $validator->validateAvatar($_FILES['avatar']);
+        if ($_FILES['avatar']['error'] !== UPLOAD_ERR_NO_FILE) {
+            $validator->validateAvatar($_FILES['avatar']);
         
-        $avatar = $_SESSION['user']->getId();
-        switch ($_FILES['avatar']['type']) {
-            case 'image/jpeg':
-                $avatar .= '.jpg';
-                break;
-            case 'image/png':
-                $avatar .= '.png';
-                break;
+            $avatar = $_SESSION['user']->getId();
+            switch ($_FILES['avatar']['type']) {
+                case 'image/jpeg':
+                    $avatar .= '.jpg';
+                    break;
+                case 'image/png':
+                    $avatar .= '.png';
+                    break;
+            }
         }
         
         if (!empty($validator->errors)) {
             self::$data['account_error'] = $validator->errors;
         } else {
-            //Delete old avatars
-            array_map('unlink', glob('dynamic/avatars/'.$_SESSION['user']->getId().'.*'));
+            if ($_FILES['avatar']['error'] !== UPLOAD_ERR_NO_FILE) {
+                //Delete old avatars
+                array_map('unlink', glob('dynamic/avatars/'.$_SESSION['user']->getId().'.*'));
+                
+                //Save changes
+                move_uploaded_file($_FILES['avatar']['tmp_name'], 'dynamic/avatars/'.$avatar);
+            } else {
+                $avatar = $_SESSION['user']->getAvatarLink();
+            }
             
-            //Save changes
-            move_uploaded_file($_FILES['avatar']['tmp_name'], 'dynamic/avatars/'.$avatar);
             $_SESSION['user']->update($email, $password, $displayName, $avatar, $bio);
         }
     
-        return $this->get(array());
+        $result = $this->get(array());
+    
+        self::$data['account_email'] = $email;
+        self::$data['account_name'] = $displayName;
+        //TODO - somhow keep the new and unsaved avatar
+        self::$data['account_bio'] = $bio;
+        
+        return $result;
     }
 }
 
