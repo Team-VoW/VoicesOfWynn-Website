@@ -9,7 +9,6 @@ class AccountDataValidator
     private const NAME_MAX_LENGTH = 31;
     private const AVATAR_MAX_SIZE = 1048576; //In bytes
     private const BIO_MAX_LENGTH = 511;
-    private const BAD_WORDS = array('LOREM'); //TODO
     
     public array $errors = array();
     
@@ -100,10 +99,11 @@ class AccountDataValidator
         }
         
         $uppercaseBio = strtoupper($bio);
-        foreach (self::BAD_WORDS as $badword)
-        {
-            if (mb_strpos($uppercaseBio, $badword) !== false){
-                $this->errors[] = 'Your bio contains a bad word: '.$badword.'. If you believe that it\'s not used as a profanity, ping Shady#2948 on Discord.';
+        $badwords = file('Models/BadWords.txt');
+        foreach ($badwords as $badword) {
+            if (mb_strpos($uppercaseBio, $badword) !== false) {
+                $this->errors[] = 'Your bio contains a bad word: '.$badword.
+                                  '. If you believe that it\'s not used as a profanity, ping Shady#2948 on Discord.';
                 return false;
             }
         }
