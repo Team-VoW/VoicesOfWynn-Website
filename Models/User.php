@@ -81,7 +81,9 @@ class User
         }
         
         $this->email = $email;
-        if (isset($hash)) { $this->hash = $hash; }
+        if (isset($hash)) {
+            $this->hash = $hash;
+        }
         $this->displayName = $displayName;
         $this->avatarLink = $avatarLink;
         $this->bio = $bio;
@@ -141,4 +143,27 @@ class User
     {
         return $this->systemAdmin;
     }
+    
+    /**
+     * Method returning an numeric array containing associative arrays with keys "name" and "color", each of them
+     * describing one of all the roles that this user has
+     * @return array List of all the roles, each element being an associative array with keys "name" (string) and
+     *     "color" (string, hex code of the color)
+     */
+    public function getRoles(): array
+    {
+        $result = Db::fetchQuery('SELECT name,color FROM discord_role JOIN user_discord_role ON user_discord_role.discord_role_id = discord_role.discord_role_id WHERE user_id = ? ORDER BY weight DESC;',
+            array($this->id), true);
+        if ($result === false) { return array(); }
+        
+        $answer = array();
+        foreach ($result as $role)
+        {
+            $roleInfo = ['name' => $role['name'], 'color' => $role['color']];
+            $answer[] = $roleInfo;
+        }
+        
+        return $answer;
+    }
 }
+

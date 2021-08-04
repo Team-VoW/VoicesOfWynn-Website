@@ -1,6 +1,6 @@
 <h1>Account information</h1>
 <form method="post" enctype="multipart/form-data">
-    <table>
+    <table style="max-width: 50vw;">
         <tr>
             <td>ID</td>
             <td><?= ${basename(__FILE__, '.phtml').'_id'} ?></td>
@@ -26,6 +26,16 @@
                      alt="Your Profile Picture"/>
                 <input type="hidden" name="MAX_FILE_SIZE" value="1048576"/>
                 <input id="avatar-input" name="avatar" type="file" accept="image/png,image/jpeg"/>
+            </td>
+        </tr>
+        <tr>
+            <td>Titles</td>
+            <td>
+                <?php foreach (${basename(__FILE__, '.phtml').'_roles'} as $role) : ?>
+                    <div style="color:#<?= $role['color'] ?>; border-width: 1px; border-color: #<?= $role['color']
+                    ?>; border-radius: 1rem; border-style: solid; padding: 5px; text-align: center; display:unset;">
+                        <?= $role['name'] ?></div>
+                <?php endforeach ?>
             </td>
         </tr>
         <tr>

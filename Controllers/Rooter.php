@@ -67,8 +67,8 @@ class Rooter extends Controller
                 break;
             case 'array':
                 $return = array();
-                for ($i = 0; $i < count($value); $i++) {
-                    $return[$i] = $this->sanitize($value[$i]);
+                foreach ($value as $key => $val) {
+                    $return[$key] = $this->sanitize($val);
                 }
                 break;
             default:
