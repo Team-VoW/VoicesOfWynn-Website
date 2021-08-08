@@ -1,2 +1,28 @@
 <h1>This is the administration page</h1>
 <p>Content will be added in the future</p>
+
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Avatar</th>
+        <th>Display Name</th>
+        <th>Bio</th>
+        <th>Roles</th>
+    </tr>
+    <?php foreach (${basename(__FILE__, '.phtml').'_accounts'} as $user) : ?>
+    <tr>
+        <td><?= $user->getId() ?></td>
+        <td><img src="dynamic/avatars/<?= $user->getAvatarLink() ?>" alt="Profile picture"/></td>
+        <td><?= $user->getName() ?></td>
+        <td style="text-align: left;"><?= nl2br($user->getBio()) ?></td>
+        <td>
+            <?php foreach ($user->getRoles() as $role ) : ?>
+            <div style="color:#<?= $role->color ?>;">
+                <input type="checkbox" checked />
+                <span><?= $role->name ?> (<?= $role->weight ?>)</span>
+            </div>
+            <?php endforeach ?>
+        </td>
+    </tr>
+    <?php endforeach ?>
+</table>

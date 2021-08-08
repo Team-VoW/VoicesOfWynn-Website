@@ -2,6 +2,9 @@
 
 namespace VoicesOfWynn\Controllers;
 
+use VoicesOfWynn\Models\AccountManager;
+use VoicesOfWynn\Models\Db;
+
 class Administration extends Controller
 {
     
@@ -20,6 +23,8 @@ class Administration extends Controller
         self::$data['base_description'] = 'Tool for the administrators to manage accounts of the contributors.';
         self::$data['base_keywords'] = 'Minecraft,Wynncraft,Mod,Voice,Administration,Management';
     
+        self::$data['administration_accounts'] = AccountManager::getUsers();
+        
         self::$views[] = 'administration';
         return true;
     }
