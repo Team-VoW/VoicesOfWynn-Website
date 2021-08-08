@@ -6,13 +6,15 @@ namespace VoicesOfWynn\Models;
 
 class User
 {
-    private int $id;
-    private string $email;
-    private string $hash;
-    private bool $systemAdmin;
-    private string $displayName;
-    private string $avatarLink;
-    private string $bio;
+    private int $id = 0;
+    private string $email = '';
+    private string $hash = '';
+    private bool $systemAdmin = false;
+    private string $displayName = '';
+    private string $avatarLink = '';
+    private string $bio = '';
+    
+    private array $roles = array();
     
     /**
      * Login the user and load it's data, then save it's instance to the session
@@ -145,25 +147,75 @@ class User
     }
     
     /**
-     * Method returning an numeric array containing associative arrays with keys "name" and "color", each of them
-     * describing one of all the roles that this user has
+     * Method returning an array containing objects of type DiscordRole, representing all the roles that this user has
+     * The returned array is also saved as an attribute of the object
      * @return array List of all the roles, each element being an associative array with keys "name" (string) and
      *     "color" (string, hex code of the color)
      */
     public function getRoles(): array
     {
-        $result = Db::fetchQuery('SELECT name,color FROM discord_role JOIN user_discord_role ON user_discord_role.discord_role_id = discord_role.discord_role_id WHERE user_id = ? ORDER BY weight DESC;',
+        $result = Db::fetchQuery('SELECT name,color,weight FROM discord_role JOIN user_discord_role ON user_discord_role.discord_role_id = discord_role.discord_role_id WHERE user_id = ? ORDER BY weight DESC;',
             array($this->id), true);
-        if ($result === false) { return array(); }
-        
-        $answer = array();
-        foreach ($result as $role)
-        {
-            $roleInfo = ['name' => $role['name'], 'color' => $role['color']];
-            $answer[] = $roleInfo;
+        if ($result === false) {
+            $this->roles = array();
+            return array();
         }
         
+        $answer = array();
+        foreach ($result as $role) {
+            $role = new DiscordRole($role['name'], $role['color'], $role['weight']);
+            $answer[] = $role;
+        }
+        
+        $this->roles = $answer;
         return $answer;
+    }
+    
+    /**
+     * Generic setter for all properties
+     * @param array $data Associative array containing values to set. Allowed keys are: id, email, hash, systemAdmin,
+     * displayName, avatarLink, bio. Any of them can be omitted
+     * @return bool TRUE, if all values from the array were set successfully, FALSE, if an unknown key was encountered
+     */
+    public function setData(array $data): bool
+    {
+        foreach ($data as $key => $value) {
+            switch ($key) {
+                case 'id':
+                    $this->id = $value;
+                    break;
+                case 'email':
+                    $this->email = $value;
+                    break;
+                case 'hash':
+                    $this->hash = $value;
+                    break;
+                case 'systemAdmin':
+                    $this->systemAdmin = $value;
+                    break;
+                case 'displayName':
+                    $this->displayName = $value;
+                    break;
+                case 'avatarLink':
+                    $this->avatarLink = $value;
+                    break;
+                case 'bio':
+                    $this->bio = $value;
+                    break;
+                default:
+                    return false;
+            }
+        }
+        return true;
+    }
+    
+    /**
+     * Setter for the $roles attribute
+     * @param array $roles Array of the DiscordRole objects
+     */
+    public function setRoles(array $roles)
+    {
+        $this->roles = $roles;
     }
 }
 
