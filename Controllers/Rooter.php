@@ -4,6 +4,10 @@
 namespace VoicesOfWynn\Controllers;
 
 
+use Exception;
+use VoicesOfWynn\Models\DiscordRole;
+use VoicesOfWynn\Models\User;
+
 class Rooter extends Controller
 {
     
@@ -69,6 +73,36 @@ class Rooter extends Controller
                 $return = array();
                 foreach ($value as $key => $val) {
                     $return[$key] = $this->sanitize($val);
+                }
+                break;
+            case 'object':
+                if ($value instanceof DiscordRole) {
+                    $return = new DiscordRole("TempName");
+                    $return->name = $this->sanitize($value->name);
+                    $return->color = $this->sanitize($value->color);
+                    $return->weight = $this->sanitize($value->weight);
+                }
+                else if ($value instanceof User) {
+                    $id = $this->sanitize($value->getId());
+                    $email = $this->sanitize($value->getEmail());
+                    $name = $this->sanitize($value->getName());
+                    $avatarLink = $this->sanitize($value->getAvatarLink());
+                    $bio = $this->sanitize($value->getBio());
+                    $roles = $this->sanitize($value->getRoles());
+                    
+                    $value->setData(array(
+                        'id' => $id,
+                        'email' => $email,
+                        'displayName' => $name,
+                        'avatarLink' => $avatarLink,
+                        'bio' => $bio
+                    ));
+                    $value->setRoles($roles);
+                    
+                    $return = $value;
+                }
+                else {
+                    throw new Exception('Object variable of class '.get_class($value).' couldn\'t be sanitized');
                 }
                 break;
             default:
