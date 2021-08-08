@@ -32,9 +32,9 @@
             <td>Titles</td>
             <td>
                 <?php foreach (${basename(__FILE__, '.phtml').'_roles'} as $role) : ?>
-                    <div style="color:#<?= $role['color'] ?>; border-width: 1px; border-color: #<?= $role['color']
+                    <div style="color:#<?= $role->color ?>; border-width: 1px; border-color: #<?= $role->color
                     ?>; border-radius: 1rem; border-style: solid; padding: 5px; text-align: center; display:unset;">
-                        <?= $role['name'] ?></div>
+                        <?= $role->name ?></div>
                 <?php endforeach ?>
             </td>
         </tr>
