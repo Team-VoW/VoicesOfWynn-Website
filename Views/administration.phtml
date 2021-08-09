@@ -1,28 +1,36 @@
-<h1>This is the administration page</h1>
-<p>Content will be added in the future</p>
-
 <table>
     <tr>
-        <th>ID</th>
-        <th>Avatar</th>
-        <th>Display Name</th>
-        <th>Bio</th>
-        <th>Roles</th>
+        <th rowspan="2">ID</th>
+        <th rowspan="2">Avatar</th>
+        <th rowspan="2">Display Name</th>
+        <th rowspan="2">Bio</th>
+        <th colspan="<?= count(${basename(__FILE__, '.phtml').'_roles'}) ?>">Roles</th>
+    </tr>
+    <tr>
+        <?php for ($i = 0; $i < count(${basename(__FILE__, '.phtml').'_roles'}); $i++) : ?>
+        <th class="role-header" style="background-color: #<?= ${basename(__FILE__, '.phtml').'_roles'}[$i]->color ?>;">
+            <?= ${basename(__FILE__, '.phtml').'_roles'}[$i]->name ?>
+        </th>
+        <?php endfor ?>
     </tr>
     <?php foreach (${basename(__FILE__, '.phtml').'_accounts'} as $user) : ?>
     <tr>
         <td><?= $user->getId() ?></td>
-        <td><img src="dynamic/avatars/<?= $user->getAvatarLink() ?>" alt="Profile picture"/></td>
+        <td><img class="avatar" src="dynamic/avatars/<?= $user->getAvatarLink() ?>" alt="Profile picture"/></td>
         <td><?= $user->getName() ?></td>
         <td style="text-align: left;"><?= nl2br($user->getBio()) ?></td>
-        <td>
-            <?php foreach ($user->getRoles() as $role ) : ?>
-            <div style="color:#<?= $role->color ?>;">
-                <input type="checkbox" checked />
-                <span><?= $role->name ?> (<?= $role->weight ?>)</span>
-            </div>
-            <?php endforeach ?>
-        </td>
+        <?php for ($i = 0; $i < count(${basename(__FILE__, '.phtml').'_roles'}); $i++) : ?>
+            <td class="role-column" style="background-color: #<?= ${basename(__FILE__, '.phtml').'_roles'}[$i]->color
+            ?>">
+                <?php if ($user->hasRole(${basename(__FILE__, '.phtml').'_roles'}[$i]->name)) : ?>
+                <input type="checkbox" checked name="<?= ${basename(__FILE__, '.phtml').'_roles'}[$i]->name ?>"
+                       class="checkbox-large" />
+                <?php else : ?>
+                <input type="checkbox" name="<?= ${basename(__FILE__, '.phtml').'_roles'}[$i]->name ?>"
+                       class="checkbox-large" />
+                <?php endif ?>
+            </td>
+        <?php endfor ?>
     </tr>
     <?php endforeach ?>
 </table>

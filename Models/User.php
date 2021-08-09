@@ -172,6 +172,25 @@ class User
     }
     
     /**
+     * Finds out if the user has a certain discord role by its name
+     * If the list of roles haven't been loaded yet, it'll be after calling this function
+     * @param string $roleName Name of the role (case sensitive)
+     * @return bool TRUE, if this user has the role, FALSE if it doesn't
+     */
+    public function hasRole(string $roleName): bool
+    {
+        if (empty($this->roles)) {
+            $this->getRoles();
+        } //Load roles if they are not loaded
+        foreach ($this->roles as $role) {
+            if ($role->name === $roleName) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
      * Generic setter for all properties
      * @param array $data Associative array containing values to set. Allowed keys are: id, email, hash, systemAdmin,
      * displayName, avatarLink, bio. Any of them can be omitted

@@ -1,0 +1,36 @@
+.checkbox-large {
+    width: 5vh;
+    height: 5vh;
+}
+
+table {
+    /* Combat classless CSS
+    width: 145%;
+    position: relative;
+    left: -15vw;
+     */
+}
+
+td th {
+    text-align: center;
+    max-height: 10vh;
+}
+
+.role-header {
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    text-align: center;
+    width: 30px;
+    max-height: 20vh;
+    overflow-y: auto;
+    font-size: small;
+}
+
+.role-column {
+    width: 30px;
+}
+
+.avatar {
+    /*width: 10vh;*/
+    height: 10vh;
+}

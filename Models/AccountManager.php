@@ -23,7 +23,7 @@ class AccountManager
             $user->setData(array(
                 'id' => $userInfo['user_id'],
                 'displayName' => $userInfo['display_name'],
-                'avatarLink' => $userInfo['picture'].'?'.rand(0,31),
+                'avatarLink' => $userInfo['picture'].'?'.rand(0, 31),
                 'bio' => $userInfo['bio'],
             ));
             $user->setRoles($roles);
@@ -31,6 +31,17 @@ class AccountManager
         }
         
         return $users;
+    }
+    
+    public function getRoles(): array
+    {
+        $roles = Db::fetchQuery('SELECT name,color,weight FROM discord_role ORDER BY weight DESC', array(), true);
+        $result = array();
+        foreach ($roles as $roleInfo) {
+            $result[] = new DiscordRole($roleInfo['name'], $roleInfo['color'], $roleInfo['weight']);
+        }
+        
+        return $result;
     }
 }
 
