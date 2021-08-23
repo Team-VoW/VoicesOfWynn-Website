@@ -26,15 +26,36 @@ class Router extends Controller
     {
         $requestedUrl = $args[0];
         
+        //Separate variables from the URL
+        $urlArguments = explode('/', $requestedUrl);
+        $variableslessUrl = '';
+        $variables = array();
+        foreach ($urlArguments as $urlArgument) {
+            if (!is_numeric($urlArgument)) {
+                $variableslessUrl .= $urlArgument.'/';
+            } else {
+                $variableslessUrl .= '<'.count($variables).'>/';
+                $variables[] = $urlArgument;
+            }
+        }
+        $variableslessUrl = rtrim($variableslessUrl, '/'); //Remove trailing slash
         //Find out which controller to call
         $routes = parse_ini_file('routes.ini');
-        if (!isset($routes[$requestedUrl])) {
+        if (!isset($routes[$variableslessUrl])) {
             $this->errorCode = 404;
             return false;
         }
-        
-        $routeValue = $routes[$requestedUrl];
+        $routeValue = $routes[$variableslessUrl];
         $arguments = explode('?', $routeValue); //Get the name of controller and the arguments (if they exist)
+        
+        //Replace variable placeholders with numeric variables
+        $i = 0; //Index in $variables
+        for ($j = 0; $j < count($arguments); $j++) { //Index in $arguments
+            if ($arguments[$j] === '<'.$i.'>') {
+                $arguments[$j] = $variables[$i];
+                $i++;
+            }
+        }
         
         $controllerName = 'VoicesOfWynn\Controllers\\'.array_shift($arguments);
         $controller = new $controllerName();
@@ -69,7 +90,7 @@ class Router extends Controller
     private function sanitize($value)
     {
         $return = null;
-        switch (gettype($value)){
+        switch (gettype($value)) {
             case 'NULL':
                 $return = null;
                 break;

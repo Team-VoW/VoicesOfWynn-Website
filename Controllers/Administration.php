@@ -36,6 +36,9 @@ class Administration extends Controller
             case 'npcs':
                 $nextController = new Npcs();
                 break;
+	        case 'npc':
+	        	$nextController = new Npc();
+	        	break;
 	        default:
 	        	$nextController = new Accounts();
         }
