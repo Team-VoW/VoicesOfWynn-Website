@@ -7,7 +7,7 @@
 		</tr>
 	<?php foreach ($quest->getNpcs() as $npc) : ?>
 		<tr>
-			<td><img src="dynamic/avatars/<?= $npc->getName() ?>.jpg" alt="NPC picture" /></td>
+			<td><img src="dynamic/npcs/<?= $npc->getName() ?>.png" alt="NPC picture" /></td>
 			<td><?= $npc->getName() ?></td>
 			<?php if ($npc->getVoiceActor() === null) : ?>
 				<td colspan="2"><i>Nobody</i></td>
