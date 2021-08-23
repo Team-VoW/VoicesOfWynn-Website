@@ -2,6 +2,8 @@
 
 namespace VoicesOfWynn\Controllers;
 
+use VoicesOfWynn\Models\ContentManager;
+
 class Npcs extends Controller
 {
     
@@ -12,7 +14,8 @@ class Npcs extends Controller
     {
         self::$data['base_description'] = 'Tool for the administrators to manage NPCs and assign voice actors to them.';
         
-        // TODO: Implement process() method.
+        $cnm = new ContentManager();
+        self::$data['npcs_quests'] = $cnm->getQuests();
         
         self::$views[] = 'npcs';
         

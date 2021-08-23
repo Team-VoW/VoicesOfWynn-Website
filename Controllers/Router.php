@@ -6,6 +6,8 @@ namespace VoicesOfWynn\Controllers;
 
 use Exception;
 use VoicesOfWynn\Models\DiscordRole;
+use VoicesOfWynn\Models\Npc;
+use VoicesOfWynn\Models\Quest;
 use VoicesOfWynn\Models\User;
 
 class Router extends Controller
@@ -70,6 +72,7 @@ class Router extends Controller
         switch (gettype($value)){
             case 'NULL':
                 $return = null;
+                break;
             case 'string':
             case 'double':
             case 'integer':
@@ -106,6 +109,26 @@ class Router extends Controller
                     $value->setRoles($roles);
                     
                     $return = $value;
+                }
+                else if ($value instanceof Quest) {
+                	$id = $this->sanitize($value->getId());
+                	$name = $this->sanitize($value->getName());
+                	$quest = new Quest(array('id' => $id, 'name' => $name));
+                	foreach ($value->getNpcs() as $npc) {
+		                $quest->addNpc($this->sanitize($npc));
+	                }
+                	$return = $quest;
+                }
+                else if ($value instanceof Npc) {
+	                $attr = array();
+	                $attr['id'] = $this->sanitize($value->getId());
+	                $attr['name'] = $this->sanitize($value->getName());
+	                $voiceActor = $this->sanitize($value->getVoiceActor());
+	                $npc = new Npc($attr);
+	                if ($voiceActor !== null) {
+	                	$npc->setVoiceActor($voiceActor);
+	                }
+	                $return = $npc;
                 }
                 else {
                     throw new Exception('Object variable of class '.get_class($value).' couldn\'t be sanitized');

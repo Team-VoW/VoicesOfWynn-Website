@@ -229,8 +229,8 @@ class User
     
     /**
      * Generic setter for all properties
-     * @param array $data Associative array containing values to set. Allowed keys are: id, email, hash, systemAdmin,
-     * displayName, avatarLink, bio. Any of them can be omitted
+     * @param array $data Associative array containing values to set. There are multiple allowed key names for each
+     * attribute and any of the attributes can be omitted
      * @return bool TRUE, if all values from the array were set successfully, FALSE, if an unknown key was encountered
      */
     public function setData(array $data): bool
@@ -238,6 +238,9 @@ class User
         foreach ($data as $key => $value) {
             switch ($key) {
                 case 'id':
+	            case 'user_id':
+	            case 'voice_actor':
+	            case 'voice_actor_id':
                     $this->id = $value;
                     break;
                 case 'email':
@@ -247,15 +250,25 @@ class User
                     $this->hash = $value;
                     break;
                 case 'systemAdmin':
+                case 'admin':
                     $this->systemAdmin = $value;
                     break;
                 case 'displayName':
+                case 'display_name':
+                case 'name':
+                case 'uname':
+                case 'vaname':
+                case 'user_name':
+                case 'voice_actor_name':
                     $this->displayName = $value;
                     break;
                 case 'avatarLink':
+                case 'avatar_link':
+                case 'picture':
                     $this->avatarLink = $value;
                     break;
                 case 'bio':
+                case 'description':
                     $this->bio = $value;
                     break;
                 default:
