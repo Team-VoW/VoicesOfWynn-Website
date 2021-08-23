@@ -42,7 +42,7 @@ class Account extends Controller
         self::$data['account_id'] = $_SESSION['user']->getId();
         self::$data['account_email'] = $_SESSION['user']->getEmail();
         self::$data['account_name'] = $_SESSION['user']->getName();
-        self::$data['account_picture'] = $_SESSION['user']->getAvatarLink().'?'.rand(0, 31);
+        self::$data['account_picture'] = $_SESSION['user']->getAvatarLink();
         self::$data['account_roles'] = $_SESSION['user']->getRoles();
         self::$data['account_bio'] = $_SESSION['user']->getBio();
         if (empty(self::$data['account_error'])) {

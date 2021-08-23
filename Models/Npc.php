@@ -4,9 +4,11 @@ namespace VoicesOfWynn\Models;
 
 class Npc
 {
-	private int $id;
-	private string $name;
+	private int $id = 0;
+	private string $name = '';
 	private $voiceActor;
+	
+	private array $recordings = array();
 	
 	/**
 	 * @param array $data Data returned from database, invalid items are skipped, multiple key names are supported for
@@ -63,6 +65,24 @@ class Npc
 	public function getVoiceActor()
 	{
 		return $this->voiceActor;
+	}
+	
+	/**
+	 * Method adding a Recording object to this NPC's $recordings attribute
+	 * @param Recording $recording The Recording object to add
+	 */
+	public function addRecording(Recording $recording)
+	{
+		$this->recordings[] = $recording;
+	}
+	
+	/**
+	 * Recordings getter
+	 * @return array
+	 */
+	public function getRecordings()
+	{
+		return $this->recordings;
 	}
 }
 

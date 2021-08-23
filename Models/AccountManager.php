@@ -23,7 +23,7 @@ class AccountManager
             $user->setData(array(
                 'id' => $userInfo['user_id'],
                 'displayName' => $userInfo['display_name'],
-                'avatarLink' => $userInfo['picture'].'?'.rand(0, 31),
+                'avatarLink' => $userInfo['picture'],
                 'bio' => $userInfo['bio'],
             ));
             $user->setRoles($roles);

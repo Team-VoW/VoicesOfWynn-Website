@@ -8,6 +8,7 @@ use Exception;
 use VoicesOfWynn\Models\DiscordRole;
 use VoicesOfWynn\Models\Npc;
 use VoicesOfWynn\Models\Quest;
+use VoicesOfWynn\Models\Recording;
 use VoicesOfWynn\Models\User;
 
 class Router extends Controller
@@ -39,6 +40,10 @@ class Router extends Controller
             }
         }
         $variableslessUrl = rtrim($variableslessUrl, '/'); //Remove trailing slash
+	    if (strlen($variableslessUrl) === 0) {
+	    	$variableslessUrl = '/'; //Set to index if nothing was left
+	    }
+	    
         //Find out which controller to call
         $routes = parse_ini_file('routes.ini');
         if (!isset($routes[$variableslessUrl])) {
@@ -116,7 +121,7 @@ class Router extends Controller
                     $id = $this->sanitize($value->getId());
                     $email = $this->sanitize($value->getEmail());
                     $name = $this->sanitize($value->getName());
-                    $avatarLink = $this->sanitize($value->getAvatarLink());
+                    $avatarLink = $this->sanitize($value->getAvatarLink(false));
                     $bio = $this->sanitize($value->getBio());
                     $roles = $this->sanitize($value->getRoles());
                     
@@ -149,7 +154,22 @@ class Router extends Controller
 	                if ($voiceActor !== null) {
 	                	$npc->setVoiceActor($voiceActor);
 	                }
+	                foreach ($value->getRecordings() as $recording) {
+	                	$npc->addRecording($this->sanitize($recording));
+	                }
 	                $return = $npc;
+                }
+                else if ($value instanceof Recording) {
+	                $return = $value;
+                	$attr = array();
+                	$attr['id'] = $this->sanitize($value->id);
+                	$attr['npc_id'] = $this->sanitize($value->npcId);
+                	$attr['quest_id'] = $this->sanitize($value->questId);
+                	$attr['line'] = $this->sanitize($value->line);
+                	$attr['file'] = $this->sanitize($value->file);
+                	$attr['upvotes'] = $this->sanitize($value->upvotes);
+                	$attr['downvotes'] = $this->sanitize($value->downvotes);
+                	return new Recording($attr);
                 }
                 else {
                     throw new Exception('Object variable of class '.get_class($value).' couldn\'t be sanitized');

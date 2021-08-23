@@ -40,9 +40,10 @@ class User
             $password .= self::DEFAULT_PASSWORD_CHARACTERS[rand(0, mb_strlen(self::DEFAULT_PASSWORD_CHARACTERS) - 1)];
         }
         
+        $this->hash = password_hash($password, PASSWORD_DEFAULT);
         $result = Db::executeQuery('INSERT INTO user (display_name,password) VALUES (?,?)', array(
             $name,
-            password_hash($password, PASSWORD_DEFAULT)
+            $this->hash
         ));
         
         if ($result) {
@@ -158,10 +159,13 @@ class User
     
     /**
      * Avatar link getter
-     * @return string Filename of the profile picture
+     * @return string Filename of the profile picture (a random number is appended to the end to prevent caching)
      */
-    public function getAvatarLink(): string
+    public function getAvatarLink(bool $appendRandom = true)
     {
+    	if ($appendRandom) {
+    		return $this->avatarLink.'?'.rand(0, 31);
+	    }
         return $this->avatarLink;
     }
     
@@ -231,9 +235,8 @@ class User
      * Generic setter for all properties
      * @param array $data Associative array containing values to set. There are multiple allowed key names for each
      * attribute and any of the attributes can be omitted
-     * @return bool TRUE, if all values from the array were set successfully, FALSE, if an unknown key was encountered
      */
-    public function setData(array $data): bool
+    public function setData(array $data): void
     {
         foreach ($data as $key => $value) {
             switch ($key) {
@@ -271,11 +274,8 @@ class User
                 case 'description':
                     $this->bio = $value;
                     break;
-                default:
-                    return false;
             }
         }
-        return true;
     }
     
     /**

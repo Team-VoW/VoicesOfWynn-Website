@@ -2,6 +2,8 @@
 
 namespace VoicesOfWynn\Controllers;
 
+use VoicesOfWynn\Models\ContentManager;
+
 class Npc extends Controller
 {
 	
@@ -14,10 +16,15 @@ class Npc extends Controller
 		
 		self::$data['base_description'] = 'Tool for the administrators to manage NPCs and assign voice actors to them.';
 		
-		self::$data['npc_id'] = $npcId;
+		$cnm = new ContentManager();
+		$npc = $cnm->getNpc($npcId);
+		self::$data['npc_npc'] = $npc;
+		self::$data['npc_voiceActor'] = $npc->getVoiceActor();
+		self::$data['npc_quest_recordings'] = $cnm->getNpcRecordings($npcId);
 		
 		self::$views[] = 'npc';
 		
 		return true;
 	}
 }
+
