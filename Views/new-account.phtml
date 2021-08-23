@@ -1,0 +1,10 @@
+<h2>Create a new account</h2>
+<form method="post">
+    <label for="username">Display name</label>
+    <input type="text" name="name" /><br>
+    <label for="password">Password</label>
+    <input type="text" name="password" value="<?= ${str_replace('-', '', basename(__FILE__, '.phtml')).'_password'}; ?>" placeholder="Will be generated" readonly/><br>
+    <input type="submit" value="Create" />
+</form>
+<div><?= ${str_replace('-', '', basename(__FILE__, '.phtml')).'_error'}; ?></div>
+

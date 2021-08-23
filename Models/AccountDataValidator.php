@@ -52,8 +52,17 @@ class AccountDataValidator
         
         return true;
     }
-    
-    public function validateName(string $name): bool
+	
+	/**
+	 * Method validating display name
+	 * @param string $name Name to validate
+	 * @param bool $checkAgainstOld TRUE, if the name should be also checked against the currently logged user's name
+	 * (default FALSE and TRUE should be used only when accounts are created by an admin, to permit changes in
+	 * capitalisation to causal users)
+	 * @return bool TRUE, if the name is valid
+	 * @throws \Exception
+	 */
+    public function validateName(string $name, bool $checkAgainstOld = false): bool
     {
         //Check length
         if (mb_strlen($name) > self::NAME_MAX_LENGTH) {
@@ -63,7 +72,7 @@ class AccountDataValidator
         
         //Check uniqueness
         $result = Db::fetchQuery('SELECT COUNT(*) AS "cnt" FROM user WHERE UPPER(display_name) = ? AND user_id != ?',
-            array(strtoupper($name), $_SESSION['user']->getId()));
+            array(strtoupper($name), $checkAgainstOld ? 0 : $_SESSION['user']->getId()));
         if ($result['cnt'] > 0) {
             $this->errors[] = 'This display name is already in use.';
             return false;

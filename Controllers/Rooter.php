@@ -30,9 +30,13 @@ class Rooter extends Controller
             $this->errorCode = 404;
             return false;
         }
-        $controllerName = 'VoicesOfWynn\Controllers\\'.$routes[$requestedUrl];
+        
+        $routeValue = $routes[$requestedUrl];
+        $arguments = explode('?', $routeValue); //Get the name of controller and the arguments (if they exist)
+        
+        $controllerName = 'VoicesOfWynn\Controllers\\'.array_shift($arguments);
         $controller = new $controllerName();
-        return $controller->process(array()); //Pass control to the specific controller
+        return $controller->process($arguments); //Pass control to the specific controller
     }
     
     /**
@@ -57,17 +61,19 @@ class Rooter extends Controller
     
     /**
      * Method sanitizing one variable of type int, double, string or array against XSS attack
-     * @param $value Variable to sanitize
+     * @param $value mixed Variable to sanitize
      * @return mixed Sanitized variable of the same type
      */
     private function sanitize($value)
     {
         $return = null;
         switch (gettype($value)){
+            case 'NULL':
+                $return = null;
             case 'string':
             case 'double':
             case 'integer':
-                $return = htmlspecialchars($value);
+                $return = htmlspecialchars($value, ENT_QUOTES);
                 break;
             case 'array':
                 $return = array();

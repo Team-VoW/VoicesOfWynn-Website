@@ -6,15 +6,52 @@ namespace VoicesOfWynn\Models;
 
 class User
 {
+    private const DEFAULT_PASSWORD_CHARACTERS = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    private const DEFAULT_PASSWORD_LENGTH = 6;
+    
     private int $id = 0;
-    private string $email = '';
+    private $email = '';
     private string $hash = '';
     private bool $systemAdmin = false;
     private string $displayName = '';
     private string $avatarLink = '';
-    private string $bio = '';
+    private $bio = '';
     
     private array $roles = array();
+    
+    /**
+     * Registers a new user account, generates a password and returns it
+     * The user is not logged in
+     * @param string $name
+     * @param string $checkAgainstOld If set to TRUE, users won't be able to pick names that are different from the
+     * old ones only in capitalisation, default FALSE
+     * @return string
+     * @throws UserException In case of an invalid name
+     */
+    public function register(string $name, bool $checkAgainstOld = false)
+    {
+        $verifier = new AccountDataValidator();
+        if (!$verifier->validateName($name, $checkAgainstOld)) {
+            throw new UserException($verifier->errors[0]);
+        }
+        
+        $password = '';
+        for ($i = 0; $i < self::DEFAULT_PASSWORD_LENGTH; $i++) {
+            $password .= self::DEFAULT_PASSWORD_CHARACTERS[rand(0, mb_strlen(self::DEFAULT_PASSWORD_CHARACTERS) - 1)];
+        }
+        
+        $result = Db::executeQuery('INSERT INTO user (display_name,password) VALUES (?,?)', array(
+            $name,
+            password_hash($password, PASSWORD_DEFAULT)
+        ));
+        
+        if ($result) {
+            return $password;
+        }
+        else {
+            throw new UserException('Couldn\'t execute the SQL query');
+        }
+    }
     
     /**
      * Login the user and load it's data, then save it's instance to the session
@@ -105,7 +142,7 @@ class User
      * E-mail getter
      * @return string E-mail address
      */
-    public function getEmail(): string
+    public function getEmail()
     {
         return $this->email;
     }
@@ -132,7 +169,7 @@ class User
      * Bio getter
      * @return string User's bio
      */
-    public function getBio(): string
+    public function getBio()
     {
         return $this->bio;
     }

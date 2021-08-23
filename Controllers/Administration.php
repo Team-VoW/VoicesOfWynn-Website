@@ -18,17 +18,31 @@ class Administration extends Controller
             $errorController = new Error403();
             return $errorController->process(array());
         }
-        
-        self::$data['base_title'] = 'Administration';
-        self::$data['base_description'] = 'Tool for the administrators to manage accounts of the contributors.';
-        self::$data['base_keywords'] = 'Minecraft,Wynncraft,Mod,Voice,Administration,Management';
     
-        self::$data['administration_roles'] = AccountManager::getRoles();
-        self::$data['administration_accounts'] = AccountManager::getUsers();
+        self::$data['base_title'] = 'Administration';
+        self::$data['base_keywords'] = 'Minecraft,Wynncraft,Mod,Voice,Administration,Management';
         
         self::$views[] = 'administration';
         self::$cssFiles[] = 'administration';
         
+        $nextController = null;
+        switch (array_shift($args)) {
+            case 'accounts':
+                $nextController = new Accounts();
+                break;
+            case 'new-account':
+                $nextController = new NewAccount();
+                break;
+            case 'npcs':
+                $nextController = new Npcs();
+                break;
+	        default:
+	        	$nextController = new Accounts();
+        }
+        
+        $nextController->process($args);
+        
         return true;
     }
 }
+
