@@ -3,7 +3,7 @@
 namespace VoicesOfWynn;
 
 use VoicesOfWynn\Controllers\Error404;
-use VoicesOfWynn\Controllers\Rooter;
+use VoicesOfWynn\Controllers\Router;
 
 //Set autoloader for dependencies
 require __DIR__.'/vendor/autoload.php';
@@ -38,8 +38,8 @@ if (!(isset($_SERVER["HTTP_X_FORWARDED_PROTO"]) && $_SERVER["HTTP_X_FORWARDED_PR
 
 $requestedUrl = $_SERVER['REQUEST_URI'];
 //Process the request
-$rooter = new Rooter();
-$result = $rooter->process(array($requestedUrl));
+$router = new Router();
+$result = $router->process(array($requestedUrl));
 if ($result !== true) {
     //Display the error webpage, overwrite the page headers (title, description, keywords)
     $errorController = new Error404();
@@ -47,6 +47,6 @@ if ($result !== true) {
 }
 
 //Display the generated website
-$website = $rooter->displayView();
+$website = $router->displayView();
 echo $website;
 

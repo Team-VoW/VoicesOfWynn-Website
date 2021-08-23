@@ -8,7 +8,7 @@ use Exception;
 use VoicesOfWynn\Models\DiscordRole;
 use VoicesOfWynn\Models\User;
 
-class Rooter extends Controller
+class Router extends Controller
 {
     
     private const VIEWS_FOLDER = 'Views';
@@ -125,5 +125,18 @@ class Rooter extends Controller
     {
         return self::VIEWS_FOLDER.'/'.array_shift(self::$views).'.phtml';
     }
+	
+	/**
+	 * Method finding and returning a variable to be inserted to a view by its name
+	 * @param $variableName
+	 * @return mixed
+	 */
+	public static function ins($variableName)
+	{
+		echo __FILE__;
+		$viewName = basename(__FILE__, '.phtml');
+		$viewName = str_replace('-', '', $viewName);
+		return ${$viewName.'_'.$variableName};
+	}
 }
 
