@@ -4,13 +4,29 @@
 <img src="dynamic/npcs/<?= ${basename(__FILE__, '.phtml').'_npc'}->getName() ?>.png" alt="NPC picture" />
 <p>
     <strong>Voice actor: </strong>
-    <?php if (${basename(__FILE__, '.phtml').'_voiceActor'} === null) : ?>
-        <i>Nobody</i>
+    <?php if (${basename(__FILE__, '.phtml').'_voice_actor'} === null) : ?>
+        <img id="voice-actor-avatar" class="avatar" src="dynamic/avatars/defaultAvatar.png" alt="Profile picture" />
+        <span id="voice-actor-name"><i>Nobody</i></span>
     <?php else : ?>
-        <img class="avatar" src="dynamic/avatars/<?= ${basename(__FILE__, '.phtml').'_voiceActor'}->getAvatarLink() ?>" alt="Profile picture" />
-        <?= ${basename(__FILE__, '.phtml').'_voiceActor'}->getName() ?>
+        <img id="voice-actor-avatar" class="avatar" src="dynamic/avatars/<?= ${basename(__FILE__, '.phtml').'_voice_actor'}->getAvatarLink() ?>" alt="Profile picture" />
+        <span id="voice-actor-name"><?= ${basename(__FILE__, '.phtml').'_voice_actor'}->getName() ?></span>
     <?php endif ?>
     <button id="change-actor-btn">Change</button>
+    <form id="voice-actor-form">
+        <select name="actor">
+	        <?php if (${basename(__FILE__, '.phtml').'_voice_actor'} === null) : ?>
+                <option selected disabled hidden></option>
+	        <?php endif ?>
+            <?php foreach (${basename(__FILE__, '.phtml').'_voice_actors'} as $vactor) : ?>
+	            <?php if (!${basename(__FILE__, '.phtml').'_voice_actor'} === null && ${basename(__FILE__, '.phtml').'_voice_actor'}->getId() === $vactor->getId) : ?>
+                <option checked value="<?= $vactor->getId() ?>" data-avatar-link="<?= $vactor->getAvatarLink() ?>"><?= $vactor->getName() ?></option>
+                <?php else : ?>
+                <option value="<?= $vactor->getId() ?>" data-avatar-link="<?= $vactor->getAvatarLink() ?>"><?= $vactor->getName() ?></option>
+                <?php endif ?>
+            <?php endforeach ?>
+        </select>
+        <input type="submit" value="Confirm" />
+    </form>
 </p>
 
 <h3>Recordings</h3>

@@ -1,3 +1,7 @@
+#voice-actor-form {
+    display: none;
+}
+
 .delete-recording-btn {
     background-color: #f63613;
     color: white;

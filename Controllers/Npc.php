@@ -2,6 +2,7 @@
 
 namespace VoicesOfWynn\Controllers;
 
+use VoicesOfWynn\Models\AccountManager;
 use VoicesOfWynn\Models\ContentManager;
 use VoicesOfWynn\Models\Db;
 
@@ -18,6 +19,8 @@ class Npc extends Controller
 				return $this->get($args);
 			case 'POST':
 				return $this->post($args);
+			case 'PUT':
+				return $this->put($args);
 			case 'DELETE':
 				return $this->delete($args);
 			default:
@@ -39,7 +42,9 @@ class Npc extends Controller
 		$cnm = new ContentManager();
 		$npc = $cnm->getNpc($npcId);
 		self::$data['npc_npc'] = $npc;
-		self::$data['npc_voiceActor'] = $npc->getVoiceActor();
+		self::$data['npc_voice_actor'] = $npc->getVoiceActor();
+		$acManager = new AccountManager();
+		self::$data['npc_voice_actors'] = $acManager->getUsers();
 		self::$data['npc_quest_recordings'] = $cnm->getNpcRecordings($npcId);
 		if (!isset(self::$data['npc_uploadErrors'])) {
 			self::$data['npc_uploadErrors'] = array();
@@ -97,11 +102,31 @@ class Npc extends Controller
 	}
 	
 	/**
+	 * Processing method for PUT requests to this controller (new voice actor was set for this NPC)
+	 * @param array $args NPC id as the first element, User ID as the second element
+	 * @return bool
+	 */
+	private function put(array $args): void
+	{
+		$npcId = $args[0];
+		$userId = $args[1];
+		
+		if (empty($npcId) || empty($userId)) {
+			header("HTTP/1.1 400 Bad request");
+			exit();
+		}
+		
+		//Update the database
+		$result = Db::executeQuery('UPDATE npc SET voice_actor_id = ? WHERE npc_id = ? LIMIT 1;', array($userId, $npcId));
+		exit($result);
+	}
+	
+	/**
 	 * Processing method for DELETE requests to this controller (a recording is supposed to be deleted)
 	 * @param array $args NPC id as the first element, Recording ID as the second element
 	 * @return bool
 	 */
-	private function delete($args): void
+	private function delete(array $args): void
 	{
 		$npcId = $args[0];
 		$recordingId = $args[1];
