@@ -44,7 +44,7 @@
                         <input name="recording1" type="file" accept="audio/ogg" class="recording-input" required/>
                     </td>
                     <td>
-                        <input name="line1" type="number" min="1" max="32767" value="<?= count($recordings)+1 ?>" class="line-input" required/>
+                        <input name="line1" type="number" min="1" max="32767" value="<?= $recordings[count($recordings) -1]->line+1 ?>" class="line-input" required/>
                     </td>
                 </tr>
             </tbody>
