@@ -26,6 +26,8 @@ class Login extends Controller
                 return $this->get(array());
             case 'POST':
                 return $this->post(array());
+	        default:
+	        	return false;
         }
     }
     
