@@ -286,5 +286,31 @@ class User
     {
         $this->roles = $roles;
     }
+	
+	/**
+	 * Removes bio of this user
+	 * @return bool
+	 * @throws \Exception
+	 */
+    public function clearBio(): bool
+    {
+    	$this->bio = '';
+    	return Db::executeQuery('UPDATE user SET bio = NULL WHERE user_id = ?', array($this->id));
+    }
+	
+	/**
+	 * Resets this user's avatar to the default one
+	 * @return bool
+	 * @throws \Exception
+	 */
+	public function clearAvatar(): bool
+	{
+		$this->avatarLink = 'defaultAvatar.png';
+		$result = Db::executeQuery('UPDATE user SET picture = DEFAULT WHERE user_id = ?', array($this->id));
+		if ($result) {
+			array_map('unlink', glob('dynamic/avatars/'.$this->getId().'.*'));
+		}
+		return $result;
+	}
 }
 

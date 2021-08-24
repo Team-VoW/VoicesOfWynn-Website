@@ -4,6 +4,7 @@
         <th rowspan="2">Avatar</th>
         <th rowspan="2">Display Name</th>
         <th rowspan="2">Bio</th>
+        <th rowspan="2">Actions</th>
         <th colspan="<?= count(${basename(__FILE__, '.phtml').'_roles'}) ?>">Roles</th>
     </tr>
     <tr>
@@ -19,6 +20,10 @@
             <td><img class="avatar" src="dynamic/avatars/<?= $user->getAvatarLink() ?>" alt="Profile picture"/></td>
             <td><?= $user->getName() ?></td>
             <td style="text-align: left;"><?= nl2br($user->getBio()) ?></td>
+            <td>
+                <a href="administration/accounts/clear-bio/<?= $user->getId() ?>">Clear Bio</a><br>
+                <a href="administration/accounts/clear-avatar/<?= $user->getId() ?>">Clear Avatar</a>
+            </td>
             <?php for ($i = 0; $i < count(${basename(__FILE__, '.phtml').'_roles'}); $i++) : ?>
                 <td class="role-column" style="background-color: #<?= ${basename(__FILE__, '.phtml').'_roles'}[$i]->color
                 ?>">
