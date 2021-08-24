@@ -30,5 +30,27 @@
         </tr>
         <?php endforeach ?>
     </table>
+    <form method="post" enctype="multipart/form-data" class="new-recording-form">
+        <h4>Add new recording</h4>
+        <input name="questId" type="hidden" value="<?= $quest->getId() ?>" />
+        <table>
+            <tr><th>File</th><th>Line #</th></tr>
+            <tbody class="new-recording-items-container">
+                <tr class="new-recording-item">
+                    <td>
+                        <input name="recording1" type="file" accept="audio/ogg" class="recording-input" required/>
+                    </td>
+                    <td>
+                        <input name="line1" type="number" min="1" max="32767" value="<?= count($recordings)+1 ?>" class="line-input" required/>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <button class="add-more-recordings-button">Add more</button>
+        <input type="submit" value="Upload"/>
+    </form>
+    <?php if (isset(${basename(__FILE__, '.phtml').'_uploadErrors'}[$quest->getId()])) : ?>
+        <?= ${basename(__FILE__, '.phtml').'_uploadErrors'}[$quest->getId()] ?>
+    <?php endif ?>
 </section>
 <?php endforeach ?>

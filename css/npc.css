@@ -1,0 +1,4 @@
+.add-more-recordings-button {
+    /* Will be displayed again by jQuery when the initial field is filled */
+    display:none;
+}
