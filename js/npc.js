@@ -25,7 +25,7 @@ $("#voice-actor-form").on('submit', function(event) {
             toggleRecastingButton();
         },
         error: function(result, message, error) {
-            alert("An error occured: " + error);
+            alert("An error occurred: " + error);
         }
     });
 });
@@ -46,7 +46,7 @@ $(".delete-recording-btn").on('click', function(event){
             $deletingRecording.remove();
         },
         error: function(result, message, error) {
-            alert("An error occured: " + error);
+            alert("An error occurred: " + error);
             $deletingRecording = undefined;
         }
     });

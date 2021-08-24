@@ -28,6 +28,12 @@ class Accounts extends Controller
 			    	$user->clearAvatar();
 			    	header('Location: /administration/accounts');
 			    	exit();
+			    case 'delete':
+				    $user = new User();
+				    $user->setData(array('id' => $args[0]));
+				    $user->delete();
+				    header('Location: /administration/accounts');
+				    exit();
 			    case 'grant-role':
 				    $user = new User();
 				    $user->setData(array('id' => $args[0]));
@@ -50,6 +56,7 @@ class Accounts extends Controller
         self::$data['accounts_roles'] = $accountManager->getRoles();
         self::$data['accounts_accounts'] = $accountManager->getUsers();
     
+        self::$cssFiles[] = 'accounts';
         self::$jsFiles[] = 'accounts';
         self::$views[] = 'accounts';
         

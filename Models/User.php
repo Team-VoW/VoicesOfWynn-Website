@@ -343,5 +343,15 @@ class User
 		}
 		return $result;
 	}
+	
+	/**
+	 * Deletes this user from the database
+	 * This object should be immediately destroyed with unset()
+	 * @return bool
+	 * @throws \Exception
+	 */
+	public function delete(): bool {
+		return Db::executeQuery('DELETE FROM user WHERE user_id = ?', array($this->id));
+	}
 }
 

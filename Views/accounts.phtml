@@ -22,7 +22,8 @@
             <td style="text-align: left;"><?= nl2br($user->getBio()) ?></td>
             <td>
                 <a href="administration/accounts/<?= $user->getId() ?>/clear-bio">Clear Bio</a><br>
-                <a href="administration/accounts/<?= $user->getId() ?>/clear-avatar">Clear Avatar</a>
+                <a href="administration/accounts/<?= $user->getId() ?>/clear-avatar">Clear Avatar</a><br>
+                <a class="delete-account-link" data-user-id=<?= $user->getId() ?>>Delete account</a>
             </td>
             <?php for ($i = 0; $i < count(${basename(__FILE__, '.phtml').'_roles'}); $i++) : ?>
                 <td class="role-column" style="background-color: #<?= ${basename(__FILE__, '.phtml').'_roles'}[$i]->color
