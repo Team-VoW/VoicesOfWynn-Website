@@ -159,11 +159,12 @@ class User
     
     /**
      * Avatar link getter
-     * @return string Filename of the profile picture (a random number is appended to the end to prevent caching)
+     * @return string Filename of the profile picture (a random number is appended to the end to prevent caching if
+     * the avatar isn't the default one)
      */
     public function getAvatarLink(bool $appendRandom = true)
     {
-    	if ($appendRandom) {
+    	if ($appendRandom && $this->avatarLink !== 'defaultAvatar.png') {
     		return $this->avatarLink.'?'.rand(0, 31);
 	    }
         return $this->avatarLink;
