@@ -28,6 +28,16 @@ class Accounts extends Controller
 			    	$user->clearAvatar();
 			    	header('Location: /administration/accounts');
 			    	exit();
+			    case 'grant-role':
+				    $user = new User();
+				    $user->setData(array('id' => $args[0]));
+				    $user->addRole($args[1]);
+				    exit();
+			    case 'revoke-role':
+				    $user = new User();
+				    $user->setData(array('id' => $args[0]));
+				    $user->removeRole($args[1]);
+				    exit();
 			    default:
 				    $errorController = new Error404();
 				    $errorController->process(array());
@@ -40,6 +50,7 @@ class Accounts extends Controller
         self::$data['accounts_roles'] = $accountManager->getRoles();
         self::$data['accounts_accounts'] = $accountManager->getUsers();
     
+        self::$jsFiles[] = 'accounts';
         self::$views[] = 'accounts';
         
         return true;

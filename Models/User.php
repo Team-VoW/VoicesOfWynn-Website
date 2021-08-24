@@ -289,6 +289,36 @@ class User
     }
 	
 	/**
+	 * Adds a role to this user in the database
+	 * Doesn't affect this object's $roles attribute
+	 * @param int $roleId
+	 * @return bool
+	 * @throws \Exception
+	 */
+    public function addRole(int $roleId): bool
+    {
+    	return Db::executeQuery('INSERT INTO user_discord_role (user_id,discord_role_id) VALUES (?,?)', array(
+    		$this->id,
+    		$roleId
+	    ));
+    }
+	
+	/**
+	 * Removes a role from this user in the database
+	 * Doesn't affect this object's $roles attribute
+	 * @param int $roleId
+	 * @return bool
+	 * @throws \Exception
+	 */
+	public function removeRole(int $roleId): bool
+	{
+		return Db::executeQuery('DELETE FROM user_discord_role WHERE user_id = ? AND discord_role_id = ?', array(
+			$this->id,
+			$roleId
+		));
+	}
+	
+	/**
 	 * Removes bio of this user
 	 * @return bool
 	 * @throws \Exception

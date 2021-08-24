@@ -15,24 +15,22 @@
         <?php endfor ?>
     </tr>
     <?php foreach (${basename(__FILE__, '.phtml').'_accounts'} as $user) : ?>
-        <tr>
+        <tr data-user-id="<?= $user->getId() ?>">
             <td><?= $user->getId() ?></td>
             <td><img class="avatar" src="dynamic/avatars/<?= $user->getAvatarLink() ?>" alt="Profile picture"/></td>
             <td><?= $user->getName() ?></td>
             <td style="text-align: left;"><?= nl2br($user->getBio()) ?></td>
             <td>
-                <a href="administration/accounts/clear-bio/<?= $user->getId() ?>">Clear Bio</a><br>
-                <a href="administration/accounts/clear-avatar/<?= $user->getId() ?>">Clear Avatar</a>
+                <a href="administration/accounts/<?= $user->getId() ?>/clear-bio">Clear Bio</a><br>
+                <a href="administration/accounts/<?= $user->getId() ?>/clear-avatar">Clear Avatar</a>
             </td>
             <?php for ($i = 0; $i < count(${basename(__FILE__, '.phtml').'_roles'}); $i++) : ?>
                 <td class="role-column" style="background-color: #<?= ${basename(__FILE__, '.phtml').'_roles'}[$i]->color
                 ?>">
                     <?php if ($user->hasRole(${basename(__FILE__, '.phtml').'_roles'}[$i]->name)) : ?>
-                        <input type="checkbox" checked name="<?= ${basename(__FILE__, '.phtml').'_roles'}[$i]->name ?>"
-                               class="checkbox-large" />
+                        <input type="checkbox" checked data-role-id="<?= ${basename(__FILE__, '.phtml').'_roles'}[$i]->getId() ?>" class="checkbox-large" />
                     <?php else : ?>
-                        <input type="checkbox" name="<?= ${basename(__FILE__, '.phtml').'_roles'}[$i]->name ?>"
-                               class="checkbox-large" />
+                        <input type="checkbox" data-role-id="<?= ${basename(__FILE__, '.phtml').'_roles'}[$i]->getId() ?>" class="checkbox-large" />
                     <?php endif ?>
                 </td>
             <?php endfor ?>
