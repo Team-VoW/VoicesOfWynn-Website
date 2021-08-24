@@ -1,3 +1,5 @@
+<script>var npcId = <?= ${basename(__FILE__, '.phtml').'_npc'}->getId() ?>;</script>
+
 <h1><?= ${basename(__FILE__, '.phtml').'_npc'}->getName() ?></h1>
 <img src="dynamic/npcs/<?= ${basename(__FILE__, '.phtml').'_npc'}->getName() ?>.png" alt="NPC picture" />
 <p>
@@ -15,7 +17,7 @@
 <?php foreach (${basename(__FILE__, '.phtml').'_quest_recordings'} as $quest) : ?>
 <section>
     <table>
-        <tr><th><?= $quest->getName() ?></th></tr>
+        <tr><th colspan="5"><?= $quest->getName() ?></th></tr>
 	    <?php $recordings = $quest->getNpcs()[0]->getRecordings(); ?>
         <?php foreach ($recordings as $recording) : ?>
         <tr>
@@ -27,6 +29,7 @@
                 </audio>
             <td style="color: green; font-weight: bolder;"><?= $recording->upvotes ?></td>
             <td style="color: red; font-weight: bolder;"><?= $recording->downvotes ?></td>
+            <td><button class="delete-recording-btn" data-recording-id="<?= $recording->id ?>">×</button></td>
         </tr>
         <?php endforeach ?>
     </table>
@@ -54,3 +57,4 @@
     <?php endif ?>
 </section>
 <?php endforeach ?>
+

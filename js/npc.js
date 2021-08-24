@@ -1,3 +1,29 @@
+// var npcId; - filled by PHP in the view
+
+//------------------------------DELETING RECORDINGS SECTION------------------------------
+
+var $deletingRecording; //HTML <tr> element with recording that is being deleted
+
+$(".delete-recording-btn").on('click', function(event){
+    if (!confirm("Do you really want to delete this recording?")) {
+        return;
+    }
+    $deletingRecording = $(event.target).closest("tr");
+    $.ajax({
+        url: "administration/npcs/manage/" + npcId + "/delete/" + $(event.target).attr("data-recording-id"),
+        type: 'DELETE',
+        success: function(result, message) {
+            $deletingRecording.remove();
+        },
+        error: function(result, message, error) {
+            alert("An error occured: " + code);
+            $deletingRecording = undefined;
+        }
+    });
+});
+
+//------------------------------UPLOADING RECORDINGS SECTION------------------------------
+
 var recordingItemHtml = '<tr class="new-recording-item"><td><input name="recording{NUM}" type="file" accept="application/ogg" class="recording-input" required/></td><td><input name="line{NUM}" type="number" min="1" max="32767" value="{LINE}" class="line-input" required/></td></tr>';
 
 function toggleAddingButton(event)

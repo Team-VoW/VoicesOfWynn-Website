@@ -18,6 +18,8 @@ class Npc extends Controller
 				return $this->get($args);
 			case 'POST':
 				return $this->post($args);
+			case 'DELETE':
+				return $this->delete($args);
 			default:
 				return false;
 		}
@@ -71,7 +73,8 @@ class Npc extends Controller
 			
 			if ($error !== UPLOAD_ERR_OK) {
 				header("HTTP/1.1 422 Unprocessable Entity");
-				self::$data['npc_uploadErrors'][$questId] = 'An error occurred during the file uploading: error code '.$error;
+				self::$data['npc_uploadErrors'][$questId] = 'An error occurred during the file uploading: error code '.
+				                                            $error;
 				return $this->get($args);
 			}
 			
@@ -83,11 +86,47 @@ class Npc extends Controller
 			
 			move_uploaded_file($tempName, 'dynamic/recordings/'.$filename);
 			Db::executeQuery('INSERT INTO recording (npc_id,quest_id,line,file) VALUES (?,?,?,?)', array(
-				$npcId,	$questId, $line, $filename
+				$npcId,
+				$questId,
+				$line,
+				$filename
 			));
 		}
 		header('Location: '.$_SERVER['REQUEST_URI']);
 		return $this->get($args);
+	}
+	
+	/**
+	 * Processing method for DELETE requests to this controller (a recording is supposed to be deleted)
+	 * @param array $args NPC id as the first element, Recording ID as the second element
+	 * @return bool
+	 */
+	private function delete($args): void
+	{
+		$npcId = $args[0];
+		$recordingId = $args[1];
+		
+		if (empty($npcId) || empty($recordingId)) {
+			header("HTTP/1.1 400 Bad request");
+			exit();
+		}
+		
+		$result = Db::fetchQuery('SELECT file FROM recording WHERE recording_id = ? AND npc_id = ?;',
+			array($recordingId, $npcId));
+		if (empty($result)) {
+			header("HTTP/1.1 404 Not Found");
+			exit();
+		}
+		
+		//Delete record from database
+		$filename = $result['file'];
+		$result = Db::executeQuery('DELETE FROM recording WHERE recording_id = ? AND npc_id = ? LIMIT 1;',
+			array($recordingId, $npcId));
+		if ($result) {
+			//Delete file
+			unlink('dynamic/recordings/'.$filename);
+		}
+		exit($result);
 	}
 }
 
