@@ -28,6 +28,7 @@
         <nav>
             <a href="/">Home</a>
             <a href="/credits">Credits</a>
+            <a href="/contents">Mod Contents</a>
             <a href="/downloads">Downloads</a>
             <?php if (!isset($_SESSION['user'])) : ?><a href="/login">Login</a><?php endif ?>
             <?php if (isset($_SESSION['user']) && $_SESSION['user']->isSysAdmin()) : ?><a href="/administration">Administration</a><?php endif ?>

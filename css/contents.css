@@ -1,0 +1,14 @@
+.npc-avatar {
+    height: 64px;
+    width: 64px;
+}
+.card ul {
+    list-style: none;
+    padding-left: 0;
+}
+.card ul li {
+    margin-bottom: 0;
+}
+.card ul li a {
+    line-height: 64px;
+}

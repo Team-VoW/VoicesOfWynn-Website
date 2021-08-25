@@ -8,12 +8,16 @@ use VoicesOfWynn\Models\Db;
 
 class Npc extends Controller
 {
+	private int $npcId;
+	private bool $disallowAdministration;
 	
 	/**
 	 * @inheritDoc
 	 */
 	public function process(array $args): bool
 	{
+		$this->npcId = array_shift($args);
+		$this->disallowAdministration = !((array_shift($args) === 'false'));
 		switch ($_SERVER['REQUEST_METHOD']) {
 			case 'GET':
 				return $this->get($args);
@@ -35,24 +39,39 @@ class Npc extends Controller
 	 */
 	private function get(array $args): bool
 	{
-		$npcId = $args[0];
+		if ($this->disallowAdministration) {
+			self::$data['base_title'] = 'Recordings for '; //Will be completed below
+			self::$data['base_keywords'] = 'Minecraft,Wynncraft,Mod,Voice,Contents,Content,Recordings,List,Voting,'; //Will be completed below
+			self::$data['base_description'] = 'You can listen to all recordings of a certain NPC on this webpage and see more details about it.';
+		}
+		else {
+			self::$data['base_description'] = 'Tool for the administrators to manage NPCs and assign voice actors to them.';
+		}
 		
-		self::$data['base_description'] = 'Tool for the administrators to manage NPCs and assign voice actors to them.';
+		self::$data['npc_admin'] = !$this->disallowAdministration;
 		
 		$cnm = new ContentManager();
-		$npc = $cnm->getNpc($npcId);
+		$npc = $cnm->getNpc($this->npcId);
 		self::$data['npc_npc'] = $npc;
 		self::$data['npc_voice_actor'] = $npc->getVoiceActor();
-		$acManager = new AccountManager();
-		self::$data['npc_voice_actors'] = $acManager->getUsers();
-		self::$data['npc_quest_recordings'] = $cnm->getNpcRecordings($npcId);
-		if (!isset(self::$data['npc_uploadErrors'])) {
+		
+		if (!$this->disallowAdministration) {
+			$acManager = new AccountManager();
+			self::$data['npc_voice_actors'] = $acManager->getUsers();
+		}
+		else {
+			self::$data['base_title'] .= $npc->getName();
+			self::$data['base_keywords'] .= $npc->getName();
+		}
+		
+		self::$data['npc_quest_recordings'] = $cnm->getNpcRecordings($this->npcId);
+		if (!$this->disallowAdministration && !isset(self::$data['npc_uploadErrors'])) {
 			self::$data['npc_uploadErrors'] = array();
 		}
 		
 		self::$views[] = 'npc';
 		self::$cssFiles[] = 'npc';
-		self::$jsFiles[] = 'npc';
+		self::$jsFiles[] = ($this->disallowAdministration) ? 'npc-public' : 'npc';
 		
 		return true;
 	}
@@ -65,7 +84,11 @@ class Npc extends Controller
 	 */
 	private function post(array $args): bool
 	{
-		$npcId = $args[0];
+		if ($this->disallowAdministration) {
+			$errorController = new Error403();
+			return $errorController->process(array());
+		}
+		
 		$questId = $_POST['questId'];
 		self::$data['npc_uploadErrors'] = array();
 		
@@ -91,7 +114,7 @@ class Npc extends Controller
 			
 			move_uploaded_file($tempName, 'dynamic/recordings/'.$filename);
 			Db::executeQuery('INSERT INTO recording (npc_id,quest_id,line,file) VALUES (?,?,?,?)', array(
-				$npcId,
+				$this->npcId,
 				$questId,
 				$line,
 				$filename
@@ -108,16 +131,21 @@ class Npc extends Controller
 	 */
 	private function put(array $args): void
 	{
-		$npcId = $args[0];
-		$userId = $args[1];
+		if ($this->disallowAdministration) {
+			$errorController = new Error403();
+			$errorController->process(array());
+			return;
+		}
 		
-		if (empty($npcId) || empty($userId)) {
+		$userId = $args[0];
+		
+		if (empty($this->npcId) || empty($userId)) {
 			header("HTTP/1.1 400 Bad request");
 			exit();
 		}
 		
 		//Update the database
-		$result = Db::executeQuery('UPDATE npc SET voice_actor_id = ? WHERE npc_id = ? LIMIT 1;', array($userId, $npcId));
+		$result = Db::executeQuery('UPDATE npc SET voice_actor_id = ? WHERE npc_id = ? LIMIT 1;', array($userId, $this->npcId));
 		exit($result);
 	}
 	
@@ -128,16 +156,21 @@ class Npc extends Controller
 	 */
 	private function delete(array $args): void
 	{
-		$npcId = $args[0];
-		$recordingId = $args[1];
+		if ($this->disallowAdministration) {
+			$errorController = new Error403();
+			$errorController->process(array());
+			return;
+		}
 		
-		if (empty($npcId) || empty($recordingId)) {
+		$recordingId = $args[0];
+		
+		if (empty($this->npcId) || empty($recordingId)) {
 			header("HTTP/1.1 400 Bad request");
 			exit();
 		}
 		
 		$result = Db::fetchQuery('SELECT file FROM recording WHERE recording_id = ? AND npc_id = ?;',
-			array($recordingId, $npcId));
+			array($recordingId, $this->npcId));
 		if (empty($result)) {
 			header("HTTP/1.1 404 Not Found");
 			exit();
@@ -146,7 +179,7 @@ class Npc extends Controller
 		//Delete record from database
 		$filename = $result['file'];
 		$result = Db::executeQuery('DELETE FROM recording WHERE recording_id = ? AND npc_id = ? LIMIT 1;',
-			array($recordingId, $npcId));
+			array($recordingId, $this->npcId));
 		if ($result) {
 			//Delete file
 			unlink('dynamic/recordings/'.$filename);

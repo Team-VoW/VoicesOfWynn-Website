@@ -11,6 +11,7 @@ class Recording
 	private string $file = '';
 	private int $upvotes = 0;
 	private int $downvotes = 0;
+	private int $comments = 0;
 	
 	/**
 	 * @param array $data Data returned from database, invalid items are skipped, multiple key names are supported for
@@ -54,6 +55,11 @@ class Recording
 				case 'dislikes':
 					$this->downvotes = $value;
 					break;
+				case 'comments':
+				case 'comment_count':
+				case 'commentCount':
+					$this->comments = $value;
+					break;
 			}
 		}
 	}
@@ -69,6 +75,47 @@ class Recording
 			return $this->$attr;
 		}
 		return null;
+	}
+	
+	/**
+	 * Upvotes this recording and sets the cookie preventing duplicate votes
+	 * @return bool
+	 * @throws \Exception
+	 */
+	public function upvote(): bool
+	{
+		setcookie('votedFor'.$this->id, 1, time() + 31536000, '/');
+		return Db::executeQuery('UPDATE recording SET upvotes = upvotes + 1 WHERE recording_id = ?;', array($this->id));
+	}
+	
+	/**
+	 * Downvotes this recording and sets the cookie preventing duplicate votes
+	 * @return bool
+	 * @throws \Exception
+	 */
+	public function downvote(): bool
+	{
+		setcookie('votedFor'.$this->id, 1, time() + 31536000, '/');
+		return Db::executeQuery('UPDATE recording SET downvotes = downvotes + 1 WHERE recording_id = ?;',
+			array($this->id));
+	}
+	
+	/**
+	 * Adds a new comment to this recording
+	 * @param $author
+	 * @param $email
+	 * @param $content
+	 * @return bool
+	 * @throws \Exception
+	 */
+	public function comment($author, $email, $content)
+	{
+		return Db::executeQuery('INSERT INTO comment (name,email,content,recording_id) VALUES (?,?,?,?);', array(
+			$author,
+			$email,
+			$content,
+			$this->id
+		));
 	}
 }
 

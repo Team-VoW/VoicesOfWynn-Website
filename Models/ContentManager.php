@@ -60,7 +60,7 @@ class ContentManager
 	public function getNpcRecordings($id): array
 	{
 		$query = '
-		SELECT recording.recording_id, recording.quest_id, recording.line, recording.file, recording.upvotes, recording.downvotes, quest.name
+		SELECT recording.recording_id, recording.quest_id, recording.line, recording.file, recording.upvotes, recording.downvotes, (SELECT COUNT(*) FROM comment WHERE comment.recording_id = recording.recording_id) AS "comments", quest.name
 		FROM recording
 		JOIN quest ON quest.quest_id = recording.quest_id
 		WHERE npc_id = ?
