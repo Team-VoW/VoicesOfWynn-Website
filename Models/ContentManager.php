@@ -85,7 +85,6 @@ class ContentManager
 		}
 		$currentQuest->addNpc($currentNpc);
 		$quests[] = $currentQuest;
-		
 		return $quests;
 	}
 	
@@ -105,7 +104,8 @@ class ContentManager
 	
 	public function getComments($recordingId): array
 	{
-		$result = Db::fetchQuery('SELECT * FROM comment WHERE recording_id = ?', array($recordingId), true);
+		$result = Db::fetchQuery('SELECT comment_id,name,REPLACE(REPLACE(email,"@"," at "), ".", " dot ") AS email,content,recording_id FROM comment WHERE recording_id = ? ORDER BY comment_id DESC',
+			array($recordingId), true);
 		if (empty($result)) {
 			return array();
 		}

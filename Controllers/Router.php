@@ -173,6 +173,7 @@ class Router extends Controller
 					$attr['file'] = $this->sanitize($value->file);
 					$attr['upvotes'] = $this->sanitize($value->upvotes);
 					$attr['downvotes'] = $this->sanitize($value->downvotes);
+					$attr['comments'] = $this->sanitize($value->comments);
 					return new Recording($attr);
 				}
 				else if ($value instanceof Comment) {

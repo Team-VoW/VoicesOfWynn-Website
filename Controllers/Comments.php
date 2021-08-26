@@ -4,6 +4,7 @@ namespace VoicesOfWynn\Controllers;
 
 use VoicesOfWynn\Models\ContentManager;
 use VoicesOfWynn\Models\Db;
+use VoicesOfWynn\Models\Recording;
 
 class Comments extends Controller
 {
@@ -44,6 +45,7 @@ class Comments extends Controller
 		$color = ['red', 'yellow', 'green', 'blue', 'purple'][rand(0, 4)];
 		$_SESSION['antispam'] = $color;
 		self::$data['comments_antispam_color'] = $color;
+		self::$data['comments_antispam_color_code'] = Recording::IDEAL_COLORS[$color];
 		
 		self::$cssFiles[] = 'comments';
 		self::$jsFiles[] = 'comments';

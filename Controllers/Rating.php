@@ -3,6 +3,7 @@
 namespace VoicesOfWynn\Controllers;
 
 use VoicesOfWynn\Models\Recording;
+use VoicesOfWynn\Models\UserException;
 
 class Rating extends Controller
 {
@@ -33,10 +34,16 @@ class Rating extends Controller
 				header('HTTP/1.1 204 No Content');
 				exit();
 			case 'c':
-				$recording->comment($_POST['name'], $_POST['email'], $_POST['content'], $_SESSION['antispam'],
-					$_POST['answer']);
-				header('HTTP/1.1 204 No Content');
-				exit();
+				try {
+					$recording->comment($_POST['name'], $_POST['email'], $_POST['content'], $_SESSION['antispam'],
+						$_POST['antispam']);
+					header('HTTP/1.1 204 No Content');
+					exit();
+				} catch (UserException $e) {
+					echo $e->getMessage();
+					header('HTTP/1.1 418 '.$e->getMessage()); //Easter egg
+					exit();
+				}
 			default:
 				header('HTTP/1.1 400 Bad Request');
 				exit();

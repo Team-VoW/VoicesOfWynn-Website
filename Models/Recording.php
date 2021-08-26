@@ -4,6 +4,15 @@ namespace VoicesOfWynn\Models;
 
 class Recording
 {
+	public const IDEAL_COLORS = array(
+		'red' => "#CC3333",
+		'yellow' => '#CCCC33',
+		'green' => '#33CC33',
+		'blue' => '#3333CC',
+		'purple' => '#CC33CC'
+	);
+	private const ANTISPAM_TOLLERANCE = 20; //In % out of 256
+	
 	private int $id = 0;
 	private int $npcId = 0;
 	private int $questId = 0;
@@ -111,9 +120,27 @@ class Recording
 	 */
 	public function comment($author, $email, $content, $antispamQuestion, $antispamAnswer)
 	{
-		//TODO verify antispam
+		$idealColor = self::IDEAL_COLORS[$antispamQuestion];
+		$redPart = hexdec(substr($idealColor, 1, 2));
+		$greenPart = hexdec(substr($idealColor, 3, 2));
+		$bluePart = hexdec(substr($idealColor, 5, 2));
+		$absoluteTollerance = round(256 * self::ANTISPAM_TOLLERANCE / 100);
 		
-		//TODO validate fields
+		$redPartAnswer = hexdec(substr($antispamAnswer, 1, 2));
+		$greenPartAnswer = hexdec(substr($antispamAnswer, 3, 2));
+		$bluePartAnswer = hexdec(substr($antispamAnswer, 5, 2));
+		
+		if (
+			$redPartAnswer + $absoluteTollerance < $redPart || $redPartAnswer - $absoluteTollerance > $redPart ||
+			$greenPartAnswer + $absoluteTollerance < $greenPart || $greenPartAnswer - $absoluteTollerance > $greenPart ||
+			$bluePartAnswer + $absoluteTollerance < $bluePart || $bluePartAnswer - $absoluteTollerance > $bluePart
+		) {
+			throw new UserException('The colour you picked was too distinct from '.$antispamQuestion.'. Try again please.');
+		}
+		
+		$author = trim($author);
+		$email = trim($email);
+		$content = trim($content);
 		
 		if (empty($author)) {
 			$author = 'Anonymous';
@@ -121,9 +148,32 @@ class Recording
 		if (empty($email)) {
 			$email = 'nobody@nowhere.net';
 		}
+		if (empty($content)) {
+			throw new UserException('No content submitted');
+		}
+		if (mb_strlen($author) > 31) {
+			throw new UserException('Name is too long, 31 characters is the limit.');
+		}
+		if (mb_strlen($email) > 255) {
+			throw new UserException('E-mail is too long, 255 characters is the limit.');
+		}
+		if (mb_strlen($content) > 65535) {
+			throw new UserException('Comment is too long, 65,535 characters is the limit.');
+		}
 		
-		$email = str_replace('@', " at ", $email);
-		$email = str_replace('.', " dot ", $email);
+		//TODO this doesn't work
+		$uppercaseContent = strtoupper($content);
+		$badwords = file('Models/BadWords.txt');
+		foreach ($badwords as $badword) {
+			if (mb_strpos($uppercaseContent, $badword) !== false) {
+				throw new UserException('The comment contains a bad word: '.$badword.'. If you believe that it\'s not used as a profanity, join our Discord (link in the footer) and ping Shady#2948.');
+			}
+		}
+		
+		//Check e-mail format (might not allow some exotic but valid e-mail domains)
+		if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+			throw new UserException('E-mail address doesn\'t seem to be in the correct format. If you are sure that you entered your e-mail address properly, ping Shady#2948 on Discord.');
+		}
 		
 		return Db::executeQuery('INSERT INTO comment (name,email,content,recording_id) VALUES (?,?,?,?);', array(
 			$author,

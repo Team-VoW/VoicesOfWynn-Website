@@ -17,11 +17,11 @@
     <label for="content">Comment: </label><br>
     <textarea id="content" name="content" placeholder="You can praise the voice actor, suggest what could be improved or just say how much you like this quest. Just please, keep bad words out of that 😉" required></textarea>
 </fieldset>
-    <label for="antispam">Not a robot? They you can select some shade of <strong style="color:<?= ${basename(__FILE__, '.phtml').'_antispam_color'} ?>;"><?= ${basename(__FILE__, '.phtml').'_antispam_color'} ?></strong>, right?</label><br>
+    <label for="antispam">Not a robot? They you can select some shade of <strong style="color:<?= ${basename(__FILE__, '.phtml').'_antispam_color_code'} ?>;"><?= ${basename(__FILE__, '.phtml').'_antispam_color'} ?></strong>, right?</label><br>
     <input id="antispam" name="antispam" type="color" required />
     <input type="submit" value="Send" />
     <small>
-        Name, e-mail and contents of the comment will be publicly vissible and you won't be able to edit or
+        Name, e-mail and contents of the comment will be publicly visible and you won't be able to edit or
         delete the comment by yourself.
     </small>
 </fieldset>
@@ -29,7 +29,7 @@
 <div id="comments">
 <?php foreach (${basename(__FILE__, '.phtml').'_comments'} as $comment) : ?>
 <div class="card">
-    <span><strong><?= $comment->author ?></strong> <<?= $comment->email ?>></span>
+    <span><strong><?= $comment->name ?></strong> < <?= $comment->email ?> ></span>
     <?php if (${basename(__FILE__, '.phtml').'_admin'}) : ?>
     <button data-comment-id="<?= $comment->id ?>" class="delete-comment-button">×</button>
     <?php endif ?>
