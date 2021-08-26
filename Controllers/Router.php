@@ -5,6 +5,7 @@ namespace VoicesOfWynn\Controllers;
 
 
 use Exception;
+use VoicesOfWynn\Models\Comment;
 use VoicesOfWynn\Models\DiscordRole;
 use VoicesOfWynn\Models\Npc;
 use VoicesOfWynn\Models\Quest;
@@ -173,6 +174,15 @@ class Router extends Controller
 					$attr['upvotes'] = $this->sanitize($value->upvotes);
 					$attr['downvotes'] = $this->sanitize($value->downvotes);
 					return new Recording($attr);
+				}
+				else if ($value instanceof Comment) {
+					$attr = array();
+					$attr['id'] = $this->sanitize($value->id);
+					$attr['name'] = $this->sanitize($value->name);
+					$attr['email'] = $this->sanitize($value->email);
+					$attr['content'] = $this->sanitize($value->content);
+					$attr['recording_id'] = $this->sanitize($value->recordingId);
+					return new Comment($attr);
 				}
 				else {
 					throw new Exception('Object variable of class '.get_class($value).' couldn\'t be sanitized');

@@ -67,9 +67,7 @@ $(".add-more-recordings-button").on('click', function(event) {
     event.preventDefault();
     let item = recordingItemHtml;
     let num = $(event.target).parent().find('.new-recording-items-container').children().length; //Header row included - we start from 1 anyway
-    console.log(num);
     num++;
-    console.log(num);
     let line = $(event.target).parent().find('.new-recording-items-container').children().last().find('.line-input').val();
     line++;
     item = item.replace(/{NUM}/g, num);

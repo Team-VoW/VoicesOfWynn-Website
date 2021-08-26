@@ -105,11 +105,26 @@ class Recording
 	 * @param $author
 	 * @param $email
 	 * @param $content
+	 * @param $antispam
 	 * @return bool
 	 * @throws \Exception
 	 */
-	public function comment($author, $email, $content)
+	public function comment($author, $email, $content, $antispamQuestion, $antispamAnswer)
 	{
+		//TODO verify antispam
+		
+		//TODO validate fields
+		
+		if (empty($author)) {
+			$author = 'Anonymous';
+		}
+		if (empty($email)) {
+			$email = 'nobody@nowhere.net';
+		}
+		
+		$email = str_replace('@', " at ", $email);
+		$email = str_replace('.', " dot ", $email);
+		
 		return Db::executeQuery('INSERT INTO comment (name,email,content,recording_id) VALUES (?,?,?,?);', array(
 			$author,
 			$email,

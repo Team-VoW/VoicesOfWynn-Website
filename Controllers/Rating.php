@@ -18,7 +18,7 @@ class Rating extends Controller
 		switch ($action) {
 			case '+':
 				if (isset($_COOKIE['votedFor'.$recording->id])) {
-					header( 'HTTP/1.1 401 Unauthorized');
+					header('HTTP/1.1 401 Unauthorized');
 					exit();
 				}
 				$recording->upvote();
@@ -26,14 +26,15 @@ class Rating extends Controller
 				exit();
 			case '-':
 				if (isset($_COOKIE['votedFor'.$recording->id])) {
-					header( 'HTTP/1.1 401 Unauthorized');
+					header('HTTP/1.1 401 Unauthorized');
 					exit();
 				}
 				$recording->downvote();
 				header('HTTP/1.1 204 No Content');
 				exit();
 			case 'c':
-				$recording->comment($_POST['name'], $_POST['email'], $_POST['content']);
+				$recording->comment($_POST['name'], $_POST['email'], $_POST['content'], $_SESSION['antispam'],
+					$_POST['answer']);
 				header('HTTP/1.1 204 No Content');
 				exit();
 			default:

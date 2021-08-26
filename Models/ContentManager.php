@@ -88,5 +88,60 @@ class ContentManager
 		
 		return $quests;
 	}
+	
+	public function getRecording($recordingId): Recording
+	{
+		$result = Db::fetchQuery('SELECT * FROM recording WHERE recording_id = ?', array($recordingId));
+		return new Recording(array(
+			'id' => $recordingId,
+			'npc_id' => $result['npc_id'],
+			'quest_id' => $result['quest_id'],
+			'line' => $result['line'],
+			'file' => $result['file'],
+			'upvotes' => $result['upvotes'],
+			'downvotes' => $result['downvotes']
+		));
+	}
+	
+	public function getComments($recordingId): array
+	{
+		$result = Db::fetchQuery('SELECT * FROM comment WHERE recording_id = ?', array($recordingId), true);
+		if (empty($result)) {
+			return array();
+		}
+		$comments = array();
+		foreach ($result as $commentData) {
+			$comments[] = new Comment($commentData);
+		}
+		return $comments;
+	}
+	
+	public function getRecordingTitle(Recording $recording): string
+	{
+		if (empty($recording->npc_id)) {
+			$npcName = Db::fetchQuery('SELECT name FROM npc WHERE npc_id = (SELECT npc_id FROM recording WHERE recording_id = ?);',
+				array($recording->id))['name'];
+		} else {
+			$npcName = Db::fetchQuery('SELECT name FROM npc WHERE npc_id = ?', array($recording->npc_id))['name'];
+		}
+		
+		if (empty($recording->quest_id)) {
+			$questName = Db::fetchQuery('SELECT name FROM quest WHERE quest_id = (SELECT quest_id FROM recording WHERE recording_id = ?);',
+				array($recording->id))['name'];
+		} else {
+			$questName = Db::fetchQuery('SELECT name FROM quest WHERE quest_id = ?',
+				array($recording->quest_id))['name'];
+		}
+		
+		if (empty($recording->line)) {
+			$lineNumber = Db::fetchQuery('SELECT line FROM recording WHERE recording_id = ?;',
+				array($recording->id))['line'];
+		} else {
+			$lineNumber = $recording->line;
+		}
+		
+		//<NPC name> in <quest name>, line <line number>
+		return $npcName.' in '.$questName.', line n. '.$lineNumber;
+	}
 }
 
