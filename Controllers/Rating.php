@@ -40,8 +40,7 @@ class Rating extends Controller
 					header('HTTP/1.1 204 No Content');
 					exit();
 				} catch (UserException $e) {
-					echo $e->getMessage();
-					header('HTTP/1.1 418 '.$e->getMessage()); //Easter egg
+					header('HTTP/1.1 418 '.$e->getMessage());
 					exit();
 				}
 			default:
