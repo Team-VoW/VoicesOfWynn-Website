@@ -16,7 +16,8 @@ class User
     private string $displayName = '';
     private string $avatarLink = '';
     private $bio = '';
-    
+    private bool $publicEmail = false;
+	
     private array $roles = array();
     
     /**
@@ -80,6 +81,7 @@ class User
         $this->displayName = $userInfo['display_name'];
         $this->avatarLink = $userInfo['picture'];
         $this->bio = $userInfo['bio'];
+        $this->publicEmail = $userInfo['public_email'];
         
         $_SESSION['user'] = $this;
         
@@ -101,17 +103,18 @@ class User
         $this->displayName = '';
         $this->avatarLink = '';
         $this->bio = '';
+        $this->publicEmail = false;
     }
     
-    public function update(string $email, string $password, string $displayName, string $avatarLink, string $bio): bool
+    public function update(string $email, string $password, string $displayName, string $avatarLink, string $bio, bool $publicEmail): bool
     {
         if (empty($password)) {
-            $parameters = array($email, $displayName, $avatarLink, $bio, $this->id);
-            $query = 'UPDATE user SET email = ?, display_name = ?, picture = ?, bio = ? WHERE user_id = ?';
+            $parameters = array($email, $displayName, $avatarLink, $bio, $this->publicEmail, $this->id);
+            $query = 'UPDATE user SET email = ?, display_name = ?, picture = ?, bio = ?, public_email = ? WHERE user_id = ?';
         } else {
             $hash = password_hash($password, PASSWORD_DEFAULT);
-            $parameters = array($email, $hash, $displayName, $avatarLink, $bio, $this->id);
-            $query = 'UPDATE user SET email = ?, password = ?, display_name = ?, picture = ?, bio = ? WHERE user_id = ?';
+            $parameters = array($email, $hash, $displayName, $avatarLink, $bio, $this->publicEmail, $this->id);
+            $query = 'UPDATE user SET email = ?, password = ?, display_name = ?, picture = ?, bio = ?, public_email = ? WHERE user_id = ?';
         }
         
         try {
@@ -127,6 +130,7 @@ class User
         $this->displayName = $displayName;
         $this->avatarLink = $avatarLink;
         $this->bio = $bio;
+        $this->publicEmail = $publicEmail;
         return $result;
     }
     
@@ -187,6 +191,15 @@ class User
     {
         return $this->systemAdmin;
     }
+	
+	/**
+	 * Private email getter
+	 * @return bool TRUE if this user set his e-mail address as public
+	 */
+	public function hasPublicEmail(): bool
+	{
+		return $this->publicEmail;
+	}
     
     /**
      * Method returning an array containing objects of type DiscordRole, representing all the roles that this user has
@@ -275,6 +288,11 @@ class User
                 case 'description':
                     $this->bio = $value;
                     break;
+	            case 'public_email':
+	            case 'publicEmail':
+	            case 'has_public_email':
+	            case 'hasPublicEmail':
+					$this->publicEmail = $value;
             }
         }
     }

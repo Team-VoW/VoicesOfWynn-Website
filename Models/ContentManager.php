@@ -57,6 +57,16 @@ class ContentManager
 		return $npc;
 	}
 	
+	public function getVoiceActor($id): User
+	{
+		$query = 'SELECT * FROM user WHERE user_id = ?;';
+		$result = Db::fetchQuery($query, array($id));
+		
+		$voiceActor = new User();
+		$voiceActor->setData($result);
+		return $voiceActor;
+	}
+	
 	public function getNpcRecordings($id): array
 	{
 		$query = '

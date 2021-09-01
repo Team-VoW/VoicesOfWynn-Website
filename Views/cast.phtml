@@ -1,0 +1,13 @@
+<?php $voiceActor = ${basename(__FILE__, '.phtml').'_voice_actor'}; ?>
+<h1><?= $voiceActor->getName(); ?></h1>
+<section>
+<?php if (!empty($voiceActor->getEmail()) && $voiceActor->hasPublicEmail()) : ?>
+<a href="mailto:<?= $voiceActor->getEmail() ?>">Contact</a>
+<?php endif ?>
+<article><?= $voiceActor->getBio(); ?></article>
+</section>
+
+<section>
+	<h3>All recordings</h3>
+	TODO
+</section>
