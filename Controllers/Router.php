@@ -183,6 +183,7 @@ class Router extends Controller
 					$attr['email'] = $this->sanitize($value->email);
 					$attr['content'] = $this->sanitize($value->content);
 					$attr['recording_id'] = $this->sanitize($value->recordingId);
+					$attr['gravatar'] = $this->sanitize($value->gravatar);
 					return new Comment($attr);
 				}
 				else {

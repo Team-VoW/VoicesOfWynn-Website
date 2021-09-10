@@ -1,5 +1,5 @@
 //var npcId; - filled by PHP in the view
-var commentItemHtml = '<div class="card" style="display:none;"><span><strong>{name}</strong> < {email} ></span><hr><p>{comment}</p></div>';
+var commentItemHtml = '<div class="card"><table><tr><td rowspan="2"><img src="{gravatar}" /></td><td><span><strong>{name}</strong> < {email} ></span></td></tr><tr><td>{comment}</td></tr></table></div>';
 
 $("#new-comment-button").on('click', function () {
     $("form").slideDown(1500);
@@ -38,10 +38,12 @@ $("form").on('submit', function (event) {
             if (email === '') {
                 email = 'nobody@nowhere.net';
             }
+            let gravatar = "https://www.gravatar.com/avatar/" + md5(email) + "?d=identicon";
             email = email.replace('@', ' at ').replace('.', ' dot ');
 
             let comment = commentItemHtml.replace('{name}', name);
             comment = comment.replace('{email}', email);
+            comment = comment.replace('{gravatar}', gravatar);
             comment = comment.replace('{comment}', $("#content").val());
             $("#comments").prepend($(comment));
             $("#hide-form-button").click();

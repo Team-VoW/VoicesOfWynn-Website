@@ -29,12 +29,18 @@
 <div id="comments">
 <?php foreach (${basename(__FILE__, '.phtml').'_comments'} as $comment) : ?>
 <div class="card">
-    <span><strong><?= $comment->name ?></strong> < <?= $comment->email ?> ></span>
-    <?php if (${basename(__FILE__, '.phtml').'_admin'}) : ?>
-    <button data-comment-id="<?= $comment->id ?>" class="delete-comment-button">×</button>
-    <?php endif ?>
-    <hr>
-    <p><?= $comment->content ?></p>
+    <table>
+        <tr>
+            <td rowspan="2"><img src="<?= $comment->gravatar ?>" alt="Avatar" /></td>
+            <td>
+                <span><strong><?= $comment->name ?></strong> < <?= $comment->email ?> ></span>
+                <?php if (${basename(__FILE__, '.phtml').'_admin'}) : ?>
+                <button data-comment-id="<?= $comment->id ?>" class="delete-comment-button">×</button>
+                <?php endif ?>
+            </td>
+        </tr>
+        <tr><td><div class="comment-content"><?= $comment->content ?></div></td></tr>
+    </table>
 </div>
 <?php endforeach ?>
 </div>
