@@ -43,6 +43,7 @@ class Account extends Controller
         
         self::$data['account_id'] = $_SESSION['user']->getId();
         self::$data['account_email'] = $_SESSION['user']->getEmail();
+        self::$data['account_publicEmail'] = $_SESSION['user']->hasPublicEmail();
         self::$data['account_name'] = $_SESSION['user']->getName();
         self::$data['account_picture'] = $_SESSION['user']->getAvatarLink();
         self::$data['account_roles'] = $_SESSION['user']->getRoles();
@@ -66,6 +67,7 @@ class Account extends Controller
     private function post(array $args): bool
     {
         $email = $_POST['email'];
+		$publicEmail = isset($_POST['publicEmail']);
         $password = $_POST['password'];
         $displayName = $_POST['name'];
         $bio = $_POST['bio'];
@@ -105,7 +107,7 @@ class Account extends Controller
                 $avatar = $_SESSION['user']->getAvatarLink();
             }
             
-            $_SESSION['user']->update($email, $password, $displayName, $avatar, $bio);
+            $_SESSION['user']->update($email, $password, $displayName, $avatar, $bio, $publicEmail);
         }
     
         $result = $this->get(array());

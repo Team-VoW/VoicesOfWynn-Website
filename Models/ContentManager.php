@@ -57,6 +57,48 @@ class ContentManager
 		return $npc;
 	}
 	
+	public function getVoiceActor($id): User
+	{
+		$query = 'SELECT * FROM user WHERE user_id = ?;';
+		$result = Db::fetchQuery($query, array($id));
+		
+		$voiceActor = new User();
+		$voiceActor->setData($result);
+		return $voiceActor;
+	}
+	
+	public function getVoiceActorRecordings($id): array
+	{
+		$query = '
+		SELECT recording.recording_id, recording.quest_id, recording.line, recording.file, recording.upvotes, recording.downvotes, (SELECT COUNT(*) FROM comment WHERE comment.recording_id = recording.recording_id) AS "comments", npc.name AS `nname`, quest.name as `qname`
+		FROM recording
+		JOIN quest USING(quest_id)
+		JOIN npc USING(npc_id)
+		WHERE npc.voice_actor_id = ?
+		ORDER BY quest_id, line;';
+		$result = Db::fetchQuery($query, array($id), true);
+		
+		$currentQuest = null;
+		$currentNpc = null;
+		foreach ($result as $recording) {
+			if ($currentQuest === null || $currentQuest->getId() !== $recording['quest_id']) {
+				//New quest encountered
+				if ($currentQuest !== null) {
+					$currentQuest->addNpc($currentNpc);
+					$quests[] = $currentQuest;
+				}
+				$currentQuest = new Quest($recording);
+				$currentNpc = new Npc(array('id' => $id, 'name' => $recording['nname']));
+			}
+			
+			$recordingObj = new Recording($recording);
+			$currentNpc->addRecording($recordingObj);
+		}
+		$currentQuest->addNpc($currentNpc);
+		$quests[] = $currentQuest;
+		return $quests;
+	}
+	
 	public function getNpcRecordings($id): array
 	{
 		$query = '
