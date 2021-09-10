@@ -109,11 +109,11 @@ class User
     public function update(string $email, string $password, string $displayName, string $avatarLink, string $bio, bool $publicEmail): bool
     {
         if (empty($password)) {
-            $parameters = array($email, $displayName, $avatarLink, $bio, $this->publicEmail, $this->id);
+            $parameters = array($email, $displayName, $avatarLink, $bio, $publicEmail, $this->id);
             $query = 'UPDATE user SET email = ?, display_name = ?, picture = ?, bio = ?, public_email = ? WHERE user_id = ?';
         } else {
             $hash = password_hash($password, PASSWORD_DEFAULT);
-            $parameters = array($email, $hash, $displayName, $avatarLink, $bio, $this->publicEmail, $this->id);
+            $parameters = array($email, $hash, $displayName, $avatarLink, $bio, $publicEmail, $this->id);
             $query = 'UPDATE user SET email = ?, password = ?, display_name = ?, picture = ?, bio = ?, public_email = ? WHERE user_id = ?';
         }
         
