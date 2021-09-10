@@ -51,6 +51,7 @@
         </tr>
     </table>
 </form>
+<a href="/cast/<?= ${basename(__FILE__, '.phtml').'_id'} ?>">View your portfolio</a>
 <ul>
     <?php foreach (${basename(__FILE__, '.phtml').'_error'} as $error) : ?>
         <li><?= $error ?></li>
