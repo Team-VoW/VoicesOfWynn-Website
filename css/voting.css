@@ -1,0 +1,8 @@
+td a {
+    font-weight: bolder;
+    color: unset;
+}
+.upvote, .downvote, .comment {
+    text-decoration: underline;
+    color: #0065bd;
+}

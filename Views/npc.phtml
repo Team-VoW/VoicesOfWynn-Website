@@ -1,5 +1,3 @@
-<script>var npcId = <?= ${basename(__FILE__, '.phtml').'_npc'}->getId() ?>;</script>
-
 <h1><?= ${basename(__FILE__, '.phtml').'_npc'}->getName() ?></h1>
 <img src="dynamic/npcs/<?= ${basename(__FILE__, '.phtml').'_npc'}->getName() ?>.png" alt="NPC picture" />
 <p>
@@ -52,8 +50,8 @@
                     <source src="dynamic/recordings/<?= $recording->file ?>" type="audio/ogg">
                     Your browser does not support the OGG audio format.
                 </audio>
-            <td><a<?php if (!isset($_COOKIE['votedFor'.$recording->id])) : ?> class="upvote"<?php endif ?> data-recording-id="<?= $recording->id ?>"><?= $recording->upvotes ?></a></td>
-            <td><a<?php if (!isset($_COOKIE['votedFor'.$recording->id])) : ?> class="downvote"<?php endif ?> data-recording-id="<?= $recording->id ?>"><?= $recording->downvotes ?></a></td>
+            <td><a<?php if (!isset($_COOKIE['votedFor'.$recording->id])) : ?> class="upvote"<?php endif ?> data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>"><?= $recording->upvotes ?></a></td>
+            <td><a<?php if (!isset($_COOKIE['votedFor'.$recording->id])) : ?> class="downvote"<?php endif ?> data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>"><?= $recording->downvotes ?></a></td>
             <td>
                 <?php if (${basename(__FILE__, '.phtml').'_admin'}) : ?>
                     <button class="delete-recording-btn" data-recording-id="<?= $recording->id ?>">×</button>

@@ -21,7 +21,10 @@ class Cast extends Controller
 		self::$data['base_keywords'] = 'Minecraft,Wynncraft,Mod,Voice,Cast,Actor,Bio,Bios,List';
 		
 		self::$data['cast_voice_actor'] = $voiceActor;
+		self::$data['cast_quest_recordings'] = $cnm->getVoiceActorRecordings($voiceActorId);
 		
+		self::$cssFiles[] = 'voting';
+		self::$jsFiles[] = 'voting';
 		self::$views[] = 'cast';
 		return true;
 	}
