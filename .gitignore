@@ -1,3 +1,7 @@
 /.idea/
-/dynamic/
+
+/dynamic/recordings/
+/dynamic/avatars/
+!/dynamic/avatars/defaultAvatar.png
+
 /vendor/
