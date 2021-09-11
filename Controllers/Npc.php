@@ -72,7 +72,10 @@ class Npc extends Controller
 		self::$views[] = 'npc';
 		self::$cssFiles[] = 'npc';
 		self::$cssFiles[] = 'voting';
-		self::$jsFiles[] = ($this->disallowAdministration) ? 'voting' : 'npc';
+		self::$jsFiles[] = 'voting';
+		if (!$this->disallowAdministration) {
+			self::$jsFiles[] = 'npc'; //Administrative functions
+		}
 		
 		return true;
 	}
