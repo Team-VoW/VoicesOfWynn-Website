@@ -6,7 +6,8 @@ class AccountManager
 {
     public function getUsers(): array
     {
-        $userData = Db::fetchQuery('SELECT user_id,picture,display_name,bio FROM user', array(), true);
+        $userData = Db::fetchQuery('SELECT user_id,picture,display_name,bio FROM user ORDER BY user_id ASC', array(),
+            true);
         $userRoles = Db::fetchQuery('SELECT user_discord_role.user_id,discord_role.name,discord_role.color,discord_role.weight FROM user_discord_role JOIN discord_role ON discord_role.discord_role_id = user_discord_role.discord_role_id ORDER BY user_id ASC',
             array(), true);
         
@@ -14,11 +15,26 @@ class AccountManager
         $role_array_itterator = 0;
         foreach ($userData as $userInfo) {
             $roles = array();
-            for (; $userRoles[$role_array_itterator]['user_id'] === $userInfo['user_id']; $role_array_itterator++) {
-                $roles[] = new DiscordRole($userRoles[$role_array_itterator]['name'],
-                    $userRoles[$role_array_itterator]['color'], $userRoles[$role_array_itterator]['weight']);
+            if ($role_array_itterator < count($userRoles)) {
+                //There are more roles to assign
+                if ($userRoles[$role_array_itterator]['user_id'] !== $userInfo['user_id']) {
+                    //This user has no roles, the loop below won't execute and $role_array_itterator will stay the same
+                    $skip = true; //To prevent it from going negative
+                } else {
+                    $skip = false;
+                }
+                
+                for (; $role_array_itterator < count($userRoles) &&
+                       $userRoles[$role_array_itterator]['user_id'] === $userInfo['user_id']; $role_array_itterator++) {
+                    $roles[] = new DiscordRole($userRoles[$role_array_itterator]['name'],
+                        $userRoles[$role_array_itterator]['color'], $userRoles[$role_array_itterator]['weight']);
+                }
+                
+                if (!$skip) {
+                    $role_array_itterator--;
+                }
             }
-            $role_array_itterator--;
+            
             $user = new User();
             $user->setData(array(
                 'id' => $userInfo['user_id'],

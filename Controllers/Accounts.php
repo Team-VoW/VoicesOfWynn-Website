@@ -38,11 +38,13 @@ class Accounts extends Controller
 				    $user = new User();
 				    $user->setData(array('id' => $args[0]));
 				    $user->addRole($args[1]);
+					header('HTTP/1.1 204 No Content');
 				    exit();
 			    case 'revoke-role':
 				    $user = new User();
 				    $user->setData(array('id' => $args[0]));
 				    $user->removeRole($args[1]);
+					header('HTTP/1.1 204 No Content');
 				    exit();
 			    default:
 				    $errorController = new Error404();
