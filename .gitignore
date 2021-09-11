@@ -1,3 +1,5 @@
 /.idea/
-/dynamic/
+/dynamic/*
+!/dynamic/avatars/default.png
+!/dynamic/avatars/nobody.png
 /vendor/

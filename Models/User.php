@@ -170,7 +170,7 @@ class User
      */
     public function getAvatarLink(bool $appendRandom = true)
     {
-    	if ($appendRandom && $this->avatarLink !== 'defaultAvatar.png') {
+    	if ($appendRandom && $this->avatarLink !== 'default.png') {
     		return $this->avatarLink.'?'.rand(0, 31);
 	    }
         return $this->avatarLink;
@@ -375,7 +375,7 @@ class User
 	 */
 	public function clearAvatar(): bool
 	{
-		$this->avatarLink = 'defaultAvatar.png';
+		$this->avatarLink = 'default.png';
 		$result = Db::executeQuery('UPDATE user SET picture = DEFAULT WHERE user_id = ?', array($this->id));
 		if ($result) {
 			array_map('unlink', glob('dynamic/avatars/'.$this->getId().'.*'));
