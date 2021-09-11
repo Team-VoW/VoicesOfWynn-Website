@@ -120,6 +120,10 @@ class ContentManager
 		ORDER BY quest_id, line;';
 		$result = Db::fetchQuery($query, array($id), true);
 		
+		if ($result === false) {
+			return array();
+		}
+		
 		$currentQuest = null;
 		$currentNpc = null;
 		foreach ($result as $recording) {

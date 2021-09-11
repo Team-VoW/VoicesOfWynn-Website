@@ -8,7 +8,11 @@
 <article><?= $voiceActor->getBio(); ?></article>
 </section>
 
+<?php if (count(${basename(__FILE__, '.phtml').'_quest_recordings'}) === 0) : ?>
+<i>This contributor didn't submit any recordings.</i>
+<?php else : ?>
 <h3>Recordings</h3>
+<?php endif ?>
 <?php foreach (${basename(__FILE__, '.phtml').'_quest_recordings'} as $quest) : ?>
     <section>
         <table>
