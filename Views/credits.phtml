@@ -1,15 +1,21 @@
 <h1>Contributors</h1>
 <p>Many people worked hard on this mod. Let's take a moment to appreciate their effort.</p>
 <?php $currentHighestRole = null; ?>
+<div class="row">
 <?php foreach (${basename(__FILE__, '.phtml').'_contributors'} as $contributor) : ?>
-	<?php if ($currentHighestRole !== $contributor->getRoles()[0]) : ?>
-	<!-- New highest role -->
-	<hr>
+	<?php
+        if ($currentHighestRole !== $contributor->getRoles()[0]->name) :
+            //New highest role
+	        $currentHighestRole = $contributor->getRoles()[0]->name;
+    ?>
+    </div> <!-- ending for <div class="row"> -->
+    <hr>
 	<h2><?= $contributor->getRoles()[0]->name ?>s</h2>
+    <div class="row">
 	<?php endif ?>
-	<a href="/cast/<?= $contributor->getId(); ?>">
+	<div class="col-3"><a href="/cast/<?= $contributor->getId(); ?>">
 		<div class="card">
-			<img src="dynamic/avatars/<?= $contributor->getAvatarLink(); ?>" alt="Contributor's profile picture" /><br>
+			<img class="avatar" src="dynamic/avatars/<?= $contributor->getAvatarLink(); ?>" alt="Contributor's profile picture" /><br>
 			<strong><?= $contributor->getName(); ?></strong>
 			<?php if (!empty($contributor->getLore())) : ?>
 			<br>
@@ -21,6 +27,6 @@
 			<?php endforeach ?>
 			</ul>
 		</div>
-	</a>
+	</a></div>
 <?php endforeach ?>
 

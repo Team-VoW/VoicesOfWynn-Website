@@ -10,3 +10,7 @@ a>.card:hover {
 li {
     display: inherit;
 }
+
+.avatar {
+    height: 10vh;
+}
