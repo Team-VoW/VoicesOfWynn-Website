@@ -59,7 +59,6 @@ class Router extends Controller
 			if (preg_match('/^<\d>$/', $arguments[$i])) {
 				$argNum = (int)substr($arguments[$i], 1, strlen($arguments[$i]) - 2);
 				$arguments[$i] = $variables[$argNum];
-				$i++;
 			}
 		}
 		
