@@ -67,6 +67,48 @@ class ContentManager
 		return $voiceActor;
 	}
 	
+	public function getContributors(): array
+	{
+		$query = '
+		SELECT `user`.user_id, `user`.display_name, `user`.picture, `user`.lore,
+		GROUP_CONCAT(discord_role.name ORDER BY weight DESC) AS `roles`,
+		GROUP_CONCAT(discord_role.color ORDER BY weight DESC) AS `role_colors`, (
+			SELECT SUM(weight)
+			FROM discord_role
+			JOIN user_discord_role USING(discord_role_id)
+			WHERE user_discord_role.user_id = user.user_id
+		) AS `roles_weight`
+		FROM user
+		JOIN user_discord_role USING(user_id)
+		JOIN discord_role USING(discord_role_id)
+		GROUP BY user_id
+		ORDER BY `roles_weight` DESC;
+		';
+		$result = Db::fetchQuery($query, array(), true);
+		
+		$users = array();
+		foreach ($result as $userData) {
+			$roleNames = explode(',', $userData['roles']);
+			$roleColors = explode(',', $userData['role_colors']);
+			$roles = array();
+			for ($i = 0; $i < count($roleNames); $i++) {
+				$roles[] = new DiscordRole($roleNames[$i], $roleColors[$i]); //Weight is not needed for the view
+			}
+			
+			$user = new User();
+			$user->setData(array(
+				'id' => $userData['user_id'],
+				'name' => $userData['display_name'],
+				'avatar' => $userData['picture'],
+				'lore' => $userData['lore']
+			));
+			
+			$user->setRoles($roles);
+			$users[] = $user;
+		}
+		return $users;
+	}
+	
 	public function getVoiceActorRecordings($id): array
 	{
 		$query = '

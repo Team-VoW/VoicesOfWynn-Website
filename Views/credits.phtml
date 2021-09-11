@@ -1,2 +1,26 @@
-<h1>This is the credits page</h1>
-<p>Content will be added in the future</p>
+<h1>Contributors</h1>
+<p>Many people worked hard on this mod. Let's take a moment to appreciate their effort.</p>
+<?php $currentHighestRole = null; ?>
+<?php foreach (${basename(__FILE__, '.phtml').'_contributors'} as $contributor) : ?>
+	<?php if ($currentHighestRole !== $contributor->getRoles()[0]) : ?>
+	<!-- New highest role -->
+	<hr>
+	<h2><?= $contributor->getRoles()[0]->name ?>s</h2>
+	<?php endif ?>
+	<a href="/cast/<?= $contributor->getId(); ?>">
+		<div class="card">
+			<img src="dynamic/avatars/<?= $contributor->getAvatarLink(); ?>" alt="Contributor's profile picture" /><br>
+			<strong><?= $contributor->getName(); ?></strong>
+			<?php if (!empty($contributor->getLore())) : ?>
+			<br>
+			<i><?= $contributor->getLore() ?></i>
+			<?php endif ?>
+			<ul>
+			<?php foreach ($contributor->getRoles() as $role) : ?>
+				<li style="color:#<?= $role->color ?>;"><?= $role->name ?></li>
+			<?php endforeach ?>
+			</ul>
+		</div>
+	</a>
+<?php endforeach ?>
+

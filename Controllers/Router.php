@@ -127,6 +127,7 @@ class Router extends Controller
 					$name = $this->sanitize($value->getName());
 					$avatarLink = $this->sanitize($value->getAvatarLink(false));
 					$bio = $this->sanitize($value->getBio());
+					$lore = $this->sanitize($value->getLore());
 					$roles = $this->sanitize($value->getRoles());
 					
 					$value->setData(array(
@@ -134,7 +135,8 @@ class Router extends Controller
 						'email' => $email,
 						'displayName' => $name,
 						'avatarLink' => $avatarLink,
-						'bio' => $bio
+						'bio' => $bio,
+						'lore' => $lore
 					));
 					$value->setRoles($roles);
 					

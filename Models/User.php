@@ -16,6 +16,7 @@ class User
     private string $displayName = '';
     private string $avatarLink = '';
     private $bio = '';
+	private $lore = '';
     private bool $publicEmail = false;
 	
     private array $roles = array();
@@ -103,6 +104,7 @@ class User
         $this->displayName = '';
         $this->avatarLink = '';
         $this->bio = '';
+		$this->lore = '';
         $this->publicEmail = false;
     }
     
@@ -182,6 +184,15 @@ class User
     {
         return $this->bio;
     }
+	
+	/**
+	 * Lore getter
+	 * @return string User's bio
+	 */
+	public function getLore()
+	{
+		return $this->lore;
+	}
     
     /**
      * System admin getter
@@ -204,11 +215,16 @@ class User
     /**
      * Method returning an array containing objects of type DiscordRole, representing all the roles that this user has
      * The returned array is also saved as an attribute of the object
+     * In case the $roles attribute is not empty, it's returned and a database query is not executed
      * @return array List of all the roles, each element being an associative array with keys "name" (string) and
      *     "color" (string, hex code of the color)
      */
     public function getRoles(): array
     {
+		if (!empty($this->roles)) {
+			return $this->roles;
+		}
+		
         $result = Db::fetchQuery('SELECT name,color,weight FROM discord_role JOIN user_discord_role ON user_discord_role.discord_role_id = discord_role.discord_role_id WHERE user_id = ? ORDER BY weight DESC;',
             array($this->id), true);
         if ($result === false) {
@@ -281,6 +297,7 @@ class User
                     break;
                 case 'avatarLink':
                 case 'avatar_link':
+	            case 'avatar':
                 case 'picture':
                     $this->avatarLink = $value;
                     break;
@@ -288,6 +305,10 @@ class User
                 case 'description':
                     $this->bio = $value;
                     break;
+	            case 'lore':
+	            case 'quote':
+					$this->lore = $value;
+					break;
 	            case 'public_email':
 	            case 'publicEmail':
 	            case 'has_public_email':
