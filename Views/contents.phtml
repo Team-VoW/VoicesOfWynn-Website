@@ -1,26 +1,26 @@
 <h1>Mod contents</h1>
 <div>
 	<?php for ($i = 0; $i < count(${basename(__FILE__, '.phtml').'_quests'}); $i++) : ?>
-	<?php $quest = ${basename(__FILE__, '.phtml').'_quests'}[$i]; ?>
-	<?php if ($i % 3 === 0) : ?>
-	<div class="row">
-	<?php endif ?>
-		<div class="col-4">
-			<div class="card">
-				<h3><?= $quest->getName(); ?></h3>
-				<hr>
-				<ul>
-					<?php foreach ($quest->getNpcs() as $npc) : ?>
-					<li>
-						<img class="npc-avatar" src="dynamic/npcs/<?= $npc->getName() ?>.png" alt="NPC avatar" />
-						<a href="contents/npc/<?= $npc->getId() ?>"><?= $npc->getName() ?></a>
-					</li>
-					<?php endforeach ?>
-				</ul>
+		<?php $quest = ${basename(__FILE__, '.phtml').'_quests'}[$i]; ?>
+		<?php if ($i % 3 === 0) : ?>
+			<div class="row">
+		<?php endif ?>
+			<div class="col-4">
+				<div class="card">
+					<h3><?= $quest->getName(); ?></h3>
+					<hr>
+					<ul>
+						<?php foreach ($quest->getNpcs() as $npc) : ?>
+						<li>
+							<img class="npc-avatar" src="dynamic/npcs/<?= $npc->getName() ?>.png" alt="NPC avatar" />
+							<a href="contents/npc/<?= $npc->getId() ?>"><?= $npc->getName() ?></a>
+						</li>
+						<?php endforeach ?>
+					</ul>
+				</div>
 			</div>
-		</div>
-	<?php if ($i + 1 % 3 === 0) : ?>
-	</div>
-	<?php endif ?>
+		<?php if (($i + 1) % 3 === 0) : ?>
+			</div>
+		<?php endif ?>
 	<?php endfor ?>
 </div>
