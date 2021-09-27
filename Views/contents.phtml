@@ -12,7 +12,7 @@
 					<ul>
 						<?php foreach ($quest->getNpcs() as $npc) : ?>
 						<li>
-							<img class="npc-avatar" src="dynamic/npcs/<?= $npc->getName() ?>.png" alt="NPC avatar" />
+							<img class="npc-avatar" src="dynamic/npcs/<?= $npc->getId() ?>.png" alt="NPC avatar" />
 							<a href="contents/npc/<?= $npc->getId() ?>"><?= $npc->getName() ?></a>
 						</li>
 						<?php endforeach ?>
