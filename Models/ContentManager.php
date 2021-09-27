@@ -11,7 +11,8 @@ class ContentManager
 		FROM quest
 		JOIN npc_quest ON npc_quest.quest_id = quest.quest_id
 		JOIN npc ON npc.npc_id = npc_quest.npc_id
-		LEFT JOIN user ON npc.voice_actor_id = user.user_id;
+		LEFT JOIN user ON npc.voice_actor_id = user.user_id
+		ORDER BY quest.quest_id, npc.npc_id;
 		';
 		$result = Db::fetchQuery($query, array(), true);
 		
