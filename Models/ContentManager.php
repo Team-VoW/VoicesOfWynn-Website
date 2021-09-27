@@ -155,6 +155,24 @@ class ContentManager
 		ORDER BY quest_id, line;';
 		$result = Db::fetchQuery($query, array($id), true);
 		
+		$quests = array();
+		if (gettype($result) !== 'array') {
+			//No recordings yet
+			$query = '
+			SELECT quest_id,name
+			FROM quest
+		    JOIN npc_quest USING(quest_id)
+			WHERE npc_id = ?;';
+			$result = Db::fetchQuery($query, array($id), true);
+			
+			foreach ($result as $quest) {
+				$currentQuest = new Quest($quest);
+				$currentQuest->addNpc(new Npc(array('id' => $id)));
+				$quests[] = $currentQuest;
+			}
+			return $quests;
+		}
+		
 		$currentQuest = null;
 		$currentNpc = null;
 		foreach ($result as $recording) {

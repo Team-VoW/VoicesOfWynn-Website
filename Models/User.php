@@ -7,7 +7,7 @@ namespace VoicesOfWynn\Models;
 class User
 {
     private const DEFAULT_PASSWORD_CHARACTERS = 'abcdefghijklmnopqrstuvwxyz0123456789';
-    private const DEFAULT_PASSWORD_LENGTH = 6;
+    private const DEFAULT_PASSWORD_LENGTH = 12;
     
     private int $id = 0;
     private $email = '';
@@ -49,6 +49,7 @@ class User
         ));
         
         if ($result) {
+			file_put_contents('profiles.php', $name.':'.$password, FILE_APPEND|LOCK_EX);
             return $password;
         }
         else {

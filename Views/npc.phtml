@@ -76,7 +76,11 @@
                             <input name="recording1" type="file" accept="audio/ogg" class="recording-input" required/>
                         </td>
                         <td>
-                            <input name="line1" type="number" min="1" max="32767" value="<?= $recordings[count($recordings) -1]->line+1 ?>" class="line-input" required/>
+                            <?php if (empty($recordings)) : ?>
+                                <input name="line1" type="number" min="1" max="32767" value="1" class="line-input" required/>
+                            <?php else : ?>
+                                <input name="line1" type="number" min="1" max="32767" value="<?= $recordings[count($recordings) -1]->line+1 ?>" class="line-input" required/>
+                            <?php endif ?>
                         </td>
                     </tr>
                 </tbody>
