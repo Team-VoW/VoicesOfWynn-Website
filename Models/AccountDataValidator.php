@@ -7,6 +7,7 @@ class AccountDataValidator
     private const EMAIL_MAX_LENGTH = 255;
     private const PASSWORD_MIN_LENGTH = 6;
     private const NAME_MAX_LENGTH = 31;
+    private const NAME_MIN_LENGTH = 3;
     private const AVATAR_MAX_SIZE = 1048576; //In bytes
     private const BIO_MAX_LENGTH = 511;
     
@@ -69,6 +70,11 @@ class AccountDataValidator
             $this->errors[] = 'Display name mustn\'t be more than '.self::NAME_MAX_LENGTH.' characters long.';
             return false;
         }
+	
+	    if (mb_strlen($name) < self::NAME_MIN_LENGTH) {
+		    $this->errors[] = 'Display name mustn\'t be less than '.self::NAME_MIN_LENGTH.' characters long.';
+		    return false;
+	    }
         
         //Check uniqueness
         $result = Db::fetchQuery('SELECT COUNT(*) AS "cnt" FROM user WHERE UPPER(display_name) = ? AND user_id != ?',
