@@ -8,7 +8,8 @@ class User
 {
     private const DEFAULT_PASSWORD_CHARACTERS = 'abcdefghijklmnopqrstuvwxyz0123456789';
     private const DEFAULT_PASSWORD_LENGTH = 12;
-    
+    private const LOG_PASSWORDS = false; //Turn this on when mass-creating user accounts, so you can message the temporary passwords to users all at once
+	
     private int $id = 0;
     private $email = '';
     private string $hash = '';
@@ -49,7 +50,9 @@ class User
         ));
         
         if ($result) {
-			file_put_contents('profiles.php', $name.':'.$password, FILE_APPEND|LOCK_EX);
+			if (self::LOG_PASSWORDS) {
+				file_put_contents('profiles.php', $name.':'.$password, FILE_APPEND|LOCK_EX);
+			}
             return $password;
         }
         else {
@@ -109,7 +112,7 @@ class User
         $this->publicEmail = false;
     }
     
-    public function update(string $email, string $password, string $displayName, string $avatarLink, string $bio, bool $publicEmail): bool
+    public function update($email, string $password, string $displayName, string $avatarLink, $bio, bool $publicEmail): bool
     {
         if (empty($password)) {
             $parameters = array($email, $displayName, $avatarLink, $bio, $publicEmail, $this->id);
