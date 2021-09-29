@@ -2,5 +2,6 @@
 /dynamic/*
 !/dynamic/avatars/default.png
 !/dynamic/avatars/nobody.png
+/files/*
 /vendor/
 profiles.php
