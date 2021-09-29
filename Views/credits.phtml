@@ -10,7 +10,7 @@
     ?>
     </div> <!-- ending for <div class="row"> -->
     <hr>
-	<h2><?= $contributor->getRoles()[0]->name ?>s</h2>
+	<h2><?= $contributor->getRoles()[0]->name ?><?php if ($contributor->getRoles()[0]->name !== 'Owner') : ?>s<?php endif ?></h2>
     <div class="row">
 	<?php endif ?>
 	<div class="col-3"><a href="/cast/<?= $contributor->getId(); ?>">

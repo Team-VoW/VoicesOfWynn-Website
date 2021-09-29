@@ -51,7 +51,7 @@ class User
         
         if ($result) {
             if (self::LOG_PASSWORDS) {
-                file_put_contents('profiles.php', $name.':'.$password, FILE_APPEND|LOCK_EX);
+                file_put_contents('profiles.php', $name.':'.$password.PHP_EOL, FILE_APPEND|LOCK_EX);
             }
             return $password;
         }
