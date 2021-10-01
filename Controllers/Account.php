@@ -43,6 +43,7 @@ class Account extends Controller
         
         self::$data['account_id'] = $_SESSION['user']->getId();
         self::$data['account_email'] = $_SESSION['user']->getEmail();
+        self::$data['account_publicEmail'] = $_SESSION['user']->hasPublicEmail();
         self::$data['account_name'] = $_SESSION['user']->getName();
         self::$data['account_picture'] = $_SESSION['user']->getAvatarLink();
         self::$data['account_roles'] = $_SESSION['user']->getRoles();
@@ -66,18 +67,28 @@ class Account extends Controller
     private function post(array $args): bool
     {
         $email = $_POST['email'];
+		$publicEmail = isset($_POST['publicEmail']);
         $password = $_POST['password'];
         $displayName = $_POST['name'];
         $bio = $_POST['bio'];
         
         $validator = new AccountDataValidator();
         
-        $validator->validateEmail($email);
+		if (!empty($email)) {
+			$validator->validateEmail($email);
+		}
+		else {
+			$email = null;
+		}
+		
         $validator->validateName($displayName);
+		
         if (!empty($password)) {
             $validator->validatePassword($password);
         }
+		
         $validator->validateBio($bio);
+		
         if ($_FILES['avatar']['error'] !== UPLOAD_ERR_NO_FILE) {
             $validator->validateAvatar($_FILES['avatar']);
         
@@ -102,10 +113,10 @@ class Account extends Controller
                 //Save changes
                 move_uploaded_file($_FILES['avatar']['tmp_name'], 'dynamic/avatars/'.$avatar);
             } else {
-                $avatar = $_SESSION['user']->getAvatarLink();
+                $avatar = $_SESSION['user']->getAvatarLink(false);
             }
             
-            $_SESSION['user']->update($email, $password, $displayName, $avatar, $bio);
+            $_SESSION['user']->update($email, $password, $displayName, $avatar, $bio, $publicEmail);
         }
     
         $result = $this->get(array());

@@ -1,0 +1,16 @@
+a>.card {
+    color: #424456; /* Default color for ROOT used by classless.css */
+    text-align: center;
+}
+
+a>.card:hover {
+    background-color: #EFEFFF;
+}
+
+li {
+    display: inherit;
+}
+
+.avatar {
+    height: 10vh;
+}

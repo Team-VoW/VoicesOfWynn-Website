@@ -7,13 +7,14 @@
 		</tr>
 	<?php foreach ($quest->getNpcs() as $npc) : ?>
 		<tr>
-			<td><img src="dynamic/npcs/<?= $npc->getName() ?>.png" alt="NPC picture" /></td>
+			<td><img src="dynamic/npcs/<?= $npc->getId() ?>.png" alt="NPC picture" class="avatar" /></td>
 			<td><?= $npc->getName() ?></td>
 			<?php if ($npc->getVoiceActor() === null) : ?>
-				<td colspan="2"><i>Nobody</i></td>
+                <td><img class="avatar" src="dynamic/avatars/nobody.png" alt="Profile picture"/></td>
+				<td><i>Nobody</i></td>
 			<?php else : ?>
-				<td><img class="avatar" src="dynamic/avatars/<?= $npc->getVoiceActor()->getAvatarLink() ?>" alt="Profile picture"/></td>
-				<td><?= $npc->getVoiceActor()->getName() ?></td>
+                <td><img class="avatar" src="dynamic/avatars/<?= $npc->getVoiceActor()->getAvatarLink() ?>" alt="Profile picture"/></td>
+				<td><a href="cast/<?= $npc->getVoiceActor()->getId() ?>"><?= $npc->getVoiceActor()->getName() ?></a></td>
 			<?php endif ?>
 			<td><a href="administration/npcs/manage/<?= $npc->getId() ?>">Manage</a></td>
 		</tr>

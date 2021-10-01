@@ -10,6 +10,8 @@ class Comment
 	private string $content = '';
 	private int $recordingId = 0;
 	
+	private string $gravatar = '';
+	
 	/**
 	 * @param array $data Data returned from database, invalid items are skipped, multiple key names are supported for
 	 * each attribute
@@ -44,6 +46,12 @@ class Comment
 				case 'recording':
 				case 'object':
 					$this->recordingId = $value;
+					break;
+				case 'gravatar':
+				case 'gravatar_link':
+				case 'avatar':
+				case 'avatar_link':
+					$this->gravatar = $value;
 					break;
 			}
 		}

@@ -1,0 +1,44 @@
+<?php $voiceActor = ${basename(__FILE__, '.phtml').'_voice_actor'}; ?>
+<h1><?= $voiceActor->getName(); ?></h1>
+<img src="dynamic/avatars/<?= $voiceActor->getAvatarLink() ?>" alt="Voice actor's avatar">
+<section>
+<?php if (!empty($voiceActor->getEmail()) && $voiceActor->hasPublicEmail()) : ?>
+<a href="mailto:<?= $voiceActor->getEmail() ?>">Contact</a>
+<?php endif ?>
+<article><?= $voiceActor->getBio(); ?></article>
+</section>
+
+<?php if (count(${basename(__FILE__, '.phtml').'_quest_recordings'}) === 0) : ?>
+<i>This contributor didn't submit any recordings.</i>
+<?php else : ?>
+<h3>Recordings</h3>
+<?php endif ?>
+<?php foreach (${basename(__FILE__, '.phtml').'_quest_recordings'} as $quest) : ?>
+    <section>
+        <table>
+            <tr>
+                <th colspan="2">
+                    <b><?= $quest->getNpcs()[0]->getName() ?></b> in <i><?= $quest->getName() ?></i></th>
+                <th>👍</th>
+                <th>👎</th>
+                <th>💬</th>
+            </tr>
+			<?php $recordings = $quest->getNpcs()[0]->getRecordings(); ?>
+			<?php foreach ($recordings as $recording) : ?>
+                <tr>
+                    <td># <?= $recording->line ?></td>
+                    <td>
+                        <audio controls>
+                            <source src="dynamic/recordings/<?= $recording->file ?>" type="audio/ogg">
+                            Your browser does not support the OGG audio format.
+                        </audio>
+                    <td><a<?php if (!isset($_COOKIE['votedFor'.$recording->id])) : ?> class="upvote"<?php endif ?> data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>"><?= $recording->upvotes ?></a></td>
+                    <td><a<?php if (!isset($_COOKIE['votedFor'.$recording->id])) : ?> class="downvote"<?php endif ?> data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>"><?= $recording->downvotes ?></a></td>
+                    <td>
+                        <a href="contents/npc/<?= $recording->npcId ?>/comments/<?= $recording->id ?>" class="comment"><?= $recording->comments ?></a>
+                    </td>
+                </tr>
+			<?php endforeach ?>
+        </table>
+    </section>
+<?php endforeach ?>

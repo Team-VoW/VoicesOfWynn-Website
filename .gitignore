@@ -1,7 +1,7 @@
 /.idea/
-
-/dynamic/recordings/
-/dynamic/avatars/
-!/dynamic/avatars/defaultAvatar.png
-
+/dynamic/*
+!/dynamic/avatars/default.png
+!/dynamic/avatars/nobody.png
+/files/*
 /vendor/
+profiles.php

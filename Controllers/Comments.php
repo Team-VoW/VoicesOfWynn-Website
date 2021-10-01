@@ -49,6 +49,7 @@ class Comments extends Controller
 		
 		self::$cssFiles[] = 'comments';
 		self::$jsFiles[] = 'comments';
+		self::$jsFiles[] = 'md5';
 		self::$views[] = 'comments';
 		return true;
 	}

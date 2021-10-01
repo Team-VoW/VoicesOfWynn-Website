@@ -1,2 +1,32 @@
-<h1>This is the credits page</h1>
-<p>Content will be added in the future</p>
+<h1>Contributors</h1>
+<p>A lot of people worked hard on this mod. Take a moment to appreciate their effort and find out who helped.</p>
+<?php $currentHighestRole = null; ?>
+<div class="row">
+<?php foreach (${basename(__FILE__, '.phtml').'_contributors'} as $contributor) : ?>
+	<?php
+        if ($currentHighestRole !== $contributor->getRoles()[0]->name) :
+            //New highest role
+	        $currentHighestRole = $contributor->getRoles()[0]->name;
+    ?>
+    </div> <!-- ending for <div class="row"> -->
+    <hr>
+	<h2><?= $contributor->getRoles()[0]->name ?><?php if ($contributor->getRoles()[0]->name !== 'Owner') : ?>s<?php endif ?></h2>
+    <div class="row">
+	<?php endif ?>
+	<div class="col-3"><a href="/cast/<?= $contributor->getId(); ?>">
+		<div class="card">
+			<img class="avatar" src="dynamic/avatars/<?= $contributor->getAvatarLink(); ?>" alt="Contributor's profile picture" /><br>
+			<strong><?= $contributor->getName(); ?></strong>
+			<?php if (!empty($contributor->getLore())) : ?>
+			<br>
+			<i><?= $contributor->getLore() ?></i>
+			<?php endif ?>
+			<ul>
+			<?php foreach ($contributor->getRoles() as $role) : ?>
+				<li style="color:#<?= $role->color ?>;"><?= $role->name ?></li>
+			<?php endforeach ?>
+			</ul>
+		</div>
+	</a></div>
+<?php endforeach ?>
+

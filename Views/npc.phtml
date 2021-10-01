@@ -5,11 +5,13 @@
 <p>
     <strong>Voice actor: </strong>
     <?php if (${basename(__FILE__, '.phtml').'_voice_actor'} === null) : ?>
-        <img id="voice-actor-avatar" class="avatar" src="dynamic/avatars/defaultAvatar.png" alt="Profile picture" />
+        <img id="voice-actor-avatar" class="avatar" src="dynamic/avatars/nobody.png" alt="Profile picture" />
         <span id="voice-actor-name"><i>Nobody</i></span>
     <?php else : ?>
-        <img id="voice-actor-avatar" class="avatar" src="dynamic/avatars/<?= ${basename(__FILE__, '.phtml').'_voice_actor'}->getAvatarLink() ?>" alt="Profile picture" />
-        <span id="voice-actor-name"><?= ${basename(__FILE__, '.phtml').'_voice_actor'}->getName() ?></span>
+        <a href="cast/<?= ${basename(__FILE__, '.phtml').'_voice_actor'}->getId() ?>">
+            <img id="voice-actor-avatar" class="avatar" src="dynamic/avatars/<?= ${basename(__FILE__, '.phtml').'_voice_actor'}->getAvatarLink() ?>" alt="Profile picture" />
+            <span id="voice-actor-name"><?= ${basename(__FILE__, '.phtml').'_voice_actor'}->getName() ?></span>
+        </a>
     <?php endif ?>
     <?php if (${basename(__FILE__, '.phtml').'_admin'}) : ?>
         <button id="change-actor-btn">Change</button>
@@ -50,8 +52,8 @@
                     <source src="dynamic/recordings/<?= $recording->file ?>" type="audio/ogg">
                     Your browser does not support the OGG audio format.
                 </audio>
-            <td><a<?php if (!isset($_COOKIE['votedFor'.$recording->id])) : ?> class="upvote"<?php endif ?> data-recording-id="<?= $recording->id ?>"><?= $recording->upvotes ?></a></td>
-            <td><a<?php if (!isset($_COOKIE['votedFor'.$recording->id])) : ?> class="downvote"<?php endif ?> data-recording-id="<?= $recording->id ?>"><?= $recording->downvotes ?></a></td>
+            <td><a<?php if (!isset($_COOKIE['votedFor'.$recording->id])) : ?> class="upvote"<?php endif ?> data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>"><?= $recording->upvotes ?></a></td>
+            <td><a<?php if (!isset($_COOKIE['votedFor'.$recording->id])) : ?> class="downvote"<?php endif ?> data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>"><?= $recording->downvotes ?></a></td>
             <td>
                 <?php if (${basename(__FILE__, '.phtml').'_admin'}) : ?>
                     <button class="delete-recording-btn" data-recording-id="<?= $recording->id ?>">×</button>
@@ -74,7 +76,11 @@
                             <input name="recording1" type="file" accept="audio/ogg" class="recording-input" required/>
                         </td>
                         <td>
-                            <input name="line1" type="number" min="1" max="32767" value="<?= $recordings[count($recordings) -1]->line+1 ?>" class="line-input" required/>
+                            <?php if (empty($recordings)) : ?>
+                                <input name="line1" type="number" min="1" max="32767" value="1" class="line-input" required/>
+                            <?php else : ?>
+                                <input name="line1" type="number" min="1" max="32767" value="<?= $recordings[count($recordings) -1]->line+1 ?>" class="line-input" required/>
+                            <?php endif ?>
                         </td>
                     </tr>
                 </tbody>

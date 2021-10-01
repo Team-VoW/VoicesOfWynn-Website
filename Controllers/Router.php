@@ -59,7 +59,6 @@ class Router extends Controller
 			if (preg_match('/^<\d>$/', $arguments[$i])) {
 				$argNum = (int)substr($arguments[$i], 1, strlen($arguments[$i]) - 2);
 				$arguments[$i] = $variables[$argNum];
-				$i++;
 			}
 		}
 		
@@ -127,6 +126,7 @@ class Router extends Controller
 					$name = $this->sanitize($value->getName());
 					$avatarLink = $this->sanitize($value->getAvatarLink(false));
 					$bio = $this->sanitize($value->getBio());
+					$lore = $this->sanitize($value->getLore());
 					$roles = $this->sanitize($value->getRoles());
 					
 					$value->setData(array(
@@ -134,7 +134,8 @@ class Router extends Controller
 						'email' => $email,
 						'displayName' => $name,
 						'avatarLink' => $avatarLink,
-						'bio' => $bio
+						'bio' => $bio,
+						'lore' => $lore
 					));
 					$value->setRoles($roles);
 					
@@ -183,6 +184,7 @@ class Router extends Controller
 					$attr['email'] = $this->sanitize($value->email);
 					$attr['content'] = $this->sanitize($value->content);
 					$attr['recording_id'] = $this->sanitize($value->recordingId);
+					$attr['gravatar'] = $this->sanitize($value->gravatar);
 					return new Comment($attr);
 				}
 				else {

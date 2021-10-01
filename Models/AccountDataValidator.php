@@ -5,8 +5,9 @@ namespace VoicesOfWynn\Models;
 class AccountDataValidator
 {
     private const EMAIL_MAX_LENGTH = 255;
-    private const PASSWORD_MIN_LENGTH = 6;
+    public const PASSWORD_MIN_LENGTH = 6;
     private const NAME_MAX_LENGTH = 31;
+    private const NAME_MIN_LENGTH = 3;
     private const AVATAR_MAX_SIZE = 1048576; //In bytes
     private const BIO_MAX_LENGTH = 511;
     
@@ -41,7 +42,7 @@ class AccountDataValidator
     {
         //Check length
         if (mb_strlen($password) < self::PASSWORD_MIN_LENGTH) {
-            $this->errors[] = 'Password must be at least '.self::EMAIL_MAX_LENGTH.' characters long.';
+            $this->errors[] = 'Password must be at least '.self::PASSWORD_MIN_LENGTH.' characters long.';
             return false;
         }
         
@@ -52,21 +53,26 @@ class AccountDataValidator
         
         return true;
     }
-	
-	/**
-	 * Method validating display name
-	 * @param string $name Name to validate
-	 * @param bool $checkAgainstOld TRUE, if the name should be also checked against the currently logged user's name
-	 * (default FALSE and TRUE should be used only when accounts are created by an admin, to permit changes in
-	 * capitalisation to causal users)
-	 * @return bool TRUE, if the name is valid
-	 * @throws \Exception
-	 */
+    
+    /**
+     * Method validating display name
+     * @param string $name Name to validate
+     * @param bool $checkAgainstOld TRUE, if the name should be also checked against the currently logged user's name
+     * (default FALSE and TRUE should be used only when accounts are created by an admin, to permit changes in
+     * capitalisation to causal users)
+     * @return bool TRUE, if the name is valid
+     * @throws \Exception
+     */
     public function validateName(string $name, bool $checkAgainstOld = false): bool
     {
         //Check length
         if (mb_strlen($name) > self::NAME_MAX_LENGTH) {
             $this->errors[] = 'Display name mustn\'t be more than '.self::NAME_MAX_LENGTH.' characters long.';
+            return false;
+        }
+    
+        if (mb_strlen($name) < self::NAME_MIN_LENGTH) {
+            $this->errors[] = 'Display name mustn\'t be less than '.self::NAME_MIN_LENGTH.' characters long.';
             return false;
         }
         

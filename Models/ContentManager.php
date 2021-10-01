@@ -11,7 +11,8 @@ class ContentManager
 		FROM quest
 		JOIN npc_quest ON npc_quest.quest_id = quest.quest_id
 		JOIN npc ON npc.npc_id = npc_quest.npc_id
-		LEFT JOIN user ON npc.voice_actor_id = user.user_id;
+		LEFT JOIN user ON npc.voice_actor_id = user.user_id
+		ORDER BY quest.quest_id, npc.npc_id;
 		';
 		$result = Db::fetchQuery($query, array(), true);
 		
@@ -57,6 +58,94 @@ class ContentManager
 		return $npc;
 	}
 	
+	public function getVoiceActor($id): User
+	{
+		$query = 'SELECT * FROM user WHERE user_id = ?;';
+		$result = Db::fetchQuery($query, array($id));
+		
+		$voiceActor = new User();
+		$voiceActor->setData($result);
+		return $voiceActor;
+	}
+	
+	public function getContributors(): array
+	{
+		$query = '
+		SELECT `user`.user_id, `user`.display_name, `user`.picture, `user`.lore,
+		GROUP_CONCAT(discord_role.name ORDER BY weight DESC) AS `roles`,
+		GROUP_CONCAT(discord_role.color ORDER BY weight DESC) AS `role_colors`, (
+			SELECT SUM(weight)
+			FROM discord_role
+			JOIN user_discord_role USING(discord_role_id)
+			WHERE user_discord_role.user_id = user.user_id
+		) AS `roles_weight`
+		FROM user
+		JOIN user_discord_role USING(user_id)
+		JOIN discord_role USING(discord_role_id)
+		GROUP BY user_id
+		ORDER BY `roles_weight` DESC;
+		';
+		$result = Db::fetchQuery($query, array(), true);
+		
+		$users = array();
+		foreach ($result as $userData) {
+			$roleNames = explode(',', $userData['roles']);
+			$roleColors = explode(',', $userData['role_colors']);
+			$roles = array();
+			for ($i = 0; $i < count($roleNames); $i++) {
+				$roles[] = new DiscordRole($roleNames[$i], $roleColors[$i]); //Weight is not needed for the view
+			}
+			
+			$user = new User();
+			$user->setData(array(
+				'id' => $userData['user_id'],
+				'name' => $userData['display_name'],
+				'avatar' => $userData['picture'],
+				'lore' => $userData['lore']
+			));
+			
+			$user->setRoles($roles);
+			$users[] = $user;
+		}
+		return $users;
+	}
+	
+	public function getVoiceActorRecordings($id): array
+	{
+		$query = '
+		SELECT recording.recording_id, recording.quest_id, recording.line, recording.file, recording.upvotes, recording.downvotes, (SELECT COUNT(*) FROM comment WHERE comment.recording_id = recording.recording_id) AS "comments", npc.name AS `nname`, quest.name as `qname`
+		FROM recording
+		JOIN quest USING(quest_id)
+		JOIN npc USING(npc_id)
+		WHERE npc.voice_actor_id = ?
+		ORDER BY quest_id, line;';
+		$result = Db::fetchQuery($query, array($id), true);
+		
+		if ($result === false) {
+			return array();
+		}
+		
+		$currentQuest = null;
+		$currentNpc = null;
+		foreach ($result as $recording) {
+			if ($currentQuest === null || $currentQuest->getId() !== $recording['quest_id']) {
+				//New quest encountered
+				if ($currentQuest !== null) {
+					$currentQuest->addNpc($currentNpc);
+					$quests[] = $currentQuest;
+				}
+				$currentQuest = new Quest($recording);
+				$currentNpc = new Npc(array('id' => $id, 'name' => $recording['nname']));
+			}
+			
+			$recordingObj = new Recording($recording);
+			$currentNpc->addRecording($recordingObj);
+		}
+		$currentQuest->addNpc($currentNpc);
+		$quests[] = $currentQuest;
+		return $quests;
+	}
+	
 	public function getNpcRecordings($id): array
 	{
 		$query = '
@@ -66,6 +155,24 @@ class ContentManager
 		WHERE npc_id = ?
 		ORDER BY quest_id, line;';
 		$result = Db::fetchQuery($query, array($id), true);
+		
+		$quests = array();
+		if (gettype($result) !== 'array') {
+			//No recordings yet
+			$query = '
+			SELECT quest_id,name
+			FROM quest
+		    JOIN npc_quest USING(quest_id)
+			WHERE npc_id = ?;';
+			$result = Db::fetchQuery($query, array($id), true);
+			
+			foreach ($result as $quest) {
+				$currentQuest = new Quest($quest);
+				$currentQuest->addNpc(new Npc(array('id' => $id)));
+				$quests[] = $currentQuest;
+			}
+			return $quests;
+		}
 		
 		$currentQuest = null;
 		$currentNpc = null;
@@ -104,8 +211,11 @@ class ContentManager
 	
 	public function getComments($recordingId): array
 	{
-		$result = Db::fetchQuery('SELECT comment_id,name,REPLACE(REPLACE(email,"@"," at "), ".", " dot ") AS email,content,recording_id FROM comment WHERE recording_id = ? ORDER BY comment_id DESC',
-			array($recordingId), true);
+		$result = Db::fetchQuery('
+			SELECT comment_id,name,REPLACE(REPLACE(email,"@"," at "), ".", " dot ") AS email,content,recording_id,
+			CONCAT("https://www.gravatar.com/avatar/",MD5(email),"?d=identicon") AS gravatar
+			FROM comment WHERE recording_id = ? ORDER BY comment_id DESC;
+		', array($recordingId), true);
 		if (empty($result)) {
 			return array();
 		}

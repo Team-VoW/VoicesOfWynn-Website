@@ -5,6 +5,7 @@ $(".upvote").on('click', function(event) {
 
     $clickedRating = $(event.target);
     let recordingId = $(event.target).attr('data-recording-id');
+    let npcId = $(event.target).attr('data-npc-id');
 
     $.ajax({
         url: "contents/npc/" + npcId + "/upvote/" + recordingId,
@@ -28,6 +29,7 @@ $(".downvote").on('click', function(event) {
 
     $clickedRating = $(event.target);
     let recordingId = $clickedRating.attr('data-recording-id');
+    let npcId = $(event.target).attr('data-npc-id');
 
     $.ajax({
         url: "contents/npc/" + npcId + "/downvote/" + recordingId,
