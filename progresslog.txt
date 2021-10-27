@@ -1,0 +1,38 @@
+!! THIS WILL BE DELETED IN THE FINAL COMMIT !!
+----------------------------------------------
+
+1) Finish credits.css       -       Done
+2) Polish credits.css       -       Not finished
+3) Navigation improvments   -       Not finished
+4) Home improvements        -       Not finished
+5) Tidy up code             -       Not finished
+6) Contributers profile     -       Not finished
+7) Administration panels    -       Not finished
+8) Login                    -       Not finished
+9) Include dark mode        -       Not finished
+
+
+PLANS:
+------
+Rather simplistic looking website cuz idk... might fit -
+shouldn't have a very complex design -
+colorcodes function as placeholders (easy to change later and i'm too lazy to decide on a colorpalette from the start) -
+look closer into animations -
+make it mostly Wynncraft styled -
+
+
+NOTES:
+------
+if i continue to run into severe problems daily i might not have the mental power to continue
+i hope this doesnt severely fuck up my sleep schedule (that would really be great)
+i should maybe have a strict schedule as to when i do what
+i shall not touch php ever again :')
+might want to remove all unecesary comments
+
+
+PROGRESS SORTED BY DAYS:
+------------------------
+10/27 - meh 
+
+
+~ Just5MoreMinutes

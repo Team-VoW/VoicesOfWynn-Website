@@ -17,16 +17,17 @@
 		<div class="card">
 			<img class="avatar" src="dynamic/avatars/<?= $contributor->getAvatarLink(); ?>" alt="Contributor's profile picture" /><br>
 			<strong><?= $contributor->getName(); ?></strong>
-			<?php if (!empty($contributor->getLore())) : ?>
-			<br>
-			<i><?= $contributor->getLore() ?></i>
-			<?php endif ?>
-			<ul>
-			<?php foreach ($contributor->getRoles() as $role) : ?>
-				<li style="color:#<?= $role->color ?>;"><?= $role->name ?></li>
-			<?php endforeach ?>
-			</ul>
-		</div>
+				<hr> 
+				<?php if (!empty($contributor->getLore())) : ?>
+				<i><?= $contributor->getLore() ?></i>
+				<?php endif ?>
+				<ul id="roles">
+					<?php foreach ($contributor->getRoles() as $role) : ?>
+					<li style="color:#<?= $role->color ?>;"><?= $role->name ?></li>
+					<?php endforeach ?>
+				</ul>
+				<hr><p id="profile">View Profile (Click)</p>
+			</div>
 	</a></div>
 <?php endforeach ?>
 

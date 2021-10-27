@@ -1,11 +1,49 @@
+/* chaos */
+
+body {
+    background: rgb(216, 216, 216);
+}
+
+main {
+    background: whitesmoke;
+    padding-right: 10px;
+    padding-left: 10px;
+    padding-bottom: 20px;
+    border-radius: 5px;
+    box-shadow: .2rem .2rem .7rem 0 #777;
+}
+
+h1, h2 {
+    letter-spacing: 2px;
+    font-weight: bold;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    text-decoration: none;
+}
+
+p {
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-style: italic;
+}
+
 a>.card {
+    background: aliceblue;
     color: #424456; /* Default color for ROOT used by classless.css */
     text-align: center;
 }
 
 a>.card:hover {
-    background-color: #EFEFFF;
+    color: white;
+	content: none;
+    background: #2e2836;
+    box-shadow: .2rem .2rem .7rem 0 #777;
+    transform: translateY(3px);
 }
+
+a:hover #roles {
+    display: block;
+    cursor: pointer;
+}
+
 
 li {
     display: inherit;
@@ -13,4 +51,5 @@ li {
 
 .avatar {
     height: 10vh;
+    border-radius: .3rem;
 }

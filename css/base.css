@@ -1,0 +1,17 @@
+/* couldnt find a file suited for the navigation so i created one <3 */
+.header0 {
+    background-color: rgb(216, 216, 216);
+}
+
+.nav {
+    list-style: none;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-size: 17px;
+    font-weight: bold;
+    letter-spacing: 1.5px;
+    padding-top: 10px;
+}
+
+.nav a:hover {
+    color: #333;
+}

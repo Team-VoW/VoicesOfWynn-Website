@@ -1,3 +1,5 @@
+/* :o */
+
 /* Classless.css v0.9
 
 Table of Contents:
@@ -29,7 +31,9 @@ footer { margin: 10rem 0rem 0rem; }
 
 
 /* text */
-:root { font: 13pt 'Open Sans', sans-serif; line-height: 1.5; color: #424456; }
+:root { 
+	font: 13pt 'Open Sans', sans-serif; line-height: 1.5; color: #424456; 
+}
 small, sub, sup { font-size: 75%; }
 
 
@@ -187,6 +191,8 @@ mark{ background-color: transparent; color: #007c30; text-decoration: underline 
 	display: flex; 
 	margin: 0 -0.5rem;
 	align-items: stretch;
+	max-width: 3439px;
+	flex-wrap: wrap;
 }
 .row [class*="col"] { padding: 0 0.5rem; }
 .row .col   { flex: 1 1 100%; }
@@ -195,16 +201,38 @@ mark{ background-color: transparent; color: #007c30; text-decoration: underline 
 .row .col-4 { flex: 0 0 33.33%; }
 .row .col-6 { flex: 0 0 50%; }
 
-
  /* cards */
-.card{
-	display: block;
+.card {
+	text-align: center;
+	display: inline-block;
+	width: auto;
+	font-family: Georgia, 'Times New Roman', Times, serif;
 	margin: .5rem 0;
+	border: 0.25rem solid #2e2836;
 	padding: .5rem 1rem 0.5rem; 
 	border-radius: .3rem; 
-	box-shadow: .1rem .1rem .4rem 0 #777;  
+	box-shadow: .1rem .1rem .4rem 0 #777;
+	flex: 3 0 21%;	/* very coolio. makes it so cards dont stick over the edges! */
 }
 
+#roles {
+	display: none;
+	text-align: left;
+	overflow: hidden;
+}
+
+#roles a.card:hover {
+	display: block;
+	overflow: visible;
+}
+
+.avatar {
+	padding-top: 3px;
+}
+
+a:hover + #profile {
+	color: rgb(148, 223, 73);
+}
 
 /* align */
 .align-top      { vertical-align: top; }
