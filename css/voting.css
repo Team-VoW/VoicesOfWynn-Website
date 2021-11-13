@@ -5,6 +5,6 @@ td a {
     color: unset;
 }
 .upvote, .downvote, .comment {
-    text-decoration: underline;
+    text-decoration: none;
     color: #0065bd;
 }

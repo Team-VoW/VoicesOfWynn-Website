@@ -3,8 +3,8 @@
 
 1) Finish credits.css       -       Done
 2) Polish credits.css       -       Not finished
-3) Navigation improvments   -       Not finished
-4) Home improvements        -       Not finished
+3) Navigation improvments   -       Started
+4) Home improvements        -       Started
 5) Tidy up code             -       Not finished
 6) Contributers profile     -       Not finished
 7) Administration panels    -       Not finished
@@ -33,6 +33,14 @@ might want to remove all unecesary comments
 PROGRESS SORTED BY DAYS:
 ------------------------
 10/27 - meh 
+10/28 - decent i guess... i made some neat changes and kinda got more into the navigation
 
 
 ~ Just5MoreMinutes
+
+[Note to self]: Work through halloween, progress wasnt too great today. cant work on the website tomorrow and on saturday - plans for 31st:
+                ~ take a look at all the public accessible pages and edit them
+                ~ if theres some time remaining, clean up code and remove unecesary comments
+                ~ after i edited all the publicly accessible files i will "wynncraftify" the page, as said colorcodes work as 
+                  placeholders right now
+                ~ if thats too much for the one day, split it into less necesary and more necesary, login is less important for example

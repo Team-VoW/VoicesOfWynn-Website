@@ -1,7 +1,21 @@
 /* chaos */
 
 body {
-    background: rgb(216, 216, 216);
+    background: linear-gradient(-35deg, #FFD751, #DC9587, #B751BF, #A62FDB);
+    background-size: 400% 400%;
+    animation: bgmove0 50s ease infinite;
+}
+
+@keyframes bgmove0 {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 main {
@@ -16,8 +30,10 @@ main {
 h1, h2 {
     letter-spacing: 2px;
     font-weight: bold;
-    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-family: 'Courier New', Courier, monospace;
     text-decoration: none;
+    text-align: center;
+    font-style: italic;
 }
 
 p {
@@ -26,22 +42,24 @@ p {
 }
 
 a>.card {
+    margin-left: auto;
+    margin-right: auto;
     background: aliceblue;
     color: #424456; /* Default color for ROOT used by classless.css */
     text-align: center;
+    border: 0.25rem solid #DC9587;
 }
 
 a>.card:hover {
-    color: white;
+    cursor: default;
 	content: none;
-    background: #2e2836;
     box-shadow: .2rem .2rem .7rem 0 #777;
     transform: translateY(3px);
 }
 
 a:hover #roles {
     display: block;
-    cursor: pointer;
+    cursor: default;
 }
 
 

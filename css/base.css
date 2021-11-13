@@ -1,17 +1,299 @@
 /* couldnt find a file suited for the navigation so i created one <3 */
+
+/* general v.1 */
+body {
+    background: linear-gradient(-35deg, #FFD751, #DC9587, #B751BF, #A62FDB);
+    background-size: 400% 400%;
+    animation: bgmove 50s ease infinite;
+}
+
+@keyframes bgmove {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+main {
+    background: whitesmoke;
+    padding-right: 10px;
+    padding-left: 10px;
+    padding-bottom: 20px;
+    border-radius: 5px;
+    box-shadow: .2rem .2rem .7rem 0 #777;
+}
+
+/* navigation */
+
 .header0 {
-    background-color: rgb(216, 216, 216);
+    float: left;
+    width: 100%;
+    height: auto;
+    flex-wrap: wrap;
 }
 
 .nav {
-    list-style: none;
-    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-    font-size: 17px;
-    font-weight: bold;
-    letter-spacing: 1.5px;
-    padding-top: 10px;
+    margin: auto;
+    padding-right: 312px;
+    float: left;
+    margin: 150px -50px 0 0;
+    width: auto;
+    padding-bottom: 90px;
+    padding-top: 15px;
 }
 
-.nav a:hover {
+.nav li {
+    float: left;
+    flex: 6 0 21%;
+    list-style: none;
+    text-decoration: none;
+}
+
+.nav li a {
+    float: left;
     color: #333;
+    padding: 6px 20px;
+    text-decoration: none;
+    font-size: 18px;
+    border-radius: 4px;
+}
+
+.nav li a:hover {
+    background-color: #333;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: .1rem .1rem .4rem 0 #777;
+}
+
+/* Below will MIGHT be used later. Login, Administration, My Account, Logout, Discord and Patreon will be found here */
+/* .dropdownbtn {
+    color: #333;
+    border: none;
+}
+
+.dropdown {
+    position: relative;
+    display: block;
+    padding-left: 0px;
+}
+
+.dropitems {
+    display: none;
+    position: absolute;
+    background-color: whitesmoke;
+    min-width: 160px;
+    box-shadow: .1rem .1rem .4rem 0 #777;
+}
+
+.dropitems a {
+    color: #333;
+    padding: 1px 1px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropitems a:hover {
+    color: whitesmoke;
+    background-color: #333;
+}
+
+.dropdown:hover .dropitems {
+    display: block;
+}
+
+.dropdown:hover .dropdownbtn {
+    background-color: #333;
+    color: whitesmoke;
+} */
+
+/* general v.2 */
+
+h1, h2 {
+    letter-spacing: 2px;
+    font-weight: bold;
+    font-family: 'Courier New', Courier, monospace;
+    text-decoration: none;
+    text-align: center;
+    font-style: italic;
+}
+
+p {
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-style: italic;
+}
+
+/* logo */
+
+#logo {
+    float: right;
+    margin: -218px 10px 0px;
+}
+
+/* uuuh idk to be honest */
+
+#vowi {
+}
+
+/* magic :p */
+
+#vertical {
+    margin: 133px 0px 0px 0;
+    border-left: 2px solid #333;
+    height: 100px;
+    position: relative;
+    left: 72%;
+}
+
+/* buttons :L */
+
+.downloadbtn {
+    font-family: 'Courier New', Courier, monospace;
+    color: #333;
+    background: #FFD751;
+    border-radius: 10px;
+    border: #FFD751;
+    padding-top: 5px;
+    padding-bottom: 7px;
+    padding-right: 10px;
+    padding-left: 10px;
+    font-size: 20px;
+}
+
+.downloadbtn:hover {
+    transform: translateY(-5px);
+    border: 5px solid #fadb76;
+    color: #333;
+    box-shadow: .0rem .2rem .4rem #777;
+}
+
+.discordbtn {
+    font-family: 'Courier New', Courier, monospace;
+    color: #333;
+    background: #5662F6;
+    border-radius: 10px;
+    border: #5662F6;
+    padding-top: 5px;
+    padding-bottom: 7px;
+    padding-right: 10px;
+    padding-left: 10px;
+    font-size: 20px;
+}
+
+.discordbtn:hover {
+    transform: translateY(-5px);
+    color: #333;
+    box-shadow: .0rem .2rem .4rem #777;
+    border: 5px solid #656ffd;
+}
+
+.creditsbtn {
+    font-family: 'Courier New', Courier, monospace;
+    color: #333;
+    background: #AB5DFC;
+    border-radius: 10px;
+    border: #AB5DFC;
+    padding-top: 5px;
+    padding-bottom: 7px;
+    padding-right: 10px;
+    padding-left: 10px;
+    font-size: 20px;
+}
+
+.creditsbtn:hover {
+    transform: translateY(-5px);
+    color: #333;
+    box-shadow: .0rem .2rem .4rem #777;
+    border: 5px solid #b16afd;
+}
+
+.patreonbtn {
+    font-family: 'Courier New', Courier, monospace;
+    color: #333;
+    background: #ff7866;
+    border-radius: 10px;
+    border: #ff7866;
+    padding-top: 5px;
+    padding-bottom: 7px;
+    padding-right: 10px;
+    padding-left: 10px;
+    font-size: 20px;
+}
+
+.patreonbtn:hover {
+    transform: translateY(-5px);
+    color: #333;
+    box-shadow: .0rem .2rem .4rem #777;
+    border: 5px solid #ff8979;
+}
+
+.backbtn {
+    font-family: 'Courier New', Courier, monospace;
+    color: #333;
+    background: rgb(0, 107, 48);
+    border-radius: 10px;
+    border: rgb(0, 107, 48);
+    padding-top: 5px;
+    padding-bottom: 7px;
+    padding-right: 10px;
+    padding-left: 10px;
+    font-size: 20px;
+}
+
+.backbtn:hover {
+    transform: translateY(-5px);
+    color: #333;
+    box-shadow: .0rem .2rem .4rem #777;
+    border: 5px solid rgb(51, 122, 83);
+}
+
+.contentsbtn {
+    font-family: 'Courier New', Courier, monospace;
+    color: #333;
+    background: rgb(21, 220, 255);
+    border-radius: 10px;
+    border: rgb(21, 220, 255);
+    padding-top: 5px;
+    padding-bottom: 7px;
+    padding-right: 10px;
+    padding-left: 10px;
+    font-size: 20px;
+}
+
+.contentsbtn:hover {
+    transform: translateY(-5px);
+    color: #333;
+    box-shadow: .0rem .2rem .4rem #777;
+    border: 5px solid rgb(103, 232, 255);
+}
+
+/* recording header */
+
+.avatar0 {
+    padding-left: 200px;
+}
+
+.bio {
+    float: right;
+    padding-right: 350px;
+    margin-top: -120px;
+}
+
+#contributerimg {
+    max-width: 150px;
+    max-height: 150px;
+}
+
+.contact {
+
+}
+
+/* iframe stuff */
+
+iframe {
+    
 }

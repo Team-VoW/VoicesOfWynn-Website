@@ -25,8 +25,24 @@ body {
 	margin: auto; 
 	max-width: 50rem; 
 	padding: 2rem 0.5rem 0rem; 
-	overflow-x: hidden; 
+	overflow-x: hidden;
+	background: linear-gradient(-35deg, #FFD751, #DC9587, #B751BF, #A62FDB);
+    background-size: 400% 400%;
+    animation: bgmove 50s ease infinite;
 }
+
+@keyframes bgmove {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
 footer { margin: 10rem 0rem 0rem; }
 
 
@@ -69,7 +85,7 @@ tr:hover{ background-color: #f4f5f6; }
 
 
 /* figures */
-img { max-width: 100%; }
+/*img { max-width: 100%; }*/
 figure { text-align: center; }
 figure > img { display: block; margin: 0.5em auto; }
 figcaption, caption { color: #777; margin-bottom: 1rem; }
@@ -89,15 +105,22 @@ code, kbd, samp {
 
 /* links */
 a { color: #0065bd; text-decoration: none; cursor: pointer; }
-a:hover, button:not([disabled]):hover { 
+/*a:hover, button:not([disabled]):hover { 
 	color: #00C5bd; 
 	border-color: #00C5bd; 
-}
-
+}*/
 
 /* forms and inputs */
 textarea, input, button, select { border-radius: .3rem; border: .1rem solid #d1d1d1; padding: 0.3rem; outline: none;}
-button { padding: 0.7rem 1rem; cursor: pointer; font-weight: bold; letter-spacing: 0.1rem; color: #0065bd; background-color: #f4f5f6; border: .1rem solid #0065bd; }
+/* button { 
+	padding: 0.7rem 1rem; 
+	cursor: pointer; 
+	font-weight: bold; 
+	letter-spacing: 0.1rem; 
+	color: #0065bd; 
+	background-color: #f4f5f6; 
+	border: .1rem solid #0065bd; 
+} */
 
 
 /* misc */
@@ -188,6 +211,7 @@ mark{ background-color: transparent; color: #007c30; text-decoration: underline 
 
  /* grid */
 .row {
+	margin: 0 auto;
 	display: flex; 
 	margin: 0 -0.5rem;
 	align-items: stretch;
@@ -195,7 +219,7 @@ mark{ background-color: transparent; color: #007c30; text-decoration: underline 
 	flex-wrap: wrap;
 }
 .row [class*="col"] { padding: 0 0.5rem; }
-.row .col   { flex: 1 1 100%; }
+.row .col   { flex: 1 1 100%; margin: 0 auto;}
 .row .col-2 { flex: 0 0 16.66%; }
 .row .col-3 { flex: 0 0 25%; }
 .row .col-4 { flex: 0 0 33.33%; }
@@ -203,25 +227,30 @@ mark{ background-color: transparent; color: #007c30; text-decoration: underline 
 
  /* cards */
 .card {
+	cursor: default;
+	align-items: center;
 	text-align: center;
 	display: inline-block;
 	width: auto;
 	font-family: Georgia, 'Times New Roman', Times, serif;
 	margin: .5rem 0;
-	border: 0.25rem solid #2e2836;
+	border: 0.25rem solid #6B5641;
 	padding: .5rem 1rem 0.5rem; 
 	border-radius: .3rem; 
 	box-shadow: .1rem .1rem .4rem 0 #777;
-	flex: 3 0 21%;	/* very coolio. makes it so cards dont stick over the edges! */
+	background: aliceblue;
+	flex: 3 0 21%;	/*very cool. makes it so cards dont stick over the edges!*/
 }
 
 #roles {
+	cursor: default;
 	display: none;
 	text-align: left;
 	overflow: hidden;
 }
 
 #roles a.card:hover {
+	cursor: default;
 	display: block;
 	overflow: visible;
 }
@@ -230,8 +259,9 @@ mark{ background-color: transparent; color: #007c30; text-decoration: underline 
 	padding-top: 3px;
 }
 
-a:hover + #profile {
-	color: rgb(148, 223, 73);
+#profile:hover {
+	color: #A62FDB;
+	cursor: pointer;
 }
 
 /* align */
