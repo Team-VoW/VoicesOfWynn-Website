@@ -218,12 +218,35 @@ mark{ background-color: transparent; color: #007c30; text-decoration: underline 
 	max-width: 3439px;
 	flex-wrap: wrap;
 }
-.row [class*="col"] { padding: 0 0.5rem; }
-.row .col   { flex: 1 1 100%; margin: 0 auto;}
-.row .col-2 { flex: 0 0 16.66%; }
-.row .col-3 { flex: 0 0 25%; }
-.row .col-4 { flex: 0 0 33.33%; }
-.row .col-6 { flex: 0 0 50%; }
+
+.row [class*="col"] { 
+	padding: 0 0.5rem;
+}
+
+.row .col   { 
+	flex: 1 1 100%; 
+	margin: 0 auto;
+	position: relative;
+	left: 50%;
+}
+
+.row .col-2 { 
+	flex: 0 0 16.66%; 
+}
+
+.row .col-3 { 
+	flex: 0 0 25%;
+	align-items: center;
+	justify-content: center;
+}
+
+.row .col-4 { 
+	flex: 0 0 33.33%; 
+}
+
+.row .col-6 { 
+	flex: 0 0 50%; 
+}
 
  /* cards */
 .card {
@@ -240,6 +263,10 @@ mark{ background-color: transparent; color: #007c30; text-decoration: underline 
 	box-shadow: .1rem .1rem .4rem 0 #777;
 	background: aliceblue;
 	flex: 3 0 21%;	/*very cool. makes it so cards dont stick over the edges!*/
+}
+
+.card div {
+	
 }
 
 #roles {
