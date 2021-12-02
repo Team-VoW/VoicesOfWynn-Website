@@ -145,7 +145,7 @@ p {
     color: #333;
     background: #FFD751;
     border-radius: 10px;
-    border: #FFD751;
+    border: 5px solid transparent;
     padding-top: 5px;
     padding-bottom: 7px;
     padding-right: 10px;
@@ -155,9 +155,14 @@ p {
 
 .downloadbtn:hover {
     transform: translateY(-5px);
-    outline: 5px solid #fadb76;
+    background: #FFD751;
     color: #333;
     box-shadow: .0rem .2rem .4rem #777;
+    pointer-events: visible;
+    position: relative;
+    z-index: 0;
+    visibility: visible;
+    float: none;
 }
 
 .discordbtn {
@@ -165,7 +170,7 @@ p {
     color: #333;
     background: #5662F6;
     border-radius: 10px;
-    border: #5662F6;
+    border: 5px solid transparent;
     padding-top: 5px;
     padding-bottom: 7px;
     padding-right: 10px;
@@ -177,29 +182,6 @@ p {
     transform: translateY(-5px);
     color: #333;
     box-shadow: .0rem .2rem .4rem #777;
-    outline: 5px solid #656ffd;
-}
-
-.creditsbtn {
-    font-family: 'Courier New', Courier, monospace;
-    color: #333;
-    background: #AB5DFC;
-    border-radius: 10px;
-    border: #AB5DFC;
-    padding-top: 5px;
-    padding-bottom: 7px;
-    padding-right: 10px;
-    padding-left: 10px;
-    font-size: 20px;
-}
-
-.creditsbtn a { visibility: visible; display: block; }
-
-.creditsbtn:hover {
-    transform: translateY(-5px);
-    color: #333;
-    box-shadow: .0rem .2rem .4rem #777;
-    outline: 5px solid #b16afd;
     pointer-events: visible;
     position: relative;
     z-index: 0;
@@ -212,7 +194,7 @@ p {
     color: #333;
     background: #ff7866;
     border-radius: 10px;
-    border: #ff7866;
+    border: 5px solid transparent;
     padding-top: 5px;
     padding-bottom: 7px;
     padding-right: 10px;
@@ -224,7 +206,11 @@ p {
     transform: translateY(-5px);
     color: #333;
     box-shadow: .0rem .2rem .4rem #777;
-    outline: 5px solid #ff8979;
+    pointer-events: visible;
+    position: relative;
+    z-index: 0;
+    visibility: visible;
+    float: none;
 }
 
 .backbtn {
@@ -232,7 +218,7 @@ p {
     color: #333;
     background: rgb(0, 107, 48);
     border-radius: 10px;
-    border: rgb(0, 107, 48);
+    border: 5px solid transparent;
     padding-top: 5px;
     padding-bottom: 7px;
     padding-right: 10px;
@@ -244,27 +230,37 @@ p {
     transform: translateY(-5px);
     color: #333;
     box-shadow: .0rem .2rem .4rem #777;
-    outline: 5px solid rgb(51, 122, 83);
+    pointer-events: visible;
+    position: relative;
+    z-index: 0;
+    visibility: visible;
+    float: none;
 }
 
-.contentsbtn {
+.creditsbtn {
     font-family: 'Courier New', Courier, monospace;
     color: #333;
-    background: rgb(21, 220, 255);
+    background: #AB5DFC;
     border-radius: 10px;
-    border: rgb(21, 220, 255);
+    border: 5px solid transparent;
     padding-top: 5px;
     padding-bottom: 7px;
     padding-right: 10px;
     padding-left: 10px;
     font-size: 20px;
+  
 }
 
-.contentsbtn:hover {
+.creditsbtn:hover {
     transform: translateY(-5px);
     color: #333;
     box-shadow: .0rem .2rem .4rem #777;
-    outline: 5px solid rgb(103, 232, 255);
+    border-color:#b16afd;
+    pointer-events: visible;
+    position: relative;
+    z-index: 0;
+    visibility: visible;
+    float: none;
 }
 
 /* recording header */
