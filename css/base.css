@@ -1,22 +1,10 @@
-/* couldnt find a file suited for the navigation so i created one <3 */
-
 /* general v.1 */
 body {
-    background: linear-gradient(-35deg, #FFD751, #DC9587, #B751BF, #A62FDB);
-    background-size: 400% 400%;
-    animation: bgmove 50s ease infinite;
-}
-
-@keyframes bgmove {
-    0% {
-        background-position: 0% 50%;
-    }
-    50% {
-        background-position: 100% 50%;
-    }
-    100% {
-        background-position: 0% 50%;
-    }
+    background-image: url(../images/ragni_home.png);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    background-attachment: fixed;
 }
 
 main {
@@ -205,11 +193,18 @@ p {
     font-size: 20px;
 }
 
+.creditsbtn a { visibility: visible; display: block; }
+
 .creditsbtn:hover {
     transform: translateY(-5px);
     color: #333;
     box-shadow: .0rem .2rem .4rem #777;
     border: 5px solid #b16afd;
+    pointer-events: visible;
+    position: relative;
+    z-index: 0;
+    visibility: visible;
+    float: none;
 }
 
 .patreonbtn {
