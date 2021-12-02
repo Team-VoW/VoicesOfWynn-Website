@@ -155,7 +155,7 @@ p {
 
 .downloadbtn:hover {
     transform: translateY(-5px);
-    border: 5px solid #fadb76;
+    outline: 5px solid #fadb76;
     color: #333;
     box-shadow: .0rem .2rem .4rem #777;
 }
@@ -177,7 +177,7 @@ p {
     transform: translateY(-5px);
     color: #333;
     box-shadow: .0rem .2rem .4rem #777;
-    border: 5px solid #656ffd;
+    outline: 5px solid #656ffd;
 }
 
 .creditsbtn {
@@ -199,7 +199,7 @@ p {
     transform: translateY(-5px);
     color: #333;
     box-shadow: .0rem .2rem .4rem #777;
-    border: 5px solid #b16afd;
+    outline: 5px solid #b16afd;
     pointer-events: visible;
     position: relative;
     z-index: 0;
@@ -224,7 +224,7 @@ p {
     transform: translateY(-5px);
     color: #333;
     box-shadow: .0rem .2rem .4rem #777;
-    border: 5px solid #ff8979;
+    outline: 5px solid #ff8979;
 }
 
 .backbtn {
@@ -244,7 +244,7 @@ p {
     transform: translateY(-5px);
     color: #333;
     box-shadow: .0rem .2rem .4rem #777;
-    border: 5px solid rgb(51, 122, 83);
+    outline: 5px solid rgb(51, 122, 83);
 }
 
 .contentsbtn {
@@ -264,7 +264,7 @@ p {
     transform: translateY(-5px);
     color: #333;
     box-shadow: .0rem .2rem .4rem #777;
-    border: 5px solid rgb(103, 232, 255);
+    outline: 5px solid rgb(103, 232, 255);
 }
 
 /* recording header */
