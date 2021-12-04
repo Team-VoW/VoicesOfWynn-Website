@@ -1,4 +1,4 @@
-/* chaos */
+/* styling for credits */
 
 body {
     background-image: url(../images/skyislands_credits.png);
@@ -45,6 +45,11 @@ a>.card:hover {
 	content: none;
     box-shadow: .2rem .2rem .7rem 0 #777;
     transform: translateY(3px);
+    pointer-events: visible;
+    position: relative;
+    z-index: 0;
+    visibility: visible;
+    float: none;
 }
 
 a:hover #roles {

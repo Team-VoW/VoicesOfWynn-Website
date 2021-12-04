@@ -2,45 +2,36 @@
 ----------------------------------------------
 
 1) Finish credits.css       -       Done
-2) Polish credits.css       -       Not finished
-3) Navigation improvments   -       Started
-4) Home improvements        -       Started
-5) Tidy up code             -       Not finished
-6) Contributers profile     -       Not finished
+2) Polish credits.css       -       Started
+3) Navigation improvments   -       Done
+4) Home improvements        -       Done
+5) Tidy up code             -       Done
+6) Contributers profile     -       Started
 7) Administration panels    -       Not finished
 8) Login                    -       Not finished
 9) Include dark mode        -       Not finished
+10) Improve mod contents    -       Started
 
 
 PLANS:
 ------
-Rather simplistic looking website cuz idk... might fit -
-shouldn't have a very complex design -
-colorcodes function as placeholders (easy to change later and i'm too lazy to decide on a colorpalette from the start) -
-look closer into animations -
-make it mostly Wynncraft styled -
+Center cards in credits
+Polish mod contents by making each quest a dropdown menu
+check why tf icons wont work... tried on my personal workspace, everything worked fine
 
 
 NOTES:
 ------
-if i continue to run into severe problems daily i might not have the mental power to continue
-i hope this doesnt severely fuck up my sleep schedule (that would really be great)
-i should maybe have a strict schedule as to when i do what
-i shall not touch php ever again :')
-might want to remove all unecesary comments
+might want to check on why apache sometimes refuses to start for a few minutes
 
 
 PROGRESS SORTED BY DAYS:
 ------------------------
 10/27 - meh 
 10/28 - decent i guess... i made some neat changes and kinda got more into the navigation
+10/31 to 12/3 - uh... I got the job :D    other than that, decent progress
 
 
 ~ Just5MoreMinutes
 
-[Note to self]: Work through halloween, progress wasnt too great today. cant work on the website tomorrow and on saturday - plans for 31st:
-                ~ take a look at all the public accessible pages and edit them
-                ~ if theres some time remaining, clean up code and remove unecesary comments
-                ~ after i edited all the publicly accessible files i will "wynncraftify" the page, as said colorcodes work as 
-                  placeholders right now
-                ~ if thats too much for the one day, split it into less necesary and more necesary, login is less important for example
+[Note to self]: want to finish website before christmas

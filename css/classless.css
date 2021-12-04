@@ -1,5 +1,3 @@
-/* :o */
-
 /* Classless.css v0.9
 
 Table of Contents:
@@ -26,21 +24,6 @@ body {
 	max-width: 50rem; 
 	padding: 2rem 0.5rem 0rem; 
 	overflow-x: hidden;
-	background: linear-gradient(-35deg, #FFD751, #DC9587, #B751BF, #A62FDB);
-    background-size: 400% 400%;
-    animation: bgmove 50s ease infinite;
-}
-
-@keyframes bgmove {
-    0% {
-        background-position: 0% 50%;
-    }
-    50% {
-        background-position: 100% 50%;
-    }
-    100% {
-        background-position: 0% 50%;
-    }
 }
 
 footer { margin: 10rem 0rem 0rem; }
@@ -48,15 +31,15 @@ footer { margin: 10rem 0rem 0rem; }
 
 /* text */
 :root { 
-	font: 13pt 'Open Sans', sans-serif; line-height: 1.5; color: #424456; 
+	font: 13pt 'Open Sherif', sans-serif; line-height: 1.5; color: #424456; 
 }
 small, sub, sup { font-size: 75%; }
-
 
 /* headings */
 h1, h2, h3, h4, h5, h6 { 
 	margin: 1.5em 0 0em; 
-	padding: 0.3em 0; 
+	padding: 0.3em 0;
+	font-family: 'Courier New', Courier, monospace;
 }
 h1 { font-size: 2.5em; font-weight: 300; }  
 h2 { font-size: 2.0em; font-weight: 300; } 
@@ -262,11 +245,7 @@ mark{ background-color: transparent; color: #007c30; text-decoration: underline 
 	border-radius: .3rem; 
 	box-shadow: .1rem .1rem .4rem 0 #777;
 	background: aliceblue;
-	flex: 3 0 21%;	/*very cool. makes it so cards dont stick over the edges!*/
-}
-
-.card div {
-	
+	flex: 3 0 21%;
 }
 
 #roles {
@@ -383,3 +362,9 @@ mark{ background-color: transparent; color: #007c30; text-decoration: underline 
 	[class*="col"] > * { margin-top: 1rem !important; }
 }
 @media (max-width: 61rem) { aside {position: relative; margin: 0.5rem 0; } }
+
+/* fonts */
+/* @font-face {
+	font-family: minecraft;
+	src: url(../fonts/minecraft_font.ttf);
+} */

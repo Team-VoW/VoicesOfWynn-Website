@@ -1,6 +1,13 @@
+/* stylign for Mod Contents */
+
 .npc-avatar {
     height: 64px;
     width: 64px;
+}
+
+.card {
+    max-width: 260px;
+    min-width: 260px;
 }
 .card ul {
     list-style: none;
@@ -11,4 +18,13 @@
 }
 .card ul li a {
     line-height: 64px;
+}
+h3 {
+    padding-top: 0;
+}
+
+.questInfo {
+    height: auto;
+    display: flex;
+    visibility: hidden;
 }

@@ -7,8 +7,10 @@
 			<div class="row">
 		<?php endif ?>
 			<div class="col-4">
+				
 				<div class="card">
 					<h3><?= $quest->getName(); ?></h3>
+					<div class="questInfo">
 					<hr>
 					<ul>
 						<?php foreach ($quest->getNpcs() as $npc) : ?>
@@ -18,6 +20,7 @@
 						</li>
 						<?php endforeach ?>
 					</ul>
+				</div>
 				</div>
 			</div>
 		<?php if (($i + 1) % 3 === 0) : ?>

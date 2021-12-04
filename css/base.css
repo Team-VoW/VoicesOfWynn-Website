@@ -1,4 +1,17 @@
-/* general v.1 */
+/* base css for vow */
+
+/* styling for all elements */
+/* Decided to adapt on Shady's idea of having a table of contents
+
+#### Contents ####
+    1) General styling
+    2) Specific styling
+    3) Other    
+*/
+
+/* ##################### */
+/*        general        */
+/*#######################*/
 body {
     background-image: url(../images/ragni_home.png);
     background-size: cover;
@@ -17,95 +30,10 @@ main {
     box-shadow: .2rem .2rem .7rem 0 #777;
 }
 
-/* navigation */
-
-.header0 {
-    float: left;
-    width: 100%;
-    height: auto;
-    flex-wrap: wrap;
-}
-
-.nav {
-    margin: auto;
-    padding-right: 312px;
-    float: left;
-    margin: 150px -50px 0 0;
-    width: auto;
-    padding-bottom: 90px;
-    padding-top: 15px;
-}
-
-.nav li {
-    float: left;
-    flex: 6 0 21%;
-    list-style: none;
-    text-decoration: none;
-}
-
-.nav li a {
-    float: left;
-    color: #333;
-    padding: 6px 20px;
-    text-decoration: none;
-    font-size: 18px;
-    border-radius: 4px;
-}
-
-.nav li a:hover {
-    background-color: #333;
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: .1rem .1rem .4rem 0 #777;
-}
-
-/* Below will MIGHT be used later. Login, Administration, My Account, Logout, Discord and Patreon will be found here */
-/* .dropdownbtn {
-    color: #333;
-    border: none;
-}
-
-.dropdown {
-    position: relative;
-    display: block;
-    padding-left: 0px;
-}
-
-.dropitems {
-    display: none;
-    position: absolute;
-    background-color: whitesmoke;
-    min-width: 160px;
-    box-shadow: .1rem .1rem .4rem 0 #777;
-}
-
-.dropitems a {
-    color: #333;
-    padding: 1px 1px;
-    text-decoration: none;
-    display: block;
-}
-
-.dropitems a:hover {
-    color: whitesmoke;
-    background-color: #333;
-}
-
-.dropdown:hover .dropitems {
-    display: block;
-}
-
-.dropdown:hover .dropdownbtn {
-    background-color: #333;
-    color: whitesmoke;
-} */
-
-/* general v.2 */
-
 h1, h2 {
+    font-family: 'Courier New', Courier, monospace;
     letter-spacing: 2px;
     font-weight: bold;
-    font-family: 'Courier New', Courier, monospace;
     text-decoration: none;
     text-align: center;
     font-style: italic;
@@ -116,20 +44,74 @@ p {
     font-style: italic;
 }
 
+iframe { border: 5px solid #fadb76; border-radius: 4px; width: 700px; height: 400px ;}
+
+button {
+    font-family: 'Courier New', Courier, monospace;
+    color: #333;
+    border-radius: 10px;
+    border: 5px solid transparent;
+    padding-top: 5px;
+    padding-bottom: 7px;
+    padding-right: 10px;
+    padding-left: 10px;
+    font-size: 20px;
+}
+
+button:hover {
+    transform: translateY(-5px);
+    color: #333;
+    box-shadow: .0rem .2rem .4rem #777;
+    pointer-events: visible;
+    position: relative;
+    z-index: 0;
+    visibility: visible;
+    float: none;
+}
+
+/* ##################### */
+/*       specific        */
+/*#######################*/
+
+/* navigation */
+.header0 {
+    float: left;
+    width: 100%;
+    height: auto;
+    flex-wrap: wrap;
+}
+.nav {
+    margin: auto;
+    padding-right: 312px;
+    float: left;
+    margin: 150px -50px 0 0;
+    width: auto;
+    padding-bottom: 90px;
+    padding-top: 15px;
+}
+.nav li {
+    float: left;
+    flex: 6 0 21%;
+    list-style: none;
+    text-decoration: none;
+}
+.nav li a {
+    float: left;
+    color: #333;
+    padding: 6px 20px;
+    text-decoration: none;
+    font-size: 18px;
+    border-radius: 4px;
+}
+.nav li a:hover {
+    background-color: #333;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: .1rem .1rem .4rem 0 #777;
+}
+
 /* logo */
-
-#logo {
-    float: right;
-    margin: -218px 10px 0px;
-}
-
-/* uuuh idk to be honest */
-
-#vowi {
-}
-
-/* magic :p */
-
+#logo { float: right; margin: -218px 10px 0px;}
 #vertical {
     margin: 133px 0px 0px 0;
     border-left: 2px solid #333;
@@ -138,136 +120,22 @@ p {
     left: 72%;
 }
 
-/* buttons :L */
+/* buttons */
+.downloadbtn { background: #FFD751; }
+.downloadbtn:hover { border-color: #fadb76; }
+.discordbtn { background: #5662F6;}
+.discordbtn:hover { border-color: #656ffd; }
+.creditsbtn { background: #AB5DFC; }
+.creditsbtn:hover { border-color:#b16afd; }
+.patreonbtn { background: #ff7866; }
+.patreonbtn:hover { border-color: #ff8979; }
+.backbtn { background: rgb(0, 107, 48); }
+.backbtn:hover { border-color: rgb(51, 122, 83); }
+.contentsbtn { background: rgb(21, 220, 255); }
+.contentsbtn:hover { border-color: rgb(103, 232, 255); }
 
-.downloadbtn {
-    font-family: 'Courier New', Courier, monospace;
-    color: #333;
-    background: #FFD751;
-    border-radius: 10px;
-    border: 5px solid transparent;
-    padding-top: 5px;
-    padding-bottom: 7px;
-    padding-right: 10px;
-    padding-left: 10px;
-    font-size: 20px;
-}
-
-.downloadbtn:hover {
-    transform: translateY(-5px);
-    background: #FFD751;
-    color: #333;
-    box-shadow: .0rem .2rem .4rem #777;
-    pointer-events: visible;
-    position: relative;
-    z-index: 0;
-    visibility: visible;
-    float: none;
-}
-
-.discordbtn {
-    font-family: 'Courier New', Courier, monospace;
-    color: #333;
-    background: #5662F6;
-    border-radius: 10px;
-    border: 5px solid transparent;
-    padding-top: 5px;
-    padding-bottom: 7px;
-    padding-right: 10px;
-    padding-left: 10px;
-    font-size: 20px;
-}
-
-.discordbtn:hover {
-    transform: translateY(-5px);
-    color: #333;
-    box-shadow: .0rem .2rem .4rem #777;
-    pointer-events: visible;
-    position: relative;
-    z-index: 0;
-    visibility: visible;
-    float: none;
-}
-
-.patreonbtn {
-    font-family: 'Courier New', Courier, monospace;
-    color: #333;
-    background: #ff7866;
-    border-radius: 10px;
-    border: 5px solid transparent;
-    padding-top: 5px;
-    padding-bottom: 7px;
-    padding-right: 10px;
-    padding-left: 10px;
-    font-size: 20px;
-}
-
-.patreonbtn:hover {
-    transform: translateY(-5px);
-    color: #333;
-    box-shadow: .0rem .2rem .4rem #777;
-    pointer-events: visible;
-    position: relative;
-    z-index: 0;
-    visibility: visible;
-    float: none;
-}
-
-.backbtn {
-    font-family: 'Courier New', Courier, monospace;
-    color: #333;
-    background: rgb(0, 107, 48);
-    border-radius: 10px;
-    border: 5px solid transparent;
-    padding-top: 5px;
-    padding-bottom: 7px;
-    padding-right: 10px;
-    padding-left: 10px;
-    font-size: 20px;
-}
-
-.backbtn:hover {
-    transform: translateY(-5px);
-    color: #333;
-    box-shadow: .0rem .2rem .4rem #777;
-    pointer-events: visible;
-    position: relative;
-    z-index: 0;
-    visibility: visible;
-    float: none;
-}
-
-.creditsbtn {
-    font-family: 'Courier New', Courier, monospace;
-    color: #333;
-    background: #AB5DFC;
-    border-radius: 10px;
-    border: 5px solid transparent;
-    padding-top: 5px;
-    padding-bottom: 7px;
-    padding-right: 10px;
-    padding-left: 10px;
-    font-size: 20px;
-  
-}
-
-.creditsbtn:hover {
-    transform: translateY(-5px);
-    color: #333;
-    box-shadow: .0rem .2rem .4rem #777;
-    border-color:#b16afd;
-    pointer-events: visible;
-    position: relative;
-    z-index: 0;
-    visibility: visible;
-    float: none;
-}
-
-/* recording header */
-
-.avatar0 {
-    padding-left: 200px;
-}
+/* recording & user profiles */
+.avatar0 { padding-left: 200px; }
 
 .bio {
     float: right;
@@ -275,17 +143,17 @@ p {
     margin-top: -120px;
 }
 
-#contributerimg {
-    max-width: 150px;
-    max-height: 150px;
-}
+#contributerimg { max-width: 150px; max-height: 150px; }
 
-.contact {
+.contact { }
 
-}
 
-/* iframe stuff */
+/* ##################### */
+/*         other         */
+/*#######################*/
 
-iframe {
-    
-}
+/* fonts */
+/* @font-face {
+    font-family: minecraft;
+    src: url(../fonts/minecraft_font.ttf);
+} */
