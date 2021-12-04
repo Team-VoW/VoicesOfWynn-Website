@@ -35,3 +35,4 @@ PROGRESS SORTED BY DAYS:
 ~ Just5MoreMinutes
 
 [Note to self]: want to finish website before christmas
+                !!important!! font is corrupted

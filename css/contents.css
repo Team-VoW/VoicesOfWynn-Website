@@ -1,4 +1,4 @@
-/* stylign for Mod Contents */
+/* styling for Mod Contents */
 
 .npc-avatar {
     height: 64px;
@@ -8,7 +8,29 @@
 .card {
     max-width: 260px;
     min-width: 260px;
+    max-height: none;
+    min-height: 200px;
+    background: aliceblue;
+    margin-left: auto;
+    margin-right: auto;
+    color: #424456;
+    text-align: center;
+    border: 0.25rem solid #DC9587;
+    align-items: center;
 }
+
+.card:hover {
+    cursor: default;
+	content: none;
+    box-shadow: .2rem .2rem .7rem 0 #777;
+    transform: translateY(3px);
+    pointer-events: visible;
+    position: relative;
+    z-index: 0;
+    visibility: visible;
+    float: none;
+}
+
 .card ul {
     list-style: none;
     padding-left: 0;
@@ -23,8 +45,5 @@ h3 {
     padding-top: 0;
 }
 
-.questInfo {
-    height: auto;
-    display: flex;
-    visibility: hidden;
-}
+#questInfo { display: none;}
+#npcvoice:hover #questInfo { display: block; }
