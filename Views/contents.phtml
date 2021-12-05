@@ -1,6 +1,13 @@
 <h1>Mod contents</h1>
 <p>There are a ton of NPCs in Wynncraft. Here you can find all that have been voiced including with all of their voice lines if you would just like to check out some npc's voice.</p>
 <br>
+<p>Looking for a quest in particular? Search it!<br></p>
+<input class="searchQuest" id="searchQ" 
+	   name="searchbar" 
+	   size="35" maxlenght="200"
+	   onkeyup="searchQuest()"
+	   type="text" placeholder="Search quest..."/>
+	   <!-- gonna get the stuff above working eventually... -->
 <div>
 	<?php for ($i = 0; $i < count(${basename(__FILE__, '.phtml').'_quests'}); $i++) : ?>
 		<?php $quest = ${basename(__FILE__, '.phtml').'_quests'}[$i]; ?>
@@ -10,8 +17,8 @@
 			<div class="col-4">
 				
 				<div class="card" id="npcvoice">
-					<h3><?= $quest->getName(); ?></h3>
-					<hr>
+					<h3 class="questName"><?= $quest->getName(); ?></h3>
+					
 					<ul id="questInfo">
 						<?php foreach ($quest->getNpcs() as $npc) : ?>
 						<li>

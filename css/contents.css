@@ -8,7 +8,7 @@
 .card {
     max-width: 260px;
     min-width: 260px;
-    max-height: none;
+    max-height: 200px;
     min-height: 200px;
     background: aliceblue;
     margin-left: auto;
@@ -20,6 +20,7 @@
 }
 
 .card:hover {
+    max-height: none;
     cursor: default;
 	content: none;
     box-shadow: .2rem .2rem .7rem 0 #777;
@@ -29,6 +30,10 @@
     z-index: 0;
     visibility: visible;
     float: none;
+}
+
+.card hr {
+    margin-top: 50px;
 }
 
 .card ul {
