@@ -52,3 +52,17 @@ h3 {
 
 #questInfo { display: none;}
 #npcvoice:hover #questInfo { display: block; }
+
+input {
+    border-bottom: 4px solid gray;
+    border-radius: 3px;
+    background: rgba(109, 109, 109, 0.13);
+    outline: none;
+}
+input:hover {
+    border-bottom: 4px solid gray;
+    border-radius: 3px;
+}
+textarea:focus, input:focus {
+    outline: none;
+}

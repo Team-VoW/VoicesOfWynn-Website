@@ -31,12 +31,11 @@ main {
 }
 
 h1, h2 {
-    font-family: 'Courier New', Courier, monospace;
+    font-family: minecraft;
     letter-spacing: 2px;
     font-weight: bold;
     text-decoration: none;
     text-align: center;
-    font-style: italic;
 }
 
 p {
@@ -47,7 +46,7 @@ p {
 iframe { border: 5px solid #fadb76; border-radius: 4px; width: 700px; height: 400px ;}
 
 button {
-    font-family: 'Courier New', Courier, monospace;
+    font-family: minecraft;
     color: #333;
     border-radius: 10px;
     border: 5px solid transparent;
@@ -56,6 +55,7 @@ button {
     padding-right: 10px;
     padding-left: 10px;
     font-size: 20px;
+    font-weight: lighter;
 }
 
 button:hover {
@@ -153,7 +153,7 @@ button:hover {
 /*#######################*/
 
 /* fonts */
-/* @font-face {
+@font-face {
     font-family: minecraft;
-    src: url(../fonts/minecraft_font.ttf);
-} */
+    src: url(../fonts/Minecraft.ttf);
+}
