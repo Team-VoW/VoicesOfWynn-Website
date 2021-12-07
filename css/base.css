@@ -110,6 +110,11 @@ button:hover {
     box-shadow: .1rem .1rem .4rem 0 #777;
 }
 
+.adminNav {
+    float: right;
+    padding-left: 800px;
+}
+
 /* logo */
 #logo { float: right; margin: -218px 10px 0px;}
 #vertical {
@@ -133,6 +138,12 @@ button:hover {
 .backbtn:hover { border-color: rgb(51, 122, 83); }
 .contentsbtn { background: rgb(21, 220, 255); }
 .contentsbtn:hover { border-color: rgb(103, 232, 255); }
+.loginbtn { background: rgb(69, 255, 153); }
+.loginbtn:hover { border-color: rgb(122, 255, 182); }
+.logoutbtn { background: rgb(255, 83, 83); }
+.logoutbtn:hover { border-color: rgb(255, 131, 131); }
+.adminbtn { background: rgb(255, 146, 45); }
+.adminbtn:hover { border-color: rgb(255, 176, 102); }
 
 /* recording & user profiles */
 .avatar0 { padding-left: 200px; }

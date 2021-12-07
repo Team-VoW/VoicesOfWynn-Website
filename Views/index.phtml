@@ -31,26 +31,23 @@ Tired of having to read dialogues when doing quests? Well, then this is the mod 
 <p style="text-align: center">Need some help? Our staff and community is always willing to help on our discord!<br>Want to report a bug or suggest a new feature? Feel free to do so on the discord!<br><br>
 <a href="/downloads"><button class="downloadbtn"><img src="images/download.png" alt="Download icon" width="20px" height="20px"/> How to download</button></a>
 </p><br><hr>
+
 <h2>Login</h2>
-<!--Below will be hidden a normal user that hasnt contributed (php will be added soon, i hope)
-<h2>Login</h2>
+
 <p style="text-align: center">You are a contributer? Make sure to log into your account!<br><br>
-<?php if (isset($_SESSION['user']) && $_SESSION['user']->isSysAdmin()) : ?><a href="/administration"><button class="adminbtn"> Administration </button></a><?php endif ?>
-<?php if (!isset($_SESSION['user'])) : ?><li><a href="/login"> Login </a></li><?php endif ?> 
-<?php if (isset($_SESSION['user'])) : ?><a href="/account"> My Account </a><?php endif ?>
-<?php if (isset($_SESSION['user'])) : ?><a href="/logout"> Logout </a><?php endif ?>
+<a href="/login"><button class="loginbtn"><img src="images/user.png" alt="login icon" width="20px" height="20px"/> Login</button></a>
+    <?php if (isset($_SESSION['user'])) : ?><a href="/logout">
+        <button class="logoutbtn">
+            <img src="images/user.png" 
+                 alt="logout" 
+                 width="20px" height="20px"/> Logout
+        </button></a>
+    <?php endif ?>
+    <?php if (isset($_SESSION['user']) && $_SESSION['user']->isSysAdmin()) : ?><a href="/administration">
+        <button class="adminbtn">Administration
+        </button></a><?php endif ?>
+    <?php if (isset($_SESSION['user'])) : ?><a href="/account">
+        <button class="adminbtn">My Account
+        </button></a><?php endif ?>
 </p>
-
-<!-- <p>Voices of Wynn is a mod that adds voices to NPCs in Wynncraft so that you don't have to read all the dialogues anymore.</p>
-
-<h2>- Download Voices Of Wynn!</h2>
-<p>You can download Voices Of Wynn here! This gives you full access to the features of the mod!</p>                                         Felt like adding this :) tell me if it doesnt fit          
-<br>
-<h2>- Get in touch with the community!</h2>
-<p>Have a chat with the community, give feedback, report bugs, get the latest news and share memes!</p>
-
-<a href="/downloads"><button>How to install</button></a>
-
-<p>Need any more help with the mod or found a bug? Get help and/or report it in our official discord server!</p>
-</div> -->
 </div>
