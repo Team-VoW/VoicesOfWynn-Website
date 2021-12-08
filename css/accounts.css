@@ -3,3 +3,9 @@
 }
 
 #userinfo { font-style: italic; }
+
+body { width: 100%; }
+main {
+    width: 2500px;
+    margin-left: -800px;
+}
