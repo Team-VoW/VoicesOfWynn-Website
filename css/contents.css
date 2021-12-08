@@ -56,7 +56,7 @@ h3 {
 input {
     border-bottom: 4px solid gray;
     border-radius: 3px;
-    background: rgba(109, 109, 109, 0.13);
+    background: rgba(168, 168, 168, 0.13);
     outline: none;
 }
 input:hover {

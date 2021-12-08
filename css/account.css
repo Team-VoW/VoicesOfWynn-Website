@@ -1,7 +1,19 @@
-/* dont seem to be having access to this page on preview */
-/* edit later */
-
 #avatar-preview {
     width: 128px;
     height: 128px;
 }
+
+input {
+    border-bottom: 4px solid gray;
+    border-radius: 3px;
+    background: rgba(109, 109, 109, 0.13);
+    outline: none;
+}
+input:hover {
+    border-bottom: 4px solid gray;
+    border-radius: 3px;
+}
+textarea:focus, input:focus {
+    outline: none;
+}
+#name:focus { outline: none; }

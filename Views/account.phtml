@@ -32,13 +32,18 @@
                 <input id="avatar-input" name="avatar" type="file" accept="image/png,image/jpeg"/>
             </td>
         </tr>
-        <tr>
-            <td>Titles</td>
-            <td>
+        <tr class="yourAccInfo">
+            <td style="font-style: italic;">Titles</td>
+            <td class="rolesAccView">
                 <?php foreach (${basename(__FILE__, '.phtml').'_roles'} as $role) : ?>
-                    <div style="color:#<?= $role->color ?>; border-width: 1px; border-color: #<?= $role->color
-                    ?>; border-radius: 1rem; border-style: solid; padding: 5px; text-align: center; display:unset;">
-                        <?= $role->name ?></div>
+                    <div class="acc0" style="color:#<?= $role->color ?>; 
+                                        border-width: 1px; 
+                                        border-color: #<?= $role->color?>; 
+                                        border-radius: 1rem; 
+                                        border-style: solid; padding: 5px; 
+                                        text-align: center; display:inline-box;
+                                        max-width:150px;">
+                        <?= $role->name ?></div><br>
                 <?php endforeach ?>
             </td>
         </tr>
@@ -47,7 +52,7 @@
             <td><textarea name="bio" id="bio"><?= ${basename(__FILE__, '.phtml').'_bio'} ?></textarea></td>
         </tr>
         <tr>
-            <td colspan="2"><input type="submit" value="Save"></td>
+            <td colspan="2"><input type="submit" value="Save" size="30"></td>
         </tr>
     </table>
 </form>

@@ -56,15 +56,16 @@ dt { font-weight: bold; }
 
 
 /* tables */
-td, th {
+/* td, th {
   padding: 0.5rem 1.5rem;
   text-align: right;
   border-bottom: 0.1rem solid #d1d1d1;
   white-space: nowrap;
 }
 td:first-child, th:first-child { padding-left:  0; text-align: left; }
-td:last-child,  th:last-child  { padding-right: 0; }
+td:last-child,  th:last-child  { padding-right: 0; } */
 tr:hover{ background-color: #f4f5f6; }
+table {border-spacing: 30px;}
 
 
 /* figures */
@@ -105,6 +106,10 @@ textarea, input, button, select { /*border-radius: .3rem; border: .1rem solid #d
 	border: .1rem solid #0065bd; 
 } */
 
+input { border-right: none; border-left: none; border-top: none; }
+textarea:focus, input:focus { outline: none; }
+textarea {resize: none; width: 600px; height: 250px; border-right: none; border-left: none; border-top: none;}
+label {font-style: italic;}
 
 /* misc */
 blockquote{ border-left: 0.3rem solid #d1d1d1; padding: 1rem 1.5rem; }
@@ -171,9 +176,13 @@ nav+main, nav+header { margin-top: 3rem; }
 fieldset { border-radius: 0rem; border: .1rem solid #d1d1d1; }
 textarea:focus, input:not([type=checkbox]):not([type=radio]):hover, select:hover{
   border: 4px solid rgb(30, 128, 0);
+  border-right: none; border-left: none; border-top: none;
+  outline: none;
+  background: rgba(168, 168, 168, 0.13);
 }
 textarea:focus, input:not([type=checkbox]):not([type=radio]):focus{
 	border-bottom: 4px solid rgb(30, 128, 0);
+	outline: none;
 }
 button[disabled]{ color: #777; border-color: #d1d1d1; }
 

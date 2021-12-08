@@ -18,6 +18,7 @@ PLANS:
 Center cards in credits
 Polish mod contents by making each quest a dropdown menu
 check why tf icons wont work... tried on my personal workspace, everything worked fine
+overlapping problem still is quite annoying in /credits and /contents
 
 
 NOTES:
@@ -30,9 +31,9 @@ PROGRESS SORTED BY DAYS:
 10/27 - meh 
 10/28 - decent i guess... i made some neat changes and kinda got more into the navigation
 10/31 to 12/3 - uh... I got the job :D    other than that, decent progress
+12/7 - good progress, started work on login and Administration, got the font to work
 
 
 ~ Just5MoreMinutes
 
 [Note to self]: want to finish website before christmas
-                !!important!! font is corrupted

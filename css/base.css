@@ -145,6 +145,10 @@ button:hover {
 .adminbtn { background: rgb(255, 146, 45); }
 .adminbtn:hover { border-color: rgb(255, 176, 102); }
 
+/* href */
+a { color: #3a46f5; }
+a:hover { background: #6670ff5b; padding: 1.5px; border-radius: 2px;}
+
 /* recording & user profiles */
 .avatar0 { padding-left: 200px; }
 
@@ -157,6 +161,24 @@ button:hover {
 #contributerimg { max-width: 150px; max-height: 150px; }
 
 .contact { }
+
+/* login */
+input {
+    border-bottom: 4px solid gray;
+    border-radius: 3px;
+    background: rgba(109, 109, 109, 0.13);
+    outline: none;
+}
+input:hover {
+    border-bottom: 4px solid gray;
+    border-radius: 3px;
+}
+textarea:focus, input:focus {
+    outline: none;
+}
+#name:focus { outline: none; }
+
+/* administration */
 
 
 /* ##################### */

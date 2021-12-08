@@ -16,10 +16,10 @@
     </tr>
     <?php foreach (${basename(__FILE__, '.phtml').'_accounts'} as $user) : ?>
         <tr data-user-id="<?= $user->getId() ?>">
-            <td><?= $user->getId() ?></td>
+            <td id="userinfo"><?= $user->getId() ?></td>
             <td><img class="avatar" src="dynamic/avatars/<?= $user->getAvatarLink() ?>" alt="Profile picture"/></td>
-            <td><?= $user->getName() ?></td>
-            <td style="text-align: left;"><?= nl2br($user->getBio()) ?></td>
+            <td id="userinfo"><?= $user->getName() ?></td>
+            <td id="userinfo" style="text-align: left;"><?= nl2br($user->getBio()) ?></td>
             <td>
                 <a href="administration/accounts/<?= $user->getId() ?>/clear-bio">Clear Bio</a><br>
                 <a href="administration/accounts/<?= $user->getId() ?>/clear-avatar">Clear Avatar</a><br>
@@ -38,4 +38,3 @@
         </tr>
     <?php endforeach ?>
 </table>
-

@@ -1,6 +1,5 @@
-/* dont seem to having access to this page on preview... again */
-/* edit later */
-
 .delete-account-link {
     color:red;
 }
+
+#userinfo { font-style: italic; }
