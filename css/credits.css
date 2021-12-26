@@ -77,3 +77,9 @@ hr {
     font-family: minecraft;
     src: url(../fonts/Minecraft.ttf);
 }
+
+@media (max-width: 1000px) {
+    .card {
+        width: 100%;
+    }
+}

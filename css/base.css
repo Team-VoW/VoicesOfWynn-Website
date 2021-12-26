@@ -45,7 +45,7 @@ p {
 
 iframe { border: 5px solid #fadb76; border-radius: 4px; /*width: 65vw; height: 23vh ;*/}
 
-button {
+button:not([class^=contactbtn]) {
     font-family: minecraft;
     color: #333;
     border-radius: 10px;
@@ -58,7 +58,7 @@ button {
     font-weight: lighter;
 }
 
-button:hover {
+button:not([class^=contactbtn]):hover {
     transform: translateY(-5px);
     color: #333;
     box-shadow: .0rem .2rem .4rem #777;
@@ -109,7 +109,6 @@ button:hover {
     transform: translateY(-2px);
     box-shadow: .1rem .1rem .4rem 0 #777;
 }
-
 .adminNav {
     float: right;
     padding-left: 800px;
@@ -144,6 +143,7 @@ button:hover {
 .logoutbtn:hover { border-color: rgb(255, 131, 131); }
 .adminbtn { background: rgb(255, 146, 45); }
 .adminbtn:hover { border-color: rgb(255, 176, 102); }
+.contactbtn { background: none; border: none;}
 
 /* href */
 a { color: #3a46f5; }
@@ -206,39 +206,22 @@ textarea:focus, input:focus {
     /* below mainly focuses on removing the navigation
     bar which will only be available on full sitze screens
     (laptop, desktop, tablet/ipad maybe */
-    main {
-        z-index: -1;
-    }
-    img {
-        overflow: hidden;
-        z-index: 0;
-    }
-    .logo {
-        margin-top: -15vh;
-    }
-    #vertical {
-        visibility: hidden;
-        overflow: hidden;
-    }
-    .nav {
-        display: none;
-    }
-    .nav li {
-        display: none;
-        overflow: hidden;
-    }
-    /* li {
-        z-index: -1;
-        display: none;
-    } */
+    main, li {z-index: -1;}
+    img, a, a:hover, 
+    a.imglink:hover, 
+    img.logo:hover {z-index: 0;}
+    img, #vertical, .nav li {overflow: hidden;}
+    .nav, .nav li, li,
+    .bio .bio0 {display: none;}
+    .logo {margin-top: -15vh;}
+    #vertical {visibility: hidden;}
     img.logo {                          /* on some mobile devices the image appears */
         display: block;                 /* stretched. couldnt find a solution for that :( */
-        margin-left: auto;
+        margin-left: auto;              /* apple acting up again... */
         margin-right: auto;
         width: 50%;
     }
     a {
-       z-index: 0;
        color: none;
        background: none;
        border-radius: none;
@@ -246,19 +229,17 @@ textarea:focus, input:focus {
     a:hover {
         pointer-events: visible;
         position: relative;
-        z-index: 0;
         float: none;
     }
     a.imglink:hover, img.logo:hover {
         pointer-events: visible;
         position: relative;
-        z-index: 0;
         visibility: visible;
         float: none;
     }
-    /* iframe {
-        
-    } */
+    .avatar0 p {text-align:left;}
+    .contact {}
+
 }
 /* #### LAPTOPS #### */
 /* mini laptops */

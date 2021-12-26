@@ -2,14 +2,21 @@
 <h1>~ <?= $voiceActor->getName(); ?> ~</h1>
 <br>
 <div class="avatar0">
-<img id="contributerimg" src="dynamic/avatars/<?= $voiceActor->getAvatarLink() ?>" alt="Voice actor's avatar">
+<p>
+
+</p>
 </div>
 <div class="bio">
 <section>
-<?php if (!empty($voiceActor->getEmail()) && $voiceActor->hasPublicEmail()) : ?>
-<a class="contact" href="mailto:<?= $voiceActor->getEmail() ?>"><button class="contactbtn">Contact</button></a>
-<?php endif ?>
-<article><?= $voiceActor->getBio(); ?></article>
+<?php 
+    if (!empty($voiceActor->getEmail()) && $voiceActor->hasPublicEmail()) {
+        include('1.html');
+    }
+    else {
+        include('2.html');
+    }
+?>
+<article class="bio0"><?= $voiceActor->getBio(); ?></article>
 </section>
 </div>
 
