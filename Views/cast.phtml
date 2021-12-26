@@ -9,12 +9,12 @@
 <?php if (!empty($voiceActor->getEmail()) && $voiceActor->hasPublicEmail()) : ?>
 <a class="contact" href="mailto:<?= $voiceActor->getEmail() ?>"><button class="contactbtn">Contact</button></a>
 <?php endif ?>
-<article><?= $voiceActor->getBio(); ?>6</article>
+<article><?= $voiceActor->getBio(); ?></article>
 </section>
 </div>
 
 <?php if (count(${basename(__FILE__, '.phtml').'_quest_recordings'}) === 0) : ?>
-<i>This contributor didn't submit any recordings.</i>
+<i style="color: rgb(255, 83, 83);">This contributor didn't submit any recordings.</i>
 <?php else : ?>
 <h3>Recordings</h3>
 <?php endif ?>
