@@ -148,6 +148,7 @@ button:not([class^=contactbtn]):hover {
     border: none; 
     max-width: 10vh;
 max-height: 10vh;}
+.contactbtn:hover { cursor: pointer; }
 
 /* href */
 a { color: #3a46f5; }
@@ -162,9 +163,9 @@ a:hover { background: #6670ff5b; border-radius: 2px;}
     font-style: italic;
 }
 #contributerimg { max-width: 10vh; max-height: 10vh; border-radius: 4px;}
-#contributerimg a:hover { background: none; }
+#contributerimg a:hover { background: none; cursor: pointer;}
 .contact { margin-left: 100px; }
-.contact:hover { background: none; }
+.contact:hover { background: none; cursor: pointer; }
 
 /* login */
 input {
