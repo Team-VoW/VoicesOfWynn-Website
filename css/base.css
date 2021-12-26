@@ -115,7 +115,7 @@ button:not([class^=contactbtn]):hover {
 }
 
 /* logo */
-
+.header0 .imglink:hover { background: none; }
 #vertical {
     margin: 133px 0px 0px 0;
     border-left: 2px solid #333;
@@ -143,7 +143,11 @@ button:not([class^=contactbtn]):hover {
 .logoutbtn:hover { border-color: rgb(255, 131, 131); }
 .adminbtn { background: rgb(255, 146, 45); }
 .adminbtn:hover { border-color: rgb(255, 176, 102); }
-.contactbtn { background: none; border: none;}
+.contactbtn { 
+    background: none; 
+    border: none; 
+    max-width: 10vh;
+max-height: 10vh;}
 
 /* href */
 a { color: #3a46f5; }
@@ -151,19 +155,16 @@ a:hover { background: #6670ff5b; border-radius: 2px;}
 
 /* recording & user profiles */
 .avatar0 { padding-left: 200px; }
-
 .bio {
     float: right;
     padding-left: 350px;
     margin-top: -135px;
     font-style: italic;
 }
-
 #contributerimg { max-width: 10vh; max-height: 10vh; border-radius: 4px;}
-
-.contact {
-    margin-left: 100px;
-}
+#contributerimg a:hover { background: none; }
+.contact { margin-left: 100px; }
+.contact:hover { background: none; }
 
 /* login */
 input {
@@ -241,8 +242,16 @@ textarea:focus, input:focus {
     .contact {}
 
 }
-/* #### LAPTOPS #### */
-/* mini laptops */
-@media (max-width: 1280px) {
 
+@media (min-width: 1000px) {
+    .imglink { 
+        float:right; 
+        margin-top: -10vh;
+    }
+    a.imglink{
+        display: block;
+        height: 200px;
+        width: 200px;
+        z-index: 0;
+    }
 }
