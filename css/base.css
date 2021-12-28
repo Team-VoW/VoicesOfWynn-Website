@@ -209,19 +209,14 @@ textarea:focus, input:focus {
     bar which will only be available on full sitze screens
     (laptop, desktop, tablet/ipad maybe */
     main, li {z-index: -1;}
-    img, a, a:hover, 
-    a.imglink:hover, 
-    img.logo:hover {z-index: 0;}
-    img, #vertical, .nav li {overflow: hidden;}
+    #vertical, .nav li {overflow: hidden;}
     .nav, .nav li, li,
     .bio .bio0 {display: none;}
-    .logo {margin-top: -15vh;}
     #vertical {visibility: hidden;}
-    img.logo {                          /* on some mobile devices the image appears */
-        display: block;                 /* stretched. couldnt find a solution for that :( */
-        margin-left: auto;              /* apple acting up again... */
-        margin-right: auto;
-        width: 50%;
+    img.logo {                          
+        display: block;
+        margin-left: auto;
+        margin-right: 93px;
     }
     a {
        color: none;
@@ -231,12 +226,6 @@ textarea:focus, input:focus {
     a:hover {
         pointer-events: visible;
         position: relative;
-        float: none;
-    }
-    a.imglink:hover, img.logo:hover {
-        pointer-events: visible;
-        position: relative;
-        visibility: visible;
         float: none;
     }
     .avatar0 p {text-align:left;}
