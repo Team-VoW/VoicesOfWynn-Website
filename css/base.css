@@ -6,7 +6,7 @@
 #### Contents ####
     1) General styling
     2) Specific styling
-    3) Other    
+    3) Screen res
 */
 
 /* ##################### */
@@ -255,17 +255,17 @@ textarea:focus, input:focus {
         z-index: 0;
     }
 }
-@media (max-width: 1950px) {
-    .logo {
-        margin-top: -110px;
-        margin-left: -15px;
-    }
+@media (max-width: 1210px) {
     #vertical {
-        margin: 133px 0px 0px 0;
+        margin: 138px 0px 0px 0;
         border-left: 2px solid #333;
-        height: 9vh;
+        height: 5vh;
         position: relative;
         left: 72%;
+    }
+    .logo {
+        margin-top: -30px;
+        margin-right: 15px;
     }
 }
 @media (max-width: 1300px) {
@@ -289,12 +289,22 @@ textarea:focus, input:focus {
             position: relative;
             left: 72%;
         }
+        @media (height: 950px) {
+            .logo {
+                float: right;
+                margin-top: -125px;
+                margin-right: 15px;
+            }
+            #vertical {
+                margin: 138px 0px 0px 0;
+                border-left: 2px solid #333;
+                height: 10vh;
+                position: relative;
+                left: 72%;
+            }
+        }
     }
 }
-/* NOTE TO SELF: All of the @media rulesets could be easily
-changed so they dont occupy this many lines, however this
-would make everything harder to read (see the first few 
-lines of mobile)! */
 @media (min-width: 1400px) {
     #vertical {
         margin: 130px 0px 0px 0;
@@ -307,23 +317,45 @@ lines of mobile)! */
         margin-top: -130px;
         margin-right: 10px;
     }
-    @media (max-width: 1200px) {
+}
+@media (min-width: 1900px) {
+    .logo {
+        margin-top: -110px;
+        margin-left: -15px;
+    }
+    @media (max-width: 1950px) {
+        .logo {
+            margin-top: -110px;
+            margin-left: -15px;
+        }
         #vertical {
-            margin: 138px 0px 0px 0;
+            margin: 133px 0px 0px 0;
             border-left: 2px solid #333;
-            height: 6vh;
+            height: 9vh;
             position: relative;
             left: 72%;
         }
-        .logo {
-            margin-top: -40px;
-            margin-right: 15px;
-        }
     }
 }
-@media (min-width: 2500px) {
+/* NOTE TO SELF: All of the @media rulesets could be easily
+changed so they dont occupy this many lines, however this
+would make everything harder to read (see the first few 
+lines of mobile)! */
+@media (max-width: 2900px) {
     .logo {
-        margin-top: -75px;
-        margin-right: 0px;
+        /*  */
+    }
+    @media (min-width: 2500px) {
+        .logo {
+            margin-top: -80px;
+            margin-left: -15px;
+        }
+        #vertical {
+            margin: 133px 0px 0px 0;
+            border-left: 2px solid #333;
+            height: 9vh;
+            position: relative;
+            left: 72%;
+        }
     }
 }
