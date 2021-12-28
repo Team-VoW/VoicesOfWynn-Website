@@ -200,7 +200,7 @@ textarea:focus, input:focus {
 }
 
 /* ######################## */
-/*        screen res        */
+/*        responsive        */
 /* ######################## */
 
 /* #### MOBILE ####*/
@@ -292,10 +292,10 @@ textarea:focus, input:focus {
     }
 }
 /* NOTE TO SELF: All of the @media rulesets could be easily
-changes so they dont occupy this many lines, however this
+changed so they dont occupy this many lines, however this
 would make everything harder to read (see the first few 
 lines of mobile)! */
-@media (max-width: 1450px) {
+@media (min-width: 1400px) {
     #vertical {
         margin: 130px 0px 0px 0;
         border-left: 2px solid #333;
@@ -306,5 +306,24 @@ lines of mobile)! */
     .logo {
         margin-top: -130px;
         margin-right: 10px;
+    }
+    @media (max-width: 1200px) {
+        #vertical {
+            margin: 138px 0px 0px 0;
+            border-left: 2px solid #333;
+            height: 6vh;
+            position: relative;
+            left: 72%;
+        }
+        .logo {
+            margin-top: -40px;
+            margin-right: 15px;
+        }
+    }
+}
+@media (min-width: 2500px) {
+    .logo {
+        margin-top: -75px;
+        margin-right: 0px;
     }
 }
