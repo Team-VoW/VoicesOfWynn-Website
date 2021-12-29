@@ -15,3 +15,9 @@ main {
         margin-left: -40vh;
     }
 }
+@media (max-width: 1210px) {
+    main {
+        width: 180vh;
+        margin-left: -30vh;
+    }
+}

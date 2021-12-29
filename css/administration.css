@@ -46,3 +46,11 @@ td th {
         border-spacing: 5px;
     }
 }
+@media (max-width: 1210px) {
+    td th {
+        padding-right: 0px;
+    }
+    table {
+        border-spacing: 5px;
+    }
+}

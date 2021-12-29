@@ -149,6 +149,8 @@ button:not([class^=contactbtn]):hover {
     max-width: 10vh;
 max-height: 10vh;}
 .contactbtn:hover { cursor: pointer; }
+.faqbtn { background: rgb(47, 104, 0); }
+.faqbtn:hover { border-color: rgb(56, 99, 22); }
 
 /* href */
 a { color: #3a46f5; }
@@ -232,7 +234,7 @@ textarea:focus, input:focus {
     .contact {}
 
 }
-@media (min-width: 1000px) {
+@media (min-width: 1001px) {
     .imglink { 
         float:right; 
         margin-top: -10vh;
@@ -242,6 +244,9 @@ textarea:focus, input:focus {
         height: 200px;
         width: 200px;
         z-index: 0;
+    }
+    .mobilenav {
+        display: none;
     }
 }
 @media (max-width: 1210px) {
@@ -287,10 +292,23 @@ textarea:focus, input:focus {
             #vertical {
                 margin: 138px 0px 0px 0;
                 border-left: 2px solid #333;
-                height: 10vh;
+                height: 13vh;
                 position: relative;
                 left: 72%;
             }
+        }
+    }
+    @media (min-width: 1310px) {
+        .logo {
+            margin-top: -130px;
+            margin-right: 15px;
+        }
+        #vertical {
+            margin: 138px 0px 0px 0;
+            border-left: 2px solid #333;
+            height: 10vh;
+            position: relative;
+            left: 72%;
         }
     }
 }
@@ -347,4 +365,8 @@ lines of mobile)! */
             left: 72%;
         }
     }
+}
+
+.creditsbtn {
+    font-size: ;
 }
