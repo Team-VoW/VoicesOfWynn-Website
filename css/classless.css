@@ -211,7 +211,7 @@ mark{ background-color: transparent; color: #007c30; text-decoration: underline 
 }
 
 .row [class*="col"] { 
-	padding: 0 0.5rem;
+	padding-left: 10px;
 }
 
 .row .col   { 
@@ -238,7 +238,6 @@ mark{ background-color: transparent; color: #007c30; text-decoration: underline 
 .row .col-6 { 
 	flex: 0 0 50%; 
 }
-
  /* cards */
 .card {
 	cursor: default;
@@ -254,20 +253,34 @@ mark{ background-color: transparent; color: #007c30; text-decoration: underline 
 	box-shadow: .1rem .1rem .4rem 0 #777;
 	background: aliceblue;
 	flex: 3 0 21%;
-	z-index: 3;
+	overflow: hidden;
+	z-index: 0;
+	position: relative;
+	min-width: 200px;
+	max-width: 200px;
 }
 
-#roles {
+.roles {
 	cursor: default;
 	display: none;
 	text-align: left;
 	overflow: hidden;
+	z-index: 0;
+	animation-name: rolessmooth;
+    animation-duration: 5s;
 }
 
-#roles a.card:hover {
+.roles a.card:hover {
 	cursor: default;
 	display: block;
 	overflow: visible;
+	z-index: 1;
+	animation-name: rolessmooth;
+    animation-duration: 5s;
+}
+.card:hover + .roles  {
+    animation-name: rolessmooth;
+    animation-duration: 5s;
 }
 
 .avatar {
@@ -277,6 +290,8 @@ mark{ background-color: transparent; color: #007c30; text-decoration: underline 
 #profile:hover {
 	color: #A62FDB;
 	cursor: pointer;
+	animation-name: rolessmooth;
+    animation-duration: 5s;
 }
 
 /* align */
@@ -376,4 +391,22 @@ mark{ background-color: transparent; color: #007c30; text-decoration: underline 
 @font-face {
 	font-family: minecraft;
 	src: url(../fonts/Minecraft.ttf);
+}
+
+@keyframes rolessmooth {
+    0% {
+        top: 0%;
+    }
+    25% {
+        top: 25%;
+    }
+    50% {
+        top: 50%;
+    }
+    75% {
+        top: 75%;
+    }
+    100% {
+        top: 100%;
+    }
 }

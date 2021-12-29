@@ -147,7 +147,8 @@ button:not([class^=contactbtn]):hover {
     background: none; 
     border: none; 
     max-width: 10vh;
-max-height: 10vh;}
+max-height: 10vh;
+float: left;}
 .contactbtn:hover { cursor: pointer; }
 .faqbtn { background: rgb(47, 104, 0); }
 .faqbtn:hover { border-color: rgb(56, 99, 22); }
@@ -157,17 +158,17 @@ a { color: #3a46f5; }
 a:hover { background: #6670ff5b; border-radius: 2px;}
 
 /* recording & user profiles */
-.avatar0 { padding-left: 200px; }
+/* .avatar0 { padding-left: 200px; float: left;}
 .bio {
     float: right;
     padding-left: 350px;
     margin-top: -135px;
     font-style: italic;
 }
-#contributerimg { max-width: 10vh; max-height: 10vh; border-radius: 4px;}
+#contributerimg { max-width: 10vh; max-height: 10vh; border-radius: 4px; float: left;}
 #contributerimg a:hover { background: none; cursor: pointer;}
 .contact { margin-left: 100px; }
-.contact:hover { background: none; cursor: pointer; }
+.contact:hover { background: none; cursor: pointer; } */
 
 /* login */
 input {
@@ -365,8 +366,4 @@ lines of mobile)! */
             left: 72%;
         }
     }
-}
-
-.creditsbtn {
-    font-size: ;
 }

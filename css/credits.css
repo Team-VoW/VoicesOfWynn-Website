@@ -1,5 +1,4 @@
 /* styling for credits */
-
 body {
     background-image: url(../images/skyislands_credits.png);
     background-size: cover;
@@ -20,7 +19,9 @@ h1, h2 {
     font-family: minecraft;
     text-decoration: none;
     text-align: center;
+    overflow: hidden;
 }
+hr { overflow: hidden; }
 
 p {
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
@@ -38,6 +39,7 @@ a>.card {
     color: #424456;
     text-align: center;
     border: 0.25rem solid #DC9587;
+    z-index: 0;
 }
 
 a>.card:hover {
@@ -47,16 +49,34 @@ a>.card:hover {
     transform: translateY(3px);
     pointer-events: visible;
     position: relative;
-    z-index: 3;
+    z-index: 11;
     visibility: visible;
     float: none;
+    overflow: hidden;
+    z-index: 1;
 }
 
-a:hover #roles {
+.card:hover + .roles {
+    animation-name: rolessmooth;
+    animation-duration: 5s;
+}
+
+a:hover .roles {
     display: block;
     cursor: default;
+    z-index: 1;
+    animation-name: rolessmooth;
+    animation-duration: 5s;
 }
+/* .card:first-child:hover {
+    animation-name: rolessmooth;
+    animation-duration: 5s;
+} */
 
+.card:hover > .row + .roles {
+        animation-name: rolessmooth;
+        animation-duration: 5s;
+}
 
 li {
     display: inherit;
@@ -71,7 +91,7 @@ hr {
     overflow: hidden;
 }
 
-.row, .col-3, .card { z-index: 3; }
+.row, .col-3, .card { z-index: 11; }
 
 @font-face {
     font-family: minecraft;
@@ -83,3 +103,34 @@ hr {
         width: 100%;
     }
 }
+
+@keyframes rolessmooth {
+    0% {
+        top: 0%;
+    }
+    25% {
+        top: 25%;
+    }
+    50% {
+        top: 50%;
+    }
+    75% {
+        top: 75%;
+    }
+    100% {
+        top: 100%;
+    }
+}
+
+.avatar0 {float: left; margin-top: -50px;}
+.bio {
+    float: right;
+    /* padding-left: 350px;
+    margin-top: -135px; */
+    font-style: italic;
+}
+#contributerimg { max-width: 10vh; max-height: 10vh; border-radius: 4px; margin-top: -10vh;}
+#contributerimg a:hover { background: none; cursor: pointer;}
+/* .contact { margin-left: 100px; } */
+.contact:hover { background: none; cursor: pointer; }
+.bio0 { float: right; }

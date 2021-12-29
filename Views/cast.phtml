@@ -1,5 +1,5 @@
 <?php $voiceActor = ${basename(__FILE__, '.phtml').'_voice_actor'}; ?>
-<h1>~ <?= $voiceActor->getName(); ?> ~</h1>
+<h1><?= $voiceActor->getName(); ?></h1>
 <br>
 <div class="avatar0">
 <p>
@@ -10,7 +10,6 @@
 <section>
 
 <?php if (!empty($voiceActor->getEmail()) && $voiceActor->hasPublicEmail()) : ?>
-    <code>
     <a class="contact" href="mailto:<?= $voiceActor->getEmail() ?>">
         <button class="contactbtn">
             <img id="contributerimg" src="dynamic/avatars/<?= $voiceActor->getAvatarLink() ?>" 
@@ -19,14 +18,11 @@
                         max-height: 10vh;">
         </button>
     </a>
-    </code>
 <?php else : ?>
-<code>
     <img id="contributerimg" src="dynamic/avatars/<?= $voiceActor->getAvatarLink() ?>" 
              alt="Voice actor's avatar" 
              style="max-width: 10vh; 
                     max-height: 10vh;">
-</code>
 <?php endif ?>
 
 <article class="bio0"><?= $voiceActor->getBio(); ?></article>

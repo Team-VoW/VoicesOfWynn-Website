@@ -21,7 +21,7 @@
 				<?php if (!empty($contributor->getLore())) : ?>
 				<i><?= $contributor->getLore() ?></i>
 				<?php endif ?>
-				<ul id="roles">
+				<ul class="roles">
 					<?php foreach ($contributor->getRoles() as $role) : ?>
 					<li style="color:#<?= $role->color ?>;"><?= $role->name ?></li>
 					<?php endforeach ?>
