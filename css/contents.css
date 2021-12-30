@@ -6,17 +6,54 @@
 }
 
 .card {
-    max-width: 260px;
-    min-width: 260px;
-    max-height: 200px;
-    min-height: 200px;
-    background: aliceblue;
+	cursor: default;
+	align-items: center;
+	text-align: center;
+	display: inline-block;
+	width: auto;
+	font-family: Georgia, 'Times New Roman', Times, serif;
+	margin: .5rem 0;
+	border: 0.25rem solid #6B5641;
+	padding: .5rem 1rem 0.5rem; 
+	border-radius: .3rem; 
+	box-shadow: .1rem .1rem .4rem 0 #777;
+	background: aliceblue;
+	flex: 3 0 21%;
+	overflow: hidden;
+	z-index: 2;
+	position: absolute;
+	max-height: fit-content;
+	min-width: calc(50rem / 3 - 0.5rem - 1rem);
+	max-width: calc(50rem / 3 - 0.5rem - 1rem);
+}
+
+a>.card {
     margin-left: auto;
     margin-right: auto;
+    background: aliceblue;
     color: #424456;
     text-align: center;
     border: 0.25rem solid #DC9587;
-    align-items: center;
+    z-index: 2;
+}
+
+a>.card:hover {
+    cursor: default;
+	content: none;
+    box-shadow: .2rem .2rem .7rem 0 #777;
+    transform: translateY(3px);
+    pointer-events: visible;
+    position: relative;
+    z-index: 3;
+    visibility: visible;
+    float: none;
+    overflow: hidden;
+    z-index: 15;
+}
+
+.cardwrapper {
+    height: 400px;
+    width: calc(50rem / 3);
 }
 
 .card:hover {

@@ -39,7 +39,7 @@ a>.card {
     color: #424456;
     text-align: center;
     border: 0.25rem solid #DC9587;
-    z-index: 0;
+    z-index: 2;
 }
 
 a>.card:hover {
@@ -49,16 +49,21 @@ a>.card:hover {
     transform: translateY(3px);
     pointer-events: visible;
     position: relative;
-    z-index: 11;
+    z-index: 3;
     visibility: visible;
     float: none;
     overflow: hidden;
-    z-index: 1;
+    z-index: 15;
 }
 
 .card:hover + .roles {
     animation-name: rolessmooth;
     animation-duration: 5s;
+}
+
+.cardwrapper {
+    height: 400px;
+    width: 25%;
 }
 
 a:hover .roles {
@@ -133,4 +138,7 @@ hr {
 #contributerimg a:hover { background: none; cursor: pointer;}
 /* .contact { margin-left: 100px; } */
 .contact:hover { background: none; cursor: pointer; }
-.bio0 { float: right; }
+.bio0 { float: right;
+    padding-left: 350px;
+    margin-top: -135px;
+    font-style: italic; }

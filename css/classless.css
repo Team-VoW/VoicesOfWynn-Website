@@ -206,7 +206,6 @@ mark{ background-color: transparent; color: #007c30; text-decoration: underline 
 	display: flex; 
 	margin: 0 -0.5rem;
 	align-items: stretch;
-	max-width: 3439px;
 	flex-wrap: wrap;
 }
 
@@ -254,27 +253,26 @@ mark{ background-color: transparent; color: #007c30; text-decoration: underline 
 	background: aliceblue;
 	flex: 3 0 21%;
 	overflow: hidden;
-	z-index: 0;
-	position: relative;
+	z-index: 2;
+	position: absolute;
+	max-height: fit-content;
 	min-width: 200px;
 	max-width: 200px;
 }
-
 .roles {
 	cursor: default;
 	display: none;
 	text-align: left;
 	overflow: hidden;
-	z-index: 0;
+	z-index: 1;
 	animation-name: rolessmooth;
     animation-duration: 5s;
 }
-
 .roles a.card:hover {
 	cursor: default;
 	display: block;
 	overflow: visible;
-	z-index: 1;
+	z-index: 3;
 	animation-name: rolessmooth;
     animation-duration: 5s;
 }

@@ -158,17 +158,18 @@ a { color: #3a46f5; }
 a:hover { background: #6670ff5b; border-radius: 2px;}
 
 /* recording & user profiles */
-/* .avatar0 { padding-left: 200px; float: left;}
-.bio {
+/* .avatar0 { padding-left: 200px; float: left;} */
+.bio0 {
     float: right;
     padding-left: 350px;
     margin-top: -135px;
     font-style: italic;
 }
-#contributerimg { max-width: 10vh; max-height: 10vh; border-radius: 4px; float: left;}
+/* #contributerimg { max-width: 10vh; max-height: 10vh; border-radius: 4px; float: left;}
 #contributerimg a:hover { background: none; cursor: pointer;}
 .contact { margin-left: 100px; }
 .contact:hover { background: none; cursor: pointer; } */
+
 
 /* login */
 input {

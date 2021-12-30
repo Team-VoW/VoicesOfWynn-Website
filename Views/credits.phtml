@@ -13,6 +13,7 @@
 	<h2><?= $contributor->getRoles()[0]->name ?><?php if ($contributor->getRoles()[0]->name !== 'Owner') : ?>s<?php endif ?></h2>
 <div class="row">
 	<?php endif ?>
+	<div class="cardwrapper">
 	<div class="col-3"><a href="/cast/<?= $contributor->getId(); ?>">
 		<div class="card">
 			<img class="avatar" src="dynamic/avatars/<?= $contributor->getAvatarLink(); ?>" alt="Contributor's profile picture" /><br>
@@ -26,7 +27,8 @@
 					<li style="color:#<?= $role->color ?>;"><?= $role->name ?></li>
 					<?php endforeach ?>
 				</ul>
-				<hr><p id="profile">View Profile (Click)</p>
+				<hr>
 			</div>
 	</a></div>
+	</div>
 <?php endforeach ?>

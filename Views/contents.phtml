@@ -17,7 +17,7 @@
 			<div class="row">
 		<?php endif ?>
 			<div class="col-4">
-				
+				<div class="cardwrapper">
 				<div class="card" id="npcvoice">
 					<h3 class="questName"><?= $quest->getName(); ?></h3>
 					
@@ -29,6 +29,7 @@
 						</li>
 						<?php endforeach ?>
 					</ul>
+				</div>
 				</div>
 			</div>
 		<?php if (($i + 1) % 3 === 0) : ?>
