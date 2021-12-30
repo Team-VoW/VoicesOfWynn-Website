@@ -55,14 +55,8 @@ a>.card:hover {
     z-index: 15;
 }
 
-.card a:hover {
-    background-color: none;
-}
-.roles a:hover {
-    background-color: none;
-}
-.cardwrapper a:hover {
-    background-color: none;
+.cardlink:hover {
+    background: none;
 }
 
 .cardwrapper {
@@ -130,19 +124,3 @@ hr {
         top: 100%;
     }
 }
-
-.avatar0 {float: left; margin-top: -50px;}
-.bio {
-    float: right;
-    /* padding-left: 350px;
-    margin-top: -135px; */
-    font-style: italic;
-}
-#contributerimg { max-width: 10vh; max-height: 10vh; border-radius: 4px; margin-top: -10vh;}
-#contributerimg a:hover { background: none; cursor: pointer;}
-/* .contact { margin-left: 100px; } */
-.contact:hover { background: none; cursor: pointer; }
-.bio0 { float: right;
-    padding-left: 350px;
-    margin-top: -135px;
-    font-style: italic; }

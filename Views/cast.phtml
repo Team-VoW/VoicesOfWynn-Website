@@ -9,23 +9,31 @@
 <div class="bio">
 <section>
 
-<?php if (!empty($voiceActor->getEmail()) && $voiceActor->hasPublicEmail()) : ?>
+<!-- <?php if (!empty($voiceActor->getEmail()) && $voiceActor->hasPublicEmail()) : ?>
     <a class="contact" href="mailto:<?= $voiceActor->getEmail() ?>">
-        <button class="contactbtn">
+        <p class="welp"><button class="contactbtn">
             <img id="contributerimg" src="dynamic/avatars/<?= $voiceActor->getAvatarLink() ?>" 
                  alt="Voice actor's avatar" 
                  style="max-width: 10vh; 
-                        max-height: 10vh;">
-        </button>
+                        max-height: 10vh;
+                        border-radius: 5px;">
+        </button></p>
     </a>
 <?php else : ?>
-    <img id="contributerimg" src="dynamic/avatars/<?= $voiceActor->getAvatarLink() ?>" 
+    <p class="welp"><img id="contributerimg" src="dynamic/avatars/<?= $voiceActor->getAvatarLink() ?>" 
              alt="Voice actor's avatar" 
              style="max-width: 10vh; 
-                    max-height: 10vh;">
-<?php endif ?>
-
-<article class="bio0"><?= $voiceActor->getBio(); ?></article>
+                    max-height: 10vh;
+                    border-radius: 5px"></p>
+<?php endif ?> -->
+<p class="welp"><img id="contributerimg" src="dynamic/avatars/<?= $voiceActor->getAvatarLink() ?>" 
+             alt="Voice actor's avatar" 
+             style="max-width: 10vh; 
+                    max-height: 10vh;
+                    border-radius: 5px"></p>
+<article class="bio0"><?= $voiceActor->getBio(); ?>
+this my temporary and super cool bio made by Just5MoreMinutes! isnt it cool how the bio can be that long? amazing right? also, the bio can be a lot longer than that if you really want to go all out with giving info about yourself! alright thanks for reading :)
+this my temporary and super cool bio made by Just5MoreMinutes! isnt it cool how the bio can be that long? amazing right? also, the bio can be a lot longer than that if you really want to go all out with giving info about yourself! alright thanks for reading :)<br></article>
 </section>
 </div>
 
