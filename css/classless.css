@@ -207,6 +207,7 @@ mark{ background-color: transparent; color: #007c30; text-decoration: underline 
 	margin: 0 -0.5rem;
 	align-items: stretch;
 	flex-wrap: wrap;
+	margin-right: 20px;
 }
 
 .row [class*="col"] { 
@@ -269,7 +270,7 @@ mark{ background-color: transparent; color: #007c30; text-decoration: underline 
     animation-duration: 5s;
 }
 .roles a.card:hover {
-	cursor: default;
+	cursor: pointer;
 	display: block;
 	overflow: visible;
 	z-index: 3;

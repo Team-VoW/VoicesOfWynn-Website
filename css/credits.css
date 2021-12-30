@@ -43,22 +43,26 @@ a>.card {
 }
 
 a>.card:hover {
-    cursor: default;
+    cursor: pointer;
 	content: none;
     box-shadow: .2rem .2rem .7rem 0 #777;
     transform: translateY(3px);
     pointer-events: visible;
     position: relative;
-    z-index: 3;
     visibility: visible;
     float: none;
     overflow: hidden;
     z-index: 15;
 }
 
-.card:hover + .roles {
-    animation-name: rolessmooth;
-    animation-duration: 5s;
+.card a:hover {
+    background-color: none;
+}
+.roles a:hover {
+    background-color: none;
+}
+.cardwrapper a:hover {
+    background-color: none;
 }
 
 .cardwrapper {
@@ -68,7 +72,7 @@ a>.card:hover {
 
 a:hover .roles {
     display: block;
-    cursor: default;
+    cursor: pointer;
     z-index: 1;
     animation-name: rolessmooth;
     animation-duration: 5s;

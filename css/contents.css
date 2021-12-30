@@ -1,90 +1,72 @@
 /* styling for Mod Contents */
+.row {
+    min-height: 200px;
+    max-height: fit-content;
+    margin-bottom: 10px;
+}
 
 .npc-avatar {
     height: 64px;
     width: 64px;
 }
 
-.card {
+#npcvoice {
 	cursor: default;
+    color: #424456;
 	align-items: center;
 	text-align: center;
 	display: inline-block;
 	width: auto;
 	font-family: Georgia, 'Times New Roman', Times, serif;
 	margin: .5rem 0;
-	border: 0.25rem solid #6B5641;
+	border: 0.25rem solid #DC9587;
 	padding: .5rem 1rem 0.5rem; 
 	border-radius: .3rem; 
 	box-shadow: .1rem .1rem .4rem 0 #777;
 	background: aliceblue;
 	flex: 3 0 21%;
 	overflow: hidden;
-	z-index: 2;
+	z-index: 1;
 	position: absolute;
 	max-height: fit-content;
 	min-width: calc(50rem / 3 - 0.5rem - 1rem);
 	max-width: calc(50rem / 3 - 0.5rem - 1rem);
+    min-height: 200px;
+    max-height: fit-content;
 }
 
-a>.card {
-    margin-left: auto;
-    margin-right: auto;
-    background: aliceblue;
-    color: #424456;
-    text-align: center;
-    border: 0.25rem solid #DC9587;
-    z-index: 2;
-}
-
-a>.card:hover {
+#npcvoice:hover {
     cursor: default;
 	content: none;
     box-shadow: .2rem .2rem .7rem 0 #777;
     transform: translateY(3px);
     pointer-events: visible;
-    position: relative;
-    z-index: 3;
     visibility: visible;
     float: none;
     overflow: hidden;
-    z-index: 15;
+    z-index: 2;
 }
 
-.cardwrapper {
-    height: 400px;
-    width: calc(50rem / 3);
-}
-
-.card:hover {
-    max-height: none;
+a:hover #questInfo {
+    display: block;
     cursor: default;
-	content: none;
-    box-shadow: .2rem .2rem .7rem 0 #777;
-    transform: translateY(3px);
-    pointer-events: visible;
-    position: relative;
-    z-index: 0;
-    visibility: visible;
-    float: none;
+    z-index: 2;
+    animation-name: rolessmooth;
+    animation-duration: 5s;
 }
 
-.card hr {
-    margin-top: 50px;
+#questInfo {
+	cursor: default;
+	display: none;
+	text-align: left;
+	overflow: hidden;
+	z-index: 1;
 }
-
-.card ul {
-    list-style: none;
-    padding-left: 0;
-}
-.card ul li {
-    margin-bottom: 0;
-}
-.card ul li a {
-    line-height: 64px;
-}
-h3 {
-    padding-top: 0;
+#questInfo a.card:hover {
+	cursor: default;
+	display: block;
+	overflow: visible;
+	z-index: 1;
 }
 
 #questInfo { display: none;}
