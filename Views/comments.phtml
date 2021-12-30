@@ -1,14 +1,15 @@
 <script>var npcId = <?= ${basename(__FILE__, '.phtml').'_recording'}->npcId ?>;</script>
 
 <h1>Comment section</h1>
-<h3><?= ${basename(__FILE__, '.phtml').'_recording_title'} ?></h3>
-<audio controls>
+<h3 style="text-align: center;"><?= ${basename(__FILE__, '.phtml').'_recording_title'} ?></h3>
+<p style="text-align: center;"><audio controls>
     <source src="dynamic/recordings/<?= ${basename(__FILE__, '.phtml').'_recording'}->file ?>" type="audio/ogg">
     Oops! Your browser doesnt support the OGG format :(
-</audio>
+</audio></p>
 <br>
-<button id="new-comment-button">Post new comment</button>
-<button id="hide-form-button">Hide the form</button>
+<p style="text-align: center;"><button id="new-comment-button">Post new comment</button></p>
+<hr>
+<p style="text-align: center;"><button id="hide-form-button">Hide the form</button></p>
 <form method="post" data-recording-id="<?= ${basename(__FILE__, '.phtml').'_recording'}->id ?>">
 <fieldset>
 <fieldset>
@@ -26,9 +27,9 @@
     </small>
 </fieldset>
 </form>
-<div id="comments">
+<div id="comments" style="margin: auto;">
 <?php foreach (${basename(__FILE__, '.phtml').'_comments'} as $comment) : ?>
-<div class="card">
+<div class="comment" style="margin: auto;">
     <table>
         <tr>
             <td rowspan="2"><img src="<?= $comment->gravatar ?>" alt="Avatar" /></td>
@@ -41,7 +42,7 @@
         </tr>
         <tr><td><div class="comment-content"><?= $comment->content ?></div></td></tr>
     </table>
-</div>
+</div><br>
 <?php endforeach ?>
 </div>
 

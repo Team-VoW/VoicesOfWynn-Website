@@ -274,14 +274,7 @@ mark{ background-color: transparent; color: #007c30; text-decoration: underline 
 	display: block;
 	overflow: visible;
 	z-index: 3;
-	animation-name: rolessmooth;
-    animation-duration: 5s;
 }
-.card:hover + .roles  {
-    animation-name: rolessmooth;
-    animation-duration: 5s;
-}
-
 .avatar {
 	padding-top: 3px;
 }

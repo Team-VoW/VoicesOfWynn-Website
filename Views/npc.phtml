@@ -1,17 +1,21 @@
 <script>var npcId = <?= ${basename(__FILE__, '.phtml').'_npc'}->getId() ?>;</script>
 
 <h1><?= ${basename(__FILE__, '.phtml').'_npc'}->getName() ?></h1>
-<img src="dynamic/npcs/<?= ${basename(__FILE__, '.phtml').'_npc'}->getName() ?>.png" alt="NPC picture" />
-<p>
-    <strong>Voice actor: </strong>
+<br>
+<p class="welp"><img src="dynamic/npcs/<?= ${basename(__FILE__, '.phtml').'_npc'}->getName() ?>.png" alt="NPC picture" /></p>
+<br><hr>
+<p style="text-align: center;">
+    <strong>Voice actor: <br></strong>
     <?php if (${basename(__FILE__, '.phtml').'_voice_actor'} === null) : ?>
-        <img id="voice-actor-avatar" class="avatar" src="dynamic/avatars/nobody.png" alt="Profile picture" />
-        <span id="voice-actor-name"><i>Nobody</i></span>
+        <img id="voice-actor-avatar" class="avatarcontents" src="dynamic/avatars/nobody.png" alt="Profile picture" />
+        <span id="voice-actor-name"><br><i>Nobody</i></span>
+        <hr>
     <?php else : ?>
-        <a href="cast/<?= ${basename(__FILE__, '.phtml').'_voice_actor'}->getId() ?>">
-            <img id="voice-actor-avatar" class="avatar" src="dynamic/avatars/<?= ${basename(__FILE__, '.phtml').'_voice_actor'}->getAvatarLink() ?>" alt="Profile picture" />
-            <span id="voice-actor-name"><?= ${basename(__FILE__, '.phtml').'_voice_actor'}->getName() ?></span>
+        <a class="valink" href="cast/<?= ${basename(__FILE__, '.phtml').'_voice_actor'}->getId() ?>">
+            <img id="voice-actor-avatar" class="avatarcontents" src="dynamic/avatars/<?= ${basename(__FILE__, '.phtml').'_voice_actor'}->getAvatarLink() ?>" alt="Profile picture" />
+            <span id="voice-actor-name"><br><?= ${basename(__FILE__, '.phtml').'_voice_actor'}->getName() ?></span>
         </a>
+        <hr>
     <?php endif ?>
     <?php if (${basename(__FILE__, '.phtml').'_admin'}) : ?>
         <button id="change-actor-btn">Change</button>
@@ -30,6 +34,7 @@
             </select>
             <input type="submit" value="Confirm" />
         </form>
+        <hr>
     <?php endif ?>
 </p>
 

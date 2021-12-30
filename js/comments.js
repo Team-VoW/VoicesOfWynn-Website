@@ -1,5 +1,5 @@
 //var npcId; - filled by PHP in the view
-var commentItemHtml = '<div class="card"><table><tr><td rowspan="2"><img src="{gravatar}" /></td><td><span><strong>{name}</strong> < {email} ></span></td></tr><tr><td>{comment}</td></tr></table></div>';
+var commentItemHtml = '<div class="comment"><table><tr><td rowspan="2"><img src="{gravatar}" /></td><td><span><strong>{name}</strong> < {email} ></span></td></tr><tr><td>{comment}</td></tr></table></div>';
 
 $("#new-comment-button").on('click', function () {
     $("form").slideDown(1500);
@@ -63,7 +63,7 @@ $(".delete-comment-button").on('click', function (event) {
         return;
     }
 
-    $deletingComment = $(event.target).closest('.card');
+    $deletingComment = $(event.target).closest('.comment');
 
     $.ajax({
         url: "contents/npc/" + npcId + "/comments/" + $("form").attr('data-recording-id') + "/delete/" + $(event.target).attr('data-comment-id'),

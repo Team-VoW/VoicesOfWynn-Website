@@ -30,3 +30,11 @@ small {
     text-align: center;
     display: inline-block;
 }
+#comments { border: none; }
+.comment {
+    max-height: fit-content;
+    min-height: 250px;
+    width: 400px;
+    border: 2px solid thistle;
+    border-radius: 4px;
+}

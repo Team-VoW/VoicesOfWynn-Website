@@ -45,7 +45,7 @@ p {
 
 iframe { border: 5px solid #fadb76; border-radius: 4px; /*width: 65vw; height: 23vh ;*/}
 
-button:not([class^=contactbtn]) {
+button {
     font-family: minecraft;
     color: #333;
     border-radius: 10px;
@@ -58,7 +58,7 @@ button:not([class^=contactbtn]) {
     font-weight: lighter;
 }
 
-button:not([class^=contactbtn]):hover {
+button:hover {
     transform: translateY(-5px);
     color: #333;
     box-shadow: .0rem .2rem .4rem #777;
@@ -143,13 +143,8 @@ button:not([class^=contactbtn]):hover {
 .logoutbtn:hover { border-color: rgb(255, 131, 131); }
 .adminbtn { background: rgb(255, 146, 45); }
 .adminbtn:hover { border-color: rgb(255, 176, 102); }
-.contactbtn { 
-    background: none; 
-    border: none; 
-    max-width: 10vh;
-max-height: 10vh;
-float: left;}
-.contactbtn:hover { cursor: pointer; }
+.contactbtn { background:rgb(65, 140, 153); }
+.contactbtn:hover { border-color: rgb(84, 143, 153); }
 .faqbtn { background: rgb(47, 104, 0); }
 .faqbtn:hover { border-color: rgb(56, 99, 22); }
 
@@ -158,8 +153,19 @@ a { color: #3a46f5; }
 a:hover { background: #6670ff5b; border-radius: 2px;}
 
 /* recording & user profiles */
-.bio0 { float: right; }
+
 .welp { text-align: center; }
+#voice-actor-avatar {
+    max-width: 10vh;
+    max-height: 10vh;
+    border-radius: 5px;
+}
+.avatarcontents {
+    max-width: 10vh;
+    max-height: 10vh;
+    border-radius: 5px;
+}
+a.valink:hover { background: none; }
 /* #contributerimg { max-width: 10vh; max-height: 10vh; border-radius: 4px; float: left;}
 #contributerimg a:hover { background: none; cursor: pointer;}
 .contact { margin-left: 100px; }
