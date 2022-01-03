@@ -38,3 +38,15 @@ small {
     border: 2px solid thistle;
     border-radius: 4px;
 }
+#new-comment-button, #hide-form-button {
+    background: rgb(79, 146, 221);
+}
+#new-comment-button:hover, #hide-form-button:hover {
+    border-color:  rgb(66, 126, 194);
+}
+.delete-comment-button {
+    background: rgb(255, 35, 35);
+}
+.delete-comment-button:hover {
+    border-color: rgb(255, 57, 57);
+}

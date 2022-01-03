@@ -40,13 +40,12 @@ h1, h2 {
 
 p {
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-    font-style: italic;
 }
 
 iframe { border: 5px solid #fadb76; border-radius: 4px; /*width: 65vw; height: 23vh ;*/}
 
 button {
-    font-family: minecraft;
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     color: #333;
     border-radius: 10px;
     border: 5px solid transparent;

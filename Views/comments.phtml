@@ -1,13 +1,13 @@
 <script>var npcId = <?= ${basename(__FILE__, '.phtml').'_recording'}->npcId ?>;</script>
 
-<h1>Comment section</h1>
+<h1>Comment Section</h1>
 <h3 style="text-align: center;"><?= ${basename(__FILE__, '.phtml').'_recording_title'} ?></h3>
 <p style="text-align: center;"><audio controls>
     <source src="dynamic/recordings/<?= ${basename(__FILE__, '.phtml').'_recording'}->file ?>" type="audio/ogg">
     Oops! Your browser doesnt support the OGG format :(
 </audio></p>
 <br>
-<p style="text-align: center;"><button id="new-comment-button">Post new comment</button></p>
+<p style="text-align: center;"><button id="new-comment-button">Post new Comment</button></p>
 <hr>
 <p style="text-align: center;"><button id="hide-form-button">Hide the form</button></p>
 <form method="post" data-recording-id="<?= ${basename(__FILE__, '.phtml').'_recording'}->id ?>">
