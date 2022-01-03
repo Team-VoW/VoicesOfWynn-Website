@@ -125,8 +125,8 @@ button:hover {
 }
 
 /* buttons */
-.downloadbtn { background: #FFD751; }
-.downloadbtn:hover { border-color: #fadb76; }
+.downloadbtn { background: rgb(5, 122, 58); }
+.downloadbtn:hover { border-color: rgb(48, 145, 92);  }
 .discordbtn { background: #5662F6;}
 .discordbtn:hover { border-color: #656ffd; }
 .creditsbtn { background: #AB5DFC; }
@@ -137,8 +137,8 @@ button:hover {
 .backbtn:hover { border-color: rgb(51, 122, 83); }
 .contentsbtn { background: rgb(21, 220, 255); }
 .contentsbtn:hover { border-color: rgb(103, 232, 255); }
-.loginbtn { background: rgb(69, 255, 153); }
-.loginbtn:hover { border-color: rgb(122, 255, 182); }
+.loginbtn { background: #FFD751; }
+.loginbtn:hover { border-color: #fadb76; }
 .logoutbtn { background: rgb(255, 83, 83); }
 .logoutbtn:hover { border-color: rgb(255, 131, 131); }
 .adminbtn { background: rgb(255, 146, 45); }
@@ -147,6 +147,8 @@ button:hover {
 .contactbtn:hover { border-color: rgb(84, 143, 153); }
 .faqbtn { background: rgb(47, 104, 0); }
 .faqbtn:hover { border-color: rgb(56, 99, 22); }
+
+
 
 /* href */
 a { color: #3a46f5; }
@@ -191,8 +193,36 @@ textarea:focus, input:focus {
 }
 #name:focus { outline: none;}
 
-/* administration */
+/* downloads */
+.dlwrapper {text-align: center;}
+.dlwrapper ul {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    *display: inline;
 
+
+    zoom: 1;        /* not neccessary tho useful */
+
+    /* list styling for ul element*/
+    list-style: none;
+    text-decoration: wavy;
+}
+.dlwrapper li {
+    padding: 20px 20px;
+    border: none;
+    /* border: 1px solid #333;
+    border-radius: 5px; 
+    
+    ^ above will remain commented for now; might be useful
+    for future if there will ever be the addition of information
+    about older versions; in case there is having a box model
+    for each download might be useful!
+    */
+    text-decoration: inherit;
+    font-size: 20px;
+}
+.dlhr { max-width: 250px; }
 
 /* ##################### */
 /*         other         */

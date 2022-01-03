@@ -12,10 +12,23 @@
 <p style="text-align: center;">
 <a href="/files/mod/latest.jar"><button class="downloadbtn"><img src="images/download.png" alt="Download icon" width="20px" height="20px" /> Download Latest Version</button></a>
 </p>
-
+<br><hr>
 <h3 style="text-align: center;">Older versions of the mod</h3>
+<p style="text-align: center;">In case you need to find an older version of the mod you are in the correct place! Find the version in the list below! They are sorted from oldest (bottom) to newest (top)!</p>
+<br><hr><br>
+
+<div class="dlwrapper">
 <ul>
 <?php foreach (${basename(__FILE__, '.phtml').'_versions'} as $version) : ?>
-    <li><?= $version['name'] ?><a href="<?= $version['link'] ?>"><button><img src="images/download.png" alt="Download icon" /></button></a></li>
+    <li>
+        <?= $version['name'] ?><p style="text-align: center;">
+        <a href="<?= $version['link'] ?>">
+        <button class="downloadbtn" >
+            <img src="images/download.png" alt="Download icon" width="20px" height="20px"/> Download
+        </button>
+        </a>
+        <hr class="dlhr">
+    </li>
 <?php endforeach ?>
 </ul>
+</div>
