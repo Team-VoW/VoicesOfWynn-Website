@@ -18,7 +18,7 @@
         <hr>
     <?php endif ?>
     <?php if (${basename(__FILE__, '.phtml').'_admin'}) : ?>
-        <p style="text-align: center;"><button id="change-actor-btn">Change</button></p>
+        <p style="text-align: center;"><button id="change-actor-btn">Change</button></p><br>
         <form id="voice-actor-form">
             <select name="actor">
                 <?php if (${basename(__FILE__, '.phtml').'_voice_actor'} === null) : ?>
@@ -31,8 +31,8 @@
                     <option value="<?= $vactor->getId() ?>" data-avatar-link="<?= $vactor->getAvatarLink() ?>"><?= $vactor->getName() ?></option>
                     <?php endif ?>
                 <?php endforeach ?>
-            </select>
-            <input type="submit" value="Confirm" />
+            </select><br><br>
+            <input type="submit" value="Confirm" id="va-confirm-change"/>
         </form>
         <hr>
     <?php endif ?>

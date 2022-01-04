@@ -1,15 +1,26 @@
 /* styling for Mod Contents */
+input {
+    border-bottom: 4px solid gray;
+    border-radius: 3px;
+    background: rgba(168, 168, 168, 0.13);
+    outline: none;
+}
+input:hover {
+    border-bottom: 4px solid gray;
+    border-radius: 3px;
+}
+textarea:focus, input:focus {
+    outline: none;
+}
 .row {
     min-height: 200px;
     max-height: fit-content;
     margin-bottom: 10px;
 }
-
 .npc-avatar {
     height: 64px;
     width: 64px;
 }
-
 #npcvoice {
 	cursor: default;
     color: #424456;
@@ -34,7 +45,6 @@
     min-height: 200px;
     max-height: fit-content;
 }
-
 #npcvoice:hover {
     cursor: default;
 	content: none;
@@ -46,15 +56,6 @@
     overflow: hidden;
     z-index: 2;
 }
-
-a:hover #questInfo {
-    display: block;
-    cursor: default;
-    z-index: 2;
-    animation-name: rolessmooth;
-    animation-duration: 5s;
-}
-
 #questInfo {
 	cursor: default;
 	display: none;
@@ -62,26 +63,17 @@ a:hover #questInfo {
 	overflow: hidden;
 	z-index: 1;
 }
-#questInfo a.card:hover {
-	cursor: default;
-	display: block;
-	overflow: visible;
-	z-index: 1;
-}
-
-#questInfo { display: none;}
 #npcvoice:hover #questInfo { display: block; }
 
-input {
-    border-bottom: 4px solid gray;
-    border-radius: 3px;
-    background: rgba(168, 168, 168, 0.13);
-    outline: none;
-}
-input:hover {
-    border-bottom: 4px solid gray;
-    border-radius: 3px;
-}
-textarea:focus, input:focus {
-    outline: none;
+
+
+@media (max-width: 1000px) {
+	#questInfo {
+		display: block;
+		visibility: visible;
+	}
+	.cardwrapper {
+		margin-bottom: 500px;
+		min-height: fit-content;
+	}
 }

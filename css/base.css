@@ -241,6 +241,13 @@ textarea:focus, input:focus {
 .acctable {
     min-width: min-content;
 }
+#voice-actor-form {
+    text-align: center;
+}
+#change-actor-btn { background-color: #8b2b1e; color: azure;}
+#va-confirm-change {
+    background-color: #e7cb6e;
+}
 /* ##################### */
 /*         other         */
 /* ##################### */
@@ -262,7 +269,7 @@ textarea:focus, input:focus {
     (laptop, desktop, tablet/ipad maybe */
     main, li {z-index: -1;}
     #vertical, .nav li {overflow: hidden;}
-    .nav, .nav li, li,
+    .nav, .nav li, li:not([id*="quest-npcs"]),
     .bio .bio0 {display: none;}
     #vertical {visibility: hidden;}
     img.logo {                          
