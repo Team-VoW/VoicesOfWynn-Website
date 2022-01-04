@@ -33,7 +33,7 @@ small {
 #comments { border: none; }
 .comment {
     max-height: fit-content;
-    min-height: 250px;
+    min-height: fit-content;
     width: 800px;
     border: 2px solid thistle;
     border-radius: 4px;
