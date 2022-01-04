@@ -34,7 +34,7 @@ small {
 .comment {
     max-height: fit-content;
     min-height: 250px;
-    width: 400px;
+    width: 800px;
     border: 2px solid thistle;
     border-radius: 4px;
 }

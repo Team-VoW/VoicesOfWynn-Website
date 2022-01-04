@@ -66,6 +66,11 @@ button:hover {
     z-index: 0;
     visibility: visible;
     float: none;
+
+    cursor: pointer;
+}
+input {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 
 /* ##################### */
@@ -222,6 +227,13 @@ textarea:focus, input:focus {
     font-size: 20px;
 }
 .dlhr { max-width: 250px; }
+
+/* account stuff */
+.newaccform {
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+}
 
 /* ##################### */
 /*         other         */

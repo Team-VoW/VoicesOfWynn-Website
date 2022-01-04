@@ -18,7 +18,7 @@
         <hr>
     <?php endif ?>
     <?php if (${basename(__FILE__, '.phtml').'_admin'}) : ?>
-        <button id="change-actor-btn">Change</button>
+        <p style="text-align: center;"><button id="change-actor-btn">Change</button></p>
         <form id="voice-actor-form">
             <select name="actor">
                 <?php if (${basename(__FILE__, '.phtml').'_voice_actor'} === null) : ?>
