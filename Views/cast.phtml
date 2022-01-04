@@ -30,7 +30,7 @@
 
 </section>
 </div>
-<h3>Recordings</h3>
+<h3 style="text-align: center;">Recordings</h3>
 
 <?php if (count(${basename(__FILE__, '.phtml').'_quest_recordings'}) === 0) : ?>
 <i style="color: rgb(255, 83, 83);">This contributor didn't submit any recordings.</i>
@@ -38,6 +38,7 @@
 
 <?php endif ?>
 <?php foreach (${basename(__FILE__, '.phtml').'_quest_recordings'} as $quest) : ?>
+<center>
     <section>
         <table>
             <tr>
@@ -65,6 +66,7 @@
 			<?php endforeach ?>
         </table>
     </section>
+</center>
 <?php endforeach ?>
 <br>
 <a href="/credits"><button class="backbtn">< Go Back</button></a>

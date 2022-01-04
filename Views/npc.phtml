@@ -38,10 +38,11 @@
     <?php endif ?>
 </p>
 
-<h3>Recordings</h3>
+<h3 style="text-align: center;">Recordings</h3>
 <?php foreach (${basename(__FILE__, '.phtml').'_quest_recordings'} as $quest) : ?>
-<section>
-    <table>
+<center>
+<section  class="table-center">
+    <table align="center">
         <tr>
             <th colspan="2"><?= $quest->getName() ?></th>
             <th>👍</th>
@@ -98,6 +99,7 @@
         <?php endif ?>
     <?php endif ?>
 </section>
+</center>
 <?php endforeach ?>
 
 <br>

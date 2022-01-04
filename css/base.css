@@ -172,6 +172,9 @@ a:hover { background: #6670ff5b; border-radius: 2px;}
     border-radius: 5px;
 }
 a.valink:hover { background: none; }
+.table-center {
+    margin: 0px auto;
+}
 /* #contributerimg { max-width: 10vh; max-height: 10vh; border-radius: 4px; float: left;}
 #contributerimg a:hover { background: none; cursor: pointer;}
 .contact { margin-left: 100px; }
