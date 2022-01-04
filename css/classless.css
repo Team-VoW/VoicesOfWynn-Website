@@ -379,21 +379,3 @@ mark{ background-color: transparent; color: #007c30; text-decoration: underline 
 	font-family: minecraft;
 	src: url(../fonts/Minecraft.ttf);
 }
-
-@keyframes rolessmooth {
-    0% {
-        top: 0%;
-    }
-    25% {
-        top: 25%;
-    }
-    50% {
-        top: 50%;
-    }
-    75% {
-        top: 75%;
-    }
-    100% {
-        top: 100%;
-    }
-}

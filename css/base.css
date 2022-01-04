@@ -42,7 +42,9 @@ p {
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
-iframe { border: 5px solid #fadb76; border-radius: 4px; /*width: 65vw; height: 23vh ;*/}
+iframe { border: 5px solid #fadb76; border-radius: 4px;
+        
+}
 
 button {
     font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
@@ -291,10 +293,19 @@ textarea:focus, input:focus {
     .contact {}
 
 
-    /* centering the <main> area */
+    /* fixing <main> */
+    body { width: 100%; background: whitesmoke; 
+    box-shadow: none;}
     main {
-
+        width: 105vw;
+        margin-left: -5vw;
+        margin-top: -11vh;
+        margin-bottom: -15vh;
+        box-shadow: none;
     }
+
+    p { padding-left: 10px;
+    padding-right: 10px; }
 
 }
 @media (min-width: 1001px) {
