@@ -265,10 +265,7 @@ mark{ background-color: transparent; color: #007c30; text-decoration: underline 
 	display: none;
 	text-align: left;
 	overflow: hidden;
-	z-index: 1;
-	animation-name: rolessmooth;
-    animation-duration: 5s;
-}
+	z-index: 1; }
 .roles a.card:hover {
 	cursor: pointer;
 	display: block;
@@ -282,8 +279,6 @@ mark{ background-color: transparent; color: #007c30; text-decoration: underline 
 #profile:hover {
 	color: #A62FDB;
 	cursor: pointer;
-	animation-name: rolessmooth;
-    animation-duration: 5s;
 }
 
 /* align */

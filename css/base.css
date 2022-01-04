@@ -72,6 +72,7 @@ button:hover {
 input {
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
+textarea { font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; }
 
 /* ##################### */
 /*       specific        */
@@ -237,7 +238,9 @@ textarea:focus, input:focus {
     margin-left: auto;
     margin-right: auto;
 }
-
+.acctable {
+    min-width: min-content;
+}
 /* ##################### */
 /*         other         */
 /* ##################### */
@@ -279,6 +282,12 @@ textarea:focus, input:focus {
     }
     .avatar0 p {text-align:left;}
     .contact {}
+
+
+    /* centering the <main> area */
+    main {
+
+    }
 
 }
 @media (min-width: 1001px) {
