@@ -62,6 +62,14 @@ textarea:focus, input:focus {
 	text-align: left;
 	overflow: hidden;
 	z-index: 1;
+	list-style: none;
+	justify-content: center;
+	align-items: center;
+}
+#questInfo li {
+	justify-content: center;
+	align-self: center;
+	align-items: center;
 }
 #npcvoice:hover #questInfo { display: block; }
 

@@ -24,8 +24,10 @@
 					<ul id="questInfo">
 						<?php foreach ($quest->getNpcs() as $npc) : ?>
 						<li id="quest-npcs">
-							<img class="npc-avatar" src="dynamic/npcs/<?= $npc->getId() ?>.png" alt="NPC avatar" />
-							<a href="contents/npc/<?= $npc->getId() ?>"><?= $npc->getName() ?></a>
+							<p style="text-align: center;"><img class="npc-avatar" src="dynamic/npcs/<?= $npc->getId() ?>.png" alt="NPC avatar" /></p>
+							<p style="text-align: center;
+										border-bottom: 1px solid black;
+							"><a href="contents/npc/<?= $npc->getId() ?>"><?= $npc->getName() ?></a></p>
 						</li>
 						<?php endforeach ?>
 					</ul>

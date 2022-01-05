@@ -45,12 +45,18 @@
             <tr>
                 <th colspan="2">
                     <b><?= $quest->getNpcs()[0]->getName() ?></b> in <i><?= $quest->getName() ?></i></th>
-                <th>👍</th>
-                <th>👎</th>
-                <th>💬</th>
+                <th>&ensp;</th>
+                <th>&ensp;</th>
+                <th>&ensp;</th>
             </tr>
 			<?php $recordings = $quest->getNpcs()[0]->getRecordings(); ?>
 			<?php foreach ($recordings as $recording) : ?>
+                <tr>
+                    <th>  </th><th>  </th>
+                    <th><button class="upvote">👍</button></th>
+                    <th><button class="downvote">👎</button></th>
+                    <th>💬</th>
+                </tr>
                 <tr>
                     <td># <?= $recording->line ?></td>
                     <td>
@@ -58,10 +64,17 @@
                             <source src="dynamic/recordings/<?= $recording->file ?>" type="audio/ogg">
                             Oops! Your browser doesnt support the OGG format :(
                         </audio>
-                    <td><a<?php if (!isset($_COOKIE['votedFor'.$recording->id])) : ?> class="upvote"<?php endif ?> data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>"><?= $recording->upvotes ?></a></td>
-                    <td><a<?php if (!isset($_COOKIE['votedFor'.$recording->id])) : ?> class="downvote"<?php endif ?> data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>"><?= $recording->downvotes ?></a></td>
                     <td>
-                        <a href="contents/npc/<?= $recording->npcId ?>/comments/<?= $recording->id ?>" class="comment"><?= $recording->comments ?></a>
+                        <p class="amount-display">&emsp;0</p>
+                        <!-- <a<?php if (!isset($_COOKIE['votedFor'.$recording->id])) : ?> class="upvote"<?php endif ?> data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>"><?= $recording->upvotes ?></a> -->
+                    </td>
+                    <td>
+                        <p class="amount-display">&emsp;0</p>
+                        <!-- <a<?php if (!isset($_COOKIE['votedFor'.$recording->id])) : ?> class="downvote"<?php endif ?> data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>"><?= $recording->downvotes ?></a> -->
+                    </td>
+                    <td>
+                        <p class="amount-display">&emsp;0</p>
+                        <!-- <a href="contents/npc/<?= $recording->npcId ?>/comments/<?= $recording->id ?>" class="comment"><?= $recording->comments ?></a> -->
                     </td>
                 </tr>
 			<?php endforeach ?>
@@ -71,4 +84,4 @@
 
 <?php endforeach ?>
 <br>
-<a href="/credits"><button class="backbtn">< Go Back</button></a>
+<button class="backbtn" onclick="history.go(-1)">< Go Back</button>
