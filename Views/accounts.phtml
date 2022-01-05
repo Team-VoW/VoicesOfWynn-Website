@@ -5,11 +5,11 @@
         <th rowspan="2">Display Name</th>
         <th rowspan="2">Bio</th>
         <th rowspan="2">Actions</th>
-        <th colspan="<?= count(${basename(__FILE__, '.phtml').'_roles'}) ?>">Roles</th>
+        <th colspan="<?= count(${basename(__FILE__, '.phtml').'_roles'}) ?>" dir="ltr">Roles</th>
     </tr>
     <tr>
         <?php for ($i = 0; $i < count(${basename(__FILE__, '.phtml').'_roles'}); $i++) : ?>
-            <th class="role-header" style="background-color: #<?= ${basename(__FILE__, '.phtml').'_roles'}[$i]->color ?>;">
+            <th class="role-header" style="background-color: #<?= ${basename(__FILE__, '.phtml').'_roles'}[$i]->color ?>;" dir="ltr">
                 <?= ${basename(__FILE__, '.phtml').'_roles'}[$i]->name ?>
             </th>
         <?php endfor ?>
