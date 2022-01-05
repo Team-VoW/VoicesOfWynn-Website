@@ -132,9 +132,17 @@ textarea { font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sa
     position: relative;
     left: 72%;
 }
-.logo { float: right;
-    z-index: 1;
-    position: absolute;}
+.logo {
+    position: absolute;
+top: 0;
+right: 0;
+margin: 110px 550px;
+}
+.imglink {
+    position: absolute;
+top: 0;
+right: 0;
+}
 
 /* buttons */
 .downloadbtn { background: #26e94c; }
@@ -301,11 +309,6 @@ textarea:focus, input:focus {
     .nav, .nav li, li:not([id*="quest-npcs"]),
     .bio .bio0 {display: none;}
     #vertical {visibility: hidden;}
-    img.logo {                          
-        display: block;
-        margin-left: 93px;
-        margin-top: -250px;
-    }
     a {
        color: none;
        background: none;
@@ -336,20 +339,32 @@ textarea:focus, input:focus {
     padding-right: 10px; }
     iframe { height: 260px; width: 420px; }
 
+    .logo {
+        margin: 0 auto;
+        position: absolute;
+        visibility: visible;
+        display: inline-block;
+        margin-right: 100px;
+    }
+    .imglink {
+        height: 200px; width: 200px;
+        margin: 0 auto;
+        margin-left: 220px;
+    }
+
 }
 /* any other media \/ */
 @media (min-width: 1001px) {                /** Done **/
-    .imglink { 
-        float:right; 
-        margin-top: -12vh;
+    .logo {
+        position: absolute;
+        top: 0;
+        right: 0;
+        margin: 110px 550px;
     }
-    a.imglink{
-        display: block;
-        height: 170px;
-        width: 170px;
-        margin-left: 61vh;
-        margin-rigth: 10px;
-        padding-top: 20px;
+    .imglink {
+        position: absolute;
+        top: 0;
+        right: 0;
     }
     .mobilenav {
         display: none;
@@ -369,10 +384,15 @@ textarea:focus, input:focus {
     }
     @media (max-width: 1300px) {                /** Done **/
         .logo {
-            float: right;
-            margin-top: -30px;
-            margin-right: ;
-            margin-left: -15px;
+            position: absolute;
+            top: 0;
+            right: 0;
+            margin: 110px 550px;
+        }
+        .imglink {
+            position: absolute;
+            top: 0;
+            right: 0;
         }
         #vertical {
             margin: 138px 0px 0px 0;
@@ -381,25 +401,17 @@ textarea:focus, input:focus {
             position: relative;
             left: 72%;
         }
-        .imglink {
-            margin-left: 200px;
-            margin-top: -90px;
-        }
-        a.imglink {
-            display: block;
-            height: 170px;
-            width: 170px;
-            margin-left: 90vh;
-            margin-rigth: 10px;
-            padding-top: 20px;
-            margin-top: -140px;
-        }
         @media (max-width: 1280px) {            /** Done **/
             .logo {
-                float: right;
-                margin-top: -30px;
-                margin-right: ;
-                margin-left: -20px;
+                position: absolute;
+                top: 0;
+                right: 0;
+                margin: 120px 230px;
+            }
+            .imglink {
+                position: absolute;
+            top: 0;
+            right: 0;
             }
             #vertical {
                 margin: 138px 0px 0px 0;
@@ -408,24 +420,17 @@ textarea:focus, input:focus {
                 position: relative;
                 left: 72%;
             }
-            .imglink {
-                margin-left: 200px;
-                margin-top: -90px;
-            }
-            a.imglink {
-                display: block;
-                height: 170px;
-                width: 170px;
-                margin-left: 90vh;
-                margin-rigth: 10px;
-                padding-top: 20px;
-                margin-top: -140px;
-            }
             @media (height: 800px) {            /** Done **/
                 .logo {
-                    float: right;
-                    margin-top: -35px;
-                    margin-left: -90px;
+                    position: absolute;
+                top: 0;
+                    right: 0;
+                    margin: 115px 230px;
+                }
+                .imglink {
+                    position: absolute;
+                top: 0;
+                right: 0;
                 }
                 #vertical {
                     margin: 138px 0px 0px 0;
@@ -434,25 +439,19 @@ textarea:focus, input:focus {
                     position: relative;
                     left: 72%;
                 }
-                .imglink {
-                    margin-left: 200px;
-                    margin-top: -90px;
-                }
-                a.imglink {
-                    display: block;
-                    height: 170px;
-                    width: 170px;
-                    margin-left: 90vh;
-                    margin-rigth: 10px;
-                    padding-top: 20px;
-                    margin-top: -140px;
-                }
+            
             }
             @media (height: 950px) {            /** Done **/
                 .logo {
-                    float: right;
-                    margin-top: -40px;
-                    margin-left: -220px;    
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    margin: 130px 230px;
+                }
+                .imglink {
+                    position: absolute;
+                top: 0;
+                right: 0;
                 }
                 #vertical {
                     margin: 138px 0px 0px 0;
@@ -461,26 +460,19 @@ textarea:focus, input:focus {
                     position: relative;
                     left: 72%;
                 }
-                .imglink {
-                    margin-left: 200px;
-                    margin-top: -90px;
-                }
-                a.imglink {
-                    display: block;
-                    height: 170px;
-                    width: 170px;
-                    margin-left: 90vh;
-                    margin-rigth: 10px;
-                    padding-top: 20px;
-                    margin-top: -140px;
-                }
             }
         }
         @media (min-width: 1310px) {             /** Done **/
             .logo {
-                float: right;
-                margin-top: -10px;
-                margin-left: -50px;  
+                position: absolute;
+            top: 0;
+            right: 0;
+            margin: 110px 550px;
+            }
+            .imglink {
+                position: absolute;
+            top: 0;
+            right: 0;
             }
             #vertical {
                 margin: 138px 0px 0px 0;
@@ -488,18 +480,6 @@ textarea:focus, input:focus {
                 height: 10vh;
                 position: relative;
                 left: 72%;
-            }
-            .imglink {
-                margin-left: 200px;
-                margin-top: -90px;
-            }
-            a.imglink {
-                display: block;
-                height: 170px;
-                width: 170px;
-                margin-left: 90vh;
-                padding-top: 20px;
-                margin-top: -140px;
             }
         }
     }
@@ -511,65 +491,41 @@ textarea:focus, input:focus {
             position: relative;
             left: 72%;
         }
-        .imglink {
-            margin-left: 200px;
-            margin-top: -90px;
-        }
         .logo {
-            float: right;
-            margin-top: -30px;
-            margin-right: ;
-            margin-left: -15px;
+            position: absolute;
+            top: 0;
+        right: 0;
+            margin: 120px 320px;
         }
-        a.imglink {
-            display: block;
-            height: 170px;
-            width: 170px;
-            margin-left: 72vh;
-            margin-rigth: 10px;
-            padding-top: 20px;
-            margin-top: -140px;
+        .imglink {
+            position: absolute;
+        top: 0;
+        right: 0;
         }
     }
     @media (min-width: 1900px) {
-        .imglink {
-            margin-left: 200px;
-            margin-top: -90px;
-        }
         .logo {
-            float: right;
-            margin-top: -30px;
-            margin-right: ;
-            margin-left: -15px;
+            position: absolute;
+        top: 0;
+        right: 0;
+        margin: 110px 550px;
         }
-        a.imglink {
-            display: block;
-            height: 170px;
-            width: 170px;
-            margin-left: 72vh;
-            margin-rigth: 10px;
-            padding-top: 20px;
-            margin-top: -140px;
+        .imglink {
+            position: absolute;
+        top: 0;
+        right: 0;
         }
         @media (max-width: 1950px) {
-            .imglink {
-                margin-left: 200px;
-                margin-top: -90px;
-            }
             .logo {
-                float: right;
-                margin-top: -30px;
-                margin-right: ;
-                margin-left: -140px;
+                position: absolute;
+            top: 0;
+            right: 0;
+            margin: 110px 550px;
             }
-            a.imglink {
-                display: block;
-                height: 170px;
-                width: 170px;
-                margin-left: 72vh;
-                margin-rigth: 10px;
-                padding-top: 20px;
-                margin-top: -140px;
+            .imglink {
+                position: absolute;
+            top: 0;
+            right: 0;
             }
             #vertical {
                 margin: 133px 0px 0px 0;
@@ -589,24 +545,16 @@ textarea:focus, input:focus {
             /*  */
         }
         @media (min-width: 2500px) {
-            .imglink {
-                margin-left: 200px;
-                margin-top: -90px;
-            }
             .logo {
-                float: right;
-                margin-top: -30px;
-                margin-right: ;
-                margin-left: -140px;
+                position: absolute;
+            top: 0;
+            right: 0;
+            margin: 110px 550px;
             }
-            a.imglink {
-                display: block;
-                height: 170px;
-                width: 170px;
-                margin-left: 60.5vh;
-                margin-rigth: 10px;
-                padding-top: 15px;
-                margin-top: -140px;
+            .imglink {
+                position: absolute;
+            top: 0;
+            right: 0;
             }
             #vertical {
                 margin: 133px 0px 0px 0;
