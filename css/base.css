@@ -137,8 +137,8 @@ textarea { font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sa
     position: absolute;}
 
 /* buttons */
-.downloadbtn { background: #238636; }
-.downloadbtn:hover { border-color: #37914A;  }
+.downloadbtn { background: #26e94c; }
+.downloadbtn:hover { border-color: #23d847;  }
 .discordbtn { background: #5662F6;}
 .discordbtn:hover { border-color: #656ffd; }
 .creditsbtn { background: #AB5DFC; }
