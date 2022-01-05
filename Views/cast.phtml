@@ -38,7 +38,8 @@
 
 <?php endif ?>
 <?php foreach (${basename(__FILE__, '.phtml').'_quest_recordings'} as $quest) : ?>
-<center>
+
+<div class="reccenter">
     <section>
         <table>
             <tr>
@@ -66,7 +67,8 @@
 			<?php endforeach ?>
         </table>
     </section>
-</center>
+</div>
+
 <?php endforeach ?>
 <br>
 <a href="/credits"><button class="backbtn">< Go Back</button></a>

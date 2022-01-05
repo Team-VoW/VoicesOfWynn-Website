@@ -178,6 +178,11 @@ a.valink:hover { background: none; }
 .table-center {
     margin: 0px auto;
 }
+.reccenter {
+    /* margin: auto 120px; */
+    display: flex;
+    justify-content: center;
+}
 /* #contributerimg { max-width: 10vh; max-height: 10vh; border-radius: 4px; float: left;}
 #contributerimg a:hover { background: none; cursor: pointer;}
 .contact { margin-left: 100px; }
@@ -294,6 +299,7 @@ textarea:focus, input:focus {
 
 
     /* fixing <main> */
+    /* in case this is problematic in the future remove it asap */
     body { width: 100%; background: whitesmoke; 
     box-shadow: none;}
     main {

@@ -40,9 +40,10 @@
 
 <h3 style="text-align: center;">Recordings</h3>
 <?php foreach (${basename(__FILE__, '.phtml').'_quest_recordings'} as $quest) : ?>
-<center>
+
+<div class="reccenter">
 <section  class="table-center">
-    <table align="center">
+    <table>
         <tr>
             <th colspan="2"><?= $quest->getName() ?></th>
             <th>👍</th>
@@ -99,7 +100,8 @@
         <?php endif ?>
     <?php endif ?>
 </section>
-</center>
+</div>
+
 <?php endforeach ?>
 
 <br>
