@@ -1,24 +1,24 @@
 <?php foreach (${basename(__FILE__, '.phtml').'_quests'} as $quest) : ?>
 <section>
-	<h3><?= $quest->getName() ?></h3>
-	<table>
+	<h3 style="text-align: center;"><?= $quest->getName() ?></h3>
+	<table class="table-npc-management">
 		<tr>
 			<th></th><th></th><th colspan="2">Voice actor</th><th></th>
 		</tr>
 	<?php foreach ($quest->getNpcs() as $npc) : ?>
 		<tr>
-			<td><img src="dynamic/npcs/<?= $npc->getId() ?>.png" alt="NPC picture" class="avatar" /></td>
-			<td><?= $npc->getName() ?></td>
+			<td style="min-width: 150px; max-width: 150px;"><img src="dynamic/npcs/<?= $npc->getId() ?>.png" alt="NPC picture" class="avatar" /></td>
+			<td style="min-width: 150px; max-width: 150px;"><?= $npc->getName() ?></td>
 			<?php if ($npc->getVoiceActor() === null) : ?>
-                <td><img class="avatar" src="dynamic/avatars/nobody.png" alt="Profile picture"/></td>
-				<td><i>Nobody</i></td>
+                <td style="min-width: 150px; max-width: 150px;"><img class="avatar" src="dynamic/avatars/nobody.png" alt="Profile picture"/></td>
+				<td style="min-width: 150px; max-width: 150px;"><i>Nobody</i></td>
 			<?php else : ?>
-                <td><img class="avatar" src="dynamic/avatars/<?= $npc->getVoiceActor()->getAvatarLink() ?>" alt="Profile picture"/></td>
-				<td><a href="cast/<?= $npc->getVoiceActor()->getId() ?>"><?= $npc->getVoiceActor()->getName() ?></a></td>
+                <td style="min-width: 150px; max-width: 150px;"><img class="avatar" src="dynamic/avatars/<?= $npc->getVoiceActor()->getAvatarLink() ?>" alt="Profile picture"/></td>
+				<td style="min-width: 150px; max-width: 150px;"><a href="cast/<?= $npc->getVoiceActor()->getId() ?>"><?= $npc->getVoiceActor()->getName() ?></a></td>
 			<?php endif ?>
-			<td><a href="administration/npcs/manage/<?= $npc->getId() ?>">Manage</a></td>
+			<td><a id="managelink" href="administration/npcs/manage/<?= $npc->getId() ?>" style="min-width: 150px; max-width: 150px;">Manage</a></td>
 		</tr>
 	<?php endforeach ?>
-	</table>
+	</table><hr>
 </section>
 <?php endforeach ?>

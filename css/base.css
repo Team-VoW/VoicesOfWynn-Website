@@ -261,6 +261,22 @@ textarea:focus, input:focus {
 #va-confirm-change {
     background-color: #e7cb6e;
 }
+
+
+/* admin stuff */
+.spacing {
+    padding: 20px;
+}
+#table-npc-management td {
+    min-width: 300px;
+    max-width: 300px;
+}
+#managelink {
+    color: red;
+}
+#managelink:hover {
+    background: rgba(255, 0, 0, 0.226);
+}
 /* ##################### */
 /*         other         */
 /* ##################### */

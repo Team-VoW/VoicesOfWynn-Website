@@ -9,6 +9,7 @@ main {
     width: 170vh;
     margin-left: -55vh;
 }
+
 @media (max-width: 1950px) {
     main {
         width: 160vh;
