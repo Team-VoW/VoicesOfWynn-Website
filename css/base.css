@@ -43,7 +43,8 @@ p {
 }
 
 iframe { border: 5px solid #fadb76; border-radius: 4px;
-        
+    height: 450px;
+    width: 800px;
 }
 
 button {
@@ -317,6 +318,7 @@ textarea:focus, input:focus {
 
     p { padding-left: 10px;
     padding-right: 10px; }
+    iframe { height: 260px; width: 420px; }
 
 }
 /* any other media \/ */
