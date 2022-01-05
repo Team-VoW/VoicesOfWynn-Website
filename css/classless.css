@@ -256,6 +256,7 @@ mark{ background-color: transparent; color: #007c30; text-decoration: underline 
 	overflow: hidden;
 	z-index: 2;
 	position: absolute;
+	min-height: auto;
 	max-height: fit-content;
 	min-width: 200px;
 	max-width: 200px;

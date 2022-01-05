@@ -123,6 +123,7 @@ textarea { font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sa
 
 /* logo */
 .header0 .imglink:hover { background: none; }
+.imglink {float: right; z-index: 1; position: absolute;}
 #vertical {
     margin: 133px 0px 0px 0;
     border-left: 2px solid #333;
@@ -130,6 +131,9 @@ textarea { font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sa
     position: relative;
     left: 72%;
 }
+.logo { float: right;
+    z-index: 1;
+    position: absolute;}
 
 /* buttons */
 .downloadbtn { background: #238636; }
@@ -179,7 +183,8 @@ a.valink:hover { background: none; }
     margin: 0px auto;
 }
 .reccenter {
-    /* margin: auto 120px; */
+    /* margin: auto 120px;      <-- alternative way of handling the 
+                                    centering problem*/
     display: flex;
     justify-content: center;
 }
@@ -270,7 +275,7 @@ textarea:focus, input:focus {
 /* ######################## */
 
 /* #### MOBILE ####*/
-@media (max-width: 1000px) {
+@media (max-width: 1000px) {                                    /** fuck mobile. had to be said. **/
     /* below mainly focuses on removing the navigation
     bar which will only be available on full sitze screens
     (laptop, desktop, tablet/ipad maybe */
@@ -281,8 +286,8 @@ textarea:focus, input:focus {
     #vertical {visibility: hidden;}
     img.logo {                          
         display: block;
-        margin-left: auto;
-        margin-right: 93px;
+        margin-left: 93px;
+        margin-top: -250px;
     }
     a {
        color: none;
@@ -314,135 +319,285 @@ textarea:focus, input:focus {
     padding-right: 10px; }
 
 }
-@media (min-width: 1001px) {
+/* any other media \/ */
+@media (min-width: 1001px) {                /** Done **/
     .imglink { 
         float:right; 
-        margin-top: -10vh;
+        margin-top: -12vh;
     }
     a.imglink{
         display: block;
-        height: 200px;
-        width: 200px;
-        z-index: 0;
+        height: 170px;
+        width: 170px;
+        margin-left: 61vh;
+        margin-rigth: 10px;
+        padding-top: 20px;
     }
     .mobilenav {
         display: none;
     }
-}
-@media (max-width: 1210px) {
-    #vertical {
-        margin: 138px 0px 0px 0;
-        border-left: 2px solid #333;
-        height: 5vh;
-        position: relative;
-        left: 72%;
-    }
-    .logo {
-        margin-top: -30px;
-        margin-right: 15px;
-    }
-}
-@media (max-width: 1300px) {
-    .logo {
-        float: right;
-        margin-top: -130px;
-        margin-right: 15px;
-    }
-    #vertical {
-        margin: 138px 0px 0px 0;
-        border-left: 2px solid #333;
-        height: 9vh;
-        position: relative;
-        left: 72%;
-    }
-    @media (max-width: 1280px) {
+    @media (max-width: 1210px) {                    /** No need for link change here **/
         #vertical {
             margin: 138px 0px 0px 0;
             border-left: 2px solid #333;
-            height: 14vh;
+            height: 5vh;
             position: relative;
             left: 72%;
         }
-        @media (height: 950px) {
+        .logo {
+            margin-top: -30px;
+            margin-right: 15px;
+        }
+    }
+    @media (max-width: 1300px) {                /** Done **/
+        .logo {
+            float: right;
+            margin-top: -30px;
+            margin-right: ;
+            margin-left: -15px;
+        }
+        #vertical {
+            margin: 138px 0px 0px 0;
+            border-left: 2px solid #333;
+            height: 9vh;
+            position: relative;
+            left: 72%;
+        }
+        .imglink {
+            margin-left: 200px;
+            margin-top: -90px;
+        }
+        a.imglink {
+            display: block;
+            height: 170px;
+            width: 170px;
+            margin-left: 90vh;
+            margin-rigth: 10px;
+            padding-top: 20px;
+            margin-top: -140px;
+        }
+        @media (max-width: 1280px) {            /** Done **/
             .logo {
                 float: right;
-                margin-top: -125px;
-                margin-right: 15px;
+                margin-top: -30px;
+                margin-right: ;
+                margin-left: -20px;
             }
             #vertical {
                 margin: 138px 0px 0px 0;
                 border-left: 2px solid #333;
-                height: 13vh;
+                height: 14vh;
+                position: relative;
+                left: 72%;
+            }
+            .imglink {
+                margin-left: 200px;
+                margin-top: -90px;
+            }
+            a.imglink {
+                display: block;
+                height: 170px;
+                width: 170px;
+                margin-left: 90vh;
+                margin-rigth: 10px;
+                padding-top: 20px;
+                margin-top: -140px;
+            }
+            @media (height: 800px) {            /** Done **/
+                .logo {
+                    float: right;
+                    margin-top: -35px;
+                    margin-left: -90px;
+                }
+                #vertical {
+                    margin: 138px 0px 0px 0;
+                    border-left: 2px solid #333;
+                    height: 14vh;
+                    position: relative;
+                    left: 72%;
+                }
+                .imglink {
+                    margin-left: 200px;
+                    margin-top: -90px;
+                }
+                a.imglink {
+                    display: block;
+                    height: 170px;
+                    width: 170px;
+                    margin-left: 90vh;
+                    margin-rigth: 10px;
+                    padding-top: 20px;
+                    margin-top: -140px;
+                }
+            }
+            @media (height: 950px) {            /** Done **/
+                .logo {
+                    float: right;
+                    margin-top: -40px;
+                    margin-left: -220px;    
+                }
+                #vertical {
+                    margin: 138px 0px 0px 0;
+                    border-left: 2px solid #333;
+                    height: 13vh;
+                    position: relative;
+                    left: 72%;
+                }
+                .imglink {
+                    margin-left: 200px;
+                    margin-top: -90px;
+                }
+                a.imglink {
+                    display: block;
+                    height: 170px;
+                    width: 170px;
+                    margin-left: 90vh;
+                    margin-rigth: 10px;
+                    padding-top: 20px;
+                    margin-top: -140px;
+                }
+            }
+        }
+        @media (min-width: 1310px) {             /** Done **/
+            .logo {
+                float: right;
+                margin-top: -10px;
+                margin-left: -50px;  
+            }
+            #vertical {
+                margin: 138px 0px 0px 0;
+                border-left: 2px solid #333;
+                height: 10vh;
+                position: relative;
+                left: 72%;
+            }
+            .imglink {
+                margin-left: 200px;
+                margin-top: -90px;
+            }
+            a.imglink {
+                display: block;
+                height: 170px;
+                width: 170px;
+                margin-left: 90vh;
+                padding-top: 20px;
+                margin-top: -140px;
+            }
+        }
+    }
+    @media (min-width: 1400px) {                    /** Done **/      
+        #vertical {
+            margin: 130px 0px 0px 0;
+            border-left: 2px solid #333;
+            height: 12vh;
+            position: relative;
+            left: 72%;
+        }
+        .imglink {
+            margin-left: 200px;
+            margin-top: -90px;
+        }
+        .logo {
+            float: right;
+            margin-top: -30px;
+            margin-right: ;
+            margin-left: -15px;
+        }
+        a.imglink {
+            display: block;
+            height: 170px;
+            width: 170px;
+            margin-left: 72vh;
+            margin-rigth: 10px;
+            padding-top: 20px;
+            margin-top: -140px;
+        }
+    }
+    @media (min-width: 1900px) {
+        .imglink {
+            margin-left: 200px;
+            margin-top: -90px;
+        }
+        .logo {
+            float: right;
+            margin-top: -30px;
+            margin-right: ;
+            margin-left: -15px;
+        }
+        a.imglink {
+            display: block;
+            height: 170px;
+            width: 170px;
+            margin-left: 72vh;
+            margin-rigth: 10px;
+            padding-top: 20px;
+            margin-top: -140px;
+        }
+        @media (max-width: 1950px) {
+            .imglink {
+                margin-left: 200px;
+                margin-top: -90px;
+            }
+            .logo {
+                float: right;
+                margin-top: -30px;
+                margin-right: ;
+                margin-left: -140px;
+            }
+            a.imglink {
+                display: block;
+                height: 170px;
+                width: 170px;
+                margin-left: 72vh;
+                margin-rigth: 10px;
+                padding-top: 20px;
+                margin-top: -140px;
+            }
+            #vertical {
+                margin: 133px 0px 0px 0;
+                border-left: 2px solid #333;
+                height: 9vh;
                 position: relative;
                 left: 72%;
             }
         }
     }
-    @media (min-width: 1310px) {
+    /* NOTE TO SELF: All of the @media rulesets could be easily
+    changed so they dont occupy this many lines, however this
+    would make everything harder to read (see the first few 
+    lines of mobile)! */
+    @media (max-width: 2900px) {
         .logo {
-            margin-top: -130px;
-            margin-right: 15px;
+            /*  */
         }
-        #vertical {
-            margin: 138px 0px 0px 0;
-            border-left: 2px solid #333;
-            height: 10vh;
-            position: relative;
-            left: 72%;
-        }
-    }
-}
-@media (min-width: 1400px) {
-    #vertical {
-        margin: 130px 0px 0px 0;
-        border-left: 2px solid #333;
-        height: 12vh;
-        position: relative;
-        left: 72%;
-    }
-    .logo {
-        margin-top: -130px;
-        margin-right: 10px;
-    }
-}
-@media (min-width: 1900px) {
-    .logo {
-        margin-top: -110px;
-        margin-left: -15px;
-    }
-    @media (max-width: 1950px) {
-        .logo {
-            margin-top: -110px;
-            margin-left: -15px;
-        }
-        #vertical {
-            margin: 133px 0px 0px 0;
-            border-left: 2px solid #333;
-            height: 9vh;
-            position: relative;
-            left: 72%;
+        @media (min-width: 2500px) {
+            .imglink {
+                margin-left: 200px;
+                margin-top: -90px;
+            }
+            .logo {
+                float: right;
+                margin-top: -30px;
+                margin-right: ;
+                margin-left: -140px;
+            }
+            a.imglink {
+                display: block;
+                height: 170px;
+                width: 170px;
+                margin-left: 60.5vh;
+                margin-rigth: 10px;
+                padding-top: 15px;
+                margin-top: -140px;
+            }
+            #vertical {
+                margin: 133px 0px 0px 0;
+                border-left: 2px solid #333;
+                height: 9vh;
+                position: relative;
+                left: 72%;
+            }
         }
     }
 }
-/* NOTE TO SELF: All of the @media rulesets could be easily
-changed so they dont occupy this many lines, however this
-would make everything harder to read (see the first few 
-lines of mobile)! */
-@media (max-width: 2900px) {
-    .logo {
-        /*  */
-    }
-    @media (min-width: 2500px) {
-        .logo {
-            margin-top: -80px;
-            margin-left: -15px;
-        }
-        #vertical {
-            margin: 133px 0px 0px 0;
-            border-left: 2px solid #333;
-            height: 9vh;
-            position: relative;
-            left: 72%;
-        }
-    }
-}
+/* fuck media-queries :) */
