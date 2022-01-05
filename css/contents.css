@@ -72,8 +72,13 @@ textarea:focus, input:focus {
 		display: block;
 		visibility: visible;
 	}
-	.cardwrapper {
-		margin-bottom: 500px;
-		min-height: fit-content;
+	.card-wrapper {
+		margin: 0 auto;
+		margin-bottom: 360px;
+	}
+	#npcvoice {
+		height: 350px;
+		width: 350px;
+		overflow-y: scroll;
 	}
 }
