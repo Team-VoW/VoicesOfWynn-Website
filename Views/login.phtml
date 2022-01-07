@@ -27,15 +27,14 @@ display: block;" >
     <?php if (${basename(__FILE__, '.phtml').'_change_password'}) : ?>
         <p>You logged in using a temporary password. You need to set a new password before proceeding (<?= VoicesOfWynn\Models\AccountDataValidator::PASSWORD_MIN_LENGTH ?> characters minimum).</p>
         <label for="new-password">New Password</label>
-        <input id="new-password" type="password" name="newPassword" /><br>
+        <input id="new-password" type="password" name="newPassword" />
     <?php endif ?>
-    
+    <div style="color: rgb(255, 83, 83); text-align: center; margin-top: -22px;"><i><?= ${basename(__FILE__, '.phtml').'_error'} ?></i></div><br>
     <input 
         style="border-right: none; border-left: none; border-top: none;"
         size="20"
         type="submit" value="Login"/>
 </form>
 </div>
-<div><?= ${basename(__FILE__, '.phtml').'_error'} ?></div>
 
 <button class="backbtn" onclick="history.go(-1)">< Go Back</button>
