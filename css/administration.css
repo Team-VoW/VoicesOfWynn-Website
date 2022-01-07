@@ -34,3 +34,23 @@ td th {
     /*width: 10vh;*/
     height: 10vh;
 }
+
+.adnav a {
+    border-right: 2px solid #333;
+}
+@media (max-width: 1950px) {
+    td th {
+        padding-right: 0px;
+    }
+    table {
+        border-spacing: 5px;
+    }
+}
+@media (max-width: 1210px) {
+    td th {
+        padding-right: 0px;
+    }
+    table {
+        border-spacing: 5px;
+    }
+}

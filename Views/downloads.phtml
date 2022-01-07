@@ -1,19 +1,34 @@
-<h1>How to install</h1>
-<p>Here you can see a tutorial on how to install Voices of Wynn</p>
+<h1>How to Install</h1>
+<p style="text-align: center;">Here you can see a tutorial on how to install Voices of Wynn
 <ol>
-    <li><a href="/files/mod/latest.jar">Download the latest version of the mod</a></li>
+    <li><a id="ahover" href="/files/mod/latest.jar">Download the latest version of the mod</a></li>
     <li>Navigate to <code>C:\Users\[USERNAME]\AppData\Roaming\.minecraft\mods</code></li>
     <li>Move the downloaded <code>.jar</code> file to this folder</li>
     <li>Restart Forge</li>
     <i>More in-depth tutorial is being made</i>
 </ol>
+</p><br>
 
-<a href="/files/mod/latest.jar"><button><img src="images/download.png" alt="Download icon" />Download Latest Version</button></a>
+<p style="text-align: center;">
+<a href="/files/mod/latest.jar"><button class="downloadbtn"><img src="images/download.png" alt="Download icon" width="20px" height="20px" /> Download Latest Version</button></a>
+</p>
+<br><hr>
+<h3 style="text-align: center;">Older Versions of the Mod</h3>
+<p style="text-align: center;">In case you need to find an older version of the mod you are in the correct place! Find the version in the list below! They are sorted from oldest (bottom) to newest (top)!</p>
+<br><hr><br>
 
-<h3>Older versions of the mod</h3>
+<div class="dlwrapper">
 <ul>
 <?php foreach (${basename(__FILE__, '.phtml').'_versions'} as $version) : ?>
-    <li><?= $version['name'] ?><a href="<?= $version['link'] ?>"><button><img src="images/download.png" alt="Download icon" /></button></a></li>
+    <li>
+        <?= $version['name'] ?><p style="text-align: center;">
+        <a href="<?= $version['link'] ?>">
+        <button class="downloadbtn" >
+            <img src="images/download.png" alt="Download icon" width="20px" height="20px"/> Download
+        </button>
+        </a>
+        <hr class="dlhr">
+    </li>
 <?php endforeach ?>
 </ul>
-
+</div>

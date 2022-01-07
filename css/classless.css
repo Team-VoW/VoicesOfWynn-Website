@@ -23,20 +23,23 @@ body {
 	margin: auto; 
 	max-width: 50rem; 
 	padding: 2rem 0.5rem 0rem; 
-	overflow-x: hidden; 
+	overflow-x: hidden;
 }
+
 footer { margin: 10rem 0rem 0rem; }
 
 
 /* text */
-:root { font: 13pt 'Open Sans', sans-serif; line-height: 1.5; color: #424456; }
+:root { 
+	font: 13pt 'Open Sherif', sans-serif; line-height: 1.5; color: #424456; 
+}
 small, sub, sup { font-size: 75%; }
-
 
 /* headings */
 h1, h2, h3, h4, h5, h6 { 
 	margin: 1.5em 0 0em; 
-	padding: 0.3em 0; 
+	padding: 0.3em 0;
+	font-family: minecraft;
 }
 h1 { font-size: 2.5em; font-weight: 300; }  
 h2 { font-size: 2.0em; font-weight: 300; } 
@@ -53,19 +56,20 @@ dt { font-weight: bold; }
 
 
 /* tables */
-td, th {
+/* td, th {
   padding: 0.5rem 1.5rem;
   text-align: right;
   border-bottom: 0.1rem solid #d1d1d1;
   white-space: nowrap;
 }
 td:first-child, th:first-child { padding-left:  0; text-align: left; }
-td:last-child,  th:last-child  { padding-right: 0; }
+td:last-child,  th:last-child  { padding-right: 0; } */
 tr:hover{ background-color: #f4f5f6; }
+table {border-spacing: 30px;}
 
 
 /* figures */
-img { max-width: 100%; }
+/*img { max-width: 100%; }*/
 figure { text-align: center; }
 figure > img { display: block; margin: 0.5em auto; }
 figcaption, caption { color: #777; margin-bottom: 1rem; }
@@ -85,16 +89,27 @@ code, kbd, samp {
 
 /* links */
 a { color: #0065bd; text-decoration: none; cursor: pointer; }
-a:hover, button:not([disabled]):hover { 
+/*a:hover, button:not([disabled]):hover { 
 	color: #00C5bd; 
 	border-color: #00C5bd; 
-}
-
+}*/
 
 /* forms and inputs */
-textarea, input, button, select { border-radius: .3rem; border: .1rem solid #d1d1d1; padding: 0.3rem; outline: none;}
-button { padding: 0.7rem 1rem; cursor: pointer; font-weight: bold; letter-spacing: 0.1rem; color: #0065bd; background-color: #f4f5f6; border: .1rem solid #0065bd; }
+textarea, input, button, select { /*border-radius: .3rem; border: .1rem solid #d1d1d1;*/ padding: 0.3rem; outline: none; font-family: minecraft;}
+/* button { 
+	padding: 0.7rem 1rem; 
+	cursor: pointer; 
+	font-weight: bold; 
+	letter-spacing: 0.1rem; 
+	color: #0065bd; 
+	background-color: #f4f5f6; 
+	border: .1rem solid #0065bd; 
+} */
 
+input { border-right: none; border-left: none; border-top: none; }
+textarea:focus, input:focus { outline: none; }
+textarea {resize: none; width: 600px; height: 250px; border-right: none; border-left: none; border-top: none;}
+label {font-style: italic;}
 
 /* misc */
 blockquote{ border-left: 0.3rem solid #d1d1d1; padding: 1rem 1.5rem; }
@@ -160,11 +175,14 @@ nav+main, nav+header { margin-top: 3rem; }
 /* Extra: forms and inputs advanced styling */
 fieldset { border-radius: 0rem; border: .1rem solid #d1d1d1; }
 textarea:focus, input:not([type=checkbox]):not([type=radio]):hover, select:hover{
-  border:.1rem solid #00C5bd;
+  border: 4px solid rgb(30, 128, 0);
+  border-right: none; border-left: none; border-top: none;
+  outline: none;
+  background: rgba(168, 168, 168, 0.13);
 }
 textarea:focus, input:not([type=checkbox]):not([type=radio]):focus{
-	border:.1rem solid #3273dc;
-	box-shadow: 0 0 5px #3273dc;
+	border-bottom: 4px solid rgb(30, 128, 0);
+	outline: none;
 }
 button[disabled]{ color: #777; border-color: #d1d1d1; }
 
@@ -184,27 +202,85 @@ mark{ background-color: transparent; color: #007c30; text-decoration: underline 
 
  /* grid */
 .row {
+	margin: 0 auto;
 	display: flex; 
 	margin: 0 -0.5rem;
 	align-items: stretch;
+	flex-wrap: wrap;
+	margin-right: 20px;
 }
-.row [class*="col"] { padding: 0 0.5rem; }
-.row .col   { flex: 1 1 100%; }
-.row .col-2 { flex: 0 0 16.66%; }
-.row .col-3 { flex: 0 0 25%; }
-.row .col-4 { flex: 0 0 33.33%; }
-.row .col-6 { flex: 0 0 50%; }
 
+.row [class*="col"] { 
+	padding-left: 15px;
+}
 
+.row .col   { 
+	flex: 1 1 100%; 
+	margin: 0 auto;
+	position: relative;
+	left: 50%;
+}
+
+.row .col-2 { 
+	flex: 0 0 16.66%; 
+}
+
+.row .col-3 { 
+	flex: 0 0 25%;
+	align-items: center;
+	justify-content: center;
+}
+
+.row .col-4 { 
+	flex: 0 0 33.33%; 
+}
+
+.row .col-6 { 
+	flex: 0 0 50%; 
+}
  /* cards */
-.card{
-	display: block;
+.card {
+	cursor: default;
+	align-items: center;
+	text-align: center;
+	display: inline-block;
+	width: auto;
+	font-family: Georgia, 'Times New Roman', Times, serif;
 	margin: .5rem 0;
+	border: 0.25rem solid #6B5641;
 	padding: .5rem 1rem 0.5rem; 
 	border-radius: .3rem; 
-	box-shadow: .1rem .1rem .4rem 0 #777;  
+	box-shadow: .1rem .1rem .4rem 0 #777;
+	background: aliceblue;
+	flex: 3 0 21%;
+	overflow: hidden;
+	z-index: 2;
+	position: absolute;
+	min-height: auto;
+	max-height: fit-content;
+	min-width: 200px;
+	max-width: 200px;
+}
+.roles {
+	cursor: default;
+	display: none;
+	text-align: left;
+	overflow: hidden;
+	z-index: 1; }
+.roles a.card:hover {
+	cursor: pointer;
+	display: block;
+	overflow: visible;
+	z-index: 3;
+}
+.avatar {
+	padding-top: 3px;
 }
 
+#profile:hover {
+	color: #A62FDB;
+	cursor: pointer;
+}
 
 /* align */
 .align-top      { vertical-align: top; }
@@ -298,3 +374,9 @@ mark{ background-color: transparent; color: #007c30; text-decoration: underline 
 	[class*="col"] > * { margin-top: 1rem !important; }
 }
 @media (max-width: 61rem) { aside {position: relative; margin: 0.5rem 0; } }
+
+/* fonts */
+@font-face {
+	font-family: minecraft;
+	src: url(../fonts/Minecraft.ttf);
+}

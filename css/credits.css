@@ -1,10 +1,82 @@
-a>.card {
-    color: #424456; /* Default color for ROOT used by classless.css */
+/* styling for credits */
+body {
+    background-image: url(../images/skyislands_credits.png);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+}
+
+main {
+    padding-right: 0.5vh;
+    padding-left: 0.5vh;
+    padding-bottom: 1vh;
+    border-radius: 1vh;
+}
+
+h1, h2 {
+    letter-spacing: 2px;
+    font-weight: bold;
+    font-family: minecraft;
+    text-decoration: none;
     text-align: center;
+}
+hr { overflow: hidden; }
+
+p {
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+strong {
+    font-family: minecraft;
+}
+
+a>.card {
+    margin-left: auto;
+    margin-right: auto;
+    background: aliceblue;
+    color: #424456;
+    text-align: center;
+    border: 0.25rem solid #DC9587;
+    z-index: 2;
 }
 
 a>.card:hover {
-    background-color: #EFEFFF;
+    cursor: pointer;
+	content: none;
+    box-shadow: .2rem .2rem .7rem 0 #777;
+    transform: translateY(3px);
+    pointer-events: visible;
+    position: relative;
+    visibility: visible;
+    float: none;
+    overflow: hidden;
+    z-index: 15;
+}
+
+.cardlink:hover {
+    background: none;
+}
+
+.cardwrapper {
+    height: 400px;
+    width: 25%;
+}
+
+a:hover .roles {
+    display: block;
+    cursor: pointer;
+    z-index: 1;
+    animation-name: rolessmooth;
+    animation-duration: 5s;
+}
+/* .card:first-child:hover {
+    animation-name: rolessmooth;
+    animation-duration: 5s;
+} */
+
+.card:hover > .row + .roles {
+        animation-name: rolessmooth;
+        animation-duration: 5s;
 }
 
 li {
@@ -13,4 +85,40 @@ li {
 
 .avatar {
     height: 10vh;
+    border-radius: .3rem;
+}
+
+hr {
+    overflow: hidden;
+}
+
+.row, .col-3, .card { z-index: 11; }
+
+@font-face {
+    font-family: minecraft;
+    src: url(../fonts/Minecraft.ttf);
+}
+
+@media (max-width: 1000px) {
+    .card {
+        width: 100%;
+    }
+}
+
+@keyframes rolessmooth {
+    0% {
+        top: 0%;
+    }
+    25% {
+        top: 25%;
+    }
+    50% {
+        top: 50%;
+    }
+    75% {
+        top: 75%;
+    }
+    100% {
+        top: 100%;
+    }
 }

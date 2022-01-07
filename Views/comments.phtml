@@ -1,14 +1,15 @@
 <script>var npcId = <?= ${basename(__FILE__, '.phtml').'_recording'}->npcId ?>;</script>
 
-<h1>Comment section</h1>
-<h3><?= ${basename(__FILE__, '.phtml').'_recording_title'} ?></h3>
-<audio controls>
+<h1>Comment Section</h1>
+<h3 style="text-align: center;"><?= ${basename(__FILE__, '.phtml').'_recording_title'} ?></h3>
+<p style="text-align: center;"><audio controls>
     <source src="dynamic/recordings/<?= ${basename(__FILE__, '.phtml').'_recording'}->file ?>" type="audio/ogg">
-    Your browser does not support the OGG audio format.
-</audio>
+    Oops! Your browser doesnt support the OGG format :(
+</audio></p>
 <br>
-<button id="new-comment-button">Post new comment</button>
-<button id="hide-form-button">Hide the form</button>
+<p style="text-align: center;"><button id="new-comment-button">Post new Comment</button></p>
+<hr>
+<p style="text-align: center;"><button id="hide-form-button">Hide the form</button></p>
 <form method="post" data-recording-id="<?= ${basename(__FILE__, '.phtml').'_recording'}->id ?>">
 <fieldset>
 <fieldset>
@@ -17,7 +18,7 @@
     <label for="content">Comment: </label><br>
     <textarea id="content" name="content" placeholder="You can praise the voice actor, suggest what could be improved or just say how much you like this quest. Just please, keep bad words out of that 😉" required></textarea>
 </fieldset>
-    <label for="antispam">Not a robot? They you can select some shade of <strong style="color:<?= ${basename(__FILE__, '.phtml').'_antispam_color_code'} ?>;"><?= ${basename(__FILE__, '.phtml').'_antispam_color'} ?></strong>, right?</label><br>
+    <label for="antispam">Not a robot? Then you can select some shade of <strong style="color:<?= ${basename(__FILE__, '.phtml').'_antispam_color_code'} ?>;"><?= ${basename(__FILE__, '.phtml').'_antispam_color'} ?></strong>, right?</label><br>
     <input id="antispam" name="antispam" type="color" required />
     <input type="submit" value="Send" />
     <small>
@@ -26,9 +27,9 @@
     </small>
 </fieldset>
 </form>
-<div id="comments">
+<div id="comments" style="margin: auto;">
 <?php foreach (${basename(__FILE__, '.phtml').'_comments'} as $comment) : ?>
-<div class="card">
+<div class="comment" style="margin: auto;">
     <table>
         <tr>
             <td rowspan="2"><img src="<?= $comment->gravatar ?>" alt="Avatar" /></td>
@@ -41,7 +42,9 @@
         </tr>
         <tr><td><div class="comment-content"><?= $comment->content ?></div></td></tr>
     </table>
-</div>
+</div><br>
 <?php endforeach ?>
 </div>
 
+<br>
+<button class="backbtn" onclick="history.go(-1)">< Go Back</button>

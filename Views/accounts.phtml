@@ -5,21 +5,21 @@
         <th rowspan="2">Display Name</th>
         <th rowspan="2">Bio</th>
         <th rowspan="2">Actions</th>
-        <th colspan="<?= count(${basename(__FILE__, '.phtml').'_roles'}) ?>">Roles</th>
+        <th colspan="<?= count(${basename(__FILE__, '.phtml').'_roles'}) ?>" dir="ltr">Roles</th>
     </tr>
     <tr>
         <?php for ($i = 0; $i < count(${basename(__FILE__, '.phtml').'_roles'}); $i++) : ?>
-            <th class="role-header" style="background-color: #<?= ${basename(__FILE__, '.phtml').'_roles'}[$i]->color ?>;">
+            <th class="role-header" style="background-color: #<?= ${basename(__FILE__, '.phtml').'_roles'}[$i]->color ?>;" dir="ltr">
                 <?= ${basename(__FILE__, '.phtml').'_roles'}[$i]->name ?>
             </th>
         <?php endfor ?>
     </tr>
     <?php foreach (${basename(__FILE__, '.phtml').'_accounts'} as $user) : ?>
         <tr data-user-id="<?= $user->getId() ?>">
-            <td><?= $user->getId() ?></td>
+            <td id="userinfo"><?= $user->getId() ?></td>
             <td><img class="avatar" src="dynamic/avatars/<?= $user->getAvatarLink() ?>" alt="Profile picture"/></td>
-            <td><?= $user->getName() ?></td>
-            <td style="text-align: left;"><?= nl2br($user->getBio()) ?></td>
+            <td id="userinfo"><?= $user->getName() ?></td>
+            <td id="userinfo" style="text-align: left;"><?= nl2br($user->getBio()) ?></td>
             <td>
                 <a href="administration/accounts/<?= $user->getId() ?>/clear-bio">Clear Bio</a><br>
                 <a href="administration/accounts/<?= $user->getId() ?>/clear-avatar">Clear Avatar</a><br>
@@ -38,4 +38,3 @@
         </tr>
     <?php endforeach ?>
 </table>
-

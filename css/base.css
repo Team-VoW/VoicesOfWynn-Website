@@ -1,0 +1,569 @@
+/* base css for vow */
+
+/* styling for all elements */
+/* Decided to adapt on Shady's idea of having a table of contents
+
+#### Contents ####
+    1) General styling
+    2) Specific styling
+    3) Screen res
+*/
+
+/* ##################### */
+/*        general        */
+/*#######################*/
+body {
+    background-image: url(../images/ragni_home.png);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    background-attachment: fixed;
+}
+
+main {
+    align-self: center;
+    background: whitesmoke;
+    padding-right: 0.5vh;
+    padding-left: 0.5vh;
+    padding-bottom: 1vh;
+    border-radius: 1vh;
+    box-shadow: .2rem .2rem .7rem 0 #777;
+}
+
+h1, h2 {
+    font-family: minecraft;
+    letter-spacing: 2px;
+    font-weight: bold;
+    text-decoration: none;
+    text-align: center;
+}
+
+p {
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+iframe { border: 5px solid #fadb76; border-radius: 4px;
+    height: 450px;
+    width: 800px;
+}
+
+button {
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    color: #333;
+    border-radius: 10px;
+    border: 5px solid transparent;
+    padding-top: 5px;
+    padding-bottom: 7px;
+    padding-right: 10px;
+    padding-left: 10px;
+    font-size: 20px;
+    font-weight: lighter;
+}
+
+button:hover {
+    transform: translateY(-5px);
+    color: #333;
+    box-shadow: .0rem .2rem .4rem #777;
+    pointer-events: visible;
+    position: relative;
+    z-index: 0;
+    visibility: visible;
+    float: none;
+
+    cursor: pointer;
+}
+input {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+textarea { font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; }
+
+/* ##################### */
+/*       specific        */
+/*#######################*/
+
+/* navigation */
+.header0 {
+    float: left;
+    width: 100%;
+    height: auto;
+    flex-wrap: wrap;
+}
+.nav {
+    margin: auto;
+    padding-right: 312px;
+    float: left;
+    margin: 150px -50px 0 0;
+    width: auto;
+    padding-bottom: 90px;
+    padding-top: 15px;
+}
+.nav li {
+    float: left;
+    flex: 6 0 21%;
+    list-style: none;
+    text-decoration: none;
+}
+.nav li a {
+    float: left;
+    color: #333;
+    padding: 6px 20px;
+    text-decoration: none;
+    font-size: 18px;
+    border-radius: 4px;
+}
+.nav li a:hover {
+    background-color: #333;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: .1rem .1rem .4rem 0 #777;
+}
+.adminNav {
+    float: right;
+    padding-left: 800px;
+}
+
+/* logo */
+.header0 .imglink:hover { background: none; }
+.imglink {float: right; z-index: 1; position: absolute;}
+#vertical {
+    margin: 133px 0px 0px 0;
+    border-left: 2px solid #333;
+    height: 7vh;
+    position: relative;
+    left: 72%;
+}
+.logo {
+    position: absolute;
+top: 0;
+right: 0;
+margin: 110px 550px;
+}
+.imglink {
+    position: absolute;
+top: 0;
+right: 0;
+}
+
+/* buttons */
+.downloadbtn { background: #26e94c; }
+.downloadbtn:hover { border-color: #23d847;  }
+.discordbtn { background: #5662F6;}
+.discordbtn:hover { border-color: #656ffd; }
+.creditsbtn { background: #AB5DFC; }
+.creditsbtn:hover { border-color:#b16afd; }
+.patreonbtn { background: #ff7866; }
+.patreonbtn:hover { border-color: #ff8979; }
+.backbtn { background: rgb(0, 107, 48); }
+.backbtn:hover { border-color: rgb(51, 122, 83); }
+.contentsbtn { background: rgb(21, 220, 255); }
+.contentsbtn:hover { border-color: rgb(103, 232, 255); }
+.loginbtn { background: #FFD751; }
+.loginbtn:hover { border-color: #fadb76; }
+.logoutbtn { background: rgb(255, 83, 83); }
+.logoutbtn:hover { border-color: rgb(255, 131, 131); }
+.adminbtn { background: rgb(255, 146, 45); }
+.adminbtn:hover { border-color: rgb(255, 176, 102); }
+.contactbtn { background:rgb(65, 140, 153); }
+.contactbtn:hover { border-color: rgb(84, 143, 153); }
+.faqbtn { background: rgb(47, 104, 0); }
+.faqbtn:hover { border-color: rgb(56, 99, 22); }
+
+
+
+/* href */
+a { color: #3a46f5; }
+a:hover { background: #6670ff5b; border-radius: 2px;}
+
+/* recording & user profiles */
+
+.welp { text-align: center; }
+#voice-actor-avatar {
+    max-width: 10vh;
+    max-height: 10vh;
+    border-radius: 5px;
+}
+.avatarcontents {
+    max-width: 10vh;
+    max-height: 10vh;
+    border-radius: 5px;
+}
+a.valink:hover { background: none; }
+.table-center {
+    margin: 0px auto;
+}
+.reccenter {
+    /* margin: auto 120px;      <-- alternative way of handling the 
+                                    centering problem*/
+    display: flex;
+    justify-content: center;
+}
+/* #contributerimg { max-width: 10vh; max-height: 10vh; border-radius: 4px; float: left;}
+#contributerimg a:hover { background: none; cursor: pointer;}
+.contact { margin-left: 100px; }
+.contact:hover { background: none; cursor: pointer; } */
+
+
+/* login */
+input {
+    border-bottom: 4px solid gray;
+    border-radius: 3px;
+    background: rgba(109, 109, 109, 0.13);
+    outline: none;
+    height: 50px;
+    width: auto;
+    font-size: 20px;
+} 
+input:hover {
+    border-bottom: 4px solid gray;
+    border-radius: 3px;
+}
+textarea:focus, input:focus {
+    outline: none;
+}
+#name:focus { outline: none;}
+
+/* downloads */
+.dlwrapper {text-align: center;}
+.dlwrapper ul {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    *display: inline;
+
+
+    zoom: 1;        /* not neccessary tho useful */
+
+    /* list styling for ul element*/
+    list-style: none;
+    text-decoration: wavy;
+}
+.dlwrapper li {
+    padding: 20px 20px;
+    border: none;
+    /* border: 1px solid #333;
+    border-radius: 5px; 
+    
+    ^ above will remain commented for now; might be useful
+    for future if there will ever be the addition of information
+    about older versions; in case there is having a box model
+    for each download might be useful!
+    */
+    text-decoration: inherit;
+    font-size: 20px;
+}
+.dlhr { max-width: 250px; }
+
+/* account stuff */
+.newaccform {
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+}
+.acctable {
+    min-width: min-content;
+}
+#voice-actor-form {
+    text-align: center;
+}
+#change-actor-btn { background-color: #8b2b1e; color: azure;}
+#va-confirm-change {
+    background-color: #e7cb6e;
+}
+
+
+/* admin stuff */
+.spacing {
+    padding: 20px;
+}
+#table-npc-management td {
+    min-width: 300px;
+    max-width: 300px;
+}
+#managelink {
+    color: red;
+}
+#managelink:hover {
+    background: rgba(255, 0, 0, 0.226);
+}
+/* ##################### */
+/*         other         */
+/* ##################### */
+
+/* fonts */
+@font-face {
+    font-family: minecraft;
+    src: url(../fonts/Minecraft.ttf);
+}
+
+/* ######################## */
+/*        responsive        */
+/* ######################## */
+
+/* #### MOBILE ####*/
+@media (max-width: 1000px) {                                    /** fuck mobile. had to be said. **/
+    /* below mainly focuses on removing the navigation
+    bar which will only be available on full sitze screens
+    (laptop, desktop, tablet/ipad maybe */
+    main, li {z-index: -1;}
+    #vertical, .nav li {overflow: hidden;}
+    .nav, .nav li, li:not([id*="quest-npcs"]),
+    .bio .bio0 {display: none;}
+    #vertical {visibility: hidden;}
+    a {
+       color: none;
+       background: none;
+       border-radius: none;
+    }
+    a:hover {
+        pointer-events: visible;
+        position: relative;
+        float: none;
+    }
+    .avatar0 p {text-align:left;}
+    .contact {}
+
+
+    /* fixing <main> */
+    /* in case this is problematic in the future remove it asap */
+    body { width: 100%; background: whitesmoke; 
+    box-shadow: none;}
+    main {
+        width: 105vw;
+        margin-left: -5vw;
+        margin-top: -11vh;
+        margin-bottom: -15vh;
+        box-shadow: none;
+    }
+
+    p { padding-left: 10px;
+    padding-right: 10px; }
+    iframe { height: 260px; width: 420px; }
+
+    .logo {
+        margin: 0 auto;
+        position: absolute;
+        visibility: visible;
+        display: inline-block;
+        margin-right: 100px;
+    }
+    .imglink {
+        height: 200px; width: 200px;
+        margin: 0 auto;
+        margin-left: 220px;
+    }
+
+}
+/* any other media \/ */
+@media (min-width: 1001px) {                /** Done **/
+    .logo {
+        position: absolute;
+        top: 0;
+        right: 0;
+        margin: 110px 550px;
+    }
+    .imglink {
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
+    .mobilenav {
+        display: none;
+    }
+    @media (max-width: 1210px) {                    /** No need for link change here **/
+        #vertical {
+            margin: 138px 0px 0px 0;
+            border-left: 2px solid #333;
+            height: 5vh;
+            position: relative;
+            left: 72%;
+        }
+        .logo {
+            margin-top: -30px;
+            margin-right: 15px;
+        }
+    }
+    @media (max-width: 1300px) {                /** Done **/
+        .logo {
+            position: absolute;
+            top: 0;
+            right: 0;
+            margin: 110px 550px;
+        }
+        .imglink {
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+        #vertical {
+            margin: 138px 0px 0px 0;
+            border-left: 2px solid #333;
+            height: 9vh;
+            position: relative;
+            left: 72%;
+        }
+        @media (max-width: 1280px) {            /** Done **/
+            .logo {
+                position: absolute;
+                top: 0;
+                right: 0;
+                margin: 120px 230px;
+            }
+            .imglink {
+                position: absolute;
+            top: 0;
+            right: 0;
+            }
+            #vertical {
+                margin: 138px 0px 0px 0;
+                border-left: 2px solid #333;
+                height: 14vh;
+                position: relative;
+                left: 72%;
+            }
+            @media (height: 800px) {            /** Done **/
+                .logo {
+                    position: absolute;
+                top: 0;
+                    right: 0;
+                    margin: 115px 230px;
+                }
+                .imglink {
+                    position: absolute;
+                top: 0;
+                right: 0;
+                }
+                #vertical {
+                    margin: 138px 0px 0px 0;
+                    border-left: 2px solid #333;
+                    height: 14vh;
+                    position: relative;
+                    left: 72%;
+                }
+            
+            }
+            @media (height: 950px) {            /** Done **/
+                .logo {
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    margin: 130px 230px;
+                }
+                .imglink {
+                    position: absolute;
+                top: 0;
+                right: 0;
+                }
+                #vertical {
+                    margin: 138px 0px 0px 0;
+                    border-left: 2px solid #333;
+                    height: 13vh;
+                    position: relative;
+                    left: 72%;
+                }
+            }
+        }
+        @media (min-width: 1310px) {             /** Done **/
+            .logo {
+                position: absolute;
+            top: 0;
+            right: 0;
+            margin: 110px 550px;
+            }
+            .imglink {
+                position: absolute;
+            top: 0;
+            right: 0;
+            }
+            #vertical {
+                margin: 138px 0px 0px 0;
+                border-left: 2px solid #333;
+                height: 10vh;
+                position: relative;
+                left: 72%;
+            }
+        }
+    }
+    @media (min-width: 1400px) {                    /** Done **/      
+        #vertical {
+            margin: 130px 0px 0px 0;
+            border-left: 2px solid #333;
+            height: 12vh;
+            position: relative;
+            left: 72%;
+        }
+        .logo {
+            position: absolute;
+            top: 0;
+        right: 0;
+            margin: 120px 320px;
+        }
+        .imglink {
+            position: absolute;
+        top: 0;
+        right: 0;
+        }
+    }
+    @media (min-width: 1900px) {
+        .logo {
+            position: absolute;
+        top: 0;
+        right: 0;
+        margin: 110px 550px;
+        }
+        .imglink {
+            position: absolute;
+        top: 0;
+        right: 0;
+        }
+        @media (max-width: 1950px) {
+            .logo {
+                position: absolute;
+            top: 0;
+            right: 0;
+            margin: 110px 550px;
+            }
+            .imglink {
+                position: absolute;
+            top: 0;
+            right: 0;
+            }
+            #vertical {
+                margin: 133px 0px 0px 0;
+                border-left: 2px solid #333;
+                height: 9vh;
+                position: relative;
+                left: 72%;
+            }
+        }
+    }
+    /* NOTE TO SELF: All of the @media rulesets could be easily
+    changed so they dont occupy this many lines, however this
+    would make everything harder to read (see the first few 
+    lines of mobile)! */
+    @media (max-width: 2900px) {
+        .logo {
+            /*  */
+        }
+        @media (min-width: 2500px) {
+            .logo {
+                position: absolute;
+            top: 0;
+            right: 0;
+            margin: 110px 550px;
+            }
+            .imglink {
+                position: absolute;
+            top: 0;
+            right: 0;
+            }
+            #vertical {
+                margin: 133px 0px 0px 0;
+                border-left: 2px solid #333;
+                height: 9vh;
+                position: relative;
+                left: 72%;
+            }
+        }
+    }
+}
+/* fuck media-queries :) */
