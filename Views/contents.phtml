@@ -21,16 +21,19 @@
 				<div class="card" id="npcvoice">
 					<h3 class="questName"><?= $quest->getName(); ?></h3>
 					
-					<ul id="questInfo">
+					<div id="questInfo" style="margin-bottom: 0px; margin-top: 0px; padding-top: 0px; padding-bottom: 0px;">
 						<?php foreach ($quest->getNpcs() as $npc) : ?>
-						<li id="quest-npcs">
-							<p style="text-align: center;"><img class="npc-avatar" src="dynamic/npcs/<?= $npc->getId() ?>.png" alt="NPC avatar" /></p>
+						<div id="quest-npcs">
+							<p style="text-align: center; margin-bottom: 0px; margin-top: 0px;"><img class="npc-avatar" src="dynamic/npcs/<?= $npc->getId() ?>.png" alt="NPC avatar" /></p>
 							<p style="text-align: center;
 										border-bottom: 1px solid black;
+										margin-top: 0px; margin-bottom: 0px;
+										padding-bottom: 15px;
 							"><a href="contents/npc/<?= $npc->getId() ?>"><?= $npc->getName() ?></a></p>
-						</li>
+							<br>
+						</div>
 						<?php endforeach ?>
-					</ul>
+						</div>
 				</div>
 				</div>
 			</div>

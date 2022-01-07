@@ -65,6 +65,7 @@ textarea:focus, input:focus {
 	list-style: none;
 	justify-content: center;
 	align-items: center;
+	margin: 0 auto;
 }
 #questInfo li {
 	justify-content: center;
