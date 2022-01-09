@@ -128,7 +128,7 @@ textarea { font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sa
 #vertical {
     margin: 133px 0px 0px 0;
     border-left: 2px solid #333;
-    height: 7vh;
+    height: 100px;
     position: relative;
     left: 72%;
 }
@@ -328,13 +328,17 @@ textarea:focus, input:focus {
     body { width: 100%; background: whitesmoke; 
     box-shadow: none;}
     main {
-        width: 105vw;
-        margin-left: -5vw;
-        margin-top: -11vh;
-        margin-bottom: -15vh;
-        box-shadow: none;
+        max-width: 100%;
+        min-width: 100%;
     }
-
+    html {
+        max-width: 100%;
+        min-width: 100%;
+    }
+    body {
+        max-width: 100%;
+        min-width: 100%;
+    }
     p { padding-left: 10px;
     padding-right: 10px; }
     iframe { height: 260px; width: 420px; }
@@ -350,6 +354,16 @@ textarea:focus, input:focus {
         height: 200px; width: 200px;
         margin: 0 auto;
         margin-left: 220px;
+    }
+
+    @media (min-width: 700px) {
+        .logo {
+            margin: 0 auto;
+            position: absolute;
+            visibility: visible;
+            display: inline-block;
+            margin-right: 300px;
+        }
     }
 
 }
@@ -373,7 +387,7 @@ textarea:focus, input:focus {
         #vertical {
             margin: 138px 0px 0px 0;
             border-left: 2px solid #333;
-            height: 5vh;
+            height: 100px;
             position: relative;
             left: 72%;
         }
@@ -397,7 +411,7 @@ textarea:focus, input:focus {
         #vertical {
             margin: 138px 0px 0px 0;
             border-left: 2px solid #333;
-            height: 9vh;
+            height: 100px;
             position: relative;
             left: 72%;
         }
@@ -420,6 +434,14 @@ textarea:focus, input:focus {
                 position: relative;
                 left: 72%;
             }
+            @media (max-width: 1050px) {
+                .logo {
+                    margin: 120px;
+                }
+                #vertical {
+                    max-height: 90px;
+                }
+            }
             @media (height: 800px) {            /** Done **/
                 .logo {
                     position: absolute;
@@ -435,7 +457,7 @@ textarea:focus, input:focus {
                 #vertical {
                     margin: 138px 0px 0px 0;
                     border-left: 2px solid #333;
-                    height: 14vh;
+                    height: 100px;
                     position: relative;
                     left: 72%;
                 }
@@ -456,9 +478,17 @@ textarea:focus, input:focus {
                 #vertical {
                     margin: 138px 0px 0px 0;
                     border-left: 2px solid #333;
-                    height: 13vh;
+                    height: 100px;
                     position: relative;
                     left: 72%;
+                }
+            }
+            @media (min-height: 1900px) {
+                .logo {
+                    margin: 120px 180px;
+                }
+                #vertical {
+                    max-height: 100px;
                 }
             }
         }
@@ -477,7 +507,7 @@ textarea:focus, input:focus {
             #vertical {
                 margin: 138px 0px 0px 0;
                 border-left: 2px solid #333;
-                height: 10vh;
+                height: 100px;
                 position: relative;
                 left: 72%;
             }
@@ -487,7 +517,7 @@ textarea:focus, input:focus {
         #vertical {
             margin: 130px 0px 0px 0;
             border-left: 2px solid #333;
-            height: 12vh;
+            height: 100px;
             position: relative;
             left: 72%;
         }
@@ -530,7 +560,7 @@ textarea:focus, input:focus {
             #vertical {
                 margin: 133px 0px 0px 0;
                 border-left: 2px solid #333;
-                height: 9vh;
+                height: 100px;
                 position: relative;
                 left: 72%;
             }
@@ -540,6 +570,8 @@ textarea:focus, input:focus {
     changed so they dont occupy this many lines, however this
     would make everything harder to read (see the first few 
     lines of mobile)! */
+
+    /* big screen, big numbers */
     @media (max-width: 2900px) {
         .logo {
             /*  */
@@ -549,7 +581,7 @@ textarea:focus, input:focus {
                 position: absolute;
             top: 0;
             right: 0;
-            margin: 110px 550px;
+            margin: 123px 1000px;
             }
             .imglink {
                 position: absolute;
@@ -559,10 +591,16 @@ textarea:focus, input:focus {
             #vertical {
                 margin: 133px 0px 0px 0;
                 border-left: 2px solid #333;
-                height: 9vh;
+                height: 100px;
                 position: relative;
                 left: 72%;
+                max-height: 100px;
             }
+        }
+    }
+    @media (min-width: 3000px) {
+        .logo {
+            margin: 110px 1500px;
         }
     }
 }
