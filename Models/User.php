@@ -8,7 +8,7 @@ class User
 {
     private const DEFAULT_PASSWORD_CHARACTERS = 'abcdefghijklmnopqrstuvwxyz0123456789';
     public const DEFAULT_PASSWORD_LENGTH = 12;
-    private const LOG_PASSWORDS = false; //Turn this on when mass-creating user accounts, so you can message the temporary passwords to users all at once
+    private const LOG_PASSWORDS = true; //Turn this on when mass-creating user accounts, so you can message the temporary passwords to users all at once
     
     private int $id = 0;
     private $email = '';

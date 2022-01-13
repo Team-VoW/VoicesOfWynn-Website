@@ -42,13 +42,10 @@
 <?php foreach (${basename(__FILE__, '.phtml').'_quest_recordings'} as $quest) : ?>
 
 <div class="reccenter">
-<section  class="table-center">
+<section class="table-center">
     <table>
         <tr>
-            <th colspan="2"><?= $quest->getName() ?></th>
-            <th>👍</th>
-            <th>👎</th>
-            <th><?php if (!${basename(__FILE__, '.phtml').'_admin'}) : ?>💬<?php endif ?></th>
+            <th colspan="<?php if (${basename(__FILE__, '.phtml').'_admin'}) : ?>6<?php else : ?>5<?php endif ?>"><?= $quest->getName() ?></th>
         </tr>
 	    <?php $recordings = $quest->getNpcs()[0]->getRecordings(); ?>
         <?php foreach ($recordings as $recording) : ?>
@@ -59,13 +56,19 @@
                     <source src="dynamic/recordings/<?= $recording->file ?>" type="audio/ogg">
                     Your browser does not support the OGG audio format.
                 </audio>
-            <td><a<?php if (!isset($_COOKIE['votedFor'.$recording->id])) : ?> class="upvote"<?php endif ?> data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>"><?= $recording->upvotes ?></a></td>
-            <td><a<?php if (!isset($_COOKIE['votedFor'.$recording->id])) : ?> class="downvote"<?php endif ?> data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>"><?= $recording->downvotes ?></a></td>
+            </td>
+            <td>
+                <button class="upvote"<?php if (isset($_COOKIE['votedFor'.$recording->id])) : ?> disabled="true"<?php endif ?> data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>">👍 (<span><?= $recording->upvotes ?></span>)</button>
+            </td>
+            <td>
+                <button class="downvote"<?php if (isset($_COOKIE['votedFor'.$recording->id])) : ?> disabled="true"<?php endif ?> data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>">👎 (<span><?= $recording->downvotes ?></span>)</button>
+            </td>
+            <td>
+                <a href="contents/npc/<?= $recording->npcId ?>/comments/<?= $recording->id ?>"><button class="comment">💬 (<span><?= $recording->comments ?></span>)</button></a>
+            </td>
             <td>
                 <?php if (${basename(__FILE__, '.phtml').'_admin'}) : ?>
                     <button class="delete-recording-btn" data-recording-id="<?= $recording->id ?>">×</button>
-                <?php else : ?>
-                    <a href="contents/npc/<?= ${basename(__FILE__, '.phtml').'_npc'}->getId() ?>/comments/<?= $recording->id ?> "class="comment"><?= $recording->comments ?></a>
                 <?php endif ?>
             </td>
         </tr>

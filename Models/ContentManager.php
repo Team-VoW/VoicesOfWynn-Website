@@ -113,7 +113,7 @@ class ContentManager
 	public function getVoiceActorRecordings($id): array
 	{
 		$query = '
-		SELECT recording.recording_id, recording.quest_id, recording.line, recording.file, recording.upvotes, recording.downvotes, (SELECT COUNT(*) FROM comment WHERE comment.recording_id = recording.recording_id) AS "comments", npc.name AS `nname`, quest.name as `qname`
+		SELECT recording.recording_id, recording.quest_id, recording.line, recording.file, recording.upvotes, recording.downvotes, (SELECT COUNT(*) FROM comment WHERE comment.recording_id = recording.recording_id) AS "comments", npc.npc_id AS `npc` , npc.name AS `nname`, quest.name as `qname`
 		FROM recording
 		JOIN quest USING(quest_id)
 		JOIN npc USING(npc_id)
@@ -135,7 +135,7 @@ class ContentManager
 					$quests[] = $currentQuest;
 				}
 				$currentQuest = new Quest($recording);
-				$currentNpc = new Npc(array('id' => $id, 'name' => $recording['nname']));
+				$currentNpc = new Npc(array('id' => $recording['npc'], 'name' => $recording['nname'])); //"npc" is a key for NPC's ID
 			}
 			
 			$recordingObj = new Recording($recording);
