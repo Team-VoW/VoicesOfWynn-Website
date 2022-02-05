@@ -9,9 +9,9 @@
 </div>
 <div class="bio">
 <section>
-<p class="welp"><img id="contributerimg" src="dynamic/avatars/<?= $voiceActor->getAvatarLink() ?>" 
-             alt="Voice actor's avatar" 
-             style="max-width: 10vh; 
+<p class="welp"><img id="contributerimg" src="dynamic/avatars/<?= $voiceActor->getAvatarLink() ?>"
+             alt="Voice actor's avatar"
+             style="max-width: 10vh;
                     max-height: 10vh;
                     border-radius: 5px"></p>
 
@@ -43,20 +43,12 @@
     <section>
         <table>
             <tr>
-                <th colspan="2">
-                    <b><?= $quest->getNpcs()[0]->getName() ?></b> in <i><?= $quest->getName() ?></i></th>
-                <th>&ensp;</th>
-                <th>&ensp;</th>
-                <th>&ensp;</th>
+                <th colspan="5">
+                    <b><?= $quest->getNpcs()[0]->getName() ?></b> in <i><?= $quest->getName() ?></i>
+                </th>
             </tr>
 			<?php $recordings = $quest->getNpcs()[0]->getRecordings(); ?>
 			<?php foreach ($recordings as $recording) : ?>
-                <tr>
-                    <th>  </th><th>  </th>
-                    <th><button class="upvote">👍</button></th>
-                    <th><button class="downvote">👎</button></th>
-                    <th>💬</th>
-                </tr>
                 <tr>
                     <td># <?= $recording->line ?></td>
                     <td>
@@ -65,16 +57,13 @@
                             Oops! Your browser doesnt support the OGG format :(
                         </audio>
                     <td>
-                        <p class="amount-display">&emsp;0</p>
-                        <!-- <a<?php if (!isset($_COOKIE['votedFor'.$recording->id])) : ?> class="upvote"<?php endif ?> data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>"><?= $recording->upvotes ?></a> -->
+                        <button class="upvote"<?php if (isset($_COOKIE['votedFor'.$recording->id])) : ?> disabled="true"<?php endif ?> data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>">👍 (<span><?= $recording->upvotes ?></span>)</button>
                     </td>
                     <td>
-                        <p class="amount-display">&emsp;0</p>
-                        <!-- <a<?php if (!isset($_COOKIE['votedFor'.$recording->id])) : ?> class="downvote"<?php endif ?> data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>"><?= $recording->downvotes ?></a> -->
+                        <button class="downvote"<?php if (isset($_COOKIE['votedFor'.$recording->id])) : ?> disabled="true"<?php endif ?> data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>">👎 (<span><?= $recording->downvotes ?></span>)</button>
                     </td>
                     <td>
-                        <p class="amount-display">&emsp;0</p>
-                        <!-- <a href="contents/npc/<?= $recording->npcId ?>/comments/<?= $recording->id ?>" class="comment"><?= $recording->comments ?></a> -->
+                        <a href="contents/npc/<?= $recording->npcId ?>/comments/<?= $recording->id ?>"><button class="comment">💬 (<span><?= $recording->comments ?></span>)</button></a>
                     </td>
                 </tr>
 			<?php endforeach ?>
