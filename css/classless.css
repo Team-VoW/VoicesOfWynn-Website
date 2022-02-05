@@ -208,6 +208,7 @@ mark{ background-color: transparent; color: #007c30; text-decoration: underline 
 	align-items: stretch;
 	flex-wrap: wrap;
 	margin-right: 20px;
+	justify-content: center;
 }
 
 .row [class*="col"] { 
