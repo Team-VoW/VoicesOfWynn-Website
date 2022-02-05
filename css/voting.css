@@ -1,10 +1,8 @@
-/* up and downvotes ig... reddit vibes */
-
 td a {
     font-weight: bolder;
     color: unset;
 }
 .upvote, .downvote, .comment {
     text-decoration: none;
-    color: #0065bd;
+    color: #333;
 }

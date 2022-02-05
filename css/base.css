@@ -167,6 +167,17 @@ right: 0;
 .contactbtn:hover { border-color: rgb(84, 143, 153); }
 .faqbtn { background: rgb(47, 104, 0); }
 .faqbtn:hover { border-color: rgb(56, 99, 22); }
+/* upvote/downvote/comment */
+.upvote { background: rgb(106, 190, 106); }
+.upvote:hover { border-color: rgb(86, 184, 86); }
+.upvote:disabled { background: #c0c0c0; border-color: rgb(86, 184, 86);}
+.downvote { background: rgb(148, 77, 77); }
+.downvote:hover { border-color: rgb(146, 56, 56); }
+.downvote:disabled { background: #c0c0c0; border-color: rgb(146, 56, 56); }
+.downvote:disabled,.upvote:disabled { color: #858585; }
+.comment { background: rgb(128, 128, 221); }
+.comment:hover { border-color: rgb(104, 104, 219); }
+
 
 
 
