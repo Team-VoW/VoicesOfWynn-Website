@@ -16,11 +16,12 @@ class Error403 extends Controller
     {
         header("HTTP/1.1 403 Forbidden");
         
-        self::$data['base_title'] = 'Access Denied';
-        self::$data['base_description'] = 'Oops, you probably didn\'t want to end up here.';
-        self::$data['base_keywords'] = '';
+        self::$data['error403_title'] = 'Access Denied';
+        self::$data['error403_description'] = 'Oops, you probably didn\'t want to end up here.';
+        self::$data['error403_keywords'] = '';
         
-        self::$views[] = 'error403';
+        self::$views = array('error403'); //Remove header, footer and stuff
+		self::$cssFiles = array('errors');
         return true;
     }
 }

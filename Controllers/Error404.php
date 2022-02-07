@@ -16,11 +16,12 @@ class Error404 extends Controller
     {
         header("HTTP/1.1 404 Not Found");
         
-        self::$data['base_title'] = 'Page not found';
-        self::$data['base_description'] = 'Oops, you probably didn\'t want to end up here.';
-        self::$data['base_keywords'] = '';
+        self::$data['error404_title'] = 'Page not found';
+        self::$data['error404_description'] = 'Oops, you probably didn\'t want to end up here.';
+        self::$data['error404_keywords'] = '';
         
-        self::$views[] = 'error404';
+        self::$views = array('error404'); //Remove header, footer and stuff
+		self::$cssFiles = array('errors');
         return true;
     }
 }
