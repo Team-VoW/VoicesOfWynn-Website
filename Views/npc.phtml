@@ -1,7 +1,7 @@
 <script>var npcId = <?= ${basename(__FILE__, '.phtml').'_npc'}->getId() ?>;</script>
 
 <h1><?= ${basename(__FILE__, '.phtml').'_npc'}->getName() ?></h1>
-<img src="dynamic/npcs/<?= ${basename(__FILE__, '.phtml').'_npc'}->getName() ?>.png" alt="NPC picture" />
+<img src="dynamic/npcs/<?= ${basename(__FILE__, '.phtml').'_npc'}->getId() ?>.png" alt="NPC picture" />
 <p>
     <strong>Voice actor: </strong>
     <?php if (${basename(__FILE__, '.phtml').'_voice_actor'} === null) : ?>
