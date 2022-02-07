@@ -1,14 +1,93 @@
+/* styling for Mod Contents */
+input {
+    border-bottom: 4px solid gray;
+    border-radius: 3px;
+    background: rgba(168, 168, 168, 0.13);
+    outline: none;
+}
+input:hover {
+    border-bottom: 4px solid gray;
+    border-radius: 3px;
+}
+textarea:focus, input:focus {
+    outline: none;
+}
+.row {
+    min-height: 200px;
+    max-height: fit-content;
+    margin-bottom: 10px;
+}
 .npc-avatar {
     height: 64px;
     width: 64px;
 }
-.card ul {
-    list-style: none;
-    padding-left: 0;
+#npcvoice {
+	cursor: default;
+    color: #424456;
+	align-items: center;
+	text-align: center;
+	display: inline-block;
+	width: auto;
+	font-family: Georgia, 'Times New Roman', Times, serif;
+	margin: .5rem 0;
+	border: 0.25rem solid #DC9587;
+	padding: .5rem 1rem 0.5rem; 
+	border-radius: .3rem; 
+	box-shadow: .1rem .1rem .4rem 0 #777;
+	background: aliceblue;
+	flex: 3 0 21%;
+	overflow: hidden;
+	z-index: 1;
+	position: absolute;
+	max-height: fit-content;
+	min-width: calc(50rem / 3 - 0.5rem - 1rem);
+	max-width: calc(50rem / 3 - 0.5rem - 1rem);
+    min-height: 200px;
+    max-height: fit-content;
 }
-.card ul li {
-    margin-bottom: 0;
+#npcvoice:hover {
+    cursor: default;
+	content: none;
+    box-shadow: .2rem .2rem .7rem 0 #777;
+    transform: translateY(3px);
+    pointer-events: visible;
+    visibility: visible;
+    float: none;
+    overflow: hidden;
+    z-index: 2;
 }
-.card ul li a {
-    line-height: 64px;
+#questInfo {
+	cursor: default;
+	display: none;
+	text-align: left;
+	overflow: hidden;
+	z-index: 1;
+	list-style: none;
+	justify-content: center;
+	align-items: center;
+	margin: 0 auto;
+}
+#questInfo li {
+	justify-content: center;
+	align-self: center;
+	align-items: center;
+}
+#npcvoice:hover #questInfo { display: block; }
+
+
+
+@media (max-width: 1000px) {
+	#questInfo {
+		display: block;
+		visibility: visible;
+	}
+	.card-wrapper {
+		margin: 0 auto;
+		margin-bottom: 360px;
+	}
+	#npcvoice {
+		height: 350px;
+		width: 350px;
+		overflow-y: scroll;
+	}
 }

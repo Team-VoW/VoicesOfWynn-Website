@@ -1,27 +1,51 @@
 <?php $voiceActor = ${basename(__FILE__, '.phtml').'_voice_actor'}; ?>
 <h1><?= $voiceActor->getName(); ?></h1>
-<img src="dynamic/avatars/<?= $voiceActor->getAvatarLink() ?>" alt="Voice actor's avatar">
+<hr>
+<br>
+<div class="avatar0">
+<p>
+
+</p>
+</div>
+<div class="bio">
 <section>
+<p class="welp"><img id="contributerimg" src="dynamic/avatars/<?= $voiceActor->getAvatarLink() ?>"
+             alt="Voice actor's avatar"
+             style="max-width: 10vh;
+                    max-height: 10vh;
+                    border-radius: 5px"></p>
+
 <?php if (!empty($voiceActor->getEmail()) && $voiceActor->hasPublicEmail()) : ?>
-<a href="mailto:<?= $voiceActor->getEmail() ?>">Contact</a>
+    <a class="contact" href="mailto:<?= $voiceActor->getEmail() ?>">
+        <p class="welp" style="text-align: center;">
+        <button class="contactbtn">
+            Contact
+        </button></p>
+    </a>
 <?php endif ?>
-<article><?= $voiceActor->getBio(); ?></article>
+
+<article class="bio0" style="text-align: center;"><?= $voiceActor->getBio(); ?>
+
+<br><br><br><hr><br></article>
+
 </section>
+</div>
+<h3 style="text-align: center;">Recordings</h3>
 
 <?php if (count(${basename(__FILE__, '.phtml').'_quest_recordings'}) === 0) : ?>
-<i>This contributor didn't submit any recordings.</i>
+<i style="color: rgb(255, 83, 83);">This contributor didn't submit any recordings.</i>
 <?php else : ?>
-<h3>Recordings</h3>
+
 <?php endif ?>
 <?php foreach (${basename(__FILE__, '.phtml').'_quest_recordings'} as $quest) : ?>
+
+<div class="reccenter">
     <section>
         <table>
             <tr>
-                <th colspan="2">
-                    <b><?= $quest->getNpcs()[0]->getName() ?></b> in <i><?= $quest->getName() ?></i></th>
-                <th>👍</th>
-                <th>👎</th>
-                <th>💬</th>
+                <th colspan="5">
+                    <b><?= $quest->getNpcs()[0]->getName() ?></b> in <i><?= $quest->getName() ?></i>
+                </th>
             </tr>
 			<?php $recordings = $quest->getNpcs()[0]->getRecordings(); ?>
 			<?php foreach ($recordings as $recording) : ?>
@@ -30,15 +54,23 @@
                     <td>
                         <audio controls>
                             <source src="dynamic/recordings/<?= $recording->file ?>" type="audio/ogg">
-                            Your browser does not support the OGG audio format.
+                            Oops! Your browser doesnt support the OGG format :(
                         </audio>
-                    <td><a<?php if (!isset($_COOKIE['votedFor'.$recording->id])) : ?> class="upvote"<?php endif ?> data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>"><?= $recording->upvotes ?></a></td>
-                    <td><a<?php if (!isset($_COOKIE['votedFor'.$recording->id])) : ?> class="downvote"<?php endif ?> data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>"><?= $recording->downvotes ?></a></td>
                     <td>
-                        <a href="contents/npc/<?= $recording->npcId ?>/comments/<?= $recording->id ?>" class="comment"><?= $recording->comments ?></a>
+                        <button class="upvote"<?php if (isset($_COOKIE['votedFor'.$recording->id])) : ?> disabled="true"<?php endif ?> data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>">👍 (<span><?= $recording->upvotes ?></span>)</button>
+                    </td>
+                    <td>
+                        <button class="downvote"<?php if (isset($_COOKIE['votedFor'.$recording->id])) : ?> disabled="true"<?php endif ?> data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>">👎 (<span><?= $recording->downvotes ?></span>)</button>
+                    </td>
+                    <td>
+                        <a href="contents/npc/<?= $recording->npcId ?>/comments/<?= $recording->id ?>"><button class="commentbtn">💬 (<span><?= $recording->comments ?></span>)</button></a>
                     </td>
                 </tr>
 			<?php endforeach ?>
         </table>
     </section>
+</div>
+
 <?php endforeach ?>
+<br>
+<button class="backbtn" onclick="history.go(-1)">< Go Back</button>

@@ -1,17 +1,10 @@
 <h1>Account information</h1>
+<center>
 <form method="post" enctype="multipart/form-data">
-    <table style="max-width: 50vw;">
+    <table style="max-width: 50vw;" class="acctable" cellspacing="1">
         <tr>
-            <td>ID</td>
-            <td><?= ${basename(__FILE__, '.phtml').'_id'} ?></td>
-        </tr>
-        <tr>
-            <td><label for="email">E-mail</label></td>
-            <td><input name="email" id="email" value="<?= ${basename(__FILE__, '.phtml').'_email'} ?>" size="31"/></td>
-        </tr>
-        <tr>
-            <td><label for="email-visibility">Display E-mail publicly?</label></td>
-            <td><input name="publicEmail" id="email-visibility" type="checkbox" <?php if (${basename(__FILE__, '.phtml').'_publicEmail'}) : ?>checked <?php endif ?>/></td>
+            <td ><label for="email">E-mail</label></td>
+            <td><input name="email" id="email" value="<?= ${basename(__FILE__, '.phtml').'_email'} ?>" size="31"/><label for="email-visibility">  Display E-Mail publicly?</label><input name="publicEmail" id="email-visibility" type="checkbox" <?php if (${basename(__FILE__, '.phtml').'_publicEmail'}) : ?>checked <?php endif ?>/></td>
         </tr>
         <tr>
             <td><label for="password">Password</label></td>
@@ -27,17 +20,31 @@
             <td><label for="avatar">Picture</label></td>
             <td>
                 <img id="avatar-preview" src="dynamic/avatars/<?= ${basename(__FILE__, '.phtml').'_picture'} ?>"
-                     alt="Your Profile Picture"/>
+                     alt="Your Profile Picture"/><br>
                 <input type="hidden" name="MAX_FILE_SIZE" value="1048576"/>
                 <input id="avatar-input" name="avatar" type="file" accept="image/png,image/jpeg"/>
             </td>
         </tr>
-        <tr>
-            <td>Titles</td>
-            <td>
+        <tr class="yourAccInfo">
+            <td style="font-style: italic;">Titles</td>
+            <td class="rolesAccView"
+                style="
+                    text-align: center;
+                    align-self: center;
+                    align-items: center;
+                "
+            >
                 <?php foreach (${basename(__FILE__, '.phtml').'_roles'} as $role) : ?>
-                    <div style="color:#<?= $role->color ?>; border-width: 1px; border-color: #<?= $role->color
-                    ?>; border-radius: 1rem; border-style: solid; padding: 5px; text-align: center; display:unset;">
+                    <div class="acc0" style="color:#<?= $role->color ?>; 
+                                        border-width: 1px; 
+                                        border-color: #<?= $role->color?>; 
+                                        border-radius: 1rem; 
+                                        border-style: solid; padding: 5px; 
+                                        text-align: center; display:inline-box;
+                                        min-width:150px; max-width: 150px;
+                                        float: left; margin-right: 5px;
+                                        margin-bottom: 5px;
+                                        align-items: center;">
                         <?= $role->name ?></div>
                 <?php endforeach ?>
             </td>
@@ -47,13 +54,16 @@
             <td><textarea name="bio" id="bio"><?= ${basename(__FILE__, '.phtml').'_bio'} ?></textarea></td>
         </tr>
         <tr>
-            <td colspan="2"><input type="submit" value="Save"></td>
+            <td colspan="2"><input type="submit" value="Save" size="30"></td>
         </tr>
     </table>
 </form>
-<a href="/cast/<?= ${basename(__FILE__, '.phtml').'_id'} ?>">View your portfolio</a>
+</center>
+<p style="text-align: center;"><a href="/cast/<?= ${basename(__FILE__, '.phtml').'_id'} ?>"><button class="viewbtn">View your portfolio</button></a></p>
 <ul>
     <?php foreach (${basename(__FILE__, '.phtml').'_error'} as $error) : ?>
         <li><?= $error ?></li>
     <?php endforeach ?>
 </ul>
+
+<button class="backbtn" onclick="history.go(-1)">< Go Back</button>

@@ -1,23 +1,40 @@
-<h1>Voice actor login</h1>
-<form method="post">
-    <label for="name">E-mail or Username</label>
-    <input id="name" type="text" name="name" value="<?= ${basename(__FILE__, '.phtml').'_username'} ?>" <?php
+<h1>Voice actor login</h1><br>
+<div style="text-align: center;
+display: block;" >
+<form method="post" class="newaccform">
+    <label for="name">E-mail or Username</label><br>
+    <input style="border-right: none; border-left: none; border-top: none;"
+           size="35" maxlenght="200"
+           id="name" type="text" 
+           name="name" value="<?= ${basename(__FILE__, '.phtml').'_username'} ?>" 
+           placeholder="Email/Username"
+           <?php
         if (${basename(__FILE__, '.phtml').'_change_password'}) :
     ?>disabled <?php
-    endif ?>/><br>
+    endif ?>/><br><br>
 
-    <label for="password">Password</label>
-    <input id="password" type="password" name="password" <?php
+    <label for="password">Password</label><br>
+    <input style="border-right: none; border-left: none; border-top: none;"
+           size="35" maxlenght="200"
+           id="password" type="password" 
+           name="password" placeholder="Password"
+           
+           <?php
         if (${basename(__FILE__, '.phtml').'_change_password'}) :
     ?>value="<?= str_repeat('F', VoicesOfWynn\Models\User::DEFAULT_PASSWORD_LENGTH) ?>" disabled <?php
-    endif ?>/><br>
+    endif ?>/><br><br>
     
     <?php if (${basename(__FILE__, '.phtml').'_change_password'}) : ?>
         <p>You logged in using a temporary password. You need to set a new password before proceeding (<?= VoicesOfWynn\Models\AccountDataValidator::PASSWORD_MIN_LENGTH ?> characters minimum).</p>
         <label for="new-password">New Password</label>
-        <input id="new-password" type="password" name="newPassword" /><br>
+        <input id="new-password" type="password" name="newPassword" />
     <?php endif ?>
-    
-    <input type="submit" value="Login"/>
+    <div style="color: rgb(255, 83, 83); text-align: center; margin-top: -22px;"><i><?= ${basename(__FILE__, '.phtml').'_error'} ?></i></div><br>
+    <input 
+        style="border-right: none; border-left: none; border-top: none;"
+        size="20"
+        type="submit" value="Login"/>
 </form>
-<div><?= ${basename(__FILE__, '.phtml').'_error'} ?></div>
+</div>
+
+<button class="backbtn" onclick="history.go(-1)">< Go Back</button>
