@@ -379,5 +379,5 @@ mark{ background-color: transparent; color: #007c30; text-decoration: underline 
 /* fonts */
 @font-face {
 	font-family: minecraft;
-	src: url(../fonts/VCR_OSD_MONO_1.001.ttf);
+	src: url(../fonts/Minecraftia-Regular.ttf);
 }

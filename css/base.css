@@ -170,7 +170,7 @@ right: 0;
 /* upvote/downvote/comment */
 .upvote { background: rgb(106, 190, 106); }
 .upvote:hover { border-color: rgb(86, 184, 86); }
-.upvote:disabled { background: #c0c0c0; border-color: rgba(53, 117, 53, 0.5);}
+.upvote:disabled { background: #c0c0c0; border-color: rgba(53, 117, 53, 0.5)}
 .downvote { background: rgb(148, 77, 77); }
 .downvote:hover { border-color: rgb(146, 56, 56); }
 .downvote:disabled { background: #c0c0c0; border-color: rgba(112, 42, 42, 0.5); }
@@ -303,7 +303,7 @@ textarea:focus, input:focus {
 /* fonts */
 @font-face {
     font-family: minecraft;
-    src: url(../fonts/VCR_OSD_MONO_1.001.ttf);
+    src: url(../fonts/Minecraftia-Regular.ttf);
 }
 
 /* ######################## */
