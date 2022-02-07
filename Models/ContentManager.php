@@ -40,7 +40,7 @@ class ContentManager
 		return $quests;
 	}
 	
-	public function getNpc($id): Npc
+	public function getNpc($id)
 	{
 		$query = '
 		SELECT npc.npc_id, npc.name, user.user_id, user.display_name, user.picture
@@ -49,6 +49,9 @@ class ContentManager
 		WHERE npc_id = ?;';
 		$result = Db::fetchQuery($query, array($id));
 		
+		if ($result === false) {
+			return false;
+		}
 		$npc = new Npc($result);
 		if ($result['user_id'] !== null) {
 			$voiceActor = new User();
@@ -57,12 +60,20 @@ class ContentManager
 		}
 		return $npc;
 	}
-	
-	public function getVoiceActor($id): User
+
+    /**
+     * @param $id int ID of the voice actor
+     * @return User|false The User object containing all the data, or FALSE, if the user with this ID doesn't exist in the database
+     */
+	public function getVoiceActor($id)
 	{
 		$query = 'SELECT * FROM user WHERE user_id = ?;';
 		$result = Db::fetchQuery($query, array($id));
-		
+		if ($result === false) {
+            //Voice actor with this ID doesn't exist
+            return false;
+        }
+
 		$voiceActor = new User();
 		$voiceActor->setData($result);
 		return $voiceActor;
@@ -194,11 +205,19 @@ class ContentManager
 		$quests[] = $currentQuest;
 		return $quests;
 	}
-	
-	public function getRecording($recordingId): Recording
+
+    /**
+     * Gets data about a single recording for the comment section
+     * @param $recordingId int ID of the recording
+     * @return false|Recording The Recording object containing all the data, or FALSE, if the recording doesn't exist in the database
+     */
+	public function getRecording($recordingId)
 	{
 		$result = Db::fetchQuery('SELECT * FROM recording WHERE recording_id = ?', array($recordingId));
-		return new Recording(array(
+        if ($result === false) {
+            return false;
+        }
+        return new Recording(array(
 			'id' => $recordingId,
 			'npc_id' => $result['npc_id'],
 			'quest_id' => $result['quest_id'],

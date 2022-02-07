@@ -35,7 +35,7 @@ class Npc extends Controller
 	/**
 	 * Processing method for GET requests to this controller (NPC info webpage was requested)
 	 * @param array $args
-	 * @return bool
+	 * @return bool TRUE if everything needed about the NPC is obtained, FALSE if the NPC of the selected ID doesn't exist
 	 */
 	private function get(array $args): bool
 	{
@@ -52,6 +52,9 @@ class Npc extends Controller
 		
 		$cnm = new ContentManager();
 		$npc = $cnm->getNpc($this->npcId);
+        if ($npc === false) {
+            return false; //NPC with this ID doesn't exist in the database
+        }
 		self::$data['npc_npc'] = $npc;
 		self::$data['npc_voice_actor'] = $npc->getVoiceActor();
 		
