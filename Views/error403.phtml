@@ -1,1 +1,32 @@
-<img src="https://http.cat/403" alt="Cute cat that is not found :´(" />
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <base href="/" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width" />
+    <title><?= ${basename(__FILE__, '.phtml').'_title'} ?></title>
+    <meta name="description" content="<?= ${basename(__FILE__, '.phtml').'_description'} ?>" />
+    <!-- Icons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="mask-icon" href="images/safari-pinned-tab.png" color="#a340c4">
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <meta name="msapplication-TileColor" content="#7b1a9b">
+    <meta name="msapplication-config" content="browserconfig.xml">
+    <meta name="theme-color" content="#7b1a9b">
+    
+    <!-- Stylesheets -->
+    <?php foreach (self::$cssFiles as $cssFile) : ?>
+        <link rel="stylesheet" type="text/css" href="css/<?= $cssFile ?>.css">
+    <?php endforeach ?>
+</head>
+<body>
+    <h1 class="error-header">403 – Forbidden</h1>
+    <p><i>It seems like you shouldn't be here...</i></p>
+	<p>Maybe your login session has expired. If that's the case, <a href="/login">logging back in</a> should help.</p>
+    <img src="images/lucio_where_the_frick_are_we.png" alt="An ilustration of two Wynncraft characters looking for something." id="error-picture" /><br>
+    <span class="art-credit">Art by <a href="https://twitter.com/gleeokenspiel" target="blank_">Gleeokenspiel</a></span><br>
+    <a href="https://voicesofwynn.com"><button class="return-button">Back to Homepage</button></a>
+</body>

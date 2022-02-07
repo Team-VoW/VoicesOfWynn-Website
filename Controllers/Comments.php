@@ -40,6 +40,10 @@ class Comments extends Controller
 		$recordingId = array_shift($args);
 		$cnm = new ContentManager();
 		self::$data['comments_recording'] = $cnm->getRecording($recordingId);
+        if (self::$data['comments_recording'] === false) {
+            //Recording of the chosen ID was not found
+            return false;
+        }
 		self::$data['comments_recording_title'] = $cnm->getRecordingTitle(self::$data['comments_recording']);
 		self::$data['comments_comments'] = $cnm->getComments($recordingId);
 		$color = ['red', 'yellow', 'green', 'blue', 'purple'][rand(0, 4)];

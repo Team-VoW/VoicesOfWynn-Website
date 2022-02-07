@@ -42,9 +42,14 @@ class Administration extends Controller
 	        default:
 	        	$nextController = new Accounts();
         }
-        
-        $nextController->process($args);
-        
+
+        $result = $nextController->process($args);
+
+        if ($result === false) {
+            //The NPC that the user wants to manage doesn't exist
+            return false;
+        }
+
         return true;
     }
 }

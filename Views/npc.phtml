@@ -1,8 +1,9 @@
 <script>var npcId = <?= ${basename(__FILE__, '.phtml').'_npc'}->getId() ?>;</script>
 
 <h1><?= ${basename(__FILE__, '.phtml').'_npc'}->getName() ?></h1>
+
 <br>
-<p class="welp"><img src="dynamic/npcs/<?= ${basename(__FILE__, '.phtml').'_npc'}->getName() ?>.png" alt="NPC picture" /></p>
+<p class="welp"><img src="dynamic/npcs/<?= ${basename(__FILE__, '.phtml').'_npc'}->getId() ?>.png" alt="NPC picture" /></p>
 <br><hr>
 <p style="text-align: center;">
     <strong>Voice actor: <br></strong>
