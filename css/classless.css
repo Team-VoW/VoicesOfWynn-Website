@@ -276,6 +276,9 @@ mark{ background-color: transparent; color: #007c30; text-decoration: underline 
 }
 .avatar {
 	padding-top: 3px;
+	min-width: 150px;
+	max-width: 150px;
+	border-radius: .3rem;
 }
 
 #profile:hover {

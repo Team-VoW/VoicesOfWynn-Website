@@ -187,7 +187,7 @@ a:hover { background: #6670ff5b; border-radius: 2px;}
 
 /* recording & user profiles */
 
-.welp { text-align: center; }
+.npc-va-center-img { text-align: center; }
 #voice-actor-avatar {
     max-width: 10vh;
     max-height: 10vh;
