@@ -9,7 +9,7 @@ $(".upvote").on('click', function(event) {
     }
     if ($clickedRating.hasClass("clicked")) {
         //Removing upvote
-        voteCount = (Number)($clickedRating.find('span').text()) - 1;
+        voteCount = (Number)($clickedRating.find('span').text());
         voteType = "remove";
     }
     else {
@@ -49,7 +49,7 @@ $(".downvote").on('click', function(event) {
     }
     if ($clickedRating.hasClass("clicked")) {
         //Removing downvote
-        voteCount = (Number)($clickedRating.find('span').text()) - 1;
+        voteCount = (Number)($clickedRating.find('span').text());
         voteType = "remove";
     }
     else {
