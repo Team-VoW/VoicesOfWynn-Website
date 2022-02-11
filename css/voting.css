@@ -3,6 +3,31 @@ td a {
     color: unset;
 }
 .upvote, .downvote, .comment {
-    text-decoration: none;
     color: #333;
+}
+
+.upvote {
+    border-color: rgb(57, 117, 57);
+    border-style: outset;
+    background: rgb(137, 210, 134);
+}
+.downvote {
+    border-color: rgb(129, 52, 52);
+    border-style: outset;
+    background: rgb(210, 134, 134);
+}
+
+.upvote:hover, .downvote:hover {
+    /* Cancel the "prompting" hover effect that is defaultly applied to all buttons */
+    transform: translateY(0);
+}
+.clicked {
+    border-style: inset;
+    background: #c0c0c0;
+}
+.upvote.clicked {
+    background: rgb(79, 180, 79);
+}
+.downvote.clicked {
+    background: rgb(171, 81, 81);
 }
