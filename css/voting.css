@@ -6,3 +6,21 @@ td a {
     text-decoration: none;
     color: #333;
 }
+
+.upvote {
+    background: rgb(106, 190, 106);
+}
+.upvote:hover, .upvote .clicked{
+    border-color: rgb(66, 138, 66);
+}
+.downvote {
+    background: rgb(148, 77, 77);
+}
+.downvote:hover, .downvote .clicked {
+    border-color: rgb(133, 51, 51);
+}
+
+.clicked {
+    color: #2c5cd5;
+    background: #c0c0c0;
+}

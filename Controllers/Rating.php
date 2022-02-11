@@ -18,17 +18,19 @@ class Rating extends Controller
 		
 		switch ($action) {
 			case '+':
-				if (isset($_COOKIE['votedFor'.$recording->id])) {
-					header('HTTP/1.1 401 Unauthorized');
-					exit();
+				if ($recording->wasVotedFor('+')) {
+                    $recording->resetVote();
+                    header('HTTP/1.1 204 No Content');
+                    exit();
 				}
 				$recording->upvote();
 				header('HTTP/1.1 204 No Content');
 				exit();
 			case '-':
-				if (isset($_COOKIE['votedFor'.$recording->id])) {
-					header('HTTP/1.1 401 Unauthorized');
-					exit();
+                if ($recording->wasVotedFor('-')) {
+                    $recording->resetVote();
+                    header('HTTP/1.1 204 No Content');
+                    exit();
 				}
 				$recording->downvote();
 				header('HTTP/1.1 204 No Content');
