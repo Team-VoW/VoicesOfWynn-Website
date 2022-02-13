@@ -22,6 +22,7 @@ class Credits extends Controller
 		self::$data['credits_contributors'] = $cnm->getContributors();
 		
 		self::$cssFiles[] = 'credits';
+        self::$jsFiles[] = 'font_rescale';
         self::$views[] = 'credits';
         return true;
     }
