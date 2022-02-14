@@ -245,7 +245,7 @@ class ContentManager
 		return $comments;
 	}
 	
-	/**
+  /**
 	 * Returns list of comments IDs on the current recording that were posted by the current user or current IP
 	 * @param int $recordingId
 	 * @return array
@@ -267,7 +267,25 @@ class ContentManager
 		}
 		return $ids;
 	}
-	
+  
+/**
+ * Returns list of recordings' IDs for which a vote of the specified type was casted from the current IP address
+ * @param string $type Either "+" for upvotes or "-" for downvotes
+ * @return array Array of recordings' IDs, or empty array if the current IP has no active votes
+ * @throws \Exception
+ */
+  public function getVotes(string $type) {
+      $result = Db::fetchQuery('SELECT recording_id FROM vote WHERE ip = ? AND type = ?;', array(inet_pton($_SERVER['REMOTE_ADDR']), $type), true);
+      if (empty($result)) {
+          return array();
+      }
+      $votes = array();
+      foreach ($result as $row) {
+          $votes[] = $row['recording_id'];
+      }
+      return $votes;
+  }
+  
 	public function getRecordingTitle(Recording $recording): string
 	{
 		if (empty($recording->npc_id)) {
@@ -292,7 +310,7 @@ class ContentManager
 			$lineNumber = $recording->line;
 		}
 		
-		//<NPC name> in <quest name>, line <line number>
+		//<NPC name> in <quest name>, line n. <line number>
 		return $npcName.' in '.$questName.', line n. '.$lineNumber;
 	}
 }

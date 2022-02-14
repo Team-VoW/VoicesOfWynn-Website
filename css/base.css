@@ -1,9 +1,4 @@
-/* base css for vow */
-
-/* styling for all elements */
-/* Decided to adapt on Shady's idea of having a table of contents
-
-#### Contents ####
+/* #### Contents ####
     1) General styling
     2) Specific styling
     3) Screen res
@@ -18,6 +13,8 @@ body {
     background-repeat: no-repeat;
     background-position: 50% 50%;
     background-attachment: fixed;
+
+    zoom: 90%;
 }
 
 main {
@@ -168,13 +165,7 @@ right: 0;
 .faqbtn { background: rgb(47, 104, 0); }
 .faqbtn:hover { border-color: rgb(56, 99, 22); }
 /* upvote/downvote/comment */
-.upvote { background: rgb(106, 190, 106); }
-.upvote:hover { border-color: rgb(86, 184, 86); }
-.upvote:disabled { background: #c0c0c0; border-color: rgba(53, 117, 53, 0.5)}
-.downvote { background: rgb(148, 77, 77); }
-.downvote:hover { border-color: rgb(146, 56, 56); }
-.downvote:disabled { background: #c0c0c0; border-color: rgba(112, 42, 42, 0.5); }
-.downvote:disabled,.upvote:disabled { color: #858585; pointer-events: none; cursor:not-allowed;}
+/* Styles for upvotes and downvotes have been moved to voting.css */
 .commentbtn { background: rgb(128, 128, 221); }
 .commentbtn:hover { border-color: rgb(104, 104, 219); }
 
@@ -187,7 +178,7 @@ a:hover { background: #6670ff5b; border-radius: 2px;}
 
 /* recording & user profiles */
 
-.welp { text-align: center; }
+.npc-va-center-img { text-align: center; }
 #voice-actor-avatar {
     max-width: 10vh;
     max-height: 10vh;
