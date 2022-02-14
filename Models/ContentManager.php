@@ -231,7 +231,7 @@ class ContentManager
 	public function getComments($recordingId): array
 	{
 		$result = Db::fetchQuery('
-			SELECT comment_id,name,REPLACE(REPLACE(email,"@"," at "), ".", " dot ") AS email,content,recording_id,
+			SELECT comment_id,verified,user_id,ip,name,email,content,recording_id,
 			CONCAT("https://www.gravatar.com/avatar/",MD5(email),"?d=identicon") AS gravatar
 			FROM comment WHERE recording_id = ? ORDER BY comment_id DESC;
 		', array($recordingId), true);

@@ -36,6 +36,12 @@ class Comments extends Controller
 		self::$data['base_keywords'] = 'Minecraft,Wynncraft,Mod,Voice,Contents,Content,Recording,Comments,Feedback';
 		
 		self::$data['comments_admin'] = (isset($_SESSION['user']) && $_SESSION['user']->isSysAdmin());
+        self::$data['comments_logged_in'] = isset($_SESSION['user']);
+        if (isset($_SESSION['user'])) {
+	        self::$data['comments_user_id'] = $_SESSION['user']->getId();
+	        self::$data['comments_user_name'] = $_SESSION['user']->getName();
+	        self::$data['comments_user_avatar'] = 'dynamic/avatars/'.$_SESSION['user']->getAvatarLink();
+        }
 		
 		$recordingId = array_shift($args);
 		$cnm = new ContentManager();
