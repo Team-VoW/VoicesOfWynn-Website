@@ -47,7 +47,7 @@ h3 { font-size: 1.5em; font-weight: 400; }
 h4 { font-size: 1.1em; font-weight: 700; margin: .5em 0 0em; } 
 h5 { font-size: 1.2em; font-weight: 400; margin-top: 0.5em; color: #777; }
 h6 { font-size: 1.0em; font-weight: 700; }
-p strong { color: #424456; font-weight: bold; font-size: 1.0em; }
+p strong/*:not(#contributor-name)*/ { color: #424456; font-weight: bold; font-size: 1.0em; }
 
 
 /* lists */
@@ -276,6 +276,9 @@ mark{ background-color: transparent; color: #007c30; text-decoration: underline 
 }
 .avatar {
 	padding-top: 3px;
+	min-width: 150px;
+	max-width: 150px;
+	border-radius: .3rem;
 }
 
 #profile:hover {

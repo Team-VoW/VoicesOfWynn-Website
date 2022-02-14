@@ -9,7 +9,7 @@
 </div>
 <div class="bio">
 <section>
-<p class="welp"><img id="contributerimg" src="dynamic/avatars/<?= $voiceActor->getAvatarLink() ?>"
+<p class="npc-va-center-img"><img id="contributerimg" src="dynamic/avatars/<?= $voiceActor->getAvatarLink() ?>"
              alt="Voice actor's avatar"
              style="max-width: 10vh;
                     max-height: 10vh;
@@ -57,13 +57,13 @@
                             Oops! Your browser doesnt support the OGG format :(
                         </audio>
                     <td>
-                        <button class="upvote"<?php if (isset($_COOKIE['votedFor'.$recording->id])) : ?> disabled="true"<?php endif ?> data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>">👍 (<span><?= $recording->upvotes ?></span>)</button>
+                        <button class="upvote<?php if (in_array($recording->id, ${basename(__FILE__, '.phtml').'_upvoted'})) : ?> clicked<?php endif ?>" data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>">👍 <span><?= $recording->upvotes ?></span></button>
                     </td>
                     <td>
-                        <button class="downvote"<?php if (isset($_COOKIE['votedFor'.$recording->id])) : ?> disabled="true"<?php endif ?> data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>">👎 (<span><?= $recording->downvotes ?></span>)</button>
+                        <button class="downvote<?php if (in_array($recording->id, ${basename(__FILE__, '.phtml').'_downvoted'})) : ?> clicked<?php endif ?>" data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>">👎 <span><?= $recording->downvotes ?></span></button>
                     </td>
                     <td>
-                        <a href="contents/npc/<?= $recording->npcId ?>/comments/<?= $recording->id ?>"><button class="commentbtn">💬 (<span><?= $recording->comments ?></span>)</button></a>
+                        <a href="contents/npc/<?= $recording->npcId ?>/comments/<?= $recording->id ?>"><button class="commentbtn">💬 <span><?= $recording->comments ?></span></button></a>
                     </td>
                 </tr>
 			<?php endforeach ?>

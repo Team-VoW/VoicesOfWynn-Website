@@ -86,6 +86,18 @@ class Recording
 		return null;
 	}
 	
+    /**
+     * Checks if this recording has been voted for by the client communicating from the current IP
+     * @param string $type Either "+" to check for upvotes or "-" to check for downvotes
+     * @return bool TRUE if it was, FALSE if it wasn't
+     */
+    public function wasVotedFor(string $type): bool {
+        $result = Db::fetchQuery('
+            SELECT COUNT(*) as "cnt" FROM vote WHERE recording_id = ? AND ip = ? AND type = ?
+        ', array($this->id, inet_pton($_SERVER['REMOTE_ADDR']), $type));
+        return !(($result['cnt'] === 0));
+    }
+
 	/**
 	 * Upvotes this recording and sets the cookie preventing duplicate votes
 	 * @return bool
@@ -93,8 +105,18 @@ class Recording
 	 */
 	public function upvote(): bool
 	{
-		setcookie('votedFor'.$this->id, 1, time() + 31536000, '/');
-		return Db::executeQuery('UPDATE recording SET upvotes = upvotes + 1 WHERE recording_id = ?;', array($this->id));
+        if ($this->wasVotedFor("-")) {
+            //Remove upvote
+            Db::executeQuery('UPDATE vote SET type = "+" WHERE recording_id = ? AND ip = ?;',
+                array($this->id, inet_pton($_SERVER['REMOTE_ADDR'])));
+        }
+        else {
+            //Add upvote
+            Db::executeQuery('INSERT INTO vote(recording_id, ip, type) VALUES (?,?,"+");',
+                array($this->id, inet_pton($_SERVER['REMOTE_ADDR'])));
+        }
+
+        return $this->updateVotesCounts();
 	}
 	
 	/**
@@ -104,11 +126,47 @@ class Recording
 	 */
 	public function downvote(): bool
 	{
-		setcookie('votedFor'.$this->id, 1, time() + 31536000, '/');
-		return Db::executeQuery('UPDATE recording SET downvotes = downvotes + 1 WHERE recording_id = ?;',
-			array($this->id));
+        if ($this->wasVotedFor("+")) {
+            //Remove downvote
+            Db::executeQuery('UPDATE vote SET type = "-" WHERE recording_id = ? AND ip = ?;',
+                array($this->id, inet_pton($_SERVER['REMOTE_ADDR'])));
+        }
+        else {
+            //Add downvote
+            Db::executeQuery('INSERT INTO vote(recording_id, ip, type) VALUES (?,?,"-");',
+                array($this->id, inet_pton($_SERVER['REMOTE_ADDR'])));
+        }
+
+		return $this->updateVotesCounts();
 	}
-	
+
+    /**
+     * Removes any upvote or downvote on this recording left by the current IP
+     * @return bool
+     * @throws \Exception
+     */
+    public function resetVote(): bool
+    {
+        Db::executeQuery('DELETE FROM vote WHERE recording_id = ? AND ip = ?',
+            array($this->id, inet_pton($_SERVER['REMOTE_ADDR'])));
+        return $this->updateVotesCounts();
+    }
+
+    /**
+     * Updates upvote/downvote count for this recording in the database
+     * @return bool
+     * @throws \Exception
+     */
+    private function updateVotesCounts()
+    {
+        return Db::executeQuery('
+            UPDATE recording SET
+            upvotes = (SELECT COUNT(*) FROM vote WHERE recording_id = ? AND type = "+"),
+            downvotes = (SELECT COUNT(*) FROM vote WHERE recording_id = ? AND type = "-")
+            WHERE recording_id = ?;
+            ', array($this->id, $this->id, $this->id));
+    }
+
 	/**
 	 * Adds a new comment to this recording
      * @param $verified bool TRUE, if the user is posting as an contributor (verification if anyone is actually logged in will be performed), FALSE, if they're posting as a guest
