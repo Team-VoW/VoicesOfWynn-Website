@@ -180,9 +180,12 @@ class Router extends Controller
 				else if ($value instanceof Comment) {
 					$attr = array();
 					$attr['id'] = $this->sanitize($value->id);
+					$attr['verified'] = $this->sanitize($value->verified);
+					$attr['userId'] = $this->sanitize($value->userId);
+					$attr['ip'] = $this->sanitize($value->ip);
 					$attr['name'] = $this->sanitize($value->name);
 					$attr['email'] = $this->sanitize($value->email);
-					$attr['content'] = $this->sanitize($value->content);
+					$attr['content'] = nl2br($this->sanitize($value->content));
 					$attr['recording_id'] = $this->sanitize($value->recordingId);
 					$attr['gravatar'] = $this->sanitize($value->gravatar);
 					return new Comment($attr);
