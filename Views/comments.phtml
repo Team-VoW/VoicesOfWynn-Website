@@ -17,7 +17,7 @@
 <hr>
 <p style="text-align: center;"><button id="hide-form-button">Hide the form</button></p>
 <form method="post" data-recording-id="<?= ${basename(__FILE__, '.phtml').'_recording'}->id ?>">
-<fieldset style="border-radius: 5px;">
+<fieldset style="border-radius: 5px;" class="comment-writing-form">
 <?php if (${basename(__FILE__, '.phtml').'_logged_in'}) : ?>
 <div>
 <div id="contributor-option" class="comment-tab selected as-contributor">Post as a contributor</div>
@@ -84,7 +84,8 @@
 	        <?php endif ?>
             </td>
         </tr>
-        <tr style="margin-top: -20px;display: block;width: 110%;"><td class="comment-main-column"><div class="comment-content"><p><hr><?= $comment->content ?></p></div></td></tr>
+        <tr></tr>
+        <tr class="comment-container"><p style="width: 100% "><hr style="width: 95%;bottom: -140px;position: relative;"></p><td class="comment-main-column"><div class="comment-content"><p style="min-width: 110%;"><?= $comment->content ?></p></div></td></tr>
     </table>
 </div><br>
 <?php endforeach ?>

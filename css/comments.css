@@ -63,7 +63,7 @@ fieldset fieldset {
 .comment {
     max-height: fit-content;
     min-height: fit-content;
-    width: 800px;
+    width: 100%;
     border: 2px solid thistle;
     border-radius: 4px;
 }
@@ -120,4 +120,42 @@ td {
     background-color: #793d8dd7;
 
     padding-right: 11px; padding-left: 10px;
+}
+
+.comment-container {
+    margin-top: -20px;display: block;min-width: 700%;
+}
+@media (max-width: 1000px) {
+    .comment-container {
+        display: block;
+        min-width: 230%;
+    }
+    .contributor-badge, .author-badge{
+        display: inline-block;
+        font-size: small;
+        color: white;
+        padding: 2px;
+        border-radius: 1rem;
+
+        padding-right: 4px;
+    }
+    .contributor-badge {
+        border: 1px solid #1f63a7;
+        background-color: #4a75a7d5;
+    }
+    .author-badge {
+        border: 1px solid #7f179e;
+        background-color: #793d8dd7;
+    }
+
+    .comment-form-wrapper {
+        width: 100%;
+    }
+    .comment-writing-form {
+        display: block;
+        width: 100%;
+        float: left;
+        margin-left: 0px;
+        position: relative;
+    }
 }
