@@ -70,7 +70,7 @@
                         <?= $comment->getName() ?>
                     <?php endif ?>
                 </strong>
-                <?php if (${basename(__FILE__, '.phtml').'_admin'}) : ?>
+                <?php if (${basename(__FILE__, '.phtml').'_admin'} || in_array($comment->id, ${basename(__FILE__, '.phtml').'_owned_comments'})) : ?>
                 <button data-comment-id="<?= $comment->id ?>" class="delete-comment-button">×</button>
                 <?php endif ?>
             </td>

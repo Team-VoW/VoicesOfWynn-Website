@@ -245,6 +245,29 @@ class ContentManager
 		return $comments;
 	}
 	
+	/**
+	 * Returns list of comments IDs on the current recording that were posted by the current user or current IP
+	 * @param int $recordingId
+	 * @return array
+	 */
+	public function getOwnedComments(int $recordingId): array
+	{
+		$userId = 0;    //No comment in the database should have 0 as value in the "user_id" column
+		$ip = $_SERVER['REMOTE_ADDR'];
+		if (isset($_SESSION['user'])) {
+			$userId = $_SESSION['user']->getId();
+		}
+		
+		$result = Db::fetchQuery('SELECT comment_id FROM comment WHERE ip = ? OR user_id = ?',
+			array(inet_pton($ip), $userId), true);
+		
+		$ids = array();
+		foreach ($result as $commentId) {
+			$ids[] = $commentId['comment_id'];
+		}
+		return $ids;
+	}
+	
 	public function getRecordingTitle(Recording $recording): string
 	{
 		if (empty($recording->npc_id)) {

@@ -193,7 +193,7 @@ class Recording
 		return Db::executeQuery('INSERT INTO comment (verified,user_id,ip,name,email,content,recording_id) VALUES (?,?,?,?,?,?,?);', array(
 			$verified,
             $userId,
-			$ip,
+			inet_pton($ip),
             $author,
 			$email,
 			$content,

@@ -76,7 +76,9 @@ $("form").on('submit', function (event) {
             comment = comment.replace('{gravatar}', gravatar);
             comment = comment.replace('{id}', result); //Response from the server is just the number representing the ID of the new comment
             comment = comment.replace('{comment}', content);
-            $("#comments").prepend($(comment));
+            $comment = $(comment);
+            $comment.find('.delete-comment-button').on('click', deleteComment)
+            $("#comments").prepend($comment);
             $("#hide-form-button").click();
             $("#comments :first-child").fadeIn(3500);
             $("#content-contributor").val("");
@@ -90,7 +92,9 @@ $("form").on('submit', function (event) {
 });
 
 var $deletingComment;
-$(".delete-comment-button").on('click', function (event) {
+$(".delete-comment-button").on('click', deleteComment);
+
+function deleteComment(event) {
     if (!confirm('Do you really want to delete this comment?')) {
         return;
     }
@@ -108,4 +112,4 @@ $(".delete-comment-button").on('click', function (event) {
             alert("An error occurred: " + error);
         }
     });
-});
+}
