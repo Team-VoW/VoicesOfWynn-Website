@@ -23,7 +23,9 @@ fieldset fieldset {
     width: 100%;
     margin: 0;
 }
-
+.comment-form-wrapper {
+    background-color: whitesmoke;
+}
 .comment-disclaimer {
     width: 100%;
     text-align: center;
@@ -32,15 +34,19 @@ fieldset fieldset {
     text-align: center;
     display: inline-block;
 }
-
+.as-contributor, .as-guest{ background-color: #d1d1d1;} 
+.as-contributor.selected { background-color: #a667ef; border-color: #b67cf8;}
+.as-guest.selected { background-color: #efe867; border-color: #ebe695;}
 .comment-tab {
-    border: 3px solid gray;
+    border-top: 3px solid #d1d1d1;border-left: 3px solid #d1d1d1;border-right: 3px solid #d1d1d1;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
     display: inline-block;
     padding: 10px;
     width: 49%;
     text-align: center;
+    z-index: 0;
+    overflow: hidden;
 }
 .selected {
     border-bottom: none;
@@ -48,11 +54,9 @@ fieldset fieldset {
 }
 #contributor-option {
     float: left;
-    background-color: #a667ef;
 }
 #guest-option {
     float: right;
-    background-color: #efe867;
 }
 
 #comments { border: none; }
@@ -78,12 +82,14 @@ td {
     float: right;
     margin: 10px;
     background: rgb(255, 35, 35);
+    margin-right: -10px;
 }
 .delete-comment-button:hover {
     display: block;
     float: right;
     margin: 10px;
     border-color: rgb(255, 57, 57);
+    margin-right: -10px;
 }
 .comment-main-column {
     width: 100%;
@@ -91,22 +97,27 @@ td {
 .comment-avatar {
     height: 80px;
     width: 80px;
+    border-radius: 5px;
 }
 .contributor-badge {
     display: inline-block;
     font-size: small;
     color: white;
     padding: 5px;
-    border-radius: 1em;
-    border: 1px solid #0066cc;
-    background-color: #459cff;
+    border-radius: 1rem;
+    border: 2px solid #1f63a7;
+    background-color: #4a75a7d5;
+
+    padding-right: 10px; padding-left: 10px;
 }
 .author-badge {
     display: inline-block;
     font-size: small;
     color: white;
     padding: 5px;
-    border-radius: 1em;
-    border: 1px solid #9d00cc;
-    background-color: #d145ff;
+    border-radius: 1rem;
+    border: 2px solid #7f179e;
+    background-color: #793d8dd7;
+
+    padding-right: 11px; padding-left: 10px;
 }

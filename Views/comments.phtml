@@ -17,14 +17,14 @@
 <hr>
 <p style="text-align: center;"><button id="hide-form-button">Hide the form</button></p>
 <form method="post" data-recording-id="<?= ${basename(__FILE__, '.phtml').'_recording'}->id ?>">
-<fieldset>
+<fieldset style="border-radius: 5px;">
 <?php if (${basename(__FILE__, '.phtml').'_logged_in'}) : ?>
 <div>
-<div id="contributor-option" class="comment-tab selected">Post as a contributor</div>
-<div id="guest-option" class="comment-tab">Post as a guest</div>
+<div id="contributor-option" class="comment-tab selected as-contributor">Post as a contributor</div>
+<div id="guest-option" class="comment-tab as-guest">Post as a guest</div>
 </div>
-<div id="contributor-form">
-    <fieldset>
+<div id="contributor-form" class="comment-form-wrapper">
+    <fieldset style="border-radius: 5px; background: whitesmoke; border: none; border-top: 3px solid #bdbdbd; border-top-left-radius: 0px; border-top-right-radius: 0px;">
         <label for="content-contributor">Comment: </label><br>
         <textarea id="content-contributor" placeholder="You can praise the voice actor, suggest what could be improved or just say how much you like this quest. Just please, keep bad words out of that 😉"></textarea>
     </fieldset>
@@ -39,7 +39,7 @@
 	<?php if (!${basename(__FILE__, '.phtml').'_logged_in'}) : ?>
         <span class="comment-disclaimer">Are you a contributor? You can post a verified comment after <a href="login">logging in</a>.</span>
 	<?php endif ?>
-    <fieldset>
+    <fieldset style="border-radius: 5px; background: whitesmoke; border: none; border-top: 3px solid #bdbdbd; border-top-left-radius: 0px; border-top-right-radius: 0px;">
         <label for="name">Name: </label><input id="name" type="text" placeholder="Anonymous" /><br>
         <label for="email">E-mail: </label><input id="email" type="text" placeholder="Used to get Gravatar; not required" /><br>
         <label for="content-guest">Comment: </label><br>
@@ -60,9 +60,6 @@
 <div id="comments" style="margin: auto;">
 <?php foreach (${basename(__FILE__, '.phtml').'_comments'} as $comment) : ?>
 <div class="comment" style="margin: auto;">
-	<?php if (${basename(__FILE__, '.phtml').'_admin'} || in_array($comment->id, ${basename(__FILE__, '.phtml').'_owned_comments'})) : ?>
-        <button data-comment-id="<?= $comment->id ?>" class="delete-comment-button">×</button>
-	<?php endif ?>
     <table>
         <tr>
             <td rowspan="2"><img src="<?= $comment->getAvatar() ?>" alt="Avatar" class="comment-avatar"/></td>
@@ -71,9 +68,9 @@
                     <?php if ($comment->verified) : ?>
                         <a href="cast/<?= $comment->userId ?>"><?= $comment->getName() ?></a>
                     <?php else : ?>
-                        <?= $comment->getName() ?>
+                        <p style="padding-top: 8px;"><?= $comment->getName() ?></p>
                     <?php endif ?>
-                </strong>
+                    </strong>
                 <?php if ($comment->verified) : ?>
 	                <?php if ($comment->userId === ${basename(__FILE__, '.phtml').'_voice_actor_id'}) : ?>
                         <div class="author-badge" title="This user is the author of this recording.">Author</div>
@@ -81,8 +78,13 @@
                     <div class="contributor-badge" title="This user contributed to this project.">Contributor</div>
                 <?php endif ?>
             </td>
+            <td>
+            <?php if (${basename(__FILE__, '.phtml').'_admin'} || in_array($comment->id, ${basename(__FILE__, '.phtml').'_owned_comments'})) : ?>
+                <button data-comment-id="<?= $comment->id ?>" class="delete-comment-button">×</button>
+	        <?php endif ?>
+            </td>
         </tr>
-        <tr><td class="comment-main-column"><div class="comment-content"><?= $comment->content ?></div></td></tr>
+        <tr style="margin-top: -20px;display: block;width: 110%;"><td class="comment-main-column"><div class="comment-content"><p><hr><?= $comment->content ?></p></div></td></tr>
     </table>
 </div><br>
 <?php endforeach ?>
