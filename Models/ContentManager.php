@@ -262,8 +262,10 @@ class ContentManager
 			array(inet_pton($ip), $userId), true);
 		
 		$ids = array();
-		foreach ($result as $commentId) {
-			$ids[] = $commentId['comment_id'];
+		if ($result !== false) {
+			foreach ($result as $commentId) {
+				$ids[] = $commentId['comment_id'];
+			}
 		}
 		return $ids;
 	}
