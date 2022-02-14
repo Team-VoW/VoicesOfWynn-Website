@@ -37,13 +37,10 @@ class Rating extends Controller
 				exit();
 			case 'c':
 				try {
-                    if (isset($_POST['verified']) && $_POST['verified'] === "true") { //HTTP turns JavaScript "true" into string
-                        $commentId = $recording->comment(true, null, null, null, $_POST['content'], null, null);
-                    }
-                    else {
-	                    $commentId = $recording->comment(false, $_SERVER['REMOTE_ADDR'], $_POST['name'], $_POST['email'], $_POST['content'], $_SESSION['antispam'], $_POST['antispam']);
-                    }
-					exit($commentId);
+					$recording->comment($_POST['name'], $_POST['email'], $_POST['content'], $_SESSION['antispam'],
+						$_POST['antispam']);
+					header('HTTP/1.1 204 No Content');
+					exit();
 				} catch (UserException $e) {
 					header('HTTP/1.1 418 '.$e->getMessage());
 					exit();

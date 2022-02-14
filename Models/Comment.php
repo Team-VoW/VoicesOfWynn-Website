@@ -5,15 +5,12 @@ namespace VoicesOfWynn\Models;
 class Comment
 {
 	private int $id = 0;
-    private bool $verified = false;
-    private $userId = 0;
-	private $ip = '0.0.0.0';
-	private $name = '';
-	private $email = '';
+	private string $name = '';
+	private string $email = '';
 	private string $content = '';
 	private int $recordingId = 0;
 	
-	private $gravatar = ''; //NULL for verified comments
+	private string $gravatar = '';
 	
 	/**
 	 * @param array $data Data returned from database, invalid items are skipped, multiple key names are supported for
@@ -27,21 +24,6 @@ class Comment
 				case 'comment_id':
 					$this->id = $value;
 					break;
-                case 'verified':
-                case 'logged':
-                case 'registered':
-                    $this->verified = $value;
-                    break;
-                case 'user_id':
-                case 'userId':
-                case 'user':
-                case 'account':
-                    $this->userId = $value;
-                    break;
-				case 'ip':
-				case 'ip_address':
-				case 'ip_addr':
-					$this->ip = $value;
 				case 'name':
 				case 'username':
 				case 'author':
@@ -86,38 +68,6 @@ class Comment
 			return $this->$attr;
 		}
 		return null;
-	}
-	
-	/**
-	 * Returns path the the avatar (either gravatar in case of unverified comments or profile picture in case of a verified ones).
-	 * @return string URL to the profile picture (without domain name for the current server)
-	 */
-	public function getAvatar(): string
-	{
-		if ($this->verified) {
-			$result = Db::fetchQuery("SELECT picture FROM user WHERE user_id = ?", array($this->userId));
-			if ($result === false) { $result['picture'] = "default.png"; }
-			return "dynamic/avatars/".$result['picture'];
-		}
-		else {
-			return "https://www.gravatar.com/avatar/".md5($this->email)."?d=identicon";
-		}
-	}
-	
-	/**
-	 * Returns the name of the poster (either the chosen name of unverified comments or profile display name in case of a verified ones).
-	 * @return string Name of the author of the comment
-	 */
-	public function getName(): string
-	{
-		if ($this->verified) {
-			$result = Db::fetchQuery("SELECT display_name FROM user WHERE user_id = ?", array($this->userId));
-			if ($result === false) { $result['display_name'] = "Deleted user"; }
-			return $result['display_name'];
-		}
-		else {
-			return $this->name;
-		}
 	}
 }
 

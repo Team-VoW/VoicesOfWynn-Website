@@ -169,77 +169,55 @@ class Recording
 
 	/**
 	 * Adds a new comment to this recording
-     * @param $verified bool TRUE, if the user is posting as an contributor (verification if anyone is actually logged in will be performed), FALSE, if they're posting as a guest
-	 * @param $ip string|null
-	 * @param $author string|null
-	 * @param $email string|null
-	 * @param $content string
-	 * @param $antispam string|null
-	 * @return int ID of the newly created comment
+	 * @param $author
+	 * @param $email
+	 * @param $content
+	 * @param $antispam
+	 * @return bool
 	 * @throws \Exception
 	 */
-	public function comment(bool $verified, $ip, $author, $email, $content, $antispamQuestion, $antispamAnswer)
+	public function comment($author, $email, $content, $antispamQuestion, $antispamAnswer)
 	{
-		if (!$verified) {
-			$idealColor = self::IDEAL_COLORS[$antispamQuestion];
-			$redPart = hexdec(substr($idealColor, 1, 2));
-			$greenPart = hexdec(substr($idealColor, 3, 2));
-			$bluePart = hexdec(substr($idealColor, 5, 2));
-			$absoluteTollerance = round(256 * self::ANTISPAM_TOLLERANCE / 100);
-			
-			$redPartAnswer = hexdec(substr($antispamAnswer, 1, 2));
-			$greenPartAnswer = hexdec(substr($antispamAnswer, 3, 2));
-			$bluePartAnswer = hexdec(substr($antispamAnswer, 5, 2));
-			
-			if (
-				$redPartAnswer + $absoluteTollerance < $redPart || $redPartAnswer - $absoluteTollerance > $redPart ||
-				$greenPartAnswer + $absoluteTollerance < $greenPart || $greenPartAnswer - $absoluteTollerance > $greenPart ||
-				$bluePartAnswer + $absoluteTollerance < $bluePart || $bluePartAnswer - $absoluteTollerance > $bluePart
-			) {
-				throw new UserException('The colour you picked was too distinct from '.$antispamQuestion.'. Try again please.');
-			}
+		$idealColor = self::IDEAL_COLORS[$antispamQuestion];
+		$redPart = hexdec(substr($idealColor, 1, 2));
+		$greenPart = hexdec(substr($idealColor, 3, 2));
+		$bluePart = hexdec(substr($idealColor, 5, 2));
+		$absoluteTollerance = round(256 * self::ANTISPAM_TOLLERANCE / 100);
+		
+		$redPartAnswer = hexdec(substr($antispamAnswer, 1, 2));
+		$greenPartAnswer = hexdec(substr($antispamAnswer, 3, 2));
+		$bluePartAnswer = hexdec(substr($antispamAnswer, 5, 2));
+		
+		if (
+			$redPartAnswer + $absoluteTollerance < $redPart || $redPartAnswer - $absoluteTollerance > $redPart ||
+			$greenPartAnswer + $absoluteTollerance < $greenPart || $greenPartAnswer - $absoluteTollerance > $greenPart ||
+			$bluePartAnswer + $absoluteTollerance < $bluePart || $bluePartAnswer - $absoluteTollerance > $bluePart
+		) {
+			throw new UserException('The colour you picked was too distinct from '.$antispamQuestion.'. Try again please.');
 		}
 		
-        if ($verified) {
-            if (!isset($_SESSION['user'])) {
-                throw new UserException('No contributor is logged in.');
-            }
-            $userId = $_SESSION['user']->getId();
-	        $ip = null;
-	        $author = null;
-	        $email = null;
-        }
-        else {
-            $author = trim($author);
-            if (empty($author)) {
-                $author = 'Anonymous';
-            }
-            if (mb_strlen($author) > 31) {
-                throw new UserException('Name is too long, 31 characters is the limit.');
-            }
-	
-	        $email = trim($email);
-	        if (empty($email)) {
-		        $email = ""; //NULL would mess up with the SQL MD5 function used inside the CONCAT function
-	        }
-	        if (mb_strlen($email) > 255) {
-		        throw new UserException('E-mail is too long, 255 characters is the limit.');
-	        }
-	        //Check e-mail format (might not allow some exotic but valid e-mail domains)
-	        if ($email !== "" && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-		        throw new UserException('E-mail address doesn\'t seem to be in the correct format. If you are sure that you entered your e-mail address properly, ping Shady#2948 on Discord.');
-	        }
-			
-	        $userId = null;
-        }
-		
+		$author = trim($author);
+		$email = trim($email);
 		$content = trim($content);
+		
+		if (empty($author)) {
+			$author = 'Anonymous';
+		}
+		if (empty($email)) {
+			$email = 'nobody@nowhere.net';
+		}
 		if (empty($content)) {
 			throw new UserException('No content submitted');
 		}
-        if (mb_strlen($content) > 65535) {
-            throw new UserException('Comment is too long, 65,535 characters is the limit.');
-        }
+		if (mb_strlen($author) > 31) {
+			throw new UserException('Name is too long, 31 characters is the limit.');
+		}
+		if (mb_strlen($email) > 255) {
+			throw new UserException('E-mail is too long, 255 characters is the limit.');
+		}
+		if (mb_strlen($content) > 65535) {
+			throw new UserException('Comment is too long, 65,535 characters is the limit.');
+		}
 		
 		$badwords = file('Models/BadWords.txt');
 		foreach ($badwords as $badword) {
@@ -248,15 +226,17 @@ class Recording
 			}
 		}
 		
-		return Db::executeQuery('INSERT INTO comment (verified,user_id,ip,name,email,content,recording_id) VALUES (?,?,?,?,?,?,?);', array(
-			$verified,
-            $userId,
-			inet_pton($ip),
-            $author,
+		//Check e-mail format (might not allow some exotic but valid e-mail domains)
+		if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+			throw new UserException('E-mail address doesn\'t seem to be in the correct format. If you are sure that you entered your e-mail address properly, ping Shady#2948 on Discord.');
+		}
+		
+		return Db::executeQuery('INSERT INTO comment (name,email,content,recording_id) VALUES (?,?,?,?);', array(
+			$author,
 			$email,
 			$content,
 			$this->id
-		), true);
+		));
 	}
 }
 

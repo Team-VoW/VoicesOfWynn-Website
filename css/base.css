@@ -217,9 +217,6 @@ input:hover {
     border-bottom: 4px solid gray;
     border-radius: 3px;
 }
-textarea {
-    background: rgba(109, 109, 109, 0.13);
-}
 textarea:focus, input:focus {
     outline: none;
 }
