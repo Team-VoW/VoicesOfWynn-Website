@@ -74,12 +74,39 @@ td {
     border-color:  rgb(66, 126, 194);
 }
 .delete-comment-button {
+    display: block;
+    float: right;
+    margin: 10px;
     background: rgb(255, 35, 35);
 }
 .delete-comment-button:hover {
+    display: block;
+    float: right;
+    margin: 10px;
     border-color: rgb(255, 57, 57);
+}
+.comment-main-column {
+    width: 100%;
 }
 .comment-avatar {
     height: 80px;
     width: 80px;
+}
+.contributor-badge {
+    display: inline-block;
+    font-size: small;
+    color: white;
+    padding: 5px;
+    border-radius: 1em;
+    border: 1px solid #0066cc;
+    background-color: #459cff;
+}
+.author-badge {
+    display: inline-block;
+    font-size: small;
+    color: white;
+    padding: 5px;
+    border-radius: 1em;
+    border: 1px solid #9d00cc;
+    background-color: #d145ff;
 }

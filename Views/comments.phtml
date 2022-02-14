@@ -1,5 +1,6 @@
 <script>
     var npcId = <?= ${basename(__FILE__, '.phtml').'_recording'}->npcId ?>;
+    var voiceActorId = <?= ${basename(__FILE__, '.phtml').'_voice_actor_id'} ?>;
     var userId = "<?= @${basename(__FILE__, '.phtml').'_user_id'} ?>";
     var userName = "<?= @${basename(__FILE__, '.phtml').'_user_name'} ?>";
     var userAvatar = "<?= @${basename(__FILE__, '.phtml').'_user_avatar'} ?>";
@@ -59,10 +60,13 @@
 <div id="comments" style="margin: auto;">
 <?php foreach (${basename(__FILE__, '.phtml').'_comments'} as $comment) : ?>
 <div class="comment" style="margin: auto;">
+	<?php if (${basename(__FILE__, '.phtml').'_admin'} || in_array($comment->id, ${basename(__FILE__, '.phtml').'_owned_comments'})) : ?>
+        <button data-comment-id="<?= $comment->id ?>" class="delete-comment-button">×</button>
+	<?php endif ?>
     <table>
         <tr>
             <td rowspan="2"><img src="<?= $comment->getAvatar() ?>" alt="Avatar" class="comment-avatar"/></td>
-            <td>
+            <td class="comment-main-column">
                 <strong>
                     <?php if ($comment->verified) : ?>
                         <a href="cast/<?= $comment->userId ?>"><?= $comment->getName() ?></a>
@@ -70,12 +74,15 @@
                         <?= $comment->getName() ?>
                     <?php endif ?>
                 </strong>
-                <?php if (${basename(__FILE__, '.phtml').'_admin'} || in_array($comment->id, ${basename(__FILE__, '.phtml').'_owned_comments'})) : ?>
-                <button data-comment-id="<?= $comment->id ?>" class="delete-comment-button">×</button>
+                <?php if ($comment->verified) : ?>
+	                <?php if ($comment->userId === ${basename(__FILE__, '.phtml').'_voice_actor_id'}) : ?>
+                        <div class="author-badge" title="This user is the author of this recording.">Author</div>
+	                <?php endif ?>
+                    <div class="contributor-badge" title="This user contributed to this project.">Contributor</div>
                 <?php endif ?>
             </td>
         </tr>
-        <tr><td><div class="comment-content"><?= $comment->content ?></div></td></tr>
+        <tr><td class="comment-main-column"><div class="comment-content"><?= $comment->content ?></div></td></tr>
     </table>
 </div><br>
 <?php endforeach ?>

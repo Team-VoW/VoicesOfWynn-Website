@@ -1,8 +1,9 @@
 //var npcId; - filled by PHP in the view
+//var voiceActorId - filled by PHP in the view
 //var userId; - filled by PHP in the view
 //var userName; - filled by PHP in the view
 //var userAvatar; - filled by PHP in the view
-var commentItemHtml = '<div class="comment" style="margin: auto;"><table><tr><td rowspan="2"><img src="{gravatar}" alt="Avatar" class="comment-avatar" /></td><td><strong>{name}</strong><button data-comment-id="{id}" class="delete-comment-button">×</button></td></tr><tr><td><div class="comment-content">{comment}</div></td></tr></table></div><br>';
+var commentItemHtml = '<div class="comment" style="margin: auto;"><button data-comment-id="{id}" class="delete-comment-button">×</button><table><tr><td rowspan="2"><img src="{gravatar}" alt="Avatar" class="comment-avatar" /></td><td><strong>{name}</strong>{badges}</td></tr><tr><td><div class="comment-content">{comment}</div></td></tr></table></div><br>';
 
 $("#new-comment-button").on('click', function () {
     $("form").slideDown(1500);
@@ -56,10 +57,14 @@ $("form").on('submit', function (event) {
             'antispam': antispam
         },
         success: function (result, message) {
-            let name, gravatar, content;
+            let name, badges = "", gravatar, content;
             if ($("#contributor-option").length === 1 && $("#contributor-option").hasClass('selected')) {
                 name = "<a href='cast/" + userId + "'>" + userName + "</a>";
                 gravatar = userAvatar;
+                if (userId == voiceActorId) {
+                    badges = "<div class=\"author-badge\" title=\"This user is the author of this recording.\">Author</div>";
+                }
+                badges += "<div class=\"contributor-badge\" title=\"This user contributed to this project.\">Contributor</div>";
                 content = $("#content-contributor").val().replace(/\n/g, '<br>');
             }
             else {
@@ -68,12 +73,14 @@ $("form").on('submit', function (event) {
                     name = 'Anonymous';
                 }
                 gravatar = "https://www.gravatar.com/avatar/" + md5(email) + "?d=identicon";
+                badges = "";
                 content = $("#content-guest").val().replace(/\n/g, '<br>');
             }
 
             let comment;
             comment = commentItemHtml.replace('{name}', name);
             comment = comment.replace('{gravatar}', gravatar);
+            comment = comment.replace('{badges}', badges);
             comment = comment.replace('{id}', result); //Response from the server is just the number representing the ID of the new comment
             comment = comment.replace('{comment}', content);
             $comment = $(comment);

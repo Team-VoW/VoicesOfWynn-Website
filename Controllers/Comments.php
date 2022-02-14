@@ -50,6 +50,7 @@ class Comments extends Controller
             //Recording of the chosen ID was not found
             return false;
         }
+		self::$data['comments_voice_actor_id'] = $cnm->getNpc(self::$data['comments_recording']->npcId)->getVoiceActor()->getId();
 		self::$data['comments_recording_title'] = $cnm->getRecordingTitle(self::$data['comments_recording']);
 		self::$data['comments_comments'] = $cnm->getComments($recordingId);
 		self::$data['comments_owned_comments'] = $cnm->getOwnedComments($recordingId);
