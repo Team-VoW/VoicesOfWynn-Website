@@ -2,6 +2,9 @@
 
 namespace VoicesOfWynn\Models;
 
+use HTMLPurifier;
+use HTMLPurifier_Config;
+
 class AccountDataValidator
 {
     private const EMAIL_MAX_LENGTH = 255;
@@ -9,9 +12,10 @@ class AccountDataValidator
     private const NAME_MAX_LENGTH = 31;
     private const NAME_MIN_LENGTH = 3;
     private const AVATAR_MAX_SIZE = 1048576; //In bytes
-    private const BIO_MAX_LENGTH = 511;
+    private const BIO_MAX_LENGTH = 65535;
     
     public array $errors = array();
+    public array $warnings = array();
     
     public function validateEmail(string $email): bool
     {
@@ -108,11 +112,11 @@ class AccountDataValidator
     public function validateBio(string $bio): bool
     {
         //Check length
-        if (mb_strlen($bio) > self::BIO_MAX_LENGTH) {
-            $this->errors[] = 'Bio mustn\'t be more than '.self::BIO_MAX_LENGTH.' characters long.';
+        if (strlen($bio) > self::BIO_MAX_LENGTH) { //Not using mb_strlen because I need to count single-bit characters for the database limit
+            $this->errors[] = 'Bio mustn\'t be more than '.self::BIO_MAX_LENGTH.' characters long (including formatting tags). Your current bio is '.strlen($bio).' characters long.';
             return false;
         }
-        
+		
         $uppercaseBio = strtoupper($bio);
         $badwords = file('Models/BadWords.txt');
         foreach ($badwords as $badword) {
@@ -125,5 +129,40 @@ class AccountDataValidator
         
         return true;
     }
+	
+	public function sanitizeBio(string $bio): string
+	{
+		//Unify linebreaks
+		$bio = str_replace('<br>', '<br />', $bio);
+		
+		//Run bio through tag and attribute whitelist
+        $config = HTMLPurifier_Config::createDefault();
+        $config->set('HTML.DefinitionID', 'enduser-customize.html tutorial');
+		$config->set('HTML.DefinitionRev', 1);
+		//$config->set('Cache.DefinitionImpl', null); // TODO: remove this later!
+
+		$config->set('HTML.Allowed', 'p[style],span[style],strong,em,sup,sub,h1,h2,h3,a[title|href|target|rel],img[src|alt|width|height],br');
+		$config->set('Attr.AllowedClasses', '');
+		$config->set('CSS.MaxImgLength', '800px');
+		$config->set('CSS.AllowedFonts', '');
+		$config->set('CSS.AllowedProperties', array('text-align','text-decoration'));
+		if ($def = $config->maybeGetRawHTMLDefinition()) {
+			$def->addAttribute('span', 'data-mce-style', 'Text');
+			$def->addAttribute('a', 'data-mce-href', 'Text');
+			$def->addAttribute('a', 'data-mce-selected', 'Text');
+			$def->addAttribute('a', 'target', 'Text');
+			$def->addAttribute('a', 'rel', 'Text');
+			$def->addAttribute('img', 'data-mce-src', 'Text');
+			$def->addAttribute('img', 'data-mce-selected', 'Text');
+		}
+		
+		$purifier = new HTMLPurifier($config);
+		$result = $purifier->purify($bio);
+		
+		if (str_replace(' ', '', $result) !== str_replace(' ', '', $bio)) { //HTMLpurifier sometimes removes spaces in the "style" atribute
+			$this->warnings[] = 'It seems like your bio contains disallowed HTML code. If you used only the tools provided in the toolbar and see unwanted changes, ping Shady#2948 on Discord please.';
+		}
+		return $result;
+	}
 }
 

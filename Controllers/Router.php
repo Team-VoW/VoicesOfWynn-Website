@@ -125,7 +125,7 @@ class Router extends Controller
 					$email = $this->sanitize($value->getEmail());
 					$name = $this->sanitize($value->getName());
 					$avatarLink = $this->sanitize($value->getAvatarLink(false));
-					$bio = $this->sanitize($value->getBio());
+					$bio = $value->getBio(); //Don't sanitize, dangerous tags are removed before saving to the database
 					$lore = $this->sanitize($value->getLore());
 					$roles = $this->sanitize($value->getRoles());
 					

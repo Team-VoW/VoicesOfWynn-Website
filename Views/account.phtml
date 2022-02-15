@@ -1,5 +1,4 @@
 <h1>Account information</h1>
-<center>
 <form method="post" enctype="multipart/form-data">
     <table style="max-width: 50vw;" class="acctable" cellspacing="1">
         <tr>
@@ -58,7 +57,6 @@
         </tr>
     </table>
 </form>
-</center>
 <p style="text-align: center;"><a href="/cast/<?= ${basename(__FILE__, '.phtml').'_id'} ?>"><button class="viewbtn">View your portfolio</button></a></p>
 <ul>
     <?php foreach (${basename(__FILE__, '.phtml').'_error'} as $error) : ?>

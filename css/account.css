@@ -13,9 +13,6 @@ input:hover {
     border-bottom: 4px solid gray;
     border-radius: 3px;
 }
-textarea:focus, input:focus {
-    outline: none;
-}
 #name:focus { outline: none; }
 #email-visibility { 
     width: 50px;

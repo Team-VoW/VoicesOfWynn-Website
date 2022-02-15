@@ -157,7 +157,7 @@ class Recording
 		if (mb_strlen($email) > 255) {
 			throw new UserException('E-mail is too long, 255 characters is the limit.');
 		}
-		if (mb_strlen($content) > 65535) {
+		if (strlen($content) > 65535) { //Not using mb_strlen, because we need to count single-bit characters
 			throw new UserException('Comment is too long, 65,535 characters is the limit.');
 		}
 		
