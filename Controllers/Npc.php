@@ -72,6 +72,9 @@ class Npc extends Controller
 			self::$data['npc_uploadErrors'] = array();
 		}
 		
+        self::$data['npc_upvoted'] = $cnm->getVotes('+');
+        self::$data['npc_downvoted'] = $cnm->getVotes('-');
+
 		self::$views[] = 'npc';
 		self::$cssFiles[] = 'npc';
 		self::$cssFiles[] = 'voting';

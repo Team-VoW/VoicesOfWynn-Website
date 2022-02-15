@@ -40,10 +40,11 @@ class Db
      * Execute a query that doesn't return any data (suitable for INSERT, UPDATE and DELETE queries)
      * @param string $query The query to execute, variables to insert need to be replaced with '?'
      * @param array $parameters Variables that should replaces the '?'s in the query
+     * @param bool $returnLastId TRUE, if the ID of the last inserted row should be returned instead of true/false
      * @return bool TRUE on success, FALSE on failure
      * @throws Exception In case of a database error
      */
-    public static function executeQuery(string $query, array $parameters = array())
+    public static function executeQuery(string $query, array $parameters = array(), $returnLastId = false)
     {
         if (!isset(self::$connection)) {
             self::connect();
@@ -54,6 +55,10 @@ class Db
         } catch (PDOException $e) {
             throw new Exception('Database query ['.$query.'] wasn\'t executed successfully.', $e->getCode(), $e);
         }
+		
+		if ($returnLastId) {
+			return self::$connection->lastInsertId();
+		}
         return $result;
     }
     
