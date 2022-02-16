@@ -47,7 +47,7 @@
     </fieldset>
     <label for="antispam">Not a robot? Then you can select some shade of <strong style="color:<?= ${basename(__FILE__, '.phtml').'_antispam_color_code'} ?>;"><?= ${basename(__FILE__, '.phtml').'_antispam_color'} ?></strong>, right?</label><br>
     <input id="antispam" type="color" required />
-    <input type="submit" value="Send" />
+    <input type="submit" value="Send" onClick="window.location.reload();"/>
     <small class="comment-disclaimer">
         Name and contents of the comment will be publicly visible.<br>
         You will be able to delete this comment only from this IP.<br>

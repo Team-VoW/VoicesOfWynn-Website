@@ -3,8 +3,9 @@
 //var userId; - filled by PHP in the view
 //var userName; - filled by PHP in the view
 //var userAvatar; - filled by PHP in the view
-var commentItemHtml = '<div class="comment" style="margin: auto;"><button data-comment-id="{id}" class="delete-comment-button">×</button><table><tr><td rowspan="2"><img src="{gravatar}" alt="Avatar" class="comment-avatar" /></td><td><strong>{name}</strong>{badges}</td></tr><tr><td><div class="comment-content">{comment}</div></td></tr></table></div><br>';
 
+// var commentItemHtml = '<div class="comment" style="margin: auto;"><button data-comment-id="{id}" class="delete-comment-button">×</button><table><tr><td rowspan="2"><img src="{gravatar}" alt="Avatar" class="comment-avatar" /></td><td><strong>{name}</strong>{badges}</td></tr><tr><td><div class="comment-content">{comment}</div></td></tr></table></div><br>';
+var commentItemHtml = '<div class="comment" style="margin: auto;"><button data-comment-id="{id}" class="delete-comment-button">×</button><table><tr><td><img src="{gravatar}" alt="Avatar" class="comment-avatar" /></td><td><strong>{name}</strong>{badges}</td></tr><tr class="comment-container"><p style="width: 100% "><hr style="width: 95%;bottom: -140px;position: relative;"></p><td class="comment-main-column"><div class="comment-content"><p style="min-width: 110%;">{comment}</p></div></td></tr>';
 $("#new-comment-button").on('click', function () {
     $("form").slideDown(1500);
     $("#new-comment-button").hide();
