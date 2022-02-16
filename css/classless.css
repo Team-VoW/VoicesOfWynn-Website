@@ -269,7 +269,7 @@ mark{ background-color: transparent; color: #007c30; text-decoration: underline 
 	float: left;
 }
 .roles {
-	padding: 0;
+	padding: 20;
 	cursor: default;
 	display: none;
 	text-align: center;
