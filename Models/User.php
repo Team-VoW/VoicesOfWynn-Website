@@ -18,6 +18,10 @@ class User
     private string $avatarLink = '';
     private $bio = '';
     private $lore = '';
+	private $discord = '';
+	private $youtube = '';
+	private $twitter = '';
+	private $castingcallclub = '';
     private bool $publicEmail = false;
     
     private array $roles = array();
@@ -26,17 +30,22 @@ class User
      * Registers a new user account, generates a password and returns it
      * The user is not logged in
      * @param string $name
+     * @oaran string $discordName
      * @param string $checkAgainstOld If set to TRUE, users won't be able to pick names that are different from the
      * old ones only in capitalisation, default FALSE
      * @return string
      * @throws UserException In case of an invalid name
      */
-    public function register(string $name, bool $checkAgainstOld = false)
+    public function register(string $name, string $discordName = '', bool $checkAgainstOld = false)
     {
         $verifier = new AccountDataValidator();
         if (!$verifier->validateName($name, $checkAgainstOld)) {
             throw new UserException($verifier->errors[0]);
         }
+		
+		if (!$verifier->validateDiscord($name, $checkAgainstOld)) {
+			throw new UserException($verifier->errors[0]);
+		}
         
         $password = '';
         for ($i = 0; $i < self::DEFAULT_PASSWORD_LENGTH; $i++) {
@@ -44,7 +53,7 @@ class User
         }
         
         $this->hash = password_hash($password, PASSWORD_DEFAULT);
-        $result = Db::executeQuery('INSERT INTO user (display_name,password) VALUES (?,?)', array(
+        $result = Db::executeQuery('INSERT INTO user (display_name,password,discord) VALUES (?,?,?)', array(
             $name,
             $this->hash
         ));
@@ -90,6 +99,10 @@ class User
         $this->displayName = $userInfo['display_name'];
         $this->avatarLink = $userInfo['picture'];
         $this->bio = $userInfo['bio'];
+		$this->discord = $userInfo['discord'];
+		$this->youtube = $userInfo['youtube'];
+		$this->twitter = $userInfo['twitter'];
+		$this->castingcallclub = $userInfo['castingcallclub'];
         $this->publicEmail = $userInfo['public_email'];
         
         $_SESSION['user'] = $this;
@@ -147,18 +160,22 @@ class User
         $this->avatarLink = '';
         $this->bio = '';
         $this->lore = '';
+	    $this->discord = '';
+	    $this->youtube = '';
+	    $this->twitter = '';
+	    $this->castingcallclub = '';
         $this->publicEmail = false;
     }
     
-    public function update($email, string $password, string $displayName, string $avatarLink, $bio, bool $publicEmail): bool
+    public function update($email, string $password, string $displayName, string $avatarLink, $bio, $discord, $youtube, $twitter, $castingcallclub, bool $publicEmail): bool
     {
         if (empty($password)) {
-            $parameters = array($email, $displayName, $avatarLink, $bio, $publicEmail, $this->id);
-            $query = 'UPDATE user SET email = ?, display_name = ?, picture = ?, bio = ?, public_email = ? WHERE user_id = ?';
+            $parameters = array($email, $displayName, $avatarLink, $bio, $discord, $youtube, $twitter, $castingcallclub, $publicEmail, $this->id);
+            $query = 'UPDATE user SET email = ?, display_name = ?, picture = ?, bio = ?, discord = ?, youtube = ?, twitter = ?, castingcallclub = ?, public_email = ? WHERE user_id = ?';
         } else {
             $hash = password_hash($password, PASSWORD_DEFAULT);
-            $parameters = array($email, $hash, $displayName, $avatarLink, $bio, $publicEmail, $this->id);
-            $query = 'UPDATE user SET email = ?, password = ?, display_name = ?, picture = ?, bio = ?, public_email = ? WHERE user_id = ?';
+            $parameters = array($email, $hash, $displayName, $avatarLink, $bio, $discord, $youtube, $twitter, $castingcallclub, $publicEmail, $this->id);
+            $query = 'UPDATE user SET email = ?, password = ?, display_name = ?, picture = ?, bio = ?, discord = ?, youtube = ?, twitter = ?, castingcallclub = ?, public_email = ? WHERE user_id = ?';
         }
         
         try {
@@ -174,6 +191,10 @@ class User
         $this->displayName = $displayName;
         $this->avatarLink = $avatarLink;
         $this->bio = $bio;
+		$this->discord = $discord;
+		$this->youtube = $youtube;
+		$this->twitter = $twitter;
+		$this->castingcallclub = $castingcallclub;
         $this->publicEmail = $publicEmail;
         return $result;
     }
@@ -236,6 +257,26 @@ class User
         return $this->lore;
     }
     
+	public function getSocial(string $network)
+	{
+		$network = strtolower($network);
+		switch ($network) {
+			case 'discord':
+				return $this->discord;
+			case 'youtube':
+			case 'yt':
+				return $this->youtube;
+			case 'twitter':
+				return $this->twitter;
+			case 'castingcallclub':
+			case 'casting_call_club':
+			case 'ccc':
+				return $this->castingcallclub;
+			default:
+				return false;
+		}
+	}
+	
     /**
      * System admin getter
      * @return bool TRUE if this user is system admin
@@ -311,6 +352,7 @@ class User
     public function setData(array $data): void
     {
         foreach ($data as $key => $value) {
+			$key = strtolower($key);
             switch ($key) {
                 case 'id':
                 case 'user_id':
@@ -351,6 +393,17 @@ class User
                 case 'quote':
                     $this->lore = $value;
                     break;
+	            case 'discord':
+					$this->discord = $value;
+	            case 'youtube':
+	            case 'yt':
+					$this->youtube = $value;
+	            case 'twitter':
+					$this->twitter = $value;
+	            case 'castingcallclub':
+	            case 'casting_call_club':
+	            case 'ccc':
+					$this->castingcallclub = $value;
                 case 'public_email':
                 case 'publicEmail':
                 case 'has_public_email':

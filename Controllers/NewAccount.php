@@ -41,7 +41,7 @@ class NewAccount extends Controller
         
         $user = new User();
         try {
-            $password = $user->register($_POST['name'], true);
+            $password = $user->register($_POST['name'], $_POST['discord'], true);
             self::$data['newaccount_password'] = $password;
         } catch (UserException $e) {
             self::$data['newaccount_error'] = $e->getMessage();

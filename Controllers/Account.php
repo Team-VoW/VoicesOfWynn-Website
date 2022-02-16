@@ -42,9 +42,13 @@ class Account extends Controller
         self::$data['base_keywords'] = 'Minecraft,Wynncraft,Mod,Voice,Account,Management';
         
         self::$data['account_id'] = $_SESSION['user']->getId();
+	    self::$data['account_name'] = $_SESSION['user']->getName();
         self::$data['account_email'] = $_SESSION['user']->getEmail();
         self::$data['account_publicEmail'] = $_SESSION['user']->hasPublicEmail();
-        self::$data['account_name'] = $_SESSION['user']->getName();
+		self::$data['account_discord'] = $_SESSION['user']->getSocial('discord');
+		self::$data['account_youtube'] = $_SESSION['user']->getSocial('youtube');
+		self::$data['account_twitter'] = $_SESSION['user']->getSocial('twitter');
+		self::$data['account_castingcallclub'] = $_SESSION['user']->getSocial('castingcallclub');
         self::$data['account_picture'] = $_SESSION['user']->getAvatarLink();
         self::$data['account_roles'] = $_SESSION['user']->getRoles();
         self::$data['account_bio'] = $_SESSION['user']->getBio();

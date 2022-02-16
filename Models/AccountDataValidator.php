@@ -8,6 +8,14 @@ class AccountDataValidator
     public const PASSWORD_MIN_LENGTH = 6;
     private const NAME_MAX_LENGTH = 31;
     private const NAME_MIN_LENGTH = 3;
+	private const DISCORD_NAME_MAX_LENGTH = 37; //Including #xxxx
+	private const DISCORD_NAME_MIN_LENGTH = 2;
+	private const YOUTUBE_NAME_MAX_LENGTH = 56;
+	private const YOUTUBE_NAME_MIN_LENGTH = 14; //Length of youtube.com/c/
+	private const TWITTER_NAME_MAX_LENGTH = 15; //Not including @
+	private const TWITTER_NAME_MIN_LENGTH = 1;
+	private const CCC_NAME_MAX_LENGTH = 64; //Don't know the exact limit
+	private const CCC_NAME_MIN_LENGTH = 1;  //Don't know the exact limit
     private const AVATAR_MAX_SIZE = 1048576; //In bytes
     private const BIO_MAX_LENGTH = 511;
     
@@ -125,5 +133,147 @@ class AccountDataValidator
         
         return true;
     }
+	
+	public function validateDiscord(string $discordName, bool $checkAgainstOld = false): bool
+	{
+		//Check length
+		if (mb_strlen($discordName) > self::DISCORD_NAME_MAX_LENGTH) {
+			$this->errors[] = 'Discord username mustn\'t be more than '.self::DISCORD_NAME_MAX_LENGTH.' characters long.';
+			return false;
+		}
+		
+		if (mb_strlen($discordName) < self::DISCORD_NAME_MIN_LENGTH) {
+			$this->errors[] = 'Discord username mustn\'t be less than '.self::DISCORD_NAME_MIN_LENGTH.' characters long.';
+			return false;
+		}
+		
+		//Check uniqueness
+		$result = Db::fetchQuery('SELECT COUNT(*) AS "cnt" FROM user WHERE UPPER(discord) = ? AND user_id != ?',
+			array(strtoupper($discordName), $checkAgainstOld ? 0 : $_SESSION['user']->getId()));
+		if ($result['cnt'] > 0) {
+			$this->errors[] = 'This Discord username is already in use.';
+			return false;
+		}
+		
+		//Check format
+		if (
+			preg_match("/^[^#]*\#\d{4}$/", $discordName) !== 1 ||
+			preg_match("/.*\#0000$/", $discordName) === 1
+		) {
+			$this->errors[] = 'This Discord username is in incorrect format.';
+			return false;
+		}
+		
+		return true;
+	}
+	
+	public function validateYouTubeLink(string $youtubeLink, bool $checkAgainstOld = false): bool
+	{
+		//Check length
+		if (mb_strlen($youtubeLink) > self::YOUTUBE_NAME_MAX_LENGTH) {
+			$this->errors[] = 'YouTube channel link mustn\'t be more than '.self::YOUTUBE_NAME_MAX_LENGTH.' characters long.';
+			return false;
+		}
+		
+		if (mb_strlen($youtubeLink) < self::YOUTUBE_NAME_MIN_LENGTH) {
+			$this->errors[] = 'YouTube channel link mustn\'t be less than '.self::YOUTUBE_NAME_MIN_LENGTH.' characters long.';
+			return false;
+		}
+		
+		//Check uniqueness
+		$result = Db::fetchQuery('SELECT COUNT(*) AS "cnt" FROM user WHERE UPPER(youtube) = ? AND user_id != ?',
+			array(strtoupper($youtubeLink), $checkAgainstOld ? 0 : $_SESSION['user']->getId()));
+		if ($result['cnt'] > 0) {
+			$this->errors[] = 'This YouTube channel is already linked by another user.';
+			return false;
+		}
+		
+		//Check format
+		if (preg_match("^(http(s)?:\/\/(www\.)?)?youtube\.com\/c(hannel)?\/[^\/]*$", $youtubeLink) !== 1) {
+			$this->errors[] = 'The YouTube channel link is in incorrect format.';
+			return false;
+		}
+		
+		//Check if the channel exists
+		$handle = curl_init($youtubeLink);
+		curl_exec($handle);
+		$httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
+		if($httpCode !== 200) {
+			$this->errors[] = 'YouTube channel wasn\'t found.';
+			return false;
+		}
+		curl_close($handle);
+		
+		return true;
+	}
+	
+	public function validateTwitter(string $twitterHandle, bool $checkAgainstOld = false): bool
+	{
+		//Check length
+		if (mb_strlen($twitterHandle) > self::TWITTER_NAME_MAX_LENGTH) {
+			$this->errors[] = 'Twitter handle mustn\'t be more than '.self::TWITTER_NAME_MAX_LENGTH.' characters long.';
+			return false;
+		}
+		
+		if (mb_strlen($twitterHandle) < self::TWITTER_NAME_MIN_LENGTH) {
+			$this->errors[] = 'Twitter handle mustn\'t be less than '.self::TWITTER_NAME_MIN_LENGTH.' characters long.';
+			return false;
+		}
+		
+		//Check uniqueness
+		$result = Db::fetchQuery('SELECT COUNT(*) AS "cnt" FROM user WHERE UPPER(twitter) = ? AND user_id != ?',
+			array(strtoupper($twitterHandle), $checkAgainstOld ? 0 : $_SESSION['user']->getId()));
+		if ($result['cnt'] > 0) {
+			$this->errors[] = 'This Twitter account is already linked by another user.';
+			return false;
+		}
+		
+		//Check if the channel exists
+		$handle = curl_init('http://twitter.com/'.$twitterHandle);
+		curl_exec($handle);
+		$httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
+		if($httpCode !== 200) {
+			$this->errors[] = 'Twitter account wasn\'t found.';
+			return false;
+		}
+		curl_close($handle);
+		
+		return true;
+	}
+	
+	public function validateCastingCallClub(string $castingCallClubName, bool $checkAgainstOld = false): bool
+	{
+		//Check length
+		if (mb_strlen($castingCallClubName) > self::CCC_NAME_MAX_LENGTH) {
+			$this->errors[] = 'Casting Call Club name mustn\'t be more than '.self::CCC_NAME_MAX_LENGTH.' characters long.';
+			return false;
+		}
+		
+		if (mb_strlen($castingCallClubName) < self::CCC_NAME_MIN_LENGTH) {
+			$this->errors[] = 'Casting Call Club name mustn\'t be less than '.self::CCC_NAME_MIN_LENGTH.' characters long.';
+			return false;
+		}
+		
+		//Check uniqueness
+		$result = Db::fetchQuery('SELECT COUNT(*) AS "cnt" FROM user WHERE UPPER(castingcallclub) = ? AND user_id != ?',
+			array(strtoupper($castingCallClubName), $checkAgainstOld ? 0 : $_SESSION['user']->getId()));
+		if ($result['cnt'] > 0) {
+			$this->errors[] = 'This Casting Call Club account is already linked by another user.';
+			return false;
+		}
+		
+		//Check if the channel exists
+		$handle = curl_init('http://www.castingcall.club/'.$castingCallClubName);
+		curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
+		$response = curl_exec($handle);
+		$httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
+		if($httpCode !== 200) {
+			$this->errors[] = 'Casting Call Club account wasn\'t found.';
+			return false;
+		}
+		curl_close($handle);
+		
+		return true;
+	}
 }
 
