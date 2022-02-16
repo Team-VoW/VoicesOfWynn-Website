@@ -55,6 +55,7 @@ class Account extends Controller
         self::$views[] = 'account';
         self::$cssFiles[] = 'account';
         self::$jsFiles[] = 'account';
+        self::$jsFiles[] = 'tinymce';
         
         return true;
     }
@@ -87,7 +88,8 @@ class Account extends Controller
             $validator->validatePassword($password);
         }
 		
-        $validator->validateBio($bio);
+	    $bio = $validator->sanitizeBio($bio);
+		$validator->validateBio($bio);
 		
         if ($_FILES['avatar']['error'] !== UPLOAD_ERR_NO_FILE) {
             $validator->validateAvatar($_FILES['avatar']);
@@ -103,9 +105,7 @@ class Account extends Controller
             }
         }
         
-        if (!empty($validator->errors)) {
-            self::$data['account_error'] = $validator->errors;
-        } else {
+        if (empty($validator->errors)) {
             if ($_FILES['avatar']['error'] !== UPLOAD_ERR_NO_FILE) {
                 //Delete old avatars
                 array_map('unlink', glob('dynamic/avatars/'.$_SESSION['user']->getId().'.*'));
@@ -125,6 +125,7 @@ class Account extends Controller
         self::$data['account_name'] = $displayName;
         //TODO - somhow keep the new and unsaved avatar
         self::$data['account_bio'] = $bio;
+	    self::$data['account_error'] = array_merge($validator->errors, $validator->warnings);
         
         return $result;
     }

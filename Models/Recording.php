@@ -237,9 +237,15 @@ class Recording
 		if (empty($content)) {
 			throw new UserException('No content submitted');
 		}
-        if (mb_strlen($content) > 65535) {
-            throw new UserException('Comment is too long, 65,535 characters is the limit.');
-        }
+		if (mb_strlen($author) > 31) {
+			throw new UserException('Name is too long, 31 characters is the limit.');
+		}
+		if (mb_strlen($email) > 255) {
+			throw new UserException('E-mail is too long, 255 characters is the limit.');
+		}
+		if (strlen($content) > 65535) { //Not using mb_strlen, because we need to count single-bit characters
+			throw new UserException('Comment is too long, 65,535 characters is the limit.');
+		}
 		
 		$badwords = file('Models/BadWords.txt');
 		foreach ($badwords as $badword) {
