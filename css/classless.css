@@ -269,9 +269,10 @@ mark{ background-color: transparent; color: #007c30; text-decoration: underline 
 	float: left;
 }
 .roles {
+	padding: 0;
 	cursor: default;
 	display: none;
-	text-align: left;
+	text-align: center;
 	overflow: hidden;
 	z-index: 1; 
 }
