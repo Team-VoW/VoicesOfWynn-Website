@@ -394,22 +394,27 @@ class User
                 case 'quote':
                     $this->lore = $value;
                     break;
-	            case 'discord':
-					$this->discord = $value;
-	            case 'youtube':
-	            case 'yt':
-					$this->youtube = $value;
-	            case 'twitter':
-					$this->twitter = $value;
-	            case 'castingcallclub':
-	            case 'casting_call_club':
-	            case 'ccc':
-					$this->castingcallclub = $value;
+                case 'discord':
+                    $this->discord = $value;
+                    break;
+                case 'youtube':
+                case 'yt':
+                    $this->youtube = $value;
+                    break;
+                case 'twitter':
+                    $this->twitter = $value;
+                    break;
+                case 'castingcallclub':
+                case 'casting_call_club':
+                case 'ccc':
+                    $this->castingcallclub = $value;
+                    break;
                 case 'public_email':
                 case 'publicEmail':
                 case 'has_public_email':
                 case 'hasPublicEmail':
                     $this->publicEmail = $value;
+                    break;
             }
         }
     }
