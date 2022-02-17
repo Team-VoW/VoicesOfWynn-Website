@@ -1,9 +1,14 @@
 <h1>Account information</h1>
+<ul class="error-list">
+	<?php foreach (${basename(__FILE__, '.phtml').'_error'} as $error) : ?>
+    <li><?= $error ?></li>
+	<?php endforeach ?>
+</ul>
 <form method="post" enctype="multipart/form-data">
     <table style="max-width: 50vw;" class="acctable" cellspacing="1">
         <tr>
-            <td ><label for="email">E-mail</label></td>
-            <td><input name="email" id="email" value="<?= ${basename(__FILE__, '.phtml').'_email'} ?>" size="31"/><label for="email-visibility">  Display E-Mail publicly?</label><input name="publicEmail" id="email-visibility" type="checkbox" <?php if (${basename(__FILE__, '.phtml').'_publicEmail'}) : ?>checked <?php endif ?>/></td>
+            <td><label for="name">Display Name</label></td>
+            <td><input name="name" id="name" value="<?= ${basename(__FILE__, '.phtml').'_name'} ?>" size="31"/></td>
         </tr>
         <tr>
             <td><label for="password">Password</label></td>
@@ -12,8 +17,35 @@
             </td>
         </tr>
         <tr>
-            <td><label for="name">Display Name</label></td>
-            <td><input name="name" id="name" value="<?= ${basename(__FILE__, '.phtml').'_name'} ?>" size="31"/></td>
+            <td><label for="email">E-mail</label></td>
+            <td>
+                <input name="email" id="email" value="<?= ${basename(__FILE__, '.phtml').'_email'} ?>" size="31"/>
+                <label for="email-visibility">  Display E-Mail publicly?</label><input name="publicEmail" id="email-visibility" type="checkbox" <?php if (${basename(__FILE__, '.phtml').'_publicEmail'}) : ?>checked <?php endif ?>/>
+            </td>
+        </tr>
+        <tr>
+            <td><label for="discord"><img src="images/discord_icon.png" alt="Discord icon" title="Discord"></label></td>
+            <td>
+                <input name="discord" id="discord" value="<?= ${basename(__FILE__, '.phtml').'_discord'} ?>" size="56" placeholder="Shady#2848" />
+            </td>
+        </tr>
+        <tr>
+            <td><label for="youtube"><img src="images/youtube_icon.png" alt="YouTube icon" title="YouTube"></label></td>
+            <td>
+                <input name="youtube" id="youtube" value="<?= ${basename(__FILE__, '.phtml').'_youtube'} ?>" size="56" placeholder="https://www.youtube.com/channel/UCros5oEtzIzIDyTXHUf4Yzw" />
+            </td>
+        </tr>
+        <tr>
+            <td><label for="twitter"><img src="images/twitter_icon.png" alt="Twitter icon" title="Twitter"></label></td>
+            <td>
+                @<input name="twitter" id="twitter" value="<?= ${basename(__FILE__, '.phtml').'_twitter'} ?>" size="56" placeholder="StechHonza" />
+            </td>
+        </tr>
+        <tr>
+            <td><label for="castingcallclub"><img src="images/castingcallclub_icon.png" alt="Casting Call Club icon" title="Casting Call Club"></label></td>
+            <td>
+                <input name="castingcallclub" id="castingcallclub" value="<?= ${basename(__FILE__, '.phtml').'_castingcallclub'} ?>" size="56" placeholder="voicesofwynn" />
+            </td>
         </tr>
         <tr>
             <td><label for="avatar">Picture</label></td>
@@ -58,10 +90,5 @@
     </table>
 </form>
 <p style="text-align: center;"><a href="/cast/<?= ${basename(__FILE__, '.phtml').'_id'} ?>"><button class="viewbtn">View your portfolio</button></a></p>
-<ul>
-    <?php foreach (${basename(__FILE__, '.phtml').'_error'} as $error) : ?>
-        <li><?= $error ?></li>
-    <?php endforeach ?>
-</ul>
 
 <button class="backbtn" onclick="history.go(-1)">< Go Back</button>

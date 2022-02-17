@@ -4,6 +4,8 @@ display: block;" >
     <form method="post" class="newaccform">
         <label for="username">Display name</label><br>
         <input type="text" name="name" /><br><br>
+        <label for="username">Discord handle</label><br>
+        <input type="text" name="discord" /><br><br>
         <label for="password">Password</label><br>
         <input type="text" name="password" value="<?= ${str_replace('-', '', basename(__FILE__, '.phtml')).'_password'}; ?>" placeholder="Will be generated" readonly/><br>
         <br>
