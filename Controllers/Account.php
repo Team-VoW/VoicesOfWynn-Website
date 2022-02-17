@@ -70,26 +70,58 @@ class Account extends Controller
      */
     private function post(array $args): bool
     {
-        $email = $_POST['email'];
-		$publicEmail = isset($_POST['publicEmail']);
+	    $displayName = $_POST['name'];
         $password = $_POST['password'];
-        $displayName = $_POST['name'];
+	    $email = $_POST['email'];
+	    $publicEmail = isset($_POST['publicEmail']);
+		$discord = $_POST['discord'];
+	    $youtube = $_POST['youtube'];
+	    $twitter = $_POST['twitter'];
+	    $castingcallclub = $_POST['castingcallclub'];
         $bio = $_POST['bio'];
         
         $validator = new AccountDataValidator();
-        
-		if (!empty($email)) {
-			$validator->validateEmail($email);
-		}
-		else {
-			$email = null;
-		}
 		
         $validator->validateName($displayName);
 		
         if (!empty($password)) {
             $validator->validatePassword($password);
         }
+	
+	    if (!empty($email)) {
+		    $validator->validateEmail($email);
+	    }
+	    else {
+		    $email = null;
+	    }
+	
+	    if (!empty($discord)) {
+		    $validator->validateDiscord($discord);
+	    }
+	    else {
+		    $discord = null;
+	    }
+	
+	    if (!empty($youtube)) {
+		    $validator->validateYouTubeLink($youtube);
+	    }
+	    else {
+		    $youtube = null;
+	    }
+	
+	    if (!empty($twitter)) {
+		    $validator->validateTwitter($twitter);
+	    }
+	    else {
+		    $twitter = null;
+	    }
+	
+	    if (!empty($castingcallclub)) {
+		    $validator->validateCastingCallClub($castingcallclub);
+	    }
+	    else {
+		    $castingcallclub = null;
+	    }
 		
         $validator->validateBio($bio);
 		
@@ -120,13 +152,17 @@ class Account extends Controller
                 $avatar = $_SESSION['user']->getAvatarLink(false);
             }
             
-            $_SESSION['user']->update($email, $password, $displayName, $avatar, $bio, $publicEmail);
+            $_SESSION['user']->update($email, $password, $displayName, $avatar, $bio, $discord, $youtube, $twitter, $castingcallclub, $publicEmail);
         }
     
         $result = $this->get(array());
     
-        self::$data['account_email'] = $email;
         self::$data['account_name'] = $displayName;
+	    self::$data['account_email'] = $email;
+	    self::$data['account_discord'] = $discord;
+	    self::$data['account_youtube'] = $youtube;
+	    self::$data['account_twitter'] = $twitter;
+	    self::$data['account_castingcallclub'] = $castingcallclub;
         //TODO - somhow keep the new and unsaved avatar
         self::$data['account_bio'] = $bio;
         

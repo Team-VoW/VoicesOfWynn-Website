@@ -196,6 +196,7 @@ class AccountDataValidator
 		
 		//Check if the channel exists
 		$handle = curl_init($youtubeLink);
+		curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
 		curl_exec($handle);
 		$httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
 		if($httpCode !== 200) {
@@ -227,9 +228,11 @@ class AccountDataValidator
 			$this->errors[] = 'This Twitter account is already linked by another user.';
 			return false;
 		}
-		
+		/*
+		//TODO - try to find a way to make this work, probably with official Twitter API
 		//Check if the channel exists
-		$handle = curl_init('http://twitter.com/'.$twitterHandle);
+		$handle = curl_init('https://twitter.com/'.$twitterHandle);
+		curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
 		curl_exec($handle);
 		$httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
 		if($httpCode !== 200) {
@@ -237,7 +240,7 @@ class AccountDataValidator
 			return false;
 		}
 		curl_close($handle);
-		
+		*/
 		return true;
 	}
 	
@@ -263,9 +266,9 @@ class AccountDataValidator
 		}
 		
 		//Check if the channel exists
-		$handle = curl_init('http://www.castingcall.club/'.$castingCallClubName);
+		$handle = curl_init('https://www.castingcall.club/'.$castingCallClubName);
 		curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
-		$response = curl_exec($handle);
+		curl_exec($handle);
 		$httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
 		if($httpCode !== 200) {
 			$this->errors[] = 'Casting Call Club account wasn\'t found.';

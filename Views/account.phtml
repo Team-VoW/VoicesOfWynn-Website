@@ -1,5 +1,9 @@
 <h1>Account information</h1>
-<center>
+<ul class="error-list">
+	<?php foreach (${basename(__FILE__, '.phtml').'_error'} as $error) : ?>
+        <li><?= $error ?></li>
+	<?php endforeach ?>
+</ul>
 <form method="post" enctype="multipart/form-data">
     <table style="max-width: 50vw;" class="acctable" cellspacing="1">
         <tr>
@@ -32,7 +36,7 @@
             </td>
         </tr>
         <tr>
-            <td><label for="twitter"><img src="images/twitter_icon.png" alt="Twitter icon" title=Twitter"></label></td>
+            <td><label for="twitter"><img src="images/twitter_icon.png" alt="Twitter icon" title="Twitter"></label></td>
             <td>
                 @<input name="twitter" id="twitter" value="<?= ${basename(__FILE__, '.phtml').'_twitter'} ?>" size="56" placeholder="StechHonza" />
             </td>
@@ -85,12 +89,6 @@
         </tr>
     </table>
 </form>
-</center>
 <p style="text-align: center;"><a href="/cast/<?= ${basename(__FILE__, '.phtml').'_id'} ?>"><button class="viewbtn">View your portfolio</button></a></p>
-<ul>
-    <?php foreach (${basename(__FILE__, '.phtml').'_error'} as $error) : ?>
-        <li><?= $error ?></li>
-    <?php endforeach ?>
-</ul>
 
 <button class="backbtn" onclick="history.go(-1)">< Go Back</button>
