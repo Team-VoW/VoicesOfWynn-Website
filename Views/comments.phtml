@@ -60,7 +60,7 @@
 <div id="comments" style="margin: auto;">
 <?php foreach (${basename(__FILE__, '.phtml').'_comments'} as $comment) : ?>
 <div class="comment" style="margin: auto;">
-    <table>
+    <table style="margin-top: -45px;">
         <tr>
             <td rowspan="2"><img src="<?= $comment->getAvatar() ?>" alt="Avatar" class="comment-avatar"/></td>
             <td class="comment-main-column">
@@ -85,7 +85,7 @@
             </td>
         </tr>
         <tr></tr>
-        <tr class="comment-container"><p style="width: 100% "><hr style="width: 95%;bottom: -140px;position: relative;"></p><td class="comment-main-column"><div class="comment-content"><p style="min-width: 110%;"><?= $comment->content ?></p></div></td></tr>
+        <tr class="comment-container"><p style="width: 100% "><hr style="width: 95%;bottom: -97px;position: relative;"></p><td class="comment-main-column"><div class="comment-content"><p style="min-width: 110%;margin-top: -25px;margin-bottom: -30px;"><?= $comment->content ?></p></div></td></tr>
     </table>
 </div><br>
 <?php endforeach ?>
