@@ -43,7 +43,7 @@ class User
             throw new UserException($verifier->errors[0]);
         }
 		
-		if (!$verifier->validateDiscord($name, $checkAgainstOld)) {
+		if (!$verifier->validateDiscord($discordName, $checkAgainstOld)) {
 			throw new UserException($verifier->errors[0]);
 		}
         
@@ -55,7 +55,8 @@ class User
         $this->hash = password_hash($password, PASSWORD_DEFAULT);
         $result = Db::executeQuery('INSERT INTO user (display_name,password,discord) VALUES (?,?,?)', array(
             $name,
-            $this->hash
+            $this->hash,
+	        $discordName
         ));
         
         if ($result) {

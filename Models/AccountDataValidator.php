@@ -189,7 +189,7 @@ class AccountDataValidator
 		}
 		
 		//Check format
-		if (preg_match("^(http(s)?:\/\/(www\.)?)?youtube\.com\/c(hannel)?\/[^\/]*$", $youtubeLink) !== 1) {
+		if (preg_match("/^(http(s)?:\/\/(www\.)?)?youtube\.com\/c(hannel)?\/[^\/]*$/", $youtubeLink) !== 1) {
 			$this->errors[] = 'The YouTube channel link is in incorrect format.';
 			return false;
 		}
