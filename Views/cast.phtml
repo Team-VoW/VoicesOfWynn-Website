@@ -1,10 +1,26 @@
 <?php $voiceActor = ${basename(__FILE__, '.phtml').'_voice_actor'}; ?>
 <h1><?= $voiceActor->getName(); ?></h1>
 <?php if (!empty($voiceActor->getSocial('discord'))) : ?>
-    <h6 class="text-center text-secondary">
-        <img src="images/discord_icon.png" alt="Discord icon" />
-        <?= $voiceActor->getSocial('discord') ?>
-    </h6>
+  <h6 class="text-center text-secondary">
+    <img src="images/discord_icon.png" alt="Discord icon" />
+    <?= $voiceActor->getSocial('discord') ?>
+  </h6>
+<?php endif ?>
+<div class="bio">
+<section>
+<p class="npc-va-center-img"><img id="contributerimg" src="dynamic/avatars/<?= $voiceActor->getAvatarLink() ?>"
+             alt="Voice actor's avatar"
+             style="max-width: 10vh;
+                    max-height: 10vh;
+                    border-radius: 5px"></p>
+
+<?php if (!empty($voiceActor->getEmail()) && $voiceActor->hasPublicEmail()) : ?>
+    <a class="contact" href="mailto:<?= $voiceActor->getEmail() ?>">
+        <p class="welp" style="text-align: center;">
+        <button class="contactbtn">
+            Contact
+        </button></p>
+    </a>
 <?php endif ?>
 
 <hr>
@@ -71,28 +87,28 @@
         <section>
             <table>
                 <tr>
-                    <th colspan="5">
-                        <b><?= $quest->getNpcs()[0]->getName() ?></b> in <i><?= $quest->getName() ?></i>
-                    </th>
+                  <th colspan="5">
+                      <b><?= $quest->getNpcs()[0]->getName() ?></b> in <i><?= $quest->getName() ?></i>
+                  </th>
                 </tr>
                 <?php $recordings = $quest->getNpcs()[0]->getRecordings(); ?>
                 <?php foreach ($recordings as $recording) : ?>
                     <tr>
-                        <td># <?= $recording->line ?></td>
-                        <td>
-                            <audio controls>
-                                <source src="dynamic/recordings/<?= $recording->file ?>" type="audio/ogg">
-                                Oops! Your browser doesnt support the OGG format :(
-                            </audio>
-                        <td>
-                            <button class="upvote"<?php if (isset($_COOKIE['votedFor'.$recording->id])) : ?> disabled="true"<?php endif ?> data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>">👍 (<span><?= $recording->upvotes ?></span>)</button>
-                        </td>
-                        <td>
-                            <button class="downvote"<?php if (isset($_COOKIE['votedFor'.$recording->id])) : ?> disabled="true"<?php endif ?> data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>">👎 (<span><?= $recording->downvotes ?></span>)</button>
-                        </td>
-                        <td>
-                            <a href="contents/npc/<?= $recording->npcId ?>/comments/<?= $recording->id ?>"><button class="commentbtn">💬 (<span><?= $recording->comments ?></span>)</button></a>
-                        </td>
+                      <td># <?= $recording->line ?></td>
+                      <td>
+                          <audio controls>
+                              <source src="dynamic/recordings/<?= $recording->file ?>" type="audio/ogg">
+                              Oops! Your browser doesnt support the OGG format :(
+                          </audio>
+                      <td>
+                          <button class="upvote<?php if (in_array($recording->id, ${basename(__FILE__, '.phtml').'_upvoted'})) : ?> clicked<?php endif ?>" data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>">👍 <span><?= $recording->upvotes ?></span></button>
+                      </td>
+                      <td>
+                          <button class="downvote<?php if (in_array($recording->id, ${basename(__FILE__, '.phtml').'_downvoted'})) : ?> clicked<?php endif ?>" data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>">👎 <span><?= $recording->downvotes ?></span></button>
+                      </td>
+                      <td>
+                          <a href="contents/npc/<?= $recording->npcId ?>/comments/<?= $recording->id ?>"><button class="commentbtn">💬 <span><?= $recording->comments ?></span></button></a>
+                      </td>
                     </tr>
                 <?php endforeach ?>
             </table>

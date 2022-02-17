@@ -36,6 +36,12 @@ class Comments extends Controller
 		self::$data['base_keywords'] = 'Minecraft,Wynncraft,Mod,Voice,Contents,Content,Recording,Comments,Feedback';
 		
 		self::$data['comments_admin'] = (isset($_SESSION['user']) && $_SESSION['user']->isSysAdmin());
+        self::$data['comments_logged_in'] = isset($_SESSION['user']);
+        if (isset($_SESSION['user'])) {
+	        self::$data['comments_user_id'] = $_SESSION['user']->getId();
+	        self::$data['comments_user_name'] = $_SESSION['user']->getName();
+	        self::$data['comments_user_avatar'] = 'dynamic/avatars/'.$_SESSION['user']->getAvatarLink();
+        }
 		
 		$recordingId = array_shift($args);
 		$cnm = new ContentManager();
@@ -44,8 +50,10 @@ class Comments extends Controller
             //Recording of the chosen ID was not found
             return false;
         }
+		self::$data['comments_voice_actor_id'] = $cnm->getNpc(self::$data['comments_recording']->npcId)->getVoiceActor()->getId();
 		self::$data['comments_recording_title'] = $cnm->getRecordingTitle(self::$data['comments_recording']);
 		self::$data['comments_comments'] = $cnm->getComments($recordingId);
+		self::$data['comments_owned_comments'] = $cnm->getOwnedComments($recordingId);
 		$color = ['red', 'yellow', 'green', 'blue', 'purple'][rand(0, 4)];
 		$_SESSION['antispam'] = $color;
 		self::$data['comments_antispam_color'] = $color;
@@ -66,13 +74,24 @@ class Comments extends Controller
 	 */
 	private function delete($args)
 	{
-		if (!isset($_SESSION['user']) || !$_SESSION['user']->isSysAdmin()) {
+		$commentId = array_shift($args);
+		$commentData = Db::fetchQuery('SELECT user_id,ip FROM comment WHERE comment_id = ?', array($commentId));
+		if ($commentData === false) {
+			return false; //No comment with this ID exists
+		}
+		$commentAuthorId = $commentData['user_id'];
+		$commentAuthorIp = $commentData['ip'];
+		
+		if (
+			(!isset($_SESSION['user']) || !$_SESSION['user']->isSysAdmin()) && //Admin not logged in
+			(!isset($_SESSION['user']) || $_SESSION['user']->getId() !== $commentAuthorId) && //Comment author not logged in
+			(inet_pton($_SERVER['REMOTE_ADDR']) !== $commentAuthorIp) //Client not accessing system from the same IP as from which the comment was posted
+		) {
 			//No user is logged in or the logged user is not system admin
 			header('HTTP/1.1 401 Unauthorized');
 			exit();
 		}
 		
-		$commentId = array_shift($args);
 		if (Db::executeQuery('DELETE FROM comment WHERE comment_id = ?;', array($commentId))) {
 			header('HTTP/1.1 204 No Content');
 			exit();

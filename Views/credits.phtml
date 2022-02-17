@@ -11,13 +11,13 @@
     </div> <!-- ending for <div class="row"> -->
     <hr>
 	<h2><?= $contributor->getRoles()[0]->name ?><?php if ($contributor->getRoles()[0]->name !== 'Owner') : ?>s<?php endif ?></h2>
-<div class="row">
+<div class="row" id="credits0">
 	<?php endif ?>
-	<div class="cardwrapper">
-	<div class="col-3"><a class="cardlink" href="/cast/<?= $contributor->getId(); ?>">
-		<div class="card">
+	<div class="cardwrapper" id="credits1">
+	<div class="col-3" id="credits2"><a class="cardlink" href="/cast/<?= $contributor->getId(); ?>">
+		<div class="card" id="credits3">
 			<img class="avatar" src="dynamic/avatars/<?= $contributor->getAvatarLink(); ?>" alt="Contributor's profile picture" /><br>
-			<strong><?= $contributor->getName(); ?></strong>
+			<p class="contributor_name"><strong><?= $contributor->getName(); ?></strong></p>
 				<hr> 
 				<?php if (!empty($contributor->getLore())) : ?>
 				<i><?= $contributor->getLore() ?></i>

@@ -10,6 +10,7 @@
 #avatar-preview {
     width: 128px;
     height: 128px;
+    border-radius: .3rem;
 }
 
 input {
@@ -21,9 +22,6 @@ input {
 input:hover {
     border-bottom: 4px solid gray;
     border-radius: 3px;
-}
-textarea:focus, input:focus {
-    outline: none;
 }
 #name:focus { outline: none; }
 #email-visibility { 
