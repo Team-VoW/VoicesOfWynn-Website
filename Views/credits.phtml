@@ -1,6 +1,8 @@
 <h1>Contributors</h1>
 <p style="text-align: center;">A lot of people worked hard on this mod. Take a moment to appreciate their effort and find out who helped.</p>
-<?php $currentHighestRole = null; ?>
+<?php $currentHighestRole = ${basename(__FILE__, '.phtml').'_contributors'}[0]->getRoles()[0]->name; ?>
+<hr>
+<h2>Owner</h2>
 <div class="row">
 <?php foreach (${basename(__FILE__, '.phtml').'_contributors'} as $contributor) : ?>
 	<?php
@@ -11,11 +13,11 @@
     </div> <!-- ending for <div class="row"> -->
     <hr>
 	<h2><?= $contributor->getRoles()[0]->name ?><?php if ($contributor->getRoles()[0]->name !== 'Owner') : ?>s<?php endif ?></h2>
-<div class="row" id="credits0">
+<div class="row">
 	<?php endif ?>
-	<div class="cardwrapper" id="credits1">
-	<div class="col-3" id="credits2"><a class="cardlink" href="/cast/<?= $contributor->getId(); ?>">
-		<div class="card" id="credits3">
+	<div class="cardwrapper">
+	<div class="col-3"><a class="cardlink" href="/cast/<?= $contributor->getId(); ?>">
+		<div class="card">
 			<img class="avatar" src="dynamic/avatars/<?= $contributor->getAvatarLink(); ?>" alt="Contributor's profile picture" /><br>
 			<p class="contributor_name"><strong><?= $contributor->getName(); ?></strong></p>
 				<hr> 
