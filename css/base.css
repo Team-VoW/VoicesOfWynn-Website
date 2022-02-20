@@ -82,6 +82,10 @@ textarea { font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sa
 
 /* navigation */
 .header0 {
+    margin-top: 50px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
     float: left;
     width: 100%;
     height: auto;
@@ -90,10 +94,7 @@ textarea { font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sa
 .nav {
     margin: auto;
     float: left;
-    margin: 75px 0px 0 0;
-    width: fit-content;
-    padding-bottom: 90px;
-    padding-top: 15px;
+    width: auto;
 }
 .nav li {
     float: left;
@@ -122,31 +123,12 @@ textarea { font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sa
 
 /* logo */
 .header0 .imglink:hover { background: none; }
-.imglink {float: right; z-index: 1; position: absolute;}
+.imglink {z-index: 1;}
 #vertical {
-    margin: 50px 220px 0px 0;
     border-left: 2px solid #333;
     height: 100px;
-    position: relative;
-    /* left: 72%; */
-    float: right;
-}
-.logo-wrapper {
-    position: absolute;
-    /* top: 0; */
-    right: 0;
-}
-.logo {
-    /* position: absolute; */
-    top: 0;
-    right: 0;
-    /* margin: 110px 550px; */
-    z-index: -1;
-}
-.imglink {
-    position: absolute;
-top: 0;
-right: 0;
+    margin-top: auto;
+    margin-bottom: auto;
 }
 
 /* buttons */
@@ -354,30 +336,10 @@ textarea:focus, input:focus {
     p { padding-left: 10px;
     padding-right: 10px; }
     iframe { height: 260px; width: 420px; }
+}
 
-    .logo {
-        margin: 0 auto;
-        position: absolute;
-        visibility: visible;
-        display: inline-block;
-        margin-right: 100px;
-    }
-    .imglink {
-        height: 200px; width: 200px;
-        margin: 0 auto;
-        margin-left: 220px;
-    }
-
-    @media (min-width: 700px) {
-        .logo {
-            margin: 0 auto;
-            position: absolute;
-            visibility: visible;
-            display: inline-block;
-            margin-right: 300px;
-        }
-    }
-
+@media (max-width:465px) {
+    iframe { height: 130px; width: 210px;}
 }
 
 /* fuck media-queries :) */
