@@ -40,8 +40,8 @@ p {
 }
 
 iframe { border: 5px solid #fadb76; border-radius: 4px;
-    height: 450px;
-    width: 800px;
+    height: 225px;
+    width: 400px;
 }
 
 button {
@@ -66,9 +66,14 @@ button:hover {
     z-index: 0;
     visibility: visible;
     float: none;
-
     cursor: pointer;
 }
+.buttonicon {
+    width: 20px;
+    height: 20px;
+    vertical-align: bottom;
+}
+
 input {
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
@@ -131,14 +136,14 @@ textarea { font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sa
 }
 .logo {
     position: absolute;
-top: 0;
-right: 0;
-margin: 110px 550px;
+    top: 0;
+    right: 0;
+    margin: 110px 550px;
 }
 .imglink {
     position: absolute;
-top: 0;
-right: 0;
+    top: 0;
+    right: 0;
 }
 
 /* buttons */
@@ -148,10 +153,16 @@ right: 0;
 .discordbtn:hover { border-color: #656ffd; }
 .creditsbtn { background: #AB5DFC; }
 .creditsbtn:hover { border-color:#b16afd; }
-.patreonbtn { background: #ff7866; }
-.patreonbtn:hover { border-color: #ff8979; }
-.backbtn { background: rgb(0, 107, 48); }
-.backbtn:hover { border-color: rgb(51, 122, 83); }
+.patreonbtn { background: #ffa599; }
+.patreonbtn:hover { border-color: #ffb5aa; }
+.backbtn {
+    background: rgb(0, 107, 48);
+    color: white;
+}
+.backbtn:hover {
+    border-color: rgb(51, 122, 83);
+    color: white;
+}
 .contentsbtn { background: rgb(21, 220, 255); }
 .contentsbtn:hover { border-color: rgb(103, 232, 255); }
 .loginbtn { background: #FFD751; }
@@ -345,7 +356,7 @@ textarea:focus, input:focus {
     }
     p { padding-left: 10px;
     padding-right: 10px; }
-    iframe { height: 260px; width: 420px; }
+    iframe { height: 130px; width: 210px; }
 
     .logo {
         margin: 0 auto;
