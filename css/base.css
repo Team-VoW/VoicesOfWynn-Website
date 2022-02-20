@@ -92,6 +92,7 @@ textarea { font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sa
     flex-wrap: wrap;
 }
 .nav {
+    padding: 0;
     margin: auto;
     float: left;
     width: auto;
