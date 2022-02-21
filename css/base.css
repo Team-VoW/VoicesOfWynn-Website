@@ -97,7 +97,7 @@ textarea { font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sa
     flex-wrap: wrap;
 }
 .nav {
-    padding: 0;
+    padding: 10px;
     margin: auto;
     float: left;
     width: auto;
@@ -135,11 +135,6 @@ textarea { font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sa
     height: 100px;
     margin-top: auto;
     margin-bottom: auto;
-}
-.imglink {
-    position: absolute;
-    top: 0;
-    right: 0;
 }
 
 /* buttons */
