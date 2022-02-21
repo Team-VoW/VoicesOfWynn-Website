@@ -19,11 +19,11 @@
             <td id="userinfo"><?= $user->getId() ?></td>
             <td><img class="avatar" src="dynamic/avatars/<?= $user->getAvatarLink() ?>" alt="Profile picture"/></td>
             <td id="userinfo"><?= $user->getName() ?></td>
-            <td id="userinfo" style="text-align: left;"><?= nl2br($user->getBio()) ?></td>
-            <td>
-                <a href="administration/accounts/<?= $user->getId() ?>/clear-bio">Clear Bio</a><br>
-                <a href="administration/accounts/<?= $user->getId() ?>/clear-avatar">Clear Avatar</a><br>
-                <a class="delete-account-link" data-user-id=<?= $user->getId() ?>>Delete account</a>
+            <td id="userinfo" style="text-align: left;"><a href="/cast/<?= $user->getId() ?>" target="_blank">Bio User <?= $user->getId() ?></a></td>
+            <td style="text-align: center;">
+                <a href="administration/accounts/<?= $user->getId() ?>/clear-bio"><button class="clearbiobtn">Clear Bio</button></a><br>
+                <a href="administration/accounts/<?= $user->getId() ?>/clear-avatar"><button class="clearavatarbtn">Clear Avatar</button></a><br>
+                <a class="delete-account-link" data-user-id=<?= $user->getId() ?>><button class="deletebtn">Delete account</button></a>
             </td>
             <?php for ($i = 0; $i < count(${basename(__FILE__, '.phtml').'_roles'}); $i++) : ?>
                 <td class="role-column" style="background-color: #<?= ${basename(__FILE__, '.phtml').'_roles'}[$i]->color

@@ -89,7 +89,7 @@ input:hover {
 #account-edit-save-button:hover {
     transform: translateY(-5px);
     color: #333;
-    background-color: rgb(70, 206, 77);
+    border-color: rgb(70, 206, 77);
     box-shadow: .0rem .2rem .4rem #777;
     pointer-events: visible;
     position: relative;
@@ -106,5 +106,5 @@ input:hover {
 
 .viewbtn:hover {
     color: white;
-    background-color: rgb(131, 80, 186);
+    border-color: rgb(131, 80, 186);
 }
