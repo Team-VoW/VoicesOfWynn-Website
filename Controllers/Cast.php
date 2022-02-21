@@ -32,6 +32,7 @@ class Cast extends Controller
 
 		self::$cssFiles[] = 'voting';
 		self::$jsFiles[] = 'voting';
+		self::$jsFiles[] = 'cast';
 		self::$views[] = 'cast';
 		return true;
 	}
