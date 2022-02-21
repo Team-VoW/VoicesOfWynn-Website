@@ -46,7 +46,7 @@ iframe { border: 5px solid #fadb76; border-radius: 4px;
     width: 400px;
 }
 
-button, .savebtn {
+button {
     font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     color: #333;
     border-radius: 10px;
@@ -59,7 +59,7 @@ button, .savebtn {
     font-weight: lighter;
 }
 
-button:hover, .savebtn:hover {
+button:hover {
     transform: translateY(-5px);
     color: #333;
     box-shadow: .0rem .2rem .4rem #777;
