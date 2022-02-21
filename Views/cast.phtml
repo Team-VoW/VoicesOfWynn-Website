@@ -2,64 +2,76 @@
 <h1><?= $voiceActor->getName(); ?></h1>
 <?php if (!empty($voiceActor->getSocial('discord'))) : ?>
   <h6 class="text-center text-secondary">
-    <img src="images/discord_icon.png" alt="Discord icon" />
-    <?= $voiceActor->getSocial('discord') ?>
+      <div id='discord-container'>
+        <img src="images/discord_icon.png" alt="Discord icon" />
+        <span class="vertical-center-text-span"><?= $voiceActor->getSocial('discord') ?></span>
+    </div>
   </h6>
 <?php endif ?>
 
 <hr>
 
 <section class="bio">
-    <p class="text-center"><img id="contributerimg" src="dynamic/avatars/<?= $voiceActor->getAvatarLink() ?>" alt="Voice actor's avatar"
-        style="max-width: 10vh;
-        max-height: 10vh;
-        border-radius: 5px">
-    </p>
-    
-    <?php if (!empty($voiceActor->getEmail()) && $voiceActor->hasPublicEmail()) : ?>
-        <div class="text-center">
-            <a href="mailto:<?= $voiceActor->getEmail() ?>"><button class="contactbtn">
-                Contact
-            </button></a>
+    <div id="socials-container">
+        <div class="socials-row text-center" id="scoials-row-1">
+            <div class="socials-card">
+                <img id="contributerimg" src="dynamic/avatars/<?= $voiceActor->getAvatarLink() ?>" alt="Voice actor's avatar"
+                style="max-width: 10vh;
+                max-height: 10vh;
+                border-radius: 5px">
+
+                <?php if (!empty($voiceActor->getEmail()) && $voiceActor->hasPublicEmail()) : ?>
+                    <br>
+                    <a href="mailto:<?= $voiceActor->getEmail() ?>"><button class="contactbtn">
+                        Contact
+                    </button></a>
+                <?php endif ?>
+            </div>
         </div>
-    <?php endif ?>
-    
-    <p class="text-center">
-        <?php if (!empty($voiceActor->getSocial('youtube'))) : ?>
-            <a href="<?= $voiceActor->getSocial('youtube') ?>" target="_blank" class="youtube">
-            <span class="text-center">
-                <img src="images/youtube_icon.png" alt="YouTube icon" />
-                <button class="youtubebtn">
-                    YouTube
-                </button>
-            </span>
-        </a>
-        <?php endif ?>
-        <?php if (!empty($voiceActor->getSocial('twitter'))) : ?>
-            <a href="https://twitter.com/<?= $voiceActor->getSocial('twitter') ?>" target="_blank" class="twitter">
-            <span class="text-center">
-                <img src="images/twitter_icon.png" alt="Twitter icon" />
-                <button class="twitterbtn">
-                    @<?= $voiceActor->getSocial('twitter') ?>
-                </button>
-            </span>
-            </a>
-        <?php endif ?>
-        <?php if (!empty($voiceActor->getSocial('castingcallclub'))) : ?>
-            <a href="https://castingcall.club/<?= $voiceActor->getSocial('castingcallclub') ?>" target="_blank" class="castingcallclub">
-            <span class="text-center">
-                <img src="images/castingcallclub_icon.png" alt="Casting Call Club icon" />
-                <button class="castingcallclubbtn">
-                    <?= $voiceActor->getSocial('castingcallclub') ?>
-                </button>
-            </span>
-            </a>
-        <?php endif ?>
-    </p>
+                
+        <div class="socials-row text-center" id="socials-row-2">
+            <?php if (!empty($voiceActor->getSocial('youtube'))) : ?>
+            <div class="socials-card">
+                <a href="<?= $voiceActor->getSocial('youtube') ?>" target="_blank" class="youtube">
+                <span class="text-center">
+                    <img src="images/youtube_icon.png" alt="YouTube icon" /><br>
+                    <button class="youtubebtn">
+                        YouTube
+                    </button>
+                </span>
+                </a>
+            </div>
+            <?php endif ?>
+            <?php if (!empty($voiceActor->getSocial('twitter'))) : ?>
+            <div class="socials-card">
+                <a href="https://twitter.com/<?= $voiceActor->getSocial('twitter') ?>" target="_blank" class="twitter">
+                <span class="text-center">
+                    <img src="images/twitter_icon.png" alt="Twitter icon" /><br>
+                    <button class="twitterbtn">
+                        @<?= $voiceActor->getSocial('twitter') ?>
+                    </button>
+                </span>
+                </a>
+            </div>
+            <?php endif ?>
+            <?php if (!empty($voiceActor->getSocial('castingcallclub'))) : ?>
+            <div class="socials-card">
+                <a href="https://castingcall.club/<?= $voiceActor->getSocial('castingcallclub') ?>" target="_blank"     class="castingcallclub">
+                <span class="text-center">
+                    <img src="images/castingcallclub_icon.png" alt="Casting Call Club icon" /><br>
+                    <button class="castingcallclubbtn">
+                        <?= $voiceActor->getSocial('castingcallclub') ?>
+                    </button>
+                </span>
+                </a>
+            </div>
+            <?php endif ?>
+        </div>
+    </div>
     
     <hr>
     <article class="bio0 text-center"><?= $voiceActor->getBio(); ?></article>
-    <hr>
+    <hr id="hr-past-bio">
 </section>
 <section>
     <h3 class="text-center">Recordings</h3>

@@ -266,6 +266,46 @@ textarea:focus, input:focus {
     background-color: #e7cb6e;
 }
 
+/* cast stuff */
+#socials-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.socials-row{
+	display: flex;
+	flex-direction: row;
+	justify-content: space-around;
+}
+
+.twitterbtn {
+    color: white;
+    background-color: #1DA1F2;
+}
+
+.youtubebtn {
+    color: white;
+    background-color: #FF3D00;
+}
+
+.castingcallclubbtn {
+    color: white;
+    background-color:#6827F7;
+}
+
+#discord-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+}
+
+.vertical-center-text-span {
+    display: inline-flex;
+    align-items: center;
+}
+
 
 /* admin stuff */
 .spacing {
@@ -337,6 +377,10 @@ textarea:focus, input:focus {
     p { padding-left: 10px;
     padding-right: 10px; }
     iframe { height: 260px; width: 420px; }
+
+    #hr-past-bio{
+        display: none;
+    }
 }
 
 @media (max-width:465px) {
