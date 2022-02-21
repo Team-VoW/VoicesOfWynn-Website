@@ -1,5 +1,5 @@
 <div id="vowi">
-    <h1>Voices of Wynn</h1>
+  <h1>Voices of Wynn</h1>
     <p class="text-center">
         Tired of having to read dialogues when doing quests? Well, then this is the mod for you! Voices of Wynn gives Wynncraft's NPCs a voice, having to read is no more, just listen to what the NPCs have to say! Sounds cool? Download it below!<br>
     </p>
@@ -23,7 +23,7 @@
     <p class="text-center">
         <iframe src="https://www.youtube.com/embed/RIeDziFpoWI"></iframe>
         <iframe src="https://www.youtube.com/embed/7xkl_dOVkUI"></iframe>
-    <p>
+    </p>
 
     <div class="mobilenav">
         <hr>
@@ -67,27 +67,27 @@
         Are you a contributor? Make sure to log into your account!
     </p>
     <p class="text-center">
-    <?php if (!isset($_SESSION['user'])) : ?>
-        <a href="/login" style="display: contents;">
-            <button class="loginbtn w-25">
-                <img src="images/user.png" alt="login icon" class="buttonicon"/>
-                Login
-            </button>
-        </a>
-    <?php else : ?>
-        <a href="/logout" style="display: contents;">
-            <button class="logoutbtn w-25">
-                Logout
-            </button>
-        </a>
-        <a href="/account" style="display: contents;">
-            <button class="adminbtn w-25">My Account</button>
-        </a>
-	    <?php if ($_SESSION['user']->isSysAdmin()) : ?>
-            <a href="/administration" style="display: contents;">
-                <button class="adminbtn w-25">Administration</button>
+        <?php if (!isset($_SESSION['user'])) : ?>
+            <a href="/login" style="display: contents;">
+                <button class="loginbtn w-25">
+                    <img src="images/user.png" alt="login icon" class="buttonicon"/>
+                    Login
+                </button>
             </a>
-	    <?php endif ?>
-    <?php endif ?>
+        <?php else : ?>
+            <a href="/logout" style="display: contents;">
+                <button class="logoutbtn w-25">
+                    Logout
+                </button>
+            </a>
+            <a href="/account" style="display: contents;">
+                <button class="adminbtn w-25">My Account</button>
+            </a>
+            <?php if ($_SESSION['user']->isSysAdmin()) : ?>
+                <a href="/administration" style="display: contents;">
+                    <button class="adminbtn w-25">Administration</button>
+                </a>
+            <?php endif ?>
+        <?php endif ?>
     </p>
-</p>
+</div>

@@ -17,7 +17,7 @@ td th {
 }
 
 .role-header {
-    writing-mode: vertical-rl;
+    writing-mode: vertical-lr;
     text-orientation: upright;
     text-align: center;
     width: 30px;

@@ -25,6 +25,8 @@ main {
     padding-bottom: 1vh;
     border-radius: 1vh;
     box-shadow: .2rem .2rem .7rem 0 #777;
+    z-index: 1;
+    position: relative;
 }
 
 h1, h2 {
@@ -85,19 +87,20 @@ textarea { font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sa
 
 /* navigation */
 .header0 {
+    margin-top: 50px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
     float: left;
     width: 100%;
     height: auto;
     flex-wrap: wrap;
 }
 .nav {
+    padding: 0;
     margin: auto;
-    padding-right: 312px;
     float: left;
-    margin: 150px -50px 0 0;
     width: auto;
-    padding-bottom: 90px;
-    padding-top: 15px;
 }
 .nav li {
     float: left;
@@ -126,19 +129,12 @@ textarea { font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sa
 
 /* logo */
 .header0 .imglink:hover { background: none; }
-.imglink {float: right; z-index: 1; position: absolute;}
+.imglink {z-index: 1;}
 #vertical {
-    margin: 133px 0px 0px 0;
     border-left: 2px solid #333;
     height: 100px;
-    position: relative;
-    left: 72%;
-}
-.logo {
-    position: absolute;
-    top: 0;
-    right: 0;
-    margin: 110px 550px;
+    margin-top: auto;
+    margin-bottom: auto;
 }
 .imglink {
     position: absolute;
@@ -185,7 +181,7 @@ textarea { font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sa
 
 /* href */
 a { color: #3a46f5; }
-a:hover { background: #6670ff5b; border-radius: 2px;}
+a:hover:not([.imglink]) { background: #6670ff5b; border-radius: 2px;}
 
 /* recording & user profiles */
 
@@ -286,6 +282,46 @@ textarea:focus, input:focus {
     background-color: #e7cb6e;
 }
 
+/* cast stuff */
+#socials-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.socials-row{
+	display: flex;
+	flex-direction: row;
+	justify-content: space-around;
+}
+
+.twitterbtn {
+    color: white;
+    background-color: #1DA1F2;
+}
+
+.youtubebtn {
+    color: white;
+    background-color: #FF3D00;
+}
+
+.castingcallclubbtn {
+    color: white;
+    background-color:#6827F7;
+}
+
+#discord-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+}
+
+.vertical-center-text-span {
+    display: inline-flex;
+    align-items: center;
+}
+
 
 /* admin stuff */
 .spacing {
@@ -320,7 +356,7 @@ textarea:focus, input:focus {
     /* below mainly focuses on removing the navigation
     bar which will only be available on full sitze screens
     (laptop, desktop, tablet/ipad maybe */
-    main, li {z-index: -1;}
+    main li {z-index: -1;}
     #vertical, .nav li {overflow: hidden;}
     .nav, .nav li, li:not([id*="quest-npcs"]),
     .bio .bio0 {display: none;}
@@ -358,265 +394,13 @@ textarea:focus, input:focus {
     padding-right: 10px; }
     iframe { height: 130px; width: 210px; }
 
-    .logo {
-        margin: 0 auto;
-        position: absolute;
-        visibility: visible;
-        display: inline-block;
-        margin-right: 100px;
-    }
-    .imglink {
-        height: 200px; width: 200px;
-        margin: 0 auto;
-        margin-left: 220px;
-    }
-
-    @media (min-width: 700px) {
-        .logo {
-            margin: 0 auto;
-            position: absolute;
-            visibility: visible;
-            display: inline-block;
-            margin-right: 300px;
-        }
-    }
-
-}
-/* any other media \/ */
-@media (min-width: 1001px) {                /** Done **/
-    .logo {
-        position: absolute;
-        top: 0;
-        right: 0;
-        margin: 110px 550px;
-    }
-    .imglink {
-        position: absolute;
-        top: 0;
-        right: 0;
-    }
-    .mobilenav {
+    #hr-past-bio{
         display: none;
     }
-    @media (max-width: 1210px) {                    /** No need for link change here **/
-        #vertical {
-            margin: 138px 0px 0px 0;
-            border-left: 2px solid #333;
-            height: 100px;
-            position: relative;
-            left: 72%;
-        }
-        .logo {
-            margin-top: -30px;
-            margin-right: 15px;
-        }
-    }
-    @media (max-width: 1300px) {                /** Done **/
-        .logo {
-            position: absolute;
-            top: 0;
-            right: 0;
-            margin: 110px 550px;
-        }
-        .imglink {
-            position: absolute;
-            top: 0;
-            right: 0;
-        }
-        #vertical {
-            margin: 138px 0px 0px 0;
-            border-left: 2px solid #333;
-            height: 100px;
-            position: relative;
-            left: 72%;
-        }
-        @media (max-width: 1280px) {            /** Done **/
-            .logo {
-                position: absolute;
-                top: 0;
-                right: 0;
-                margin: 120px 230px;
-            }
-            .imglink {
-                position: absolute;
-            top: 0;
-            right: 0;
-            }
-            #vertical {
-                margin: 138px 0px 0px 0;
-                border-left: 2px solid #333;
-                height: 14vh;
-                position: relative;
-                left: 72%;
-            }
-            @media (max-width: 1050px) {
-                .logo {
-                    margin: 120px;
-                }
-                #vertical {
-                    max-height: 90px;
-                }
-            }
-            @media (height: 800px) {            /** Done **/
-                .logo {
-                    position: absolute;
-                top: 0;
-                    right: 0;
-                    margin: 115px 230px;
-                }
-                .imglink {
-                    position: absolute;
-                top: 0;
-                right: 0;
-                }
-                #vertical {
-                    margin: 138px 0px 0px 0;
-                    border-left: 2px solid #333;
-                    height: 100px;
-                    position: relative;
-                    left: 72%;
-                }
-            
-            }
-            @media (height: 950px) {            /** Done **/
-                .logo {
-                    position: absolute;
-                    top: 0;
-                    right: 0;
-                    margin: 130px 230px;
-                }
-                .imglink {
-                    position: absolute;
-                top: 0;
-                right: 0;
-                }
-                #vertical {
-                    margin: 138px 0px 0px 0;
-                    border-left: 2px solid #333;
-                    height: 100px;
-                    position: relative;
-                    left: 72%;
-                }
-            }
-            @media (min-height: 1900px) {
-                .logo {
-                    margin: 120px 180px;
-                }
-                #vertical {
-                    max-height: 100px;
-                }
-            }
-        }
-        @media (min-width: 1310px) {             /** Done **/
-            .logo {
-                position: absolute;
-            top: 0;
-            right: 0;
-            margin: 110px 550px;
-            }
-            .imglink {
-                position: absolute;
-            top: 0;
-            right: 0;
-            }
-            #vertical {
-                margin: 138px 0px 0px 0;
-                border-left: 2px solid #333;
-                height: 100px;
-                position: relative;
-                left: 72%;
-            }
-        }
-    }
-    @media (min-width: 1400px) {                    /** Done **/      
-        #vertical {
-            margin: 130px 0px 0px 0;
-            border-left: 2px solid #333;
-            height: 100px;
-            position: relative;
-            left: 72%;
-        }
-        .logo {
-            position: absolute;
-            top: 0;
-        right: 0;
-            margin: 120px 320px;
-        }
-        .imglink {
-            position: absolute;
-        top: 0;
-        right: 0;
-        }
-    }
-    @media (min-width: 1900px) {
-        .logo {
-            position: absolute;
-        top: 0;
-        right: 0;
-        margin: 110px 550px;
-        }
-        .imglink {
-            position: absolute;
-        top: 0;
-        right: 0;
-        }
-        @media (max-width: 1950px) {
-            .logo {
-                position: absolute;
-            top: 0;
-            right: 0;
-            margin: 110px 550px;
-            }
-            .imglink {
-                position: absolute;
-            top: 0;
-            right: 0;
-            }
-            #vertical {
-                margin: 133px 0px 0px 0;
-                border-left: 2px solid #333;
-                height: 100px;
-                position: relative;
-                left: 72%;
-            }
-        }
-    }
-    /* NOTE TO SELF: All of the @media rulesets could be easily
-    changed so they dont occupy this many lines, however this
-    would make everything harder to read (see the first few 
-    lines of mobile)! */
-
-    /* big screen, big numbers */
-    @media (max-width: 2900px) {
-        .logo {
-            /*  */
-        }
-        @media (min-width: 2500px) {
-            .logo {
-                position: absolute;
-            top: 0;
-            right: 0;
-            margin: 123px 1000px;
-            }
-            .imglink {
-                position: absolute;
-            top: 0;
-            right: 0;
-            }
-            #vertical {
-                margin: 133px 0px 0px 0;
-                border-left: 2px solid #333;
-                height: 100px;
-                position: relative;
-                left: 72%;
-                max-height: 100px;
-            }
-        }
-    }
-    @media (min-width: 3000px) {
-        .logo {
-            margin: 110px 1500px;
-        }
-    }
 }
+
+@media (max-width:465px) {
+    iframe { height: 130px; width: 210px;}
+}
+
 /* fuck media-queries :) */
