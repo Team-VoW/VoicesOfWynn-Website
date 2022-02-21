@@ -300,7 +300,7 @@ textarea:focus, input:focus {
     /* below mainly focuses on removing the navigation
     bar which will only be available on full sitze screens
     (laptop, desktop, tablet/ipad maybe */
-    main, li {z-index: -1;}
+    main li {z-index: -1;}
     #vertical, .nav li {overflow: hidden;}
     .nav, .nav li, li:not([id*="quest-npcs"]),
     .bio .bio0 {display: none;}
