@@ -46,6 +46,7 @@ input:hover {
     display: flex;
     flex-direction:row;
     gap: 50px;
+    align-items: center;
 }
 
 #account-edit-row-save {
@@ -61,4 +62,12 @@ input:hover {
 
 .account-edit-field-right>input[type="checkbox"] {
     width: 25px;
+}
+
+#account-edit-field-twitter{
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
 }

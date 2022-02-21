@@ -58,8 +58,9 @@
             <div class="account-edit-field-left">
                 <label for="twitter"><img src="images/twitter_icon.png" alt="Twitter icon" title="Twitter"></label>
             </div>
-            <div class="account-edit-field-right">
-                <input class="input-change" name="twitter" value="<?= ${basename(__FILE__, '.phtml').'_twitter'} ?>" placeholder="StechHonza" />
+            <div class="account-edit-field-right" id="account-edit-field-twitter">
+                @
+                <input name="twitter" class="input-change"value="<?= ${basename(__FILE__, '.phtml').'_twitter'} ?>" placeholder="StechHonza" />
             </div>
         </div>
         <div class="account-edit-row">
