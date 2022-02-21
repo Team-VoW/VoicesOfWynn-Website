@@ -4,7 +4,7 @@
   <h6 class="text-center text-secondary">
       <div id='discord-container'>
         <img src="images/discord_icon.png" alt="Discord icon" />
-        <span class="vertical-center-text-span"><?= $voiceActor->getSocial('discord') ?></span>
+        <span class="vertical-bottom-text-span" id="discord-tag-cast"><?= $voiceActor->getSocial('discord') ?></span>
     </div>
   </h6>
 <?php endif ?>
@@ -23,7 +23,7 @@
                 <?php if (!empty($voiceActor->getEmail()) && $voiceActor->hasPublicEmail()) : ?>
                     <br>
                     <a href="mailto:<?= $voiceActor->getEmail() ?>"><button class="contactbtn">
-                        Contact
+                        ✉ Contact
                     </button></a>
                 <?php endif ?>
             </div>
