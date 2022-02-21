@@ -32,3 +32,33 @@ input:hover {
 #email {
     margin-top: 0;
 }
+
+/* Layout */
+#account-edit-container {
+    display: flex;
+    flex-direction:column;
+    justify-content: space-around;
+    gap: 10px;
+    padding: 30px;
+}
+
+.account-edit-row {
+    display: flex;
+    flex-direction:row;
+    gap: 50px;
+}
+
+#account-edit-row-save {
+    flex-direction:row-reverse;
+}
+
+#account-edit-field-img{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    gap: 10px;
+}
+
+.account-edit-field-right>input[type="checkbox"] {
+    width: 25px;
+}
