@@ -1,5 +1,17 @@
-.delete-account-link {
-    color:red;
+.buttons-column {
+    display: flex; 
+    flex-direction: column; 
+    justify-content: space-around;
+}
+
+.buttons-column>a {
+    margin: 0!important;
+}
+
+.buttons-column>a>button{
+    font-size: 13px;
+    border-radius: 0;
+    min-width: 125px;
 }
 
 #userinfo { font-style: italic; }
@@ -22,3 +34,4 @@ main {
         margin-left: -30vh;
     }
 }
+

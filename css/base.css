@@ -164,10 +164,10 @@ textarea { font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sa
 .adminbtn:hover { border-color: rgb(255, 176, 102); }
 .contactbtn { background:rgb(255, 239, 102); }
 .contactbtn:hover { border-color: rgb(239, 228, 143); }
-.clearbiobtn { background: rgb(0, 153, 255);}
-.clearbiobtn:hover { border-color: rgb(57, 145, 204);}
-.clearavatarbtn { background: rgb(0, 255, 250);}
-.clearavatarbtn:hover { border-color: rgb(43, 206, 203);}
+.clearbiobtn { background: rgb(247, 225, 32);}
+.clearbiobtn:hover { border-color: rgb(211, 195, 50);}
+.clearavatarbtn { background: rgb(255, 127, 0);}
+.clearavatarbtn:hover { border-color: rgb(214, 133, 53);}
 .deletebtn { background: rgb(255, 0, 0);}
 .deletebtn:hover { border-color: rgb(221, 55, 55);}
 .faqbtn { background: rgb(47, 104, 0); }
