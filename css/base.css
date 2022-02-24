@@ -57,6 +57,7 @@ button {
     padding-left: 10px;
     font-size: 20px;
     font-weight: lighter;
+    width: fit-content;
 }
 
 button:hover {
