@@ -1,40 +1,42 @@
-<table>
-    <tr>
-        <th rowspan="2">ID</th>
-        <th rowspan="2">Avatar</th>
-        <th rowspan="2">Display Name</th>
-        <th rowspan="2">Bio</th>
-        <th rowspan="2">Actions</th>
-        <th colspan="<?= count(${basename(__FILE__, '.phtml').'_roles'}) ?>" dir="ltr">Roles</th>
-    </tr>
-    <tr>
-        <?php for ($i = 0; $i < count(${basename(__FILE__, '.phtml').'_roles'}); $i++) : ?>
-            <th class="role-header" style="background-color: #<?= ${basename(__FILE__, '.phtml').'_roles'}[$i]->color ?>;" dir="ltr">
-                <?= ${basename(__FILE__, '.phtml').'_roles'}[$i]->name ?>
-            </th>
-        <?php endfor ?>
-    </tr>
-    <?php foreach (${basename(__FILE__, '.phtml').'_accounts'} as $user) : ?>
-        <tr data-user-id="<?= $user->getId() ?>">
-            <td id="userinfo"><?= $user->getId() ?></td>
-            <td><img class="avatar" src="dynamic/avatars/<?= $user->getAvatarLink() ?>" alt="Profile picture"/></td>
-            <td id="userinfo"><?= $user->getName() ?></td>
-            <td id="userinfo" style="text-align: left;"><a href="/cast/<?= $user->getId() ?>#bio" target="_blank">Bio User <?= $user->getId() ?></a></td>
-            <td class="buttons-column">
-                <a href="administration/accounts/<?= $user->getId() ?>/clear-bio"><button class="clearbiobtn">Clear Bio</button></a><br>
-                <a href="administration/accounts/<?= $user->getId() ?>/clear-avatar"><button class="clearavatarbtn">Clear Avatar</button></a><br>
-                <a class="delete-account-link" data-user-id=<?= $user->getId() ?>><button class="deletebtn">Delete account</button></a>
-            </td>
+<div class="table-container">
+    <table>
+        <tr>
+            <th rowspan="2">ID</th>
+            <th rowspan="2">Avatar</th>
+            <th rowspan="2">Display Name</th>
+            <th rowspan="2">Bio</th>
+            <th rowspan="2">Actions</th>
+            <th colspan="<?= count(${basename(__FILE__, '.phtml').'_roles'}) ?>" dir="ltr">Roles</th>
+        </tr>
+        <tr>
             <?php for ($i = 0; $i < count(${basename(__FILE__, '.phtml').'_roles'}); $i++) : ?>
-                <td class="role-column" style="background-color: #<?= ${basename(__FILE__, '.phtml').'_roles'}[$i]->color
-                ?>">
-                    <?php if ($user->hasRole(${basename(__FILE__, '.phtml').'_roles'}[$i]->name)) : ?>
-                        <input type="checkbox" checked data-role-id="<?= ${basename(__FILE__, '.phtml').'_roles'}[$i]->getId() ?>" class="checkbox-large" />
-                    <?php else : ?>
-                        <input type="checkbox" data-role-id="<?= ${basename(__FILE__, '.phtml').'_roles'}[$i]->getId() ?>" class="checkbox-large" />
-                    <?php endif ?>
-                </td>
+                <th class="role-header" style="background-color: #<?= ${basename(__FILE__, '.phtml').'_roles'}[$i]->color ?>;" dir="ltr">
+                    <?= ${basename(__FILE__, '.phtml').'_roles'}[$i]->name ?>
+                </th>
             <?php endfor ?>
         </tr>
-    <?php endforeach ?>
-</table>
+        <?php foreach (${basename(__FILE__, '.phtml').'_accounts'} as $user) : ?>
+            <tr data-user-id="<?= $user->getId() ?>">
+                <td id="userinfo"><?= $user->getId() ?></td>
+                <td><img class="avatar" src="dynamic/avatars/<?= $user->getAvatarLink() ?>" alt="Profile picture"/></td>
+                <td id="userinfo"><?= $user->getName() ?></td>
+                <td id="userinfo" style="text-align: left;"><a href="/cast/<?= $user->getId() ?>#bio" target="_blank">Bio User <?= $user->getId() ?></a></td>
+                <td class="buttons-column">
+                    <a href="administration/accounts/<?= $user->getId() ?>/clear-bio"><button class="clearbiobtn">Clear Bio</button></a><br>
+                    <a href="administration/accounts/<?= $user->getId() ?>/clear-avatar"><button class="clearavatarbtn">Clear Avatar</button></a><br>
+                    <a class="delete-account-link" data-user-id=<?= $user->getId() ?>><button class="deletebtn">Delete account</button></a>
+                </td>
+                <?php for ($i = 0; $i < count(${basename(__FILE__, '.phtml').'_roles'}); $i++) : ?>
+                    <td class="role-column" style="background-color: #<?= ${basename(__FILE__, '.phtml').'_roles'}[$i]->color
+                    ?>">
+                        <?php if ($user->hasRole(${basename(__FILE__, '.phtml').'_roles'}[$i]->name)) : ?>
+                            <input type="checkbox" checked data-role-id="<?= ${basename(__FILE__, '.phtml').'_roles'}[$i]->getId() ?>" class="checkbox-large" />
+                        <?php else : ?>
+                            <input type="checkbox" data-role-id="<?= ${basename(__FILE__, '.phtml').'_roles'}[$i]->getId() ?>" class="checkbox-large" />
+                        <?php endif ?>
+                    </td>
+                <?php endfor ?>
+            </tr>
+        <?php endforeach ?>
+    </table>
+</div>                       
