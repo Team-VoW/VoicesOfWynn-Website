@@ -367,11 +367,11 @@ class User
                 case 'hash':
                     $this->hash = $value;
                     break;
-                case 'systemAdmin':
+                case 'systemadmin':
                 case 'admin':
                     $this->systemAdmin = $value;
                     break;
-                case 'displayName':
+                case 'displayname':
                 case 'display_name':
                 case 'name':
                 case 'uname':
@@ -380,7 +380,7 @@ class User
                 case 'voice_actor_name':
                     $this->displayName = $value;
                     break;
-                case 'avatarLink':
+                case 'avatarlink':
                 case 'avatar_link':
                 case 'avatar':
                 case 'picture':
@@ -410,9 +410,9 @@ class User
                     $this->castingcallclub = $value;
                     break;
                 case 'public_email':
-                case 'publicEmail':
+                case 'publicemail':
                 case 'has_public_email':
-                case 'hasPublicEmail':
+                case 'haspublicemail':
                     $this->publicEmail = $value;
                     break;
             }
