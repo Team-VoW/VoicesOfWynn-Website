@@ -1,0 +1,49 @@
+/* Oridinal repository: https://github.com/wehelie/SpeechBubbleCSS */
+/* Modified for this specific use */
+
+.question-bubble {
+    position: relative;
+    background:#ffe082;
+    padding: 20px;
+    border: 5px solid #a78624;
+    border-radius: 15px;
+    margin-left: 20px;
+}
+
+.answer-bubble {
+    position: relative;
+    background:#8eeb6f;
+    padding: 20px;
+    border: 5px solid #51873f;
+    border-radius: 15px;
+	right: 16px;
+    margin-right: 20px;
+}
+
+.question-bubble:after {
+    content: "";
+    display: block;
+    position: absolute; 
+    left: -18px;
+    top: 16px; 
+
+    width: 0;
+    height: 0; 
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent; 
+    border-right: 16px solid #a78624; 
+}
+
+.answer-bubble:after {
+    content: "";
+    display: block;
+    position: absolute; 
+    right: -18px;
+    top: 16px; 
+
+    width: 0;
+    height: 0; 
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent; 
+    border-left: 16px solid #51873f; 
+}
