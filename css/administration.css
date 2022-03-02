@@ -26,11 +26,6 @@ td th {
     width: 30px;
 }
 
-.avatar {
-    /*width: 10vh;*/
-    height: 10vh;
-}
-
 .adnav {
     display: inline-flex;
     flex-direction: row;
