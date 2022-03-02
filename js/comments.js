@@ -4,9 +4,8 @@
 //var userName; - filled by PHP in the view
 //var userAvatar; - filled by PHP in the view
 
-// var commentItemHtml = '<div class="comment" style="margin: auto;"><button data-comment-id="{id}" class="delete-comment-button">×</button><table><tr><td rowspan="2"><img src="{gravatar}" alt="Avatar" class="comment-avatar" /></td><td><strong>{name}</strong>{badges}</td></tr><tr><td><div class="comment-content">{comment}</div></td></tr></table></div><br>';
-var commentItemHtml = '<div class="comment" style="margin: auto;"><table style="margin-top: -45px;"><tr><td rowspan="2"><img src="{gravatar}" alt="Avatar" class="comment-avatar"/></td><td class="comment-main-column"><strong><a href="cast/"><p style="padding-top: 8px;"></strong><div class="author-badge" title="This user is the author of this recording.">Author</div><div class="contributor-badge" title="This user contributed to this project.">Contributor</div></td><td><button data-comment-id="{id}" class="delete-comment-button">×</button></td></tr><tr></tr><tr class="comment-container"><p style="width: 100% "><hr style="width: 95%;bottom: -97px;position: relative;"></p><td class="comment-main-column"><div class="comment-content"><p style="min-width: 110%;margin-top: -25px;margin-bottom: -30px;">{comment}</p></div></td></tr></table></div><br></div>'
-// var commentItemHtml = '<div class="comment" style="margin: auto;"><button data-comment-id="{id}" class="delete-comment-button">×</button><table><tr><td><img src="{gravatar}" alt="Avatar" class="comment-avatar" /></td><td><strong>{name}</strong>{badges}</td></tr><tr class="comment-container"><p style="width: 100% "><hr style="width: 95%;bottom: -140px;position: relative;"></p><td class="comment-main-column"><div class="comment-content"><p style="min-width: 110%;">{comment}</p></div></td></tr>';
+var commentItemHTML = '<div class="comment" style="margin: auto;"><table style="margin-top: -45px;"><tr><td rowspan="2"><img src="{gravatar}" alt="Avatar" class="comment-avatar"/></td><td class="comment-main-column"><strong><span style="padding-top: 8px;">{name}</span></strong>{badges}</td><td><button data-comment-id="{id}" class="delete-comment-button">×</button></td></tr><tr></tr><tr class="comment-container"><p style="width: 100% "><hr style="width: 95%;bottom: -97px;position: relative;"></p><td class="comment-main-column"><div class="comment-content"><p style="min-width: 110%;margin-top: -25px;margin-bottom: -30px;">{comment}</p></div></td></tr></table></div>';
+
 $("#new-comment-button").on('click', function () {
     $("form").slideDown(1500);
     $("#new-comment-button").hide();
@@ -66,7 +65,7 @@ $("form").on('submit', function (event) {
                 if (userId == voiceActorId) {
                     badges = "<div class=\"author-badge\" title=\"This user is the author of this recording.\">Author</div>";
                 }
-                badges += "<div class=\"contributor-badge\" title=\"This user contributed to this project.\">Contributor</div>";
+                badges += "\n<div class=\"contributor-badge\" title=\"This user contributed to this project.\">Contributor</div>";
                 content = $("#content-contributor").val().replace(/\n/g, '<br>');
             }
             else {
@@ -80,7 +79,7 @@ $("form").on('submit', function (event) {
             }
 
             let comment;
-            comment = commentItemHtml.replace('{name}', name);
+            comment = commentItemHTML.replace('{name}', name);
             comment = comment.replace('{gravatar}', gravatar);
             comment = comment.replace('{badges}', badges);
             comment = comment.replace('{id}', result); //Response from the server is just the number representing the ID of the new comment
