@@ -26,21 +26,17 @@ td th {
     width: 30px;
 }
 
-.avatar {
-    /*width: 10vh;*/
-    height: 10vh;
-}
-
 .adnav {
     display: inline-flex;
     flex-direction: row;
     justify-content: center;
-    gap: 25px;
     min-height: unset;
 }
 
 .adnav a {
-    border-right: 2px solid #333;
+    border: 2px solid #999;
+    border-radius: 20px 20px 0 0;
+    padding: 10px 5px;
 }
 
 main {

@@ -35,8 +35,8 @@ fieldset fieldset {
     display: inline-block;
 }
 .as-contributor, .as-guest{ background-color: #d1d1d1;} 
-.as-contributor.selected { background-color: #a667ef; border-color: #b67cf8;}
-.as-guest.selected { background-color: #efe867; border-color: #ebe695;}
+.as-contributor.selected { background-color: cornflowerblue; border-color: #39578b;}
+.as-guest.selected { background-color: #efe867; border-color: #a5a147;}
 .comment-tab {
     border-top: 3px solid #d1d1d1;border-left: 3px solid #d1d1d1;border-right: 3px solid #d1d1d1;
     border-top-left-radius: 10px;
@@ -105,8 +105,8 @@ td {
     color: white;
     padding: 5px;
     border-radius: 1rem;
-    border: 2px solid #1f63a7;
-    background-color: #4a75a7d5;
+    border: 2px solid #39578b;
+    background-color: cornflowerblue;
 
     padding-right: 10px; padding-left: 10px;
 }
@@ -116,10 +116,10 @@ td {
     color: white;
     padding: 5px;
     border-radius: 1rem;
-    border: 2px solid #7f179e;
-    background-color: #793d8dd7;
+    border: 2px solid #8a339b;
+    background-color: #e256ff;
 
-    padding-right: 11px; padding-left: 10px;
+    padding-right: 10px; padding-left: 10px;
 }
 
 .comment-container {
