@@ -23,11 +23,15 @@ h1, h2 {
 hr { overflow: hidden; }
 
 p {
-    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;  
 }
 
 strong {
     font-family: minecraft;
+}
+
+.contributor_name {
+    width: auto;
 }
 
 .row {
@@ -62,8 +66,9 @@ a>.card:hover {
 }
 
 .cardwrapper {
-    height: 400px;
+    height: 400px; /* Default value that is changed by JavaScript once the webpage fully loads */
     width: 25%;
+    margin-bottom: 10px;
 }
 
 a:hover .roles {

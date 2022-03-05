@@ -42,9 +42,13 @@ class Account extends Controller
         self::$data['base_keywords'] = 'Minecraft,Wynncraft,Mod,Voice,Account,Management';
         
         self::$data['account_id'] = $_SESSION['user']->getId();
+	    self::$data['account_name'] = $_SESSION['user']->getName();
         self::$data['account_email'] = $_SESSION['user']->getEmail();
         self::$data['account_publicEmail'] = $_SESSION['user']->hasPublicEmail();
-        self::$data['account_name'] = $_SESSION['user']->getName();
+		self::$data['account_discord'] = $_SESSION['user']->getSocial('discord');
+		self::$data['account_youtube'] = $_SESSION['user']->getSocial('youtube');
+		self::$data['account_twitter'] = $_SESSION['user']->getSocial('twitter');
+		self::$data['account_castingcallclub'] = $_SESSION['user']->getSocial('castingcallclub');
         self::$data['account_picture'] = $_SESSION['user']->getAvatarLink();
         self::$data['account_roles'] = $_SESSION['user']->getRoles();
         self::$data['account_bio'] = $_SESSION['user']->getBio();
@@ -55,6 +59,7 @@ class Account extends Controller
         self::$views[] = 'account';
         self::$cssFiles[] = 'account';
         self::$jsFiles[] = 'account';
+        self::$jsFiles[] = 'tinymce';
         
         return true;
     }
@@ -66,28 +71,61 @@ class Account extends Controller
      */
     private function post(array $args): bool
     {
-        $email = $_POST['email'];
-		$publicEmail = isset($_POST['publicEmail']);
+	    $displayName = $_POST['name'];
         $password = $_POST['password'];
-        $displayName = $_POST['name'];
+	    $email = $_POST['email'];
+	    $publicEmail = isset($_POST['publicEmail']);
+		$discord = $_POST['discord'];
+	    $youtube = $_POST['youtube'];
+	    $twitter = $_POST['twitter'];
+	    $castingcallclub = $_POST['castingcallclub'];
         $bio = $_POST['bio'];
         
         $validator = new AccountDataValidator();
-        
-		if (!empty($email)) {
-			$validator->validateEmail($email);
-		}
-		else {
-			$email = null;
-		}
 		
         $validator->validateName($displayName);
 		
         if (!empty($password)) {
             $validator->validatePassword($password);
         }
+	
+	    if (!empty($email)) {
+		    $validator->validateEmail($email);
+	    }
+	    else {
+		    $email = null;
+	    }
+	
+	    if (!empty($discord)) {
+		    $validator->validateDiscord($discord);
+	    }
+	    else {
+		    $discord = null;
+	    }
+	
+	    if (!empty($youtube)) {
+		    $validator->validateYouTubeLink($youtube);
+	    }
+	    else {
+		    $youtube = null;
+	    }
+	
+	    if (!empty($twitter)) {
+		    $validator->validateTwitter($twitter);
+	    }
+	    else {
+		    $twitter = null;
+	    }
+	
+	    if (!empty($castingcallclub)) {
+		    $validator->validateCastingCallClub($castingcallclub);
+	    }
+	    else {
+		    $castingcallclub = null;
+	    }
 		
-        $validator->validateBio($bio);
+	    $bio = $validator->sanitizeBio($bio);
+		$validator->validateBio($bio);
 		
         if ($_FILES['avatar']['error'] !== UPLOAD_ERR_NO_FILE) {
             $validator->validateAvatar($_FILES['avatar']);
@@ -103,9 +141,7 @@ class Account extends Controller
             }
         }
         
-        if (!empty($validator->errors)) {
-            self::$data['account_error'] = $validator->errors;
-        } else {
+        if (empty($validator->errors)) {
             if ($_FILES['avatar']['error'] !== UPLOAD_ERR_NO_FILE) {
                 //Delete old avatars
                 array_map('unlink', glob('dynamic/avatars/'.$_SESSION['user']->getId().'.*'));
@@ -116,15 +152,20 @@ class Account extends Controller
                 $avatar = $_SESSION['user']->getAvatarLink(false);
             }
             
-            $_SESSION['user']->update($email, $password, $displayName, $avatar, $bio, $publicEmail);
+            $_SESSION['user']->update($email, $password, $displayName, $avatar, $bio, $discord, $youtube, $twitter, $castingcallclub, $publicEmail);
         }
     
         $result = $this->get(array());
     
-        self::$data['account_email'] = $email;
         self::$data['account_name'] = $displayName;
+	    self::$data['account_email'] = $email;
+	    self::$data['account_discord'] = $discord;
+	    self::$data['account_youtube'] = $youtube;
+	    self::$data['account_twitter'] = $twitter;
+	    self::$data['account_castingcallclub'] = $castingcallclub;
         //TODO - somhow keep the new and unsaved avatar
         self::$data['account_bio'] = $bio;
+	    self::$data['account_error'] = array_merge($validator->errors, $validator->warnings);
         
         return $result;
     }

@@ -1,6 +1,8 @@
 <h1>Contributors</h1>
 <p style="text-align: center;">A lot of people worked hard on this mod. Take a moment to appreciate their effort and find out who helped.</p>
-<?php $currentHighestRole = null; ?>
+<?php $currentHighestRole = ${basename(__FILE__, '.phtml').'_contributors'}[0]->getRoles()[0]->name; ?>
+<hr>
+<h2>Owner</h2>
 <div class="row">
 <?php foreach (${basename(__FILE__, '.phtml').'_contributors'} as $contributor) : ?>
 	<?php
@@ -17,7 +19,7 @@
 	<div class="col-3"><a class="cardlink" href="/cast/<?= $contributor->getId(); ?>">
 		<div class="card">
 			<img class="avatar" src="dynamic/avatars/<?= $contributor->getAvatarLink(); ?>" alt="Contributor's profile picture" /><br>
-			<strong><?= $contributor->getName(); ?></strong>
+			<p class="contributor_name"><strong><?= $contributor->getName(); ?></strong></p>
 				<hr> 
 				<?php if (!empty($contributor->getLore())) : ?>
 				<i><?= $contributor->getLore() ?></i>

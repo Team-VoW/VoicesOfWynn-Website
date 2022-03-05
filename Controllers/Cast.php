@@ -27,9 +27,14 @@ class Cast extends Controller
 		self::$data['cast_voice_actor'] = $voiceActor;
 		self::$data['cast_quest_recordings'] = $cnm->getVoiceActorRecordings($voiceActorId);
 		
+        self::$data['cast_upvoted'] = $cnm->getVotes('+');
+        self::$data['cast_downvoted'] = $cnm->getVotes('-');
+
 		self::$cssFiles[] = 'voting';
 		self::$jsFiles[] = 'voting';
+		self::$jsFiles[] = 'cast';
 		self::$views[] = 'cast';
 		return true;
 	}
 }
+

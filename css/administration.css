@@ -4,11 +4,7 @@
 }
 
 table {
-    /* Combat classless CSS
-    width: 145%;
-    position: relative;
-    left: -15vw;
-     */
+    border-spacing: 10px 40px!important;
 }
 
 td th {
@@ -17,7 +13,7 @@ td th {
 }
 
 .role-header {
-    writing-mode: vertical-rl;
+    writing-mode: vertical-lr;
     text-orientation: upright;
     text-align: center;
     width: 30px;
@@ -30,27 +26,22 @@ td th {
     width: 30px;
 }
 
-.avatar {
-    /*width: 10vh;*/
-    height: 10vh;
+.adnav {
+    display: inline-flex;
+    flex-direction: row;
+    justify-content: center;
+    min-height: unset;
 }
 
 .adnav a {
-    border-right: 2px solid #333;
+    border: 2px solid #999;
+    border-radius: 20px 20px 0 0;
+    padding: 10px 5px;
 }
-@media (max-width: 1950px) {
-    td th {
-        padding-right: 0px;
-    }
-    table {
-        border-spacing: 5px;
-    }
-}
-@media (max-width: 1210px) {
-    td th {
-        padding-right: 0px;
-    }
-    table {
-        border-spacing: 5px;
-    }
+
+main {
+    width:fit-content;
+    margin-left:auto;
+    margin-right:auto;
+    max-width:100%;
 }

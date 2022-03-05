@@ -25,6 +25,8 @@
 </head>
 
 <body>
+<!-- <center> -->
+    <main>
     <div class="header0">
         <ul class="nav">
             <div style="float: left">
@@ -41,15 +43,13 @@
                 <img class="logo" src="images/wynnvplogo.png" alt="Very cool Logo" width="200px" height="200px"/>
             </a>
     </div>
-    
-<!-- <center> -->
-    <main>
+
         <?php require $this->getNextView(); ?>
     </main>
 <!-- </center> -->
     <footer style="font-weight: bolder;">
         <span id="about">Coded by &copy; <a href="https://github.com/ShadyMedic">Shady</a>, <?= ${basename(__FILE__, '.phtml').'_currentYear'} ?></span>
-        <span style="float: right"> designed with &hearts; by <a href="https://www.just5moreminutes.xyz">Just5MoreMinutes</a></span> <!-- (◡︵◡) -->
+        <span style="float: right"> designed with &hearts; by <a href="https://www.youtube.com/watch?v=xuCO7-DLCaA">Just5MoreMinutes</a></span> <!-- temporary link till I can pay for my domain & host (◡︵◡) -->
     </footer>
     <!-- JavaScript -->
     <?php foreach (self::$jsFiles as $jsFile) : ?>

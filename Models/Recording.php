@@ -86,6 +86,18 @@ class Recording
 		return null;
 	}
 	
+    /**
+     * Checks if this recording has been voted for by the client communicating from the current IP
+     * @param string $type Either "+" to check for upvotes or "-" to check for downvotes
+     * @return bool TRUE if it was, FALSE if it wasn't
+     */
+    public function wasVotedFor(string $type): bool {
+        $result = Db::fetchQuery('
+            SELECT COUNT(*) as "cnt" FROM vote WHERE recording_id = ? AND ip = ? AND type = ?
+        ', array($this->id, inet_pton($_SERVER['REMOTE_ADDR']), $type));
+        return !(($result['cnt'] === 0));
+    }
+
 	/**
 	 * Upvotes this recording and sets the cookie preventing duplicate votes
 	 * @return bool
@@ -93,8 +105,18 @@ class Recording
 	 */
 	public function upvote(): bool
 	{
-		setcookie('votedFor'.$this->id, 1, time() + 31536000, '/');
-		return Db::executeQuery('UPDATE recording SET upvotes = upvotes + 1 WHERE recording_id = ?;', array($this->id));
+        if ($this->wasVotedFor("-")) {
+            //Remove upvote
+            Db::executeQuery('UPDATE vote SET type = "+" WHERE recording_id = ? AND ip = ?;',
+                array($this->id, inet_pton($_SERVER['REMOTE_ADDR'])));
+        }
+        else {
+            //Add upvote
+            Db::executeQuery('INSERT INTO vote(recording_id, ip, type) VALUES (?,?,"+");',
+                array($this->id, inet_pton($_SERVER['REMOTE_ADDR'])));
+        }
+
+        return $this->updateVotesCounts();
 	}
 	
 	/**
@@ -104,50 +126,114 @@ class Recording
 	 */
 	public function downvote(): bool
 	{
-		setcookie('votedFor'.$this->id, 1, time() + 31536000, '/');
-		return Db::executeQuery('UPDATE recording SET downvotes = downvotes + 1 WHERE recording_id = ?;',
-			array($this->id));
+        if ($this->wasVotedFor("+")) {
+            //Remove downvote
+            Db::executeQuery('UPDATE vote SET type = "-" WHERE recording_id = ? AND ip = ?;',
+                array($this->id, inet_pton($_SERVER['REMOTE_ADDR'])));
+        }
+        else {
+            //Add downvote
+            Db::executeQuery('INSERT INTO vote(recording_id, ip, type) VALUES (?,?,"-");',
+                array($this->id, inet_pton($_SERVER['REMOTE_ADDR'])));
+        }
+
+		return $this->updateVotesCounts();
 	}
-	
+
+    /**
+     * Removes any upvote or downvote on this recording left by the current IP
+     * @return bool
+     * @throws \Exception
+     */
+    public function resetVote(): bool
+    {
+        Db::executeQuery('DELETE FROM vote WHERE recording_id = ? AND ip = ?',
+            array($this->id, inet_pton($_SERVER['REMOTE_ADDR'])));
+        return $this->updateVotesCounts();
+    }
+
+    /**
+     * Updates upvote/downvote count for this recording in the database
+     * @return bool
+     * @throws \Exception
+     */
+    private function updateVotesCounts()
+    {
+        return Db::executeQuery('
+            UPDATE recording SET
+            upvotes = (SELECT COUNT(*) FROM vote WHERE recording_id = ? AND type = "+"),
+            downvotes = (SELECT COUNT(*) FROM vote WHERE recording_id = ? AND type = "-")
+            WHERE recording_id = ?;
+            ', array($this->id, $this->id, $this->id));
+    }
+
 	/**
 	 * Adds a new comment to this recording
-	 * @param $author
-	 * @param $email
-	 * @param $content
-	 * @param $antispam
-	 * @return bool
+     * @param $verified bool TRUE, if the user is posting as an contributor (verification if anyone is actually logged in will be performed), FALSE, if they're posting as a guest
+	 * @param $ip string|null
+	 * @param $author string|null
+	 * @param $email string|null
+	 * @param $content string
+	 * @param $antispam string|null
+	 * @return int ID of the newly created comment
 	 * @throws \Exception
 	 */
-	public function comment($author, $email, $content, $antispamQuestion, $antispamAnswer)
+	public function comment(bool $verified, $ip, $author, $email, $content, $antispamQuestion, $antispamAnswer)
 	{
-		$idealColor = self::IDEAL_COLORS[$antispamQuestion];
-		$redPart = hexdec(substr($idealColor, 1, 2));
-		$greenPart = hexdec(substr($idealColor, 3, 2));
-		$bluePart = hexdec(substr($idealColor, 5, 2));
-		$absoluteTollerance = round(256 * self::ANTISPAM_TOLLERANCE / 100);
-		
-		$redPartAnswer = hexdec(substr($antispamAnswer, 1, 2));
-		$greenPartAnswer = hexdec(substr($antispamAnswer, 3, 2));
-		$bluePartAnswer = hexdec(substr($antispamAnswer, 5, 2));
-		
-		if (
-			$redPartAnswer + $absoluteTollerance < $redPart || $redPartAnswer - $absoluteTollerance > $redPart ||
-			$greenPartAnswer + $absoluteTollerance < $greenPart || $greenPartAnswer - $absoluteTollerance > $greenPart ||
-			$bluePartAnswer + $absoluteTollerance < $bluePart || $bluePartAnswer - $absoluteTollerance > $bluePart
-		) {
-			throw new UserException('The colour you picked was too distinct from '.$antispamQuestion.'. Try again please.');
+		if (!$verified) {
+			$idealColor = self::IDEAL_COLORS[$antispamQuestion];
+			$redPart = hexdec(substr($idealColor, 1, 2));
+			$greenPart = hexdec(substr($idealColor, 3, 2));
+			$bluePart = hexdec(substr($idealColor, 5, 2));
+			$absoluteTollerance = round(256 * self::ANTISPAM_TOLLERANCE / 100);
+			
+			$redPartAnswer = hexdec(substr($antispamAnswer, 1, 2));
+			$greenPartAnswer = hexdec(substr($antispamAnswer, 3, 2));
+			$bluePartAnswer = hexdec(substr($antispamAnswer, 5, 2));
+			
+			if (
+				$redPartAnswer + $absoluteTollerance < $redPart || $redPartAnswer - $absoluteTollerance > $redPart ||
+				$greenPartAnswer + $absoluteTollerance < $greenPart || $greenPartAnswer - $absoluteTollerance > $greenPart ||
+				$bluePartAnswer + $absoluteTollerance < $bluePart || $bluePartAnswer - $absoluteTollerance > $bluePart
+			) {
+				throw new UserException('The colour you picked was too distinct from '.$antispamQuestion.'. Try again please.');
+			}
 		}
 		
-		$author = trim($author);
-		$email = trim($email);
+        if ($verified) {
+            if (!isset($_SESSION['user'])) {
+                throw new UserException('No contributor is logged in.');
+            }
+            $userId = $_SESSION['user']->getId();
+	        $ip = null;
+	        $author = null;
+	        $email = null;
+        }
+        else {
+            $author = trim($author);
+            if (empty($author)) {
+                $author = 'Anonymous';
+            }
+            if (mb_strlen($author) > 31) {
+                throw new UserException('Name is too long, 31 characters is the limit.');
+            }
+	
+	        $email = trim($email);
+	        if (empty($email)) {
+		        $email = ""; //NULL would mess up with the SQL MD5 function used inside the CONCAT function
+	        }
+	        if (mb_strlen($email) > 255) {
+		        throw new UserException('E-mail is too long, 255 characters is the limit.');
+	        }
+	        //Check e-mail format (might not allow some exotic but valid e-mail domains)
+	        if ($email !== "" && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+		        throw new UserException('E-mail address doesn\'t seem to be in the correct format. If you are sure that you entered your e-mail address properly, ping Shady#2948 on Discord.');
+	        }
+			
+	        $userId = null;
+        }
+		
 		$content = trim($content);
-		
-		if (empty($author)) {
-			$author = 'Anonymous';
-		}
-		if (empty($email)) {
-			$email = 'nobody@nowhere.net';
-		}
 		if (empty($content)) {
 			throw new UserException('No content submitted');
 		}
@@ -157,7 +243,7 @@ class Recording
 		if (mb_strlen($email) > 255) {
 			throw new UserException('E-mail is too long, 255 characters is the limit.');
 		}
-		if (mb_strlen($content) > 65535) {
+		if (strlen($content) > 65535) { //Not using mb_strlen, because we need to count single-bit characters
 			throw new UserException('Comment is too long, 65,535 characters is the limit.');
 		}
 		
@@ -168,17 +254,15 @@ class Recording
 			}
 		}
 		
-		//Check e-mail format (might not allow some exotic but valid e-mail domains)
-		if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-			throw new UserException('E-mail address doesn\'t seem to be in the correct format. If you are sure that you entered your e-mail address properly, ping Shady#2948 on Discord.');
-		}
-		
-		return Db::executeQuery('INSERT INTO comment (name,email,content,recording_id) VALUES (?,?,?,?);', array(
-			$author,
+		return Db::executeQuery('INSERT INTO comment (verified,user_id,ip,name,email,content,recording_id) VALUES (?,?,?,?,?,?,?);', array(
+			$verified,
+            $userId,
+			inet_pton($ip),
+            $author,
 			$email,
 			$content,
 			$this->id
-		));
+		), true);
 	}
 }
 

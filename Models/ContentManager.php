@@ -231,7 +231,7 @@ class ContentManager
 	public function getComments($recordingId): array
 	{
 		$result = Db::fetchQuery('
-			SELECT comment_id,name,REPLACE(REPLACE(email,"@"," at "), ".", " dot ") AS email,content,recording_id,
+			SELECT comment_id,verified,user_id,ip,name,email,content,recording_id,
 			CONCAT("https://www.gravatar.com/avatar/",MD5(email),"?d=identicon") AS gravatar
 			FROM comment WHERE recording_id = ? ORDER BY comment_id DESC;
 		', array($recordingId), true);
@@ -245,6 +245,49 @@ class ContentManager
 		return $comments;
 	}
 	
+  /**
+	 * Returns list of comments IDs on the current recording that were posted by the current user or current IP
+	 * @param int $recordingId
+	 * @return array
+	 */
+	public function getOwnedComments(int $recordingId): array
+	{
+		$userId = 0;    //No comment in the database should have 0 as value in the "user_id" column
+		$ip = $_SERVER['REMOTE_ADDR'];
+		if (isset($_SESSION['user'])) {
+			$userId = $_SESSION['user']->getId();
+		}
+		
+		$result = Db::fetchQuery('SELECT comment_id FROM comment WHERE ip = ? OR user_id = ?',
+			array(inet_pton($ip), $userId), true);
+		
+		$ids = array();
+		if ($result !== false) {
+			foreach ($result as $commentId) {
+				$ids[] = $commentId['comment_id'];
+			}
+		}
+		return $ids;
+	}
+  
+/**
+ * Returns list of recordings' IDs for which a vote of the specified type was casted from the current IP address
+ * @param string $type Either "+" for upvotes or "-" for downvotes
+ * @return array Array of recordings' IDs, or empty array if the current IP has no active votes
+ * @throws \Exception
+ */
+  public function getVotes(string $type) {
+      $result = Db::fetchQuery('SELECT recording_id FROM vote WHERE ip = ? AND type = ?;', array(inet_pton($_SERVER['REMOTE_ADDR']), $type), true);
+      if (empty($result)) {
+          return array();
+      }
+      $votes = array();
+      foreach ($result as $row) {
+          $votes[] = $row['recording_id'];
+      }
+      return $votes;
+  }
+  
 	public function getRecordingTitle(Recording $recording): string
 	{
 		if (empty($recording->npc_id)) {
@@ -269,7 +312,7 @@ class ContentManager
 			$lineNumber = $recording->line;
 		}
 		
-		//<NPC name> in <quest name>, line <line number>
+		//<NPC name> in <quest name>, line n. <line number>
 		return $npcName.' in '.$questName.', line n. '.$lineNumber;
 	}
 }
