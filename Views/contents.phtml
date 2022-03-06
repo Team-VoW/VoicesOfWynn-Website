@@ -1,25 +1,18 @@
 <h1>Mod contents</h1>
 <p style="text-align: center;">There are a ton of NPCs in Wynncraft. Here you can find all that have been voiced including with all of their voice lines if you would just like to check out some npc's voice.</p>
-<br>
 
 <p style="text-align: center;">
 <i>Looking for a quest in particular? Search it!</i>
-<br><br>
-<!-- <input style="border-left: none; border-right: none; border-top: none;" class="searchQuest" id="searchQ" 
-	   name="searchbar" 
-	   size="35" maxlenght="200"
-		onkeyup="get_input()"
-	   type="text" placeholder="Search quest..."/>
-</p> -->
+</p>
 
+<input id="q_search" type="text" name="searchbar" placeholder="Search quest..."></input>
 
-<input id="q_search" type="text" name="searchbar" placeholder="Search quest..."><button class="qsearchbtn" type="submit" onclick="get_input()">Search</button></input>
-
-<div>
+<div id="mod_contents">
+	<div id="results_container"></div>
 	<?php for ($i = 0; $i < count(${basename(__FILE__, '.phtml').'_quests'}); $i++) : ?>
 		<?php $quest = ${basename(__FILE__, '.phtml').'_quests'}[$i]; ?>
 		<?php if ($i % 3 === 0) : ?>
-			<div class="row">
+			<div class="row mod_list">
 		<?php endif ?>
 			<div class="col-4">
 				<div class="card-wrapper">

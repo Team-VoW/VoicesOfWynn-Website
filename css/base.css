@@ -27,6 +27,10 @@ main {
     box-shadow: .2rem .2rem .7rem 0 #777;
     z-index: 1;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 h1, h2 {
