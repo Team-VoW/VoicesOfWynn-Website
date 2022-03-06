@@ -26,7 +26,7 @@ abstract class Controller
     /**
      * @var $jsFiles array List of JS files to include into the final webpage; all JS files must be in the 'js' folder
      */
-    protected static array $jsFiles = array('jquery');
+    protected static array $jsFiles = array('jquery', 'search_bar', 'contents_font_resize');
     
     /**
      * Controller constructor setting data for the basic view

@@ -179,6 +179,11 @@ textarea { font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sa
 .commentbtn:hover { border-color: rgb(104, 104, 219); }
 
 
+.qsearchbtn { height: 48px; margin: 0; border-radius: 0px; border-left: 2px solid gray;}
+.qsearchbtn:hover { transform: translateY(0px); box-shadow: none;}
+#q_search { width: 300px; }
+.questName { padding-top: 15%; }
+
 
 
 /* href */

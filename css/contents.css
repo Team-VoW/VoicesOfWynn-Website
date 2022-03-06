@@ -22,7 +22,7 @@ textarea:focus, input:focus {
     width: 64px;
 	border-radius: .3rem;
 }
-#npcvoice {
+.npcvoice {
 	cursor: default;
     color: #424456;
 	align-items: center;
@@ -46,7 +46,7 @@ textarea:focus, input:focus {
     min-height: 200px;
     max-height: fit-content;
 }
-#npcvoice:hover {
+.npcvoice:hover {
     cursor: default;
 	content: none;
     box-shadow: .2rem .2rem .7rem 0 #777;
@@ -57,7 +57,7 @@ textarea:focus, input:focus {
     overflow: hidden;
     z-index: 2;
 }
-#questInfo {
+.questInfo {
 	cursor: default;
 	display: none;
 	text-align: left;
@@ -68,17 +68,17 @@ textarea:focus, input:focus {
 	align-items: center;
 	margin: 0 auto;
 }
-#questInfo li {
+.questInfo li {
 	justify-content: center;
 	align-self: center;
 	align-items: center;
 }
-#npcvoice:hover #questInfo { display: block; }
+.npcvoice:hover .questInfo { display: block; }
 
 
 
 @media (max-width: 1000px) {
-	#questInfo {
+	.questInfo {
 		display: block;
 		visibility: visible;
 	}
@@ -86,7 +86,7 @@ textarea:focus, input:focus {
 		margin: 0 auto;
 		margin-bottom: 360px;
 	}
-	#npcvoice {
+	.npcvoice {
 		height: 350px;
 		width: 350px;
 		overflow-y: scroll;
