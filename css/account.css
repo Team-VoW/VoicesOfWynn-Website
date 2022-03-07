@@ -60,6 +60,14 @@ input:hover {
     gap: 10px;
 }
 
+.input-change{
+    width: 100%;
+}
+
+.account-edit-field-right {
+    width: 100%;
+}
+
 .account-edit-field-right>input[type="checkbox"] {
     width: 25px;
 }
@@ -107,4 +115,24 @@ input:hover {
 .viewbtn:hover {
     color: white;
     border-color: rgb(131, 80, 186);
+}
+
+@media screen and (max-width:755px){
+    .account-edit-field-left{
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .account-edit-row{
+        flex-direction: column;
+    }
+
+    #chekbox-container{
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+    }
 }

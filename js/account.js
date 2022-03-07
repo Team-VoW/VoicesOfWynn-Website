@@ -3,41 +3,20 @@ $("#avatar-input").on('change', function(event) {
 });
 
 $(function () {
-    let $cards = $(".account-edit-field-left");
+    let $inputs = $(".account-edit-field-left");
     let currentMaxWidth = 0;
-    for (let i = 0; i < $cards.length; i++) 
+    for (let i = 0; i < $inputs.length; i++) 
     { 
-      if(currentMaxWidth < Math.ceil($($cards[i]).outerWidth())) 
+      if(currentMaxWidth < Math.ceil($($inputs[i]).outerWidth())) 
       {
-        currentMaxWidth = Math.ceil($($cards[i]).outerWidth());
-        console.log(Math.ceil($($cards[i]).outerWidth()))
+        currentMaxWidth = Math.ceil($($inputs[i]).outerWidth());
+        console.log(Math.ceil($($inputs[i]).outerWidth()))
       }
-      if(i+1 === $cards.length) 
+      if(i+1 === $inputs.length) 
       {
-        for(let h = 0; h < $cards.length; h++)
+        for(let h = 0; h < $inputs.length; h++)
         {
-          $($cards[h]).width(currentMaxWidth + "px")
-        }
-      }
-    }
-  });
-
-  $(function () {
-    let $cards = $(".input-change");
-    let currentMaxWidth = 0;
-    for (let i = 0; i < $cards.length; i++) 
-    { 
-      if(currentMaxWidth < Math.ceil($($cards[i]).outerWidth())) 
-      {
-        currentMaxWidth = Math.ceil($($cards[i]).outerWidth());
-        console.log(Math.ceil($($cards[i]).outerWidth()))
-      }
-      if(i+1 === $cards.length) 
-      {
-        for(let h = 0; h < $cards.length; h++)
-        {
-          $($cards[h]).width(currentMaxWidth + "px")
-
+          $($inputs[h]).width(currentMaxWidth + "px")
         }
       }
     }
