@@ -1,11 +1,4 @@
 /* styling for credits */
-body {
-    background-image: url(../images/skyislands_credits.png);
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: 50% 50%;
-}
-
 main {
     padding-right: 0.5vh;
     padding-left: 0.5vh;

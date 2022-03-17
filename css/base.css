@@ -7,13 +7,27 @@
 /* ##################### */
 /*        general        */
 /*#######################*/
+
+/* MORE PICTURES MORE KEYFRAMES SMOOTHER DAY AND NIGHT CYCLE*/
+
+@keyframes bgchange {
+    0% {
+        background-image: url("../images/day.jpg");
+    }
+    100% {
+        background-image: url("../images/night.jpg");
+    }
+}
+
 body {
-    background-image: url(../images/ragni_home.png);
+    background-position: center center;
+    background-attachment: fixed;
     background-size: cover;
     background-repeat: no-repeat;
-    background-position: 50% 50%;
-    background-attachment: fixed;
-
+    -webkit-animation: bgchange 60s infinite;
+    animation: bgchange 60s infinite;
+    -webkit-animation-direction: normal;
+    animation-direction: normal;
     zoom: 90%;
 }
 
