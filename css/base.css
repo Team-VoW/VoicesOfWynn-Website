@@ -14,8 +14,11 @@
     0% {
         background-image: url("../images/day.jpg");
     }
-    100% {
+    50% {
         background-image: url("../images/night.jpg");
+    }
+    100% {
+        background-image: url("../images/day.jpg");
     }
 }
 
@@ -24,10 +27,12 @@ body {
     background-attachment: fixed;
     background-size: cover;
     background-repeat: no-repeat;
-    -webkit-animation: bgchange 60s infinite;
-    animation: bgchange 60s infinite;
+    -webkit-animation: bgchange 120s infinite;
+    animation: bgchange 120s infinite;
     -webkit-animation-direction: normal;
     animation-direction: normal;
+    -webkit-animation-timing-function: ease;
+    animation-timing-function: ease;
     zoom: 90%;
 }
 
