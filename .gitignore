@@ -1,5 +1,5 @@
 /.idea/
-/.vscode/
+.vscode/
 /dynamic/*
 !/dynamic/avatars/default.png
 !/dynamic/avatars/nobody.png

@@ -20,6 +20,7 @@ class Contents extends Controller
 		self::$data['contents_quests'] = $cnm->getQuests();
 		
 		self::$cssFiles[] = 'contents';
+		self::$jsFiles[] = 'search_bar';
 		self::$views[] = 'contents';
 		return true;
 	}

@@ -1,28 +1,27 @@
 <h1>Mod contents</h1>
 <p style="text-align: center;">There are a ton of NPCs in Wynncraft. Here you can find all that have been voiced including with all of their voice lines if you would just like to check out some npc's voice.</p>
-<br>
-<p style="text-align: center; color: green;">Looking for a quest in particular? You can find it easier by using <b>CTRL+F</b> (a better search tool will be implemented soon)!<br></p>
-<!-- <p style="text-align: center;">
-<input style="border-left: none; border-right: none; border-top: none;" class="searchQuest" id="searchQ" 
-	   name="searchbar" 
-	   size="35" maxlenght="200"
-	   onkeyup="searchQuest()"
-	   type="text" placeholder="Search quest..."/> -->
+
+<p style="text-align: center;">
+<i>Looking for a quest in particular? Search it!</i>
 </p>
-<div>
+
+<input id="q_search" type="text" name="searchbar" placeholder="Search quest..."></input>
+
+<div id="mod_contents">
+	<div id="results_container"></div>
 	<?php for ($i = 0; $i < count(${basename(__FILE__, '.phtml').'_quests'}); $i++) : ?>
 		<?php $quest = ${basename(__FILE__, '.phtml').'_quests'}[$i]; ?>
 		<?php if ($i % 3 === 0) : ?>
-			<div class="row">
+			<div class="row mod_list">
 		<?php endif ?>
 			<div class="col-4">
 				<div class="card-wrapper">
-				<div class="card" id="npcvoice">
+				<div class="card npcvoice">
 					<h3 class="questName"><?= $quest->getName(); ?></h3>
 					
-					<div id="questInfo" style="margin-bottom: 0px; margin-top: 0px; padding-top: 0px; padding-bottom: 0px;">
+					<div class="questInfo" style="margin-bottom: 0px; margin-top: 0px; padding-top: 0px; padding-bottom: 0px;">
 						<?php foreach ($quest->getNpcs() as $npc) : ?>
-						<div id="quest-npcs">
+						<div class="quest-npcs">
 							<p style="text-align: center; margin-bottom: 0px; margin-top: 0px;"><img class="npc-avatar" src="dynamic/npcs/<?= $npc->getId() ?>.png" alt="NPC avatar" /></p>
 							<p style="text-align: center;
 										border-bottom: 1px solid black;

@@ -3,7 +3,6 @@ $.getScript("https://cdn.tiny.cloud/1/kpiricxjt3ddplrd8k4ex78xpjn6i6iy99gp4lln5p
 	function() {
 		tinymce.init({
 			selector: '#bio',
-			width: 700,
 			height: 250,
 			toolbar: 'undo redo cut copy paste | removeformat | bold italic underline strikethrough | h1 h2 h3 superscript subscript | link image | alignleft aligncenter alignright alignjustify',
 			menubar: '',

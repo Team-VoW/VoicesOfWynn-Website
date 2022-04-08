@@ -12,6 +12,18 @@ input:hover {
 textarea:focus, input:focus {
     outline: none;
 }
+
+#mod_contents {
+	width: 100%;
+}
+
+.content {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
 .row {
     min-height: 200px;
     max-height: fit-content;
@@ -22,7 +34,8 @@ textarea:focus, input:focus {
     width: 64px;
 	border-radius: .3rem;
 }
-#npcvoice {
+.npcvoice {
+	position: absolute;
 	cursor: default;
     color: #424456;
 	align-items: center;
@@ -30,9 +43,9 @@ textarea:focus, input:focus {
 	display: inline-block;
 	width: auto;
 	font-family: Georgia, 'Times New Roman', Times, serif;
-	margin: .5rem 0;
+	margin: 0;
 	border: 0.25rem solid #DC9587;
-	padding: .5rem 1rem 0.5rem; 
+	padding: 0; 
 	border-radius: .3rem; 
 	box-shadow: .1rem .1rem .4rem 0 #777;
 	background: aliceblue;
@@ -46,49 +59,93 @@ textarea:focus, input:focus {
     min-height: 200px;
     max-height: fit-content;
 }
-#npcvoice:hover {
-    cursor: default;
+.npcvoice:hover {
+	cursor: pointer;
 	content: none;
-    box-shadow: .2rem .2rem .7rem 0 #777;
-    transform: translateY(3px);
-    pointer-events: visible;
-    visibility: visible;
-    float: none;
-    overflow: hidden;
-    z-index: 2;
+	box-shadow: .2rem .2rem .7rem 0 #777;
+	transform: translateY(3px);
+	pointer-events: visible;
+	position: absolute;
+	visibility: visible;
+	float: none;
+	overflow: hidden;
+	z-index: 15;
 }
-#questInfo {
+.npcvoice:hover h3 {
+	margin-top: 35px;
+}
+.questInfo {
 	cursor: default;
 	display: none;
 	text-align: left;
 	overflow: hidden;
-	z-index: 1;
+	z-index: 15;
 	list-style: none;
 	justify-content: center;
 	align-items: center;
 	margin: 0 auto;
 }
-#questInfo li {
+.questInfo li {
 	justify-content: center;
 	align-self: center;
 	align-items: center;
 }
-#npcvoice:hover #questInfo { display: block; }
+.npcvoice:hover .questInfo { display: block; }
 
+
+#results {
+	display: none;
+}
+
+/*overwrite classles*/
+
+.row {
+	margin: 0;
+}
+
+.row > .col-4 {
+	padding: 0;
+	margin:0;
+}
+
+.card-wrapper {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+}
+
+.npcvoice > h3 {
+	margin: 0;
+	padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+	height:min-content;
+}
+
+.npcvoice {
+	padding: .5rem;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	position: relative;
+}
+
+.questInfo {
+	width: 100%;
+}
 
 
 @media (max-width: 1000px) {
-	#questInfo {
+	.questInfo {
 		display: block;
 		visibility: visible;
+		overflow: auto;
 	}
-	.card-wrapper {
-		margin: 0 auto;
-		margin-bottom: 360px;
-	}
-	#npcvoice {
+	.npcvoice {
 		height: 350px;
 		width: 350px;
-		overflow-y: scroll;
 	}
 }
