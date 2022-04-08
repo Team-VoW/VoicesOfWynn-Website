@@ -29,7 +29,7 @@ mb_internal_encoding('UTF-8');
 
 /* KEEP THIS COMMENTED ON LOCAL SERVERS - IT'S NOT POSSIBLE TO USE SSL ON THEM
 //Check if HTTPS connection was used and if not (HTTP), redirect the client.
-if (!(isset($_SERVER["HTTP_X_FORWARDED_PROTO"]) && $_SERVER["HTTP_X_FORWARDED_PROTO"] === "https")) {
+if (!(isset($_SERVER["HTTP_X_FORWARDED_PROTO"]) && $_SERVER["HTTP_X_FORWARDED_PROTO"] === "https") && substr($_SERVER['REQUEST_URI'], 0, 5 ) !== "/api/") {
     header('Location: https://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
     header('Connection: close');
     exit();
