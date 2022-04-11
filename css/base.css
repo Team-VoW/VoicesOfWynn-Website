@@ -8,7 +8,7 @@
 /*        general        */
 /*#######################*/
 
-body > div {
+body > div:not(.tox) {
     position: fixed!important;
     width: 100%!important;
     height: 100%!important;
@@ -20,7 +20,7 @@ body > div {
     background-size: cover!important;
 }
 
-body > div > div {
+body > div:not(.tox) > div {
     position: fixed!important;
     width: 100%!important;
     height: 100%!important;
