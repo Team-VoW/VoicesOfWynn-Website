@@ -1,8 +1,8 @@
 <h1>Account information</h1>
 <ul class="error-list">
-	<?php foreach (${basename(__FILE__, '.phtml').'_error'} as $error) : ?>
+    <?php foreach (${basename(__FILE__, '.phtml').'_error'} as $error) : ?>
     <li><?= $error ?></li>
-	<?php endforeach ?>
+    <?php endforeach ?>
 </ul>
 <form method="post" enctype="multipart/form-data">
     <div id="account-edit-container">
@@ -11,7 +11,7 @@
                 <label for="name">Display Name</label>
             </div>
             <div class="account-edit-field-right">
-                <input class="input-change" name="name" value="<?= ${basename(__FILE__, '.phtml').'_name'} ?>" >
+                <input class="input-change" name="name" value="<?= ${basename(__FILE__, '.phtml').'_name'} ?>">
             </div>
         </div>
         <div class="account-edit-row">
@@ -19,7 +19,8 @@
                 <label for="password">Password</label>
             </div>
             <div class="account-edit-field-right">
-                <input class="input-change" type="password" name="password" placeholder="Leave empty to keep the old one" />
+                <input class="input-change" type="password" name="password"
+                    placeholder="Leave empty to keep the old one" />
             </div>
         </div>
         <div class="account-edit-row">
@@ -29,13 +30,14 @@
             <div class="account-edit-field-right">
                 <input class="input-change" name="email" value="<?= ${basename(__FILE__, '.phtml').'_email'} ?>" />
             </div>
-        </div>  
+        </div>
         <div class="account-edit-row">
             <div class="account-edit-field-left">
-                <label for="email-visibility">  Display E-Mail publicly?</label>
+                <label for="email-visibility"> Display E-Mail publicly?</label>
             </div>
             <div class="account-edit-field-right" id="chekbox-container">
-                <input name="publicEmail" type="checkbox" <?php if (${basename(__FILE__, '.phtml').'_publicEmail'}) : ?>checked <?php endif ?>/>
+                <input name="publicEmail" type="checkbox"
+                    <?php if (${basename(__FILE__, '.phtml').'_publicEmail'}) : ?>checked <?php endif ?> />
             </div>
         </div>
         <div class="account-edit-row">
@@ -43,7 +45,8 @@
                 <label for="discord"><img src="images/discord_icon.png" alt="Discord icon" title="Discord"></label>
             </div>
             <div class="account-edit-field-right">
-                <input class="input-change" name="discord" value="<?= ${basename(__FILE__, '.phtml').'_discord'} ?>" placeholder="Shady#2848" />
+                <input class="input-change" name="discord" value="<?= ${basename(__FILE__, '.phtml').'_discord'} ?>"
+                    placeholder="Shady#2848" />
             </div>
         </div>
         <div class="account-edit-row">
@@ -51,7 +54,8 @@
                 <label for="youtube"><img src="images/youtube_icon.png" alt="YouTube icon" title="YouTube"></label>
             </div>
             <div class="account-edit-field-right">
-                <input class="input-change" name="youtube" value="<?= ${basename(__FILE__, '.phtml').'_youtube'} ?>" placeholder="https://www.youtube.com/channel/UCros5oEtzIzIDyTXHUf4Yzw" />
+                <input class="input-change" name="youtube" value="<?= ${basename(__FILE__, '.phtml').'_youtube'} ?>"
+                    placeholder="https://www.youtube.com/channel/UCros5oEtzIzIDyTXHUf4Yzw" />
             </div>
         </div>
         <div class="account-edit-row">
@@ -60,15 +64,18 @@
             </div>
             <div class="account-edit-field-right" id="account-edit-field-twitter">
                 @
-                <input name="twitter" class="input-change"value="<?= ${basename(__FILE__, '.phtml').'_twitter'} ?>" placeholder="StechHonza" />
+                <input name="twitter" class="input-change" value="<?= ${basename(__FILE__, '.phtml').'_twitter'} ?>"
+                    placeholder="StechHonza" />
             </div>
         </div>
         <div class="account-edit-row">
             <div class="account-edit-field-left">
-                <label for="castingcallclub"><img src="images/castingcallclub_icon.png" alt="Casting Call Club icon" title="Casting Call Club"></label>
+                <label for="castingcallclub"><img src="images/castingcallclub_icon.png" alt="Casting Call Club icon"
+                        title="Casting Call Club"></label>
             </div>
             <div class="account-edit-field-right">
-                <input class="input-change" name="castingcallclub" id="castingcallclub" value="<?= ${basename(__FILE__, '.phtml').'_castingcallclub'} ?>" placeholder="voicesofwynn" />
+                <input class="input-change" name="castingcallclub" id="castingcallclub"
+                    value="<?= ${basename(__FILE__, '.phtml').'_castingcallclub'} ?>" placeholder="voicesofwynn" />
             </div>
         </div>
         <div class="account-edit-row">
@@ -77,10 +84,10 @@
             </div>
             <div class="account-edit-field-right input-change" id='account-edit-field-img'>
                 <img id="avatar-preview" src="dynamic/avatars/<?= ${basename(__FILE__, '.phtml').'_picture'} ?>"
-                     alt="Your Profile Picture"/>
-                <input id="avatar-input" class="input-change" name="avatar" type="file" accept="image/png,image/jpeg"/>
+                    alt="Your Profile Picture" />
+                <input id="avatar-input" class="input-change" name="avatar" type="file" accept="image/png,image/jpeg" />
             </div>
-            <input type="hidden" name="MAX_FILE_SIZE" value="1048576"/>
+            <input type="hidden" name="MAX_FILE_SIZE" value="1048576" />
         </div>
         <div class="account-edit-row">
             <div class="account-edit-field-left">
@@ -89,7 +96,7 @@
             <div class="account-edit-field-right input-change">
                 <hr class="input-change" style="display:hidden;">
                 <?php foreach (${basename(__FILE__, '.phtml').'_roles'} as $role) : ?>
-                    <div class="acc0" style="color:#<?= $role->color ?>; 
+                <div class="acc0" style="color:#<?= $role->color ?>; 
                                         border-width: 1px; 
                                         border-color: #<?= $role->color?>; 
                                         border-radius: 1rem; 
@@ -99,9 +106,9 @@
                                         float: left; margin-right: 5px;
                                         margin-bottom: 5px;
                                         align-items: center;">
-                        <?= $role->name ?></div>
+                    <?= $role->name ?></div>
                 <?php endforeach ?>
-                <hr class="input-change" style="display:hidden;">
+                <hr class="input-change" style="display:none;">
             </div>
         </div>
         <div class="account-edit-row">
@@ -109,16 +116,19 @@
                 <label for="bio">Bio</label>
             </div>
             <div class="account-edit-field-right">
-                <textarea name="bio" id="bio" class="input-change"><?= ${basename(__FILE__, '.phtml').'_bio'} ?></textarea>
+                <textarea name="bio" id="bio"
+                    class="input-change"><?= ${basename(__FILE__, '.phtml').'_bio'} ?></textarea>
             </div>
         </div>
         <div class="account-edit-row" id="account-edit-row-save">
             <div class="account-edit-field">
                 <input type="submit" value="Save" id="account-edit-save-button">
             </div>
-        </div>  
+        </div>
     </div>
 </form>
-<p style="text-align: center;"><a href="/cast/<?= ${basename(__FILE__, '.phtml').'_id'} ?>"><button class="viewbtn">View your portfolio</button></a></p>
+<p style="text-align: center;"><a href="/cast/<?= ${basename(__FILE__, '.phtml').'_id'} ?>"><button class="viewbtn">View
+            your portfolio</button></a></p>
 
-<button class="backbtn" onclick="history.go(-1)">< Go Back</button>
+<button class="backbtn" onclick="history.go(-1)">
+    < Go Back</button>

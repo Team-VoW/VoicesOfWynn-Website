@@ -6,15 +6,23 @@ RewriteEngine On
 # RewriteBase /
 
 # In case it's necessary to allow direct access to all files besides those with extensions listed bellow, uncomment the next two lines
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
+# RewriteCond %{REQUEST_FILENAME} !-f
+# RewriteCond %{REQUEST_FILENAME} !-d
 
 # Allow dirrect access to browser configuration files
 RewriteCond %{REQUEST_URI} !^/browserconfig\.xml$
 RewriteCond %{REQUEST_URI} !^/site\.webmanifest$
 
-# Allow direct access to files with certain extensions, redirect everything else to index.php
-RewriteRule !\.(css|js|txt|ico|xml|svg|gif|png|jpg|jar\.gz)$ index.php [L]
+RewriteCond %{REQUEST_FILENAME} -s [OR]
+RewriteCond %{REQUEST_FILENAME} -l [OR]
+RewriteCond %{REQUEST_FILENAME} -d [OR]
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule \.(jar|css|js|txt|ico|ttf|xml|svg|gif|png|ogg|jpg|bpr\.gz)$ - [NC,L]
+
+RewriteCond %{REQUEST_URI}::$1 ^(/.+)(.+)::\2$
+RewriteRule ^(.*) - [E=BASE:%1]
+RewriteRule ^(.*)$ %{ENV:BASE}index.php [NC,L]
+
 
 # Use .phtml files as .php files
 AddType application/x-httpd-php .php .phtml
@@ -43,20 +51,20 @@ AddType application/x-httpd-php .php .phtml
 </IfModule>
 
 # Cache for one week (HTTP/1.0)
-<IfModule mod_expires.c>
-    ExpiresActive On
-    ExpiresDefault "access plus 1 seconds"
-    ExpiresByType text/css "access plus 604800 seconds"
-    ExpiresByType text/javascript "access plus 604800 seconds"
-    ExpiresByType image/png "access plus 604800 seconds"
-    ExpiresByType image/gif "access plus 604800 seconds"
-    ExpiresByType image/x-icon "access plus 604800 seconds"
-    ExpiresByType image/svg+xml "access plus 604800 seconds"
-</IfModule>
+#<IfModule mod_expires.c>
+#    ExpiresActive On
+#    ExpiresDefault "access plus 1 seconds"
+#    ExpiresByType text/css "access plus 604800 seconds"
+#    ExpiresByType text/javascript "access plus 604800 seconds"
+#    ExpiresByType image/png "access plus 604800 seconds"
+#    ExpiresByType image/gif "access plus 604800 seconds"
+#    ExpiresByType image/x-icon "access plus 604800 seconds"
+#    ExpiresByType image/svg+xml "access plus 604800 seconds"
+#</IfModule>
 
 # Cache for one week (HTTP/1.1)
-<IfModule mod_headers.c>
-    <filesMatch ".(css|js|png|gif|ico|svg)$">
-        Header set Cache-Control "max-age=604800, public"
-    </filesMatch>
-</IfModule>
+#<IfModule mod_headers.c>
+#    <filesMatch ".(css|js|png|gif|ico|svg)$">
+#        Header set Cache-Control "max-age=604800, public"
+#    </filesMatch>
+#</IfModule>

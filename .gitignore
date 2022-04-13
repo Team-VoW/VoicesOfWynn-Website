@@ -6,3 +6,4 @@
 /files/*
 /vendor/
 profiles.php
+composer.phar
