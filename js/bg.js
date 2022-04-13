@@ -1,5 +1,5 @@
 $("body").bgSwitcher({
-  images: ['./../images/bg/0.jpeg','./../images/bg/1.jpeg','./../images/bg/2.jpeg','./../images/bg/3.jpeg','./../images/bg/4.jpeg','./../images/bg/5.jpeg','./../images/bg/6.jpeg','./../images/bg/7.jpeg','./../images/bg/8.jpeg','./../images/bg/9.jpeg','./../images/bg/10.jpeg','./../images/bg/11.jpeg','./../images/bg/12.jpeg','./../images/bg/13.jpeg','./../images/bg/14.jpeg','./../images/bg/15.jpeg','./../images/bg/16.jpeg','./../images/bg/17.jpeg','./../images/bg/18.jpeg'],
+  images: ['./../images/bg/0.jpg','./../images/bg/1.jpg','./../images/bg/2.jpg','./../images/bg/3.jpg','./../images/bg/4.jpg','./../images/bg/5.jpg','./../images/bg/6.jpg','./../images/bg/7.jpg','./../images/bg/8.jpg','./../images/bg/9.jpg','./../images/bg/10.jpg','./../images/bg/11.jpg','./../images/bg/12.jpg','./../images/bg/13.jpg','./../images/bg/14.jpg','./../images/bg/15.jpg','./../images/bg/16.jpg','./../images/bg/17.jpg','./../images/bg/18.jpg'],
   loop: true,
   effect: 'fade',
   easing: 'linear',
