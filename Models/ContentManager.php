@@ -139,9 +139,10 @@ class ContentManager
 		$currentQuest = null;
 		$currentNpc = null;
 		foreach ($result as $recording) {
-			if ($currentQuest === null || $currentQuest->getId() !== $recording['quest_id']) {
-				//New quest encountered
+			if ($currentQuest === null || $currentQuest->getId() !== $recording['quest_id'] || $currentNpc->getId() !== $recording['npc']) {
+				//New quest or NPC encountered
 				if ($currentQuest !== null) {
+					//Finalise the current quest and save it
 					$currentQuest->addNpc($currentNpc);
 					$quests[] = $currentQuest;
 				}
