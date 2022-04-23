@@ -280,7 +280,7 @@ class Api extends Controller
 			$parameters = array($npcName);
 		}
 		else {
-			$query = 'UPDATE report SET status = "unprocessed" AND status = "forwarded"';
+			$query = 'UPDATE report SET status = "unprocessed" WHERE status = "forwarded"';
 			$parameters = array();
 		}
 		
