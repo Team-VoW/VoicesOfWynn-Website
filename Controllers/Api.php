@@ -68,7 +68,7 @@ class Api extends Controller
 					header("HTTP/1.1 401 Unauthorized");
 					die();
 				}
-				$this->updateReport(array($_PUT['line'], $_PUT['answer'])); //answer must be either "y", "n" or "v" (case senstive)
+				$this->updateReport(array($_PUT['line'], $_PUT['answer'])); //answer must be either "y", "n", "v" or "r" (case senstive)
 				break;
 			case 'resetForwarded':
 				if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
@@ -239,19 +239,34 @@ class Api extends Controller
 	}
 	
 	/**
-	 * Processing method for a PUT request used to update the status of a single report
+	 * Processing method for a PUT request used to update the status of a single report or a delete it (if the verdict variable is set to "r")
 	 * @param array $args Must contain the chat message as the first element and the verdict as the second one
 	 * @return bool
 	 */
 	private function updateReport(array $args): bool
 	{
 		$chatMessage = $args[0];
+        	$db = $this->connectToDb();
+		
+		if ($verdict === 'r') { //Deleting the report
+			try {
+				$statement = $db->prepare('DELETE FROM report WHERE chat_message = ? LIMIT 1');
+				$statement->execute(array($chatMessage));
+			} catch (PDOException $e) {
+    				header("HTTP/1.1 500 Internal Server Error");
+    				echo json_encode("The report couldn't be deleted. If the problem persists, contact the webmaster, please.");
+    				die();
+    			}
+    			header("HTTP/1.1 204 No content");
+			die();
+		}
+		
 		$verdict = ($args[1] === 'y') ? "accepted" : (($args[1] === 'n') ? "rejected" : (($args[1] === 'v') ? "fixed" : null));
+		
 		if (is_null($verdict)) {
 			header("HTTP/1.1 406 Not Acceptable");
 			die();
 		}
-		$db = $this->connectToDb();
 		try {
 			$statement = $db->prepare('UPDATE report SET status = ? WHERE chat_message = ? LIMIT 1');
 			$statement->execute(array($verdict, $chatMessage));
