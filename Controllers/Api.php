@@ -153,6 +153,9 @@ class Api extends Controller
 					$_POST['y'],
 					$_POST['z'],
 				));
+				
+				header("HTTP/1.1 201 Created");
+				die();
 			}
 			else {
 				//Updating existing report
@@ -164,15 +167,15 @@ class Api extends Controller
 					$_POST['z'],
 					$existingReportId,
 				));
+				
+				header("HTTP/1.1 204 No Content");
+				die();
 			}
 		} catch (PDOException $e) {
 			header("HTTP/1.1 500 Internal Server Error");
 			echo json_encode("The report couldn't be saved. If the problem persists, contact the webmaster, please.");
 			die();
 		}
-		
-		header("HTTP/1.1 201 Created");
-		die();
 	}
 	
 	/**
