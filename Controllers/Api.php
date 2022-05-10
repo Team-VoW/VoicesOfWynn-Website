@@ -131,7 +131,7 @@ class Api extends Controller
 		$this->checkRange($_POST['y'], -8388608, 8388607);
 		$this->checkRange($_POST['z'], -8388608, 8388607);
 		
-		$author = $_POST['player']
+		$author = $_POST['player'];
 		if ($author === self::ANONYMOUS_REPORT_NAME_INDICATOR) {
 			$author = hash('sha256', $_SERVER['REMOTE_ADDR']);
 		}
