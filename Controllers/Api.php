@@ -246,12 +246,27 @@ class Api extends Controller
 	private function updateReport(array $args): bool
 	{
 		$chatMessage = $args[0];
+		$db = $this->connectToDb();
+		
+		if ($args[1] == 'r') {
+		    //Deleting the report
+	            try {
+		        $statement = $db->prepare('DELETE FROM report WHERE chat_message = ? LIMIT 1');
+			$statement->execute(array($chatMessage));
+	            } catch (PDOException $e) {
+    			header("HTTP/1.1 500 Internal Server Error");
+    			echo json_encode("The report couldn't be deleted. If the problem persists, contact the webmaster, please.");
+    			die();
+    		    }
+    		    header("HTTP/1.1 204 No content");
+		    die();
+	        }
+		
 		$verdict = ($args[1] === 'y') ? "accepted" : (($args[1] === 'n') ? "rejected" : (($args[1] === 'v') ? "fixed" : null));
 		if (is_null($verdict)) {
 			header("HTTP/1.1 406 Not Acceptable");
 			die();
 		}
-		$db = $this->connectToDb();
 		try {
 			$statement = $db->prepare('UPDATE report SET status = ? WHERE chat_message = ? LIMIT 1');
 			$statement->execute(array($verdict, $chatMessage));
