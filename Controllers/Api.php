@@ -256,20 +256,21 @@ class Api extends Controller
 	private function updateReport(array $args): bool
 	{
 		$chatMessage = $args[0];
-        	$db = $this->connectToDb();
+		$db = $this->connectToDb();
 		
-		if ($verdict === 'r') { //Deleting the report
-			try {
-				$statement = $db->prepare('DELETE FROM report WHERE chat_message = ? LIMIT 1');
-				$statement->execute(array($chatMessage));
-			} catch (PDOException $e) {
-    				header("HTTP/1.1 500 Internal Server Error");
-    				echo json_encode("The report couldn't be deleted. If the problem persists, contact the webmaster, please.");
-    				die();
-    			}
-    			header("HTTP/1.1 204 No content");
-			die();
-		}
+		if ($args[1] == 'r') {
+		    //Deleting the report
+            try {
+		        $statement = $db->prepare('DELETE FROM report WHERE chat_message = ? LIMIT 1');
+	   		    $statement->execute(array($chatMessage));
+            } catch (PDOException $e) {
+    			header("HTTP/1.1 500 Internal Server Error");
+    			echo json_encode("The report couldn't be deleted. If the problem persists, contact the webmaster, please.");
+    			die();
+            }
+            header("HTTP/1.1 204 No content");
+		    die();
+        }
 		
 		$verdict = ($args[1] === 'y') ? "accepted" : (($args[1] === 'n') ? "rejected" : (($args[1] === 'v') ? "fixed" : null));
 		
@@ -305,7 +306,7 @@ class Api extends Controller
 			$parameters = array($npcName);
 		}
 		else {
-			$query = 'UPDATE report SET status = "unprocessed" AND status = "forwarded"';
+			$query = 'UPDATE report SET status = "unprocessed" WHERE status = "forwarded"';
 			$parameters = array();
 		}
 		
