@@ -12,6 +12,8 @@ class Api extends Controller
 	const COLLECTING_API_KEY = '';
 	const UPDATING_API_KEY = '';
 	
+	const ANONYMOUS_REPORT_NAME_INDICATOR = "Anonymous";
+	
 	/**
 	 * @inheritDoc
 	 */
@@ -68,7 +70,7 @@ class Api extends Controller
 					header("HTTP/1.1 401 Unauthorized");
 					die();
 				}
-				$this->updateReport(array($_PUT['line'], $_PUT['answer'])); //answer must be either "y", "n" or "v" (case senstive)
+				$this->updateReport(array($_PUT['line'], $_PUT['answer'])); //answer must be either "y", "n", "v" or "r" (case senstive)
 				break;
 			case 'resetForwarded':
 				if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
@@ -124,10 +126,15 @@ class Api extends Controller
 	{
 		$this->checkLength($_POST['full'], 1, 511);
 		$this->checkLength($_POST['npc'], 0, 127);
-		$this->checkLength($_POST['player'], 1, 16);
+		$this->checkLength($_POST['player'], 1, 32); //Minecraft names's length can be 16 characters at maximum, but we need 64 for sha256 hashes of IPs
 		$this->checkRange($_POST['x'], -8388608, 8388607);
 		$this->checkRange($_POST['y'], -8388608, 8388607);
 		$this->checkRange($_POST['z'], -8388608, 8388607);
+		
+		$author = $_POST['player'];
+		if ($author === self::ANONYMOUS_REPORT_NAME_INDICATOR) {
+			$author = hash('sha256', $_SERVER['REMOTE_ADDR']);
+		}
 		
 		$db = $this->connectToDb();
 		
@@ -141,11 +148,14 @@ class Api extends Controller
 				$result = $statement->execute(array(
 					$_POST['full'],
 					$_POST['npc'],
-					$_POST['player'],
+					$author,
 					$_POST['x'],
 					$_POST['y'],
 					$_POST['z'],
 				));
+				
+				header("HTTP/1.1 201 Created");
+				die();
 			}
 			else {
 				//Updating existing report
@@ -157,15 +167,15 @@ class Api extends Controller
 					$_POST['z'],
 					$existingReportId,
 				));
+				
+				header("HTTP/1.1 204 No Content");
+				die();
 			}
 		} catch (PDOException $e) {
 			header("HTTP/1.1 500 Internal Server Error");
 			echo json_encode("The report couldn't be saved. If the problem persists, contact the webmaster, please.");
 			die();
 		}
-		
-		header("HTTP/1.1 201 Created");
-		die();
 	}
 	
 	/**
@@ -239,7 +249,7 @@ class Api extends Controller
 	}
 	
 	/**
-	 * Processing method for a PUT request used to update the status of a single report
+	 * Processing method for a PUT request used to update the status of a single report or a delete it (if the verdict variable is set to "r")
 	 * @param array $args Must contain the chat message as the first element and the verdict as the second one
 	 * @return bool
 	 */
@@ -250,19 +260,20 @@ class Api extends Controller
 		
 		if ($args[1] == 'r') {
 		    //Deleting the report
-	            try {
+            try {
 		        $statement = $db->prepare('DELETE FROM report WHERE chat_message = ? LIMIT 1');
-			$statement->execute(array($chatMessage));
-	            } catch (PDOException $e) {
+	   		    $statement->execute(array($chatMessage));
+            } catch (PDOException $e) {
     			header("HTTP/1.1 500 Internal Server Error");
     			echo json_encode("The report couldn't be deleted. If the problem persists, contact the webmaster, please.");
     			die();
-    		    }
-    		    header("HTTP/1.1 204 No content");
+            }
+            header("HTTP/1.1 204 No content");
 		    die();
-	        }
+        }
 		
 		$verdict = ($args[1] === 'y') ? "accepted" : (($args[1] === 'n') ? "rejected" : (($args[1] === 'v') ? "fixed" : null));
+		
 		if (is_null($verdict)) {
 			header("HTTP/1.1 406 Not Acceptable");
 			die();
