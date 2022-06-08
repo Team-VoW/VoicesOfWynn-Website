@@ -6,7 +6,7 @@ use VoicesOfWynn\Controllers\Error404;
 use VoicesOfWynn\Controllers\Router;
 
 //Set autoloader for dependencies
-require __DIR__.'/vendor/autoload.php';
+// require __DIR__.'/vendor/autoload.php';
 
 //Define and set autoloader for custom classes
 function autoloader(string $name): void

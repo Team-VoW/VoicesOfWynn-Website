@@ -1,125 +1,125 @@
-/* styling for credits */
-main {
-    padding-right: 0.5vh;
-    padding-left: 0.5vh;
-    padding-bottom: 1vh;
-    border-radius: 1vh;
-}
+/* ------------------------------------------------------------------
 
-h1, h2 {
-    letter-spacing: 2px;
-    font-weight: bold;
-    font-family: minecraft;
-    text-decoration: none;
-    text-align: center;
-}
-hr { overflow: hidden; }
+styling for credits page, big parts need to be overtaken from
+base2.css since credits doesn't take the same styles as everything
+else ://
 
-p {
-    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;  
-}
+--------------------------------------------------------------------- */
 
-strong {
-    font-family: minecraft;
-}
-
-.contributor_name {
-    width: auto;
-}
-
-.row {
-    justify-content: center;
-}
-
-a>.card {
-    margin-left: auto;
-    margin-right: auto;
-    background: aliceblue;
-    color: #424456;
-    text-align: center;
-    border: 0.25rem solid #DC9587;
-    z-index: 2;
-}
-
-a>.card:hover {
-    cursor: pointer;
-	content: none;
-    box-shadow: .2rem .2rem .7rem 0 #777;
-    transform: translateY(3px);
-    pointer-events: visible;
-    position: relative;
-    visibility: visible;
-    float: none;
-    overflow: hidden;
-    z-index: 15;
-}
-
-.cardlink:hover {
-    background: none;
-}
-
+        /* cards */
 .cardwrapper {
     height: 400px; /* Default value that is changed by JavaScript once the webpage fully loads */
     width: 25%;
-    margin-bottom: 10px;
+    margin-bottom: .625rem;
+}
+
+.card {
+    position: absolute;
+    z-index: 2;
+
+    display: inline-block;
+    overflow: hidden;
+    margin: .5rem 0;
+    padding: .5rem 1rem 0.5rem; 
+    width: auto;
+
+	font-family: Georgia, 'Times New Roman', Times, serif;
+	text-align: center;
+
+	cursor: default;
+
+	border-radius: .3rem;
+
+	box-shadow: .1rem .1rem .4rem 0 #777;
+	background: aliceblue;
+
+	min-height: auto;
+	max-height: fit-content;
+	min-width: 200px;
+	max-width: 200px;
+}
+
+a>.card {
+    z-index: 2;
+
+    text-align: center;
+    border: 0.25rem solid #DC9587;
+    background: aliceblue;
+    color: #424456;
+}
+
+a>.card:hover {
+    position: relative;
+    z-index: 15;
+
+    visibility: visible;
+    overflow: hidden;
+    
+    cursor: pointer;
+    pointer-events: visible;
+
+    box-shadow: .2rem .2rem .7rem 0 #777;
+
+    transform: translateY(3px);
+}
+
+        /* roles */
+.roles {
+	padding: 0 1.25rem;
+	cursor: default;
+	display: none;
+	text-align: center;
+	overflow: hidden;
+	z-index: 1; 
+}
+
+.roles li {
+	white-space: nowrap;
+	list-style: none;
+}
+
+.roles a.card:hover {           /* not 100% if that is actually necessary heh */
+	cursor: pointer;
+	display: block;
+	overflow: visible;
+	z-index: 3;
 }
 
 a:hover .roles {
     display: block;
     cursor: pointer;
     z-index: 1;
-    animation-name: rolessmooth;
-    animation-duration: 5s;
-}
-/* .card:first-child:hover {
-    animation-name: rolessmooth;
-    animation-duration: 5s;
-} */
-
-.card:hover > .row + .roles {
-        animation-name: rolessmooth;
-        animation-duration: 5s;
 }
 
-li {
-    display: inherit;
-}
-
+        /* contributor details */
 .avatar {
-    border-radius: .3rem;
+	padding-top: .1rem;
+	min-width: 9.375rem;
+	max-width: 9.375rem;
+	border-radius: .3rem;
 }
 
-hr {
-    overflow: hidden;
-}
+.contributor_name {width: auto;}
 
-.row, .col-3, .card { z-index: 11; }
 
-@font-face {
-    font-family: minecraft;
-    src: url(../fonts/Minecraft.ttf);
-}
 
+
+
+
+
+
+/* below will be expanded soon */
 @media (max-width: 1000px) {
     .card {
         width: 100%;
     }
 }
 
-@keyframes rolessmooth {
-    0% {
-        top: 0%;
-    }
-    25% {
-        top: 25%;
-    }
-    50% {
-        top: 50%;
-    }
-    75% {
-        top: 75%;
-    }
-    100% {
-        top: 100%;
-    }
+
+
+
+
+@font-face {
+    font-family: minecraft;
+    src: url(../fonts/Minecraft.ttf);
 }

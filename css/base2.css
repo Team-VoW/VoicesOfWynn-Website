@@ -1,0 +1,405 @@
+/* 
+_______________ CONTENTS _______________
+|        1) General styling             |
+|        2) Specific styling            |
+|        3) Responsive                  |
+|        4) Other                       |
+‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+    NOTE: if code is overtaken/slightly edited from the original
+          version of classless.css it is marked with "classless.css".
+          The original classless.css can be found here:
+            https://github.com/emareg/classlesscss 
+*/
+
+
+
+
+/*                                                             */
+/* _________________________ GENERAL _________________________ */
+/*                                                             */
+
+
+
+
+/* ---- 1.1)  general, default styling to have a fixed layout for body and main ---- */
+
+
+        /*  */
+:root { font: 13pt 'Open Sherif', sans-serif; line-height: 1.5; color: #424456; } /* classless.css */
+* {box-sizing: border-box; border-spacing: 0;}                                      /* classless.css */
+
+        /* body styling, default layout */
+body { 
+    zoom: 90%; 
+    margin: auto;                                                                   /* classless.css */
+	max-width: 50rem; 
+	padding: 2rem 0.5rem 0rem; 
+	overflow-x: hidden;
+}
+body > div:not(.tox) {
+    position: fixed!important;
+    width: 100%!important;
+    height: 100%!important;
+    left: 0!important;
+    top: 0!important;
+    margin: 0!important;
+    background-position: center center!important;
+    background-repeat: no-repeat!important;
+    background-size: cover!important;
+}
+body > div:not(.tox) > div {
+    position: fixed!important;
+    width: 100%!important;
+    height: 100%!important;
+    left: 0!important;
+    top: 0!important;
+    margin: 0!important;
+    background-position: center center!important;
+    background-repeat: no-repeat!important;
+    background-size: cover!important;
+}
+
+        /* make main & footer fit needs */
+main {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-right: .3rem;
+    padding-left: .3rem;
+    padding-bottom: .6rem;
+    border-radius: .6rem;
+
+    background: whitesmoke;
+    box-shadow: .2rem .2rem .7rem 0 #777;
+}
+footer { margin: 10rem 0rem 0rem; }                                                 /* classless.css */
+
+        /* default styling for a lot of stuffs :') */
+header, footer, figure ,table, video, blockquote,                                   /* classless.css */
+ul, ol, dl, fieldset, pre, pre > code { 
+	display: block; 
+	margin: 0.5rem 0rem 1rem;
+	width: 100%; 
+	overflow-x: auto;
+	overflow-y: hidden;
+}
+
+
+/* ---- 1.2) text styling ---- */
+
+
+        /* headings */
+h1,h2,h3,h4,h5,h6 { 
+    margin: 1.5rem 0rem 0rem;
+    padding: 0.3rem 0;
+    font-family: minecraft;
+    text-align: center;
+    letter-spacing: .125rem;
+    text-decoration: none;
+}
+h1,h2 { font-weight: bold; }
+h1 { font-size: 2.5em; font-weight: 300; }                                          /* classless.css */
+h2 { font-size: 2.0em; font-weight: 300; }                                          /* classless.css */
+h3 { font-size: 1.5em; font-weight: 400; }                                          /* classless.css */
+h4 { font-size: 1.1em; font-weight: 700; margin: .5em 0 0em; }                      /* classless.css */
+h5 { font-size: 1.2em; font-weight: 400; margin-top: 0.5em; color: #777; }        /* classless.css */
+h6 { font-size: 1.0em; font-weight: 700; }                                          /* classless.css */
+
+        /* paragraphs */
+p { font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif; }
+p strong { color: #424456; font-weight: bold; font-size: 1.0rem; }
+
+        /* smaller text types (small, sub, sup) */
+small,sub,sup{font-size: 60%;}
+
+        /* links */
+a { color: #0065bd; text-decoration: none; cursor: pointer; }
+
+
+/* ---- 1.3) button default styles ---- */
+
+
+        /* default button style (idle & hover) */
+button {
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-size: 1.25rem;
+    font-weight: lighter;
+    color: #333;
+    border-radius: .625rem;
+    border: 5px solid transparent;
+    padding-top: .3rem;
+    padding-bottom: .4rem;
+    padding-right: .625rem;
+    padding-left: .625rem;
+    width: fit-content;
+}
+button:hover {
+    transform: translateY(-5px);
+    color: #333;
+    box-shadow: .0rem .2rem .4rem #777;
+    pointer-events: visible;
+    position: relative;
+    z-index: 0;
+    visibility: visible;
+    float: none;
+    cursor: pointer;
+}
+
+        /* set default size for images on buttons */
+button img { width: 20px; height: 20px; vertical-align: bottom; }
+
+
+/* ---- 1.4) input types ---- */
+    /* NOTE: this only includes basic styling, may be altered later on throughout the code using
+    classes */
+
+
+input { 
+    border-right: none; border-left: none; border-top: none;
+    outline: none;
+    padding: 0.3rem;
+    font-family: minecraft;
+}
+textarea { resize: none; outline: none;
+width: 37.5rem; height: 15.625rem;
+border-right: none;border-left: none; border-top: none;
+font-family: minecraft;
+padding: .3rem;}
+input:focus, textarea:focus { outline: none; }
+label{font-style: italic;}                                                          /* classless.css */
+
+
+/* ---- 1.5) lists & tables ---- */
+
+
+        /* lists */
+li,dd { margin-bottom: 0.5rem; }                                                    /* classless.css */
+dt{font-weight: bold;}                                                              /* classless.css */ 
+/* ul { width: auto; 
+    display: flex; flex-direction: row; flex-wrap: wrap; 
+    justify-content: center; }   */
+
+        /* tables */
+table { border-spacing: 30px; } /* more to be added soonTM heh */
+
+
+/* ---- 1.6) other ---- */
+
+
+        /* quotes */
+blockquote { border-left: .3rem solid #d1d1d1; border-right: none; border-bottom: none; border-top: none;
+padding: 1rem 1.5rem;}
+
+        /* horizontal lines default styling (hr) */
+hr { border: 0; border-top: .1rem solid #d1d1d1; }
+
+        /* break lines (br) */
+br { margin-top: 2rem; }
+
+
+
+
+/*                                                             */
+/* _________________________ SPECIFC _________________________ */
+/*                                                             */
+
+
+
+/* ---- 2.1) grid shit ---- */
+
+
+        /* grid */
+.row {                                                                              /* classless.css */
+	margin: 0 auto;
+	display: flex; 
+	margin: 0 -0.5rem;
+	align-items: stretch;
+	flex-wrap: wrap;
+	margin-right: 20px;
+	justify-content: center;
+}
+.row [class*="col"] {                                                               /* classless.css */
+	padding-left: 15px;
+}
+.row .col   {                                                                       /* classless.css */
+	flex: 1 1 100%; 
+	margin: 0 auto;
+	position: relative;
+	left: 50%;
+}
+.row .col-2 {                                                                       /* classless.css */
+	flex: 0 0 16.66%; 
+}
+.row .col-3 {                                                                       /* classless.css */
+	flex: 0 0 25%;
+	align-items: center;
+	justify-content: center;
+}
+.row .col-4 {                                                                       /* classless.css */
+	flex: 0 0 33.33%; 
+}
+.row .col-6 {                                                                       /* classless.css */
+	flex: 0 0 50%; 
+}
+
+
+/* ---- 2.3) spacings ---- */
+
+
+        /* margins */
+            /* small */
+.m-s, .mr-s { margin-right: .0rem; }
+.m-s, .ml-s { margin-left: .0rem; }
+.m-s, .mt-s { margin-top: .0rem; }
+.m-s, .mb-s { margin-bottom: .0rem; }
+            /* medium */
+.m-m, .mr-m { margin-right: .5rem; }
+.m-m, .ml-m { margin-left: .5rem; }
+.m-m, .mt-m { margin-top: .5rem; }
+.m-m, .mb-m { margin-bottom: .5rem; }
+            /* large */
+.m-l, .mr-l { margin-right: 1.0rem; }
+.m-l, .ml-l { margin-left: 1.0rem; }
+.m-l, .mt-l { margin-top: 1.0rem; }
+.m-l, .mb-l { margin-bottom: 1.0rem; }
+            /* double */
+.m-d, .mr-d { margin-right: 2.0rem; }
+.m-d, .ml-d { margin-left: 2.0rem; }
+.m-d, .mt-d { margin-top: 2.0rem; }
+.m-d, .mb-d { margin-bottom: 2.0rem; }
+
+        /* paddings */
+            /* small */
+.p-s, .pr-s { margin-right: .0rem; }
+.p-s, .pl-s { margin-left: .0rem; }
+.p-s, .pt-s { margin-top: .0rem; }
+.p-s, .pb-s { margin-bottom: .0rem; }
+            /* medium */
+.p-m, .pr-m { margin-right: .5rem; }
+.p-m, .pl-m { margin-left: .5rem; }
+.p-m, .pt-m { margin-top: .5rem; }
+.p-m, .pb-m { margin-bottom: .5rem; }
+            /* large */
+.p-l, .pr-l { margin-right: 1.0rem; }
+.p-l, .pl-l { margin-left: 1.0rem; }
+.p-l, .pt-l { margin-top: 1.0rem; }
+.p-l, .pb-l { margin-bottom: 1.0rem; }
+            /* double */
+.p-d, .pr-d { margin-right: 2.0rem; }
+.p-d, .pl-d { margin-left: 2.0rem; }
+.p-d, .pt-d { margin-top: 2.0rem; }
+.p-d, .pb-d { margin-bottom: 2.0rem; }
+
+        /* horizontal lines */
+.hr-s { min-width: 15%; }
+.hr-m { min-width: 30%; }
+.hr-l { min-width: 55%; }
+.hr-e { min-width: 75%; }
+.hr-f { min-width: 95%; }
+
+        /* floats */
+.f-r { float: right; }
+.f-l { float: left; }
+
+        /* text alignments */
+.txt-c { text-align: center; }
+.txt-r { text-align: right; }
+.txt-l { text-align: left; }
+
+        /* links */
+.a-no-hover { background: none; }
+
+        /* alignments */
+.align-bot { position: relative; bottom: .15rem; }
+.align-top { position: relative; top: .15rem; }
+.align-r   { position: relative; right: .15rem; }
+.align-l   { position: relative; left: .15rem; }
+
+
+/* ---- 2.3) specific specifc classes (yikes) ---- */
+
+
+        /* content */
+.content {
+        width: 100%;
+}
+
+
+
+
+/*                                                                */
+/* _________________________ RESPONSIVE _________________________ */
+/*                                                                */
+
+
+
+/* ---- 3.1) mobile ---- */
+
+
+@media (max-width: 62.5rem) {
+        body { 
+                width: 100%; background: whitesmoke; 
+                box-shadow: none;}
+        main {
+                max-width: 100%;
+                min-width: 100%;
+        }
+        html {
+                max-width: 100%;
+                min-width: 100%;
+        }
+        body {
+                max-width: 100%;
+                min-width: 100%;
+        }
+        p { 
+                padding-left: .625rem;
+                padding-right: .625rem; 
+        }
+        a {
+                color: none;
+                background: none;
+                border-radius: none;
+        }
+        a:hover {
+                pointer-events: visible;
+                position: relative;
+                float: none;
+        }
+        iframe { height: 8.125rem; width: 13.125rem; }
+        main li { z-index: -1; }
+
+        #vertical, .nav li {overflow: hidden;}
+        .nav, .nav li, li:not([id*="quest-npcs"]),
+        .bio .bio0 {display: none;}
+        #vertical {visibility: hidden;}
+
+        .avatar0 p {text-align:left;}
+
+        #hr-past-bio{
+            display: none;
+        }
+}
+    
+@media (max-width:29.0rem) {
+        iframe { height: 8.125rem; width: 13.125rem;}
+}
+
+
+
+
+/*                                                             */
+/* _________________________ GENERAL _________________________ */
+/*                                                             */
+
+
+
+/* ---- 4.1) fonts ---- */
+
+
+@font-face {
+	font-family: minecraft;
+	src: url(../fonts/Minecraftia-Regular.ttf);
+}

@@ -14,7 +14,7 @@
 </audio></p>
 <br>
 <p style="text-align: center;"><button id="new-comment-button">Post new Comment</button></p>
-<hr>
+<hr class="hr-f">
 <p style="text-align: center;"><button id="hide-form-button">Hide the form</button></p>
 <form method="post" data-recording-id="<?= ${basename(__FILE__, '.phtml').'_recording'}->id ?>">
 <fieldset style="border-radius: 5px;" class="comment-writing-form">
@@ -85,7 +85,7 @@
             </td>
         </tr>
         <tr></tr>
-        <tr class="comment-container"><p style="width: 100% "><hr style="width: 95%;bottom: -97px;position: relative;"></p><td class="comment-main-column"><div class="comment-content"><p style="min-width: 110%;margin-top: -25px;margin-bottom: -30px;"><?= $comment->content ?></p></div></td></tr>
+        <tr class="comment-container"><p style="width: 100% "><hr class="hr-f align-bot"></p><td class="comment-main-column"><div class="comment-content"><p style="min-width: 110%;margin-top: -25px;margin-bottom: -30px;"><?= $comment->content ?></p></div></td></tr>
     </table>
 </div><br>
 <?php endforeach ?>
