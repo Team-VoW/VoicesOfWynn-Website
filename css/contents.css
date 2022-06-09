@@ -1,150 +1,151 @@
-/* styling for Mod Contents */
-input {
-    border-bottom: 4px solid gray;
-    border-radius: 3px;
-    background: rgba(168, 168, 168, 0.13);
-    outline: none;
-}
-input:hover {
-    border-bottom: 4px solid gray;
-    border-radius: 3px;
-}
-textarea:focus, input:focus {
-    outline: none;
-}
+/* ------------------------------------------------------------------
 
-#mod_contents {
-	width: 100%;
-}
+styling for contents page
 
-.content {
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-}
+--------------------------------------------------------------------- */
 
-.row {
-    min-height: 200px;
-    max-height: fit-content;
-    margin-bottom: 10px;
-}
+
+
+#results { display: none; }		/* NOTE TO SELF: check if this is connected to js cuz searchbar is a thing */
+
+
+
+
+/*                                                               */
+/* _________________________ CONTAINER _________________________ */
+/*                                                               */
+.mod-contents { width: 100%; }
+
+
+
+
+/*                                                             		 */
+/* _________________________ QUEST DETAILS _________________________ */
+/*                                                             		 */
+
+
+		/* avatar/picture of NPC */
 .npc-avatar {
     height: 64px;
     width: 64px;
 	border-radius: .3rem;
 }
-.npcvoice {
-	position: absolute;
-	cursor: default;
-    color: #424456;
+
+	/* ---- quest card ---- */
+
+
+			/* container for every single card */
+.card-wrapper {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+
+	padding-top: .6rem;
+}
+
+			/* quest cards */
+.q-voice {
+	display: flex;
+	flex: 3 0 21%;
+	flex-direction: column;
+	justify-content: center;
 	align-items: center;
-	text-align: center;
-	display: inline-block;
-	width: auto;
-	font-family: Georgia, 'Times New Roman', Times, serif;
+
+	position: relative;
+	z-index: 1;
+
+	overflow: hidden;
 	margin: 0;
+	padding: .5rem;
+	
+	background: aliceblue;
+
+	font-family: Georgia, 'Times New Roman', Times, serif;
+    color: #424456;
+	text-align: center;
+
 	border: 0.25rem solid #DC9587;
-	padding: 0; 
 	border-radius: .3rem; 
 	box-shadow: .1rem .1rem .4rem 0 #777;
-	background: aliceblue;
-	flex: 3 0 21%;
-	overflow: hidden;
-	z-index: 1;
-	position: absolute;
-	max-height: fit-content;
+
+	cursor: default;
+
+	width: auto;
 	min-width: calc(50rem / 3 - 0.5rem - 1rem);
 	max-width: calc(50rem / 3 - 0.5rem - 1rem);
     min-height: 200px;
     max-height: fit-content;
 }
-.npcvoice:hover {
-	cursor: pointer;
-	content: none;
-	box-shadow: .2rem .2rem .7rem 0 #777;
-	transform: translateY(3px);
-	pointer-events: visible;
+
+.q-voice:hover {
 	position: absolute;
+	z-index: 15;
+
+	transform: translateY(3px);
 	visibility: visible;
 	float: none;
 	overflow: hidden;
-	z-index: 15;
+
+	content: none;
+
+	pointer-events: visible;
+	cursor: pointer;
+
+	box-shadow: .2rem .2rem .7rem 0 #777;
 }
-.npcvoice:hover h3 {
-	margin-top: 35px;
-}
-.questInfo {
-	cursor: default;
-	display: none;
-	text-align: left;
-	overflow: hidden;
-	z-index: 15;
-	list-style: none;
-	justify-content: center;
-	align-items: center;
-	margin: 0 auto;
-}
-.questInfo li {
-	justify-content: center;
-	align-self: center;
-	align-items: center;
-}
-.npcvoice:hover .questInfo { display: block; }
 
 
-#results {
-	display: none;
-}
+			/* quest names */
+.quest-name { padding-top: 15%; }
 
-/*overwrite classles*/
-
-.row {
+.q-voice > h3 {
 	margin: 0;
+	padding: 0;
+  	display: flex;
+  	justify-content: center;
+  	align-items: center;
+  	text-align: center;
+	height:min-content;
 }
+
+.q-voice:hover h3 {margin-top: 2rem;}
+
+
+		/* all NPCs in quest */
+.quest-info {
+	display: none;
+	overflow: hidden;
+	cursor: default;
+
+	text-align: left;
+	list-style: none;
+	margin: 0 auto;
+
+	width: 100%;
+}
+
+.q-voice:hover .quest-info { display: block; }
+
+
+		/*overwrite classles*/
+.row { margin: 0; }
 
 .row > .col-4 {
 	padding: 0;
 	margin:0;
 }
 
-.card-wrapper {
-	display: flex;
-	flex-direction: row;
-	justify-content: center;
-}
-
-.npcvoice > h3 {
-	margin: 0;
-	padding: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-	height:min-content;
-}
-
-.npcvoice {
-	padding: .5rem;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-	position: relative;
-}
-
-.questInfo {
-	width: 100%;
-}
+		/* specific mini-classes */
+.sub-line { border-bottom: 1px solid black; margin-top: .5rem; }
 
 
-@media (max-width: 1000px) {
-	.questInfo {
+@media (max-width: 62.5rem) {
+	.quest-info {
 		display: block;
 		visibility: visible;
 		overflow: auto;
 	}
-	.npcvoice {
+	.q-voice {
 		height: 350px;
 		width: 350px;
 	}

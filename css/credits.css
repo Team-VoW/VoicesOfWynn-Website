@@ -6,7 +6,15 @@ else ://
 
 --------------------------------------------------------------------- */
 
-        /* cards */
+
+
+
+/*                                                           */
+/* _________________________ CARDS _________________________ */
+/*                                                           */
+
+
+
 .cardwrapper {
     height: 400px; /* Default value that is changed by JavaScript once the webpage fully loads */
     width: 25%;
@@ -63,7 +71,15 @@ a>.card:hover {
     transform: translateY(3px);
 }
 
-        /* roles */
+
+
+
+/*                                                           */
+/* _________________________ ROLES _________________________ */
+/*                                                           */
+
+
+
 .roles {
 	padding: 0 1.25rem;
 	cursor: default;
@@ -91,7 +107,15 @@ a:hover .roles {
     z-index: 1;
 }
 
-        /* contributor details */
+
+
+
+/*                                                                         */
+/* _________________________ CONTRIBUTOR DETAILS _________________________ */
+/*                                                                         */
+
+
+
 .avatar {
 	padding-top: .1rem;
 	min-width: 9.375rem;

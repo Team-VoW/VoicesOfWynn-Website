@@ -158,9 +158,16 @@ button img { width: 20px; height: 20px; vertical-align: bottom; }
 
 input { 
     border-right: none; border-left: none; border-top: none;
+    border-bottom: 4px solid gray;
+    border-radius: 3px;
     outline: none;
     padding: 0.3rem;
     font-family: minecraft;
+    background: rgba(168, 168, 168, 0.13);
+}
+input:hover {
+        border-bottom: 4px solid gray;
+        border-radius: 3px;
 }
 textarea { resize: none; outline: none;
 width: 37.5rem; height: 15.625rem;
@@ -195,7 +202,7 @@ padding: 1rem 1.5rem;}
         /* horizontal lines default styling (hr) */
 hr { border: 0; border-top: .1rem solid #d1d1d1; }
 
-        /* break lines (br) */
+        /* line breaks (br) */
 br { margin-top: 2rem; }
 
 
@@ -389,6 +396,8 @@ br { margin-top: 2rem; }
 @media (max-width:29.0rem) {
         iframe { height: 8.125rem; width: 13.125rem;}
 }
+
+/* fuck media queries :)                <--- has to stay for good measures */
 
 
 
