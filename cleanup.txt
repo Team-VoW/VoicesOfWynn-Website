@@ -36,7 +36,7 @@ base.phtml          -       not started
 cast.phtml          -       finished
 comments.phtml      -       not started
 contents.phtml      -       finished
-credits.phtml       -       ongoing
+credits.phtml       -       finished
 downloads.phtml     -       not started
 error403.phtml      -       finished
 error404.phtml      -       finished
