@@ -183,8 +183,6 @@ textarea { font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sa
 .logoutbtn:hover { border-color: rgb(255, 131, 131); }
 .adminbtn { background: rgb(255, 146, 45); }
 .adminbtn:hover { border-color: rgb(255, 176, 102); }
-.contactbtn { background:rgb(255, 239, 102); }
-.contactbtn:hover { border-color: rgb(239, 228, 143); }
 .clearbiobtn { background: rgb(247, 225, 32);}
 .clearbiobtn:hover { border-color: rgb(211, 195, 50);}
 .clearavatarbtn { background: rgb(255, 127, 0);}
@@ -195,8 +193,7 @@ textarea { font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sa
 .faqbtn:hover { border-color: rgb(56, 99, 22); }
 /* upvote/downvote/comment */
 /* Styles for upvotes and downvotes have been moved to voting.css */
-.commentbtn { background: rgb(128, 128, 221); }
-.commentbtn:hover { border-color: rgb(104, 104, 219); }
+
 
 
 .qsearchbtn { height: 48px; margin: 0; border-radius: 0px; border-left: 2px solid gray;}
@@ -225,12 +222,6 @@ a:hover:not([.imglink]) { background: #6670ff5b; border-radius: 2px;}
 a.valink:hover { background: none; }
 .table-center {
     margin: 0px auto;
-}
-.reccenter {
-    /* margin: auto 120px;      <-- alternative way of handling the 
-                                    centering problem*/
-    display: flex;
-    justify-content: center;
 }
 /* #contributerimg { max-width: 10vh; max-height: 10vh; border-radius: 4px; float: left;}
 #contributerimg a:hover { background: none; cursor: pointer;}
@@ -322,32 +313,12 @@ textarea:focus, input:focus {
 	justify-content: space-around;
 }
 
-.twitterbtn {
-    color: white;
-    background-color: #1DA1F2;
-}
-
-.youtubebtn {
-    color: white;
-    background-color: #FF3D00;
-}
-
-.castingcallclubbtn {
-    color: white;
-    background-color:#6827F7;
-}
-
 #discord-container {
     display: flex;
     justify-content: center;
     flex-direction: row;
     gap: 20px;
     font-family: Arial, Helvetica, sans-serif;
-}
-
-.vertical-bottom-text-span {
-    display: inline-flex;
-    align-items: flex-end;
 }
 
 #discord-tag-cast {

@@ -21,7 +21,7 @@ abstract class Controller
      * @var $cssFiles array List of CSS files to include into the final webpage; all CSS files must be in the 'css'
      *     folder
      */
-    protected static array $cssFiles = array(/*'classless',*/ 'base2');
+    protected static array $cssFiles = array('base2');
     
     /**
      * @var $jsFiles array List of JS files to include into the final webpage; all JS files must be in the 'js' folder

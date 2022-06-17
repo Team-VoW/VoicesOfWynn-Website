@@ -1,7 +1,94 @@
+/* ------------------------------------------------------------------
+
+styling for cast & voting
+
+--------------------------------------------------------------------- */
+
+
+
+
+/*                                                             */
+/* _________________________ SPECIFC _________________________ */
+/*                                                             */
+
+
+    /* tables */
 td a {
     font-weight: bolder;
     color: unset;
 }
+
+
+
+
+/*                                                            */
+/* _________________________ ITEMS  _________________________ */
+/*                                                            */
+
+/* sorted chronologically as seen in webpage */
+
+
+    /* ---- CAST ---- */
+        /* recordings */
+.reccenter {
+    display: flex;
+    justify-content: center;
+}
+
+
+        /* social */
+#socials-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    gap: .6rem;
+}
+
+.socials-row{
+	display: flex;
+	flex-direction: row;
+	justify-content: space-around;
+}
+
+.socials-card { width: 8.625rem; }
+
+            /* discord */
+#discord-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    gap: 1.25rem;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.vertical-bottom-text-span {
+    display: inline-flex;
+    align-items: flex-end;
+}
+
+
+            /* images */
+.contributor-img {
+    max-width: 10vh; max-height: 10vh;
+    border-radius: 5px;
+}
+
+
+            /* buttons */
+.contactbtn { background:rgb(255, 239, 102); }
+.contactbtn:hover { border-color: rgb(239, 228, 143); }
+
+.youtubebtn { color: white; background-color: #FF3D00;}
+
+.twitterbtn { color: white; background-color: #1DA1F2;}
+
+.castingcallclubbtn { color: white; background-color:#6827F7; }
+
+.commentbtn { background: rgb(128, 128, 221); }
+.commentbtn:hover { border-color: rgb(104, 104, 219); }
+
+
+    /* ---- VOTING ---- */
 .upvote, .downvote, .comment {
     color: #333;
 }

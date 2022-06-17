@@ -1,0 +1,56 @@
+####### ###  ##   #    #   ##  ### #######
+## NOTES TO SELF   //  Just5MoreMinutes ##
+####### ###  ##   #    #   ##  ### #######
+
+
+
+list of all files that still need clean-up
+well fuck.... that are more than expected heh 
+
+__________________ CSS __________________
+
+account.css         -       not started
+accounts.css        -       not started
+administration.css  -       not started
+base.css            -       ditched *
+base2.css           -       ongoing
+bubble.css          -       not started
+classless.css       -       ditched *
+comments.css        -       not started
+contents.css        -       finished
+credits.css         -       finished
+errors.css          -       finished
+faq.css             -       not started
+npc.css             -       not started
+voting.css          -       finished
+
+
+
+
+________________ (P)HTML ________________
+
+account.phtml       -       not started
+accounts.phtml      -       not started
+administration.phtml-       not started
+base.phtml          -       not started
+cast.phtml          -       finished
+comments.phtml      -       not started
+contents.phtml      -       finished
+credits.phtml       -       ongoing
+downloads.phtml     -       not started
+error403.phtml      -       finished
+error404.phtml      -       finished
+faq.phtml           -       not finished
+index.phtml         -       not finished
+login.phtml         -       not finished
+new-account.phtml   -       not finished
+npc.phtml           -       not finished
+npcs.phtml          -       not finished
+
+
+
+
+________________ EXTRA ________________
+
+* "ditched" means that files are discontinued and will be
+  deleted in the last commit.

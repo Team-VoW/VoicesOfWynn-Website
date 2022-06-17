@@ -324,6 +324,14 @@ br { margin-top: 2rem; }
 .align-r   { position: relative; right: .15rem; }
 .align-l   { position: relative; left: .15rem; }
 
+        /* text colors */
+.txt-main { color: #333; }
+
+        /* word-breaks */
+.wb-n { word-break: normal; }
+.wb-a { word-break: break-all; }
+.wb-ka{ word-break: keep-all; }
+
 
 /* ---- 2.3) specific specifc classes (yikes) ---- */
 
@@ -383,14 +391,10 @@ br { margin-top: 2rem; }
 
         #vertical, .nav li {overflow: hidden;}
         .nav, .nav li, li:not([id*="quest-npcs"]),
-        .bio .bio0 {display: none;}
+        .bio {display: none;}
         #vertical {visibility: hidden;}
 
         .avatar0 p {text-align:left;}
-
-        #hr-past-bio{
-            display: none;
-        }
 }
     
 @media (max-width:29.0rem) {
