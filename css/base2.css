@@ -162,8 +162,9 @@ input {
     border-radius: 3px;
     outline: none;
     padding: 0.3rem;
-    font-family: minecraft;
+    font-family: Arial, Helvetica, sans-serif;
     background: rgba(168, 168, 168, 0.13);
+    height: 2.8rem;
 }
 input:hover {
         border-bottom: 4px solid gray;
@@ -172,7 +173,7 @@ input:hover {
 textarea { resize: none; outline: none;
 width: 37.5rem; height: 15.625rem;
 border-right: none;border-left: none; border-top: none;
-font-family: minecraft;
+font-family: Arial, Helvetica, sans-serif;
 padding: .3rem;}
 input:focus, textarea:focus { outline: none; }
 label{font-style: italic;}                                                          /* classless.css */
@@ -277,27 +278,33 @@ br { margin-top: 2rem; }
 .m-d, .mt-d { margin-top: 2.0rem; }
 .m-d, .mb-d { margin-bottom: 2.0rem; }
 
+.m-a        { margin: auto }
+.no-m       { margin: 0; }
+
         /* paddings */
             /* small */
-.p-s, .pr-s { margin-right: .0rem; }
-.p-s, .pl-s { margin-left: .0rem; }
-.p-s, .pt-s { margin-top: .0rem; }
-.p-s, .pb-s { margin-bottom: .0rem; }
+.p-s, .pr-s { padding-right: .0rem; }
+.p-s, .pl-s { padding-left: .0rem; }
+.p-s, .pt-s { padding-top: .0rem; }
+.p-s, .pb-s { padding-bottom: .0rem; }
             /* medium */
-.p-m, .pr-m { margin-right: .5rem; }
-.p-m, .pl-m { margin-left: .5rem; }
-.p-m, .pt-m { margin-top: .5rem; }
-.p-m, .pb-m { margin-bottom: .5rem; }
+.p-m, .pr-m { padding-right: .5rem; }
+.p-m, .pl-m { padding-left: .5rem; }
+.p-m, .pt-m { padding-top: .5rem; }
+.p-m, .pb-m { padding-bottom: .5rem; }
             /* large */
-.p-l, .pr-l { margin-right: 1.0rem; }
-.p-l, .pl-l { margin-left: 1.0rem; }
-.p-l, .pt-l { margin-top: 1.0rem; }
-.p-l, .pb-l { margin-bottom: 1.0rem; }
+.p-l, .pr-l { padding-right: 1.0rem; }
+.p-l, .pl-l { padding-left: 1.0rem; }
+.p-l, .pt-l { padding-top: 1.0rem; }
+.p-l, .pb-l { padding-bottom: 1.0rem; }
             /* double */
-.p-d, .pr-d { margin-right: 2.0rem; }
-.p-d, .pl-d { margin-left: 2.0rem; }
-.p-d, .pt-d { margin-top: 2.0rem; }
-.p-d, .pb-d { margin-bottom: 2.0rem; }
+.p-d, .pr-d { padding-right: 2.0rem; }
+.p-d, .pl-d { padding-left: 2.0rem; }
+.p-d, .pt-d { padding-top: 2.0rem; }
+.p-d, .pb-d { padding-bottom: 2.0rem; }
+
+.p-a        { padding: auto; }
+.no-p       { padding: 0; }
 
         /* horizontal lines */
 .hr-s { min-width: 15%; }
@@ -324,13 +331,17 @@ br { margin-top: 2rem; }
 .align-r   { position: relative; right: .15rem; }
 .align-l   { position: relative; left: .15rem; }
 
-        /* text colors */
+        /* text colors & backgrounds */
 .txt-main { color: #333; }
+.default-bg { background-color: whitesmoke; }
 
         /* word-breaks */
 .wb-n { word-break: normal; }
 .wb-a { word-break: break-all; }
 .wb-ka{ word-break: keep-all; }
+
+        /* widths */
+.max-width { width: 100%; }
 
 
 /* ---- 2.3) specific specifc classes (yikes) ---- */
