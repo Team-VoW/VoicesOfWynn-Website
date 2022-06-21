@@ -41,7 +41,6 @@ var commentItemHTML = `
 </table>
 </div>
 `;
-// var commentItemHTML = '<div class="comment" style="margin: auto;"><table style="margin-top: -45px;"><tr><td rowspan="2"><img src="{gravatar}" alt="Avatar" class="comment-avatar"/></td><td class="comment-main-column"><strong><span style="padding-top: 8px;">{name}</span></strong>{badges}</td><td><button data-comment-id="{id}" class="delete-comment-button">×</button></td></tr><tr></tr><tr class="comment-container"><hr class="hr-f"><td class="comment-main-column"><div class="comment-content"><p style="min-width: 110%;margin-top: -25px;margin-bottom: -30px;">{comment}</p></div></td></tr></table></div>';
 
 $("#new-comment-button").on('click', function () {
     $("form").slideDown(1500);

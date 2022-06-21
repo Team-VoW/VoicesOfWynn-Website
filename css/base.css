@@ -159,8 +159,6 @@ textarea { font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sa
 }
 
 /* buttons */
-.downloadbtn { background: #26e94c; }
-.downloadbtn:hover { border-color: #23d847;  }
 .discordbtn { background: #5662F6;}
 .discordbtn:hover { border-color: #656ffd; }
 .creditsbtn { background: #AB5DFC; }
@@ -252,35 +250,6 @@ textarea:focus, input:focus {
 #name:focus { outline: none;}
 
 /* downloads */
-.dlwrapper {text-align: center;}
-.dlwrapper ul {
-    display: inline-block;
-    margin: 0;
-    padding: 0;
-    *display: inline;
-
-
-    zoom: 1;        /* not neccessary tho useful */
-
-    /* list styling for ul element*/
-    list-style: none;
-    text-decoration: wavy;
-}
-.dlwrapper li {
-    padding: 20px 20px;
-    border: none;
-    /* border: 1px solid #333;
-    border-radius: 5px; 
-    
-    ^ above will remain commented for now; might be useful
-    for future if there will ever be the addition of information
-    about older versions; in case there is having a box model
-    for each download might be useful!
-    */
-    text-decoration: inherit;
-    font-size: 20px;
-}
-.dlhr { max-width: 250px; }
 
 /* account stuff */
 .newaccform {

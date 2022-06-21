@@ -20,6 +20,7 @@ class Downloads extends Controller
 		self::$data['downloads_versions'] = $versionManager->getVersions();
 
         self::$views[] = 'downloads';
+        self::$cssFiles[] = 'downloads';
         return true;
     }
 }

@@ -16,13 +16,14 @@ base.css            -       ditched *
 base2.css           -       ongoing
 bubble.css          -       not started
 classless.css       -       ditched *
-comments.css        -       not started
+comments.css        -       finished
 contents.css        -       finished
 credits.css         -       finished
 errors.css          -       finished
 faq.css             -       not started
 npc.css             -       not started
 voting.css          -       finished
+downloads.css       -       finished            (new)
 
 
 
@@ -34,10 +35,10 @@ accounts.phtml      -       not started
 administration.phtml-       not started
 base.phtml          -       not started
 cast.phtml          -       finished
-comments.phtml      -       not started
+comments.phtml      -       finished
 contents.phtml      -       finished
 credits.phtml       -       finished
-downloads.phtml     -       not started
+downloads.phtml     -       finished
 error403.phtml      -       finished
 error404.phtml      -       finished
 faq.phtml           -       not started
