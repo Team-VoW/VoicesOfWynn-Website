@@ -14,13 +14,13 @@ accounts.css        -       not started
 administration.css  -       not started
 base.css            -       ditched *
 base2.css           -       ongoing
-bubble.css          -       not started
+bubble.css          -       finished
 classless.css       -       ditched *
 comments.css        -       finished
 contents.css        -       finished
 credits.css         -       finished
 errors.css          -       finished
-faq.css             -       not started
+faq.css             -       finished
 npc.css             -       not started
 voting.css          -       finished
 downloads.css       -       finished            (new)
@@ -41,7 +41,7 @@ credits.phtml       -       finished
 downloads.phtml     -       finished
 error403.phtml      -       finished
 error404.phtml      -       finished
-faq.phtml           -       not started
+faq.phtml           -       finished
 index.phtml         -       not started
 login.phtml         -       not started
 new-account.phtml   -       not started

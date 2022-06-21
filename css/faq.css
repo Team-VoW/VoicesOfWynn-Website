@@ -1,16 +1,10 @@
-.faq-element {
-	width: 75%;
-}
+hr { margin: 2.5rem 0; }
+
+.faq-element { width: 75%; }
 
 .question-bubble {
     margin-right: 25%;
-	margin-bottom: 15px;
+	margin-bottom: .9rem; 
 }
 
-.answer-bubble {
-    margin-left: 25%;
-}
-
-hr {
-	margin: 40px 0;
-}
+.answer-bubble { margin-left: 25%; }

@@ -3,20 +3,20 @@
 
 .question-bubble {
     position: relative;
-    background:#ffe082;
-    padding: 20px;
-    border: 5px solid #a78624;
+    background:#ffe08269;
+    padding: 1.25rem;
+    border: 5px solid #e6c667;
     border-radius: 15px;
     margin-left: 20px;
 }
 
 .answer-bubble {
     position: relative;
-    background:#8eeb6f;
-    padding: 20px;
-    border: 5px solid #51873f;
+    background:#8eeb6f63;
+    padding: 1.25rem;
+    border: 5px solid #4f9737;
     border-radius: 15px;
-	right: 16px;
+	right: 1rem;
     margin-right: 20px;
 }
 
@@ -25,13 +25,13 @@
     display: block;
     position: absolute; 
     left: -18px;
-    top: 16px; 
+    top: 1rem; 
 
     width: 0;
     height: 0; 
     border-top: 8px solid transparent;
     border-bottom: 8px solid transparent; 
-    border-right: 16px solid #a78624; 
+    border-right: 16px solid #e6c667; 
 }
 
 .answer-bubble:after {
@@ -39,11 +39,11 @@
     display: block;
     position: absolute; 
     right: -18px;
-    top: 16px; 
+    top: 1rem; 
 
     width: 0;
     height: 0; 
     border-top: 8px solid transparent;
     border-bottom: 8px solid transparent; 
-    border-left: 16px solid #51873f; 
+    border-left: 16px solid #4f9737; 
 }
