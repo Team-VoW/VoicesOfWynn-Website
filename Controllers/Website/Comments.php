@@ -1,18 +1,18 @@
 <?php
 
-namespace VoicesOfWynn\Controllers;
+namespace VoicesOfWynn\Controllers\Website;
 
 use VoicesOfWynn\Models\ContentManager;
 use VoicesOfWynn\Models\Db;
 use VoicesOfWynn\Models\Recording;
 
-class Comments extends Controller
+class Comments extends WebpageController
 {
 	
 	/**
 	 * @inheritDoc
 	 */
-	public function process(array $args): bool
+	public function process(array $args): int
 	{
 		switch ($_SERVER['REQUEST_METHOD']) {
 			case 'GET':
@@ -20,7 +20,7 @@ class Comments extends Controller
 			case 'DELETE':
 				return $this->delete($args);
 			default:
-				return false;
+				return 405;
 		}
 	}
 	
@@ -48,7 +48,7 @@ class Comments extends Controller
 		self::$data['comments_recording'] = $cnm->getRecording($recordingId);
         if (self::$data['comments_recording'] === false) {
             //Recording of the chosen ID was not found
-            return false;
+            return 404;
         }
 		self::$data['comments_voice_actor_id'] = $cnm->getNpc(self::$data['comments_recording']->npcId)->getVoiceActor()->getId();
 		self::$data['comments_recording_title'] = $cnm->getRecordingTitle(self::$data['comments_recording']);
@@ -77,7 +77,7 @@ class Comments extends Controller
 		$commentId = array_shift($args);
 		$commentData = Db::fetchQuery('SELECT user_id,ip FROM comment WHERE comment_id = ?', array($commentId));
 		if ($commentData === false) {
-			return false; //No comment with this ID exists
+			return 404; //No comment with this ID exists
 		}
 		$commentAuthorId = $commentData['user_id'];
 		$commentAuthorIp = $commentData['ip'];
@@ -88,16 +88,13 @@ class Comments extends Controller
 			(inet_pton($_SERVER['REMOTE_ADDR']) !== $commentAuthorIp) //Client not accessing system from the same IP as from which the comment was posted
 		) {
 			//No user is logged in or the logged user is not system admin
-			header('HTTP/1.1 401 Unauthorized');
-			exit();
+			return 401;
 		}
 		
 		if (Db::executeQuery('DELETE FROM comment WHERE comment_id = ?;', array($commentId))) {
-			header('HTTP/1.1 204 No Content');
-			exit();
+			return 204;
 		}
-		header('HTTP/1.1 500 Internal Server Error');
-		exit();
+		return 500;
 	}
 }
 

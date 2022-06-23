@@ -142,7 +142,7 @@ class User
             unset($_SESSION['passchangename']);
             return $this->login($name, $newPassword);
         }
-        throw new UserException('An error occured. Please, try again later and if the error persists, ping Shady#2948 on Discord.');
+        throw new UserException('An error occurred. Please, try again later and if the error persists, ping Shady#2948 on Discord.');
     }
     
     /**

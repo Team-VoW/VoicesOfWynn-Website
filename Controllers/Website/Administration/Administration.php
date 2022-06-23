@@ -1,22 +1,25 @@
 <?php
 
-namespace VoicesOfWynn\Controllers;
+namespace VoicesOfWynn\Controllers\Website\Administration;
 
-use VoicesOfWynn\Models\AccountManager;
-use VoicesOfWynn\Models\Db;
+use VoicesOfWynn\Controllers\Website\Npc;
+use VoicesOfWynn\Controllers\Website\WebpageController;
 
-class Administration extends Controller
+class Administration extends WebpageController
 {
     
     /**
      * @inheritDoc
      */
-    public function process(array $args): bool
+    public function process(array $args): int
     {
-        if (!isset($_SESSION['user']) || !$_SESSION['user']->isSysAdmin()) {
-            //No user is logged in or the logged user is not system admin
-            $errorController = new Error403();
-            return $errorController->process(array());
+        if (!isset($_SESSION['user'])) {
+            //No user is logged in
+            return 401;
+        }
+        if (!$_SESSION['user']->isSysAdmin()) {
+            //The logged user is not system admin
+            return 403;
         }
     
         self::$data['base_title'] = 'Administration';
@@ -43,14 +46,7 @@ class Administration extends Controller
 	        	$nextController = new Accounts();
         }
 
-        $result = $nextController->process($args);
-
-        if ($result === false) {
-            //The NPC that the user wants to manage doesn't exist
-            return false;
-        }
-
-        return true;
+        return $nextController->process($args);
     }
 }
 

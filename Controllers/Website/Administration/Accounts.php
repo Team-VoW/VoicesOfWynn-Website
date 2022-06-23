@@ -1,17 +1,18 @@
 <?php
 
-namespace VoicesOfWynn\Controllers;
+namespace VoicesOfWynn\Controllers\Website\Administration;
 
+use VoicesOfWynn\Controllers\Website\WebpageController;
 use VoicesOfWynn\Models\AccountManager;
 use VoicesOfWynn\Models\User;
 
-class Accounts extends Controller
+class Accounts extends WebpageController
 {
     
     /**
      * @inheritDoc
      */
-    public function process(array $args): bool
+    public function process(array $args): int
     {
     	if (count($args) > 0)
     	{
@@ -20,38 +21,32 @@ class Accounts extends Controller
 			    	$user = new User();
 			    	$user->setData(array('id' => $args[0]));
 			    	$user->clearBio();
-				    header('Location: /administration/accounts');
-				    exit();
+				    return 204;
 			    case 'clear-avatar':
 				    $user = new User();
 				    $user->setData(array('id' => $args[0]));
 			    	$user->clearAvatar();
-			    	header('Location: /administration/accounts');
-			    	exit();
+			    	return 204;
 			    case 'delete':
 				    $user = new User();
 				    $user->setData(array('id' => $args[0]));
 				    $user->delete();
-				    header('Location: /administration/accounts');
-				    exit();
+				    return 204;
 			    case 'grant-role':
 				    $user = new User();
 				    $user->setData(array('id' => $args[0]));
 				    $user->addRole($args[1]);
-					header('HTTP/1.1 204 No Content');
-				    exit();
+					return 204;
 			    case 'revoke-role':
 				    $user = new User();
 				    $user->setData(array('id' => $args[0]));
 				    $user->removeRole($args[1]);
-					header('HTTP/1.1 204 No Content');
-				    exit();
+					return 204;
 			    default:
-				    $errorController = new Error404();
-				    $errorController->process(array());
+				    return 400;
 		    }
 	    }
-    		
+
         self::$data['base_description'] = 'Tool for the administrators to manage accounts of the contributors.';
     
         $accountManager = new AccountManager();

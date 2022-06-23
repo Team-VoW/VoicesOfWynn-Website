@@ -1,17 +1,18 @@
 <?php
 
-namespace VoicesOfWynn\Controllers;
+namespace VoicesOfWynn\Controllers\Website;
 
+use VoicesOfWynn\Controllers\Controller;
 use VoicesOfWynn\Models\Recording;
 use VoicesOfWynn\Models\UserException;
 
-class Rating extends Controller
+class Rating extends WebpageController
 {
 	
 	/**
 	 * @inheritDoc
 	 */
-	public function process(array $args): bool
+	public function process(array $args): int
 	{
 		$recording = new Recording(array('id' => array_shift($args)));
 		$action = array_shift($args);
@@ -20,21 +21,17 @@ class Rating extends Controller
 			case '+':
 				if ($recording->wasVotedFor('+')) {
                     $recording->resetVote();
-                    header('HTTP/1.1 204 No Content');
-                    exit();
+                    return 204;
 				}
 				$recording->upvote();
-				header('HTTP/1.1 204 No Content');
-				exit();
+				return 204;
 			case '-':
                 if ($recording->wasVotedFor('-')) {
                     $recording->resetVote();
-                    header('HTTP/1.1 204 No Content');
-                    exit();
+                    return 204;
 				}
 				$recording->downvote();
-				header('HTTP/1.1 204 No Content');
-				exit();
+				return 204;
 			case 'c':
 				try {
                     if (isset($_POST['verified']) && $_POST['verified'] === "true") { //HTTP turns JavaScript "true" into string
@@ -46,11 +43,10 @@ class Rating extends Controller
 					exit($commentId);
 				} catch (UserException $e) {
 					header('HTTP/1.1 418 '.$e->getMessage());
-					exit();
+					exit(); //TODO replace this
 				}
 			default:
-				header('HTTP/1.1 400 Bad Request');
-				exit();
+				return 400;
 		}
 	}
 }

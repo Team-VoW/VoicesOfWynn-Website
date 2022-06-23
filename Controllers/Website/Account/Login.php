@@ -1,19 +1,21 @@
 <?php
 
 
-namespace VoicesOfWynn\Controllers;
+namespace VoicesOfWynn\Controllers\Website\Account;
 
 
+use VoicesOfWynn\Controllers\Website\WebpageController;
 use VoicesOfWynn\Models\User;
 use VoicesOfWynn\Models\UserException;
+use function VoicesOfWynn\Controllers\setcookie;
 
-class Login extends Controller
+class Login extends WebpageController
 {
     
     /**
      * @inheritDoc
      */
-    public function process(array $args): bool
+    public function process(array $args): int
     {
         if (isset($_SESSION['user'])) {
             //The user is already logged in
@@ -27,7 +29,7 @@ class Login extends Controller
             case 'POST':
                 return $this->post(array());
             default:
-                return false;
+                return 405;
         }
     }
     
@@ -77,7 +79,7 @@ class Login extends Controller
                     header('Location: /account');
                     return true;
                 }
-                return false;
+                return 400;
             }
             else if ($user->login($name, $pass)) {
                 //Login was successful

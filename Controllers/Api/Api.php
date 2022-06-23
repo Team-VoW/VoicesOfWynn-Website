@@ -1,32 +1,28 @@
 <?php
 
 
-namespace VoicesOfWynn\Controllers;
+namespace VoicesOfWynn\Controllers\Api;
 
 use PDO;
 use PDOException;
 
-class Api extends Controller
+class Api extends ApiController
 {
-	const REPORTING_API_KEY = '';
-	const COLLECTING_API_KEY = '';
-	const UPDATING_API_KEY = '';
 	
 	const ANONYMOUS_REPORT_NAME_INDICATOR = "Anonymous";
 	
 	/**
 	 * @inheritDoc
 	 */
-	public function process(array $args): bool
+	public function process(array $args): int
 	{
 		parse_str(file_get_contents("php://input"),$_PUT);
 		
 		if (!isset($_REQUEST['apiKey']) && !isset($_PUT['apiKey'])) {
-			header("HTTP/1.1 403 Forbidden");
+			header("HTTP/1.1 401 Unauthorized");
 			die();
 		}
-		
-		header('Content-Type: application/json');
+
 		switch ($args[0]) {
 			case 'newUnvoicedLineReport':
 				if ($_SERVER['REQUEST_METHOD'] !== 'POST') {

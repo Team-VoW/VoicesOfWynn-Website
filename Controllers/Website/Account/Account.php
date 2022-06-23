@@ -1,23 +1,22 @@
 <?php
 
 
-namespace VoicesOfWynn\Controllers;
+namespace VoicesOfWynn\Controllers\Website\Account;
 
-
+use VoicesOfWynn\Controllers\Website\WebpageController;
 use VoicesOfWynn\Models\AccountDataValidator;
 
-class Account extends Controller
+class Account extends WebpageController
 {
     
     /**
      * @inheritDoc
      */
-    public function process(array $args): bool
+    public function process(array $args): int
     {
         if (!isset($_SESSION['user'])) {
             //No user is logged in
-            $errorController = new Error403();
-            return $errorController->process(array());
+            return 401;
         }
         
         switch ($_SERVER['REQUEST_METHOD']) {
@@ -26,7 +25,7 @@ class Account extends Controller
             case 'POST':
                 return $this->post(array());
 	        default:
-	        	return false;
+	        	return 405;
         }
     }
     

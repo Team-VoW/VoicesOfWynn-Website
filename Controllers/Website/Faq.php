@@ -1,14 +1,16 @@
 <?php
 
-namespace VoicesOfWynn\Controllers;
+namespace VoicesOfWynn\Controllers\Website;
 
-class Faq extends Controller
+use VoicesOfWynn\Controllers\Controller;
+
+class Faq extends WebpageController
 {
 	
 	/**
 	 * @inheritDoc
 	 */
-	public function process(array $args): bool
+	public function process(array $args): int
 	{
 		self::$data['base_title'] = 'FAQ';
 		self::$data['base_description'] = 'Do you have a question about the mod? Then you\'ll most likely find it here';

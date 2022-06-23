@@ -1,16 +1,17 @@
 <?php
 
-namespace VoicesOfWynn\Controllers;
+namespace VoicesOfWynn\Controllers\Website;
 
+use VoicesOfWynn\Controllers\Controller;
 use VoicesOfWynn\Models\ContentManager;
 
-class Contents extends Controller
+class Contents extends WebpageController
 {
 	
 	/**
 	 * @inheritDoc
 	 */
-	public function process(array $args): bool
+	public function process(array $args): int
 	{
 		self::$data['base_title'] = 'Mod Contents';
 		self::$data['base_description'] = 'Would you like to find out what voice does a certain NPC have in our mod, but you can\'t do the quest it appears in? You can play any recording from the mod here, rate them with votes and comment on them.';

@@ -1,12 +1,12 @@
 <?php
 
-namespace VoicesOfWynn\Controllers;
+namespace VoicesOfWynn\Controllers\Website;
 
 use VoicesOfWynn\Models\AccountManager;
 use VoicesOfWynn\Models\ContentManager;
 use VoicesOfWynn\Models\Db;
 
-class Npc extends Controller
+class Npc extends WebpageController
 {
 	private int $npcId;
 	private bool $disallowAdministration;
@@ -14,7 +14,7 @@ class Npc extends Controller
 	/**
 	 * @inheritDoc
 	 */
-	public function process(array $args): bool
+	public function process(array $args): int
 	{
 		$this->npcId = array_shift($args);
 		$this->disallowAdministration = !((array_shift($args) === 'false'));
@@ -28,16 +28,16 @@ class Npc extends Controller
 			case 'DELETE':
 				return $this->delete($args);
 			default:
-				return false;
+				return 405;
 		}
 	}
 	
 	/**
 	 * Processing method for GET requests to this controller (NPC info webpage was requested)
 	 * @param array $args
-	 * @return bool TRUE if everything needed about the NPC is obtained, FALSE if the NPC of the selected ID doesn't exist
+	 * @return int|bool TRUE if everything needed about the NPC is obtained, FALSE if the NPC of the selected ID doesn't exist
 	 */
-	private function get(array $args): bool
+	private function get(array $args): int
 	{
 		if ($this->disallowAdministration) {
 			self::$data['base_title'] = 'Recordings for '; //Will be completed below
@@ -53,7 +53,7 @@ class Npc extends Controller
 		$cnm = new ContentManager();
 		$npc = $cnm->getNpc($this->npcId);
         if ($npc === false) {
-            return false; //NPC with this ID doesn't exist in the database
+            return 404; //NPC with this ID doesn't exist in the database
         }
 		self::$data['npc_npc'] = $npc;
 		self::$data['npc_voice_actor'] = $npc->getVoiceActor();
@@ -90,13 +90,12 @@ class Npc extends Controller
 	 * Processing method for POST requests to this controller (new recordings were uploaded or a voice actor was
 	 * changed)
 	 * @param array $args
-	 * @return bool
+	 * @return int|bool
 	 */
-	private function post(array $args): bool
+	private function post(array $args): int
 	{
 		if ($this->disallowAdministration) {
-			$errorController = new Error403();
-			return $errorController->process(array());
+			return 403;
 		}
 		
 		$questId = $_POST['questId'];
@@ -137,21 +136,18 @@ class Npc extends Controller
 	/**
 	 * Processing method for PUT requests to this controller (new voice actor was set for this NPC)
 	 * @param array $args NPC id as the first element, User ID as the second element
-	 * @return bool
+	 * @return int|bool
 	 */
-	private function put(array $args): void
+	private function put(array $args): int
 	{
 		if ($this->disallowAdministration) {
-			$errorController = new Error403();
-			$errorController->process(array());
-			return;
+			return 403;
 		}
 		
 		$userId = $args[0];
 		
 		if (empty($this->npcId) || empty($userId)) {
-			header("HTTP/1.1 400 Bad request");
-			exit();
+			return 400;
 		}
 		
 		//Update the database
@@ -162,28 +158,24 @@ class Npc extends Controller
 	/**
 	 * Processing method for DELETE requests to this controller (a recording is supposed to be deleted)
 	 * @param array $args NPC id as the first element, Recording ID as the second element
-	 * @return bool
+	 * @return int|bool
 	 */
-	private function delete(array $args): void
+	private function delete(array $args): int
 	{
 		if ($this->disallowAdministration) {
-			$errorController = new Error403();
-			$errorController->process(array());
-			return;
+			return 403;
 		}
 		
 		$recordingId = $args[0];
 		
 		if (empty($this->npcId) || empty($recordingId)) {
-			header("HTTP/1.1 400 Bad request");
-			exit();
+			return 400;
 		}
 		
 		$result = Db::fetchQuery('SELECT file FROM recording WHERE recording_id = ? AND npc_id = ?;',
 			array($recordingId, $this->npcId));
 		if (empty($result)) {
-			header("HTTP/1.1 404 Not Found");
-			exit();
+			return 404;
 		}
 		
 		//Delete record from database

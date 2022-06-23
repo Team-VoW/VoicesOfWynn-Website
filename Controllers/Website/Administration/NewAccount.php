@@ -1,18 +1,18 @@
 <?php
 
-namespace VoicesOfWynn\Controllers;
+namespace VoicesOfWynn\Controllers\Website\Administration;
 
-use VoicesOfWynn\Models\AccountManager;
+use VoicesOfWynn\Controllers\Website\WebpageController;
 use VoicesOfWynn\Models\User;
 use VoicesOfWynn\Models\UserException;
 
-class NewAccount extends Controller
+class NewAccount extends WebpageController
 {
     
     /**
      * @inheritDoc
      */
-    public function process(array $args): bool
+    public function process(array $args): int
     {
         switch ($_SERVER['REQUEST_METHOD']) {
             case 'GET':
@@ -20,7 +20,7 @@ class NewAccount extends Controller
             case 'POST':
                 return $this->post(array());
 	        default:
-	        	return false;
+	        	return 405;
         }
     }
     

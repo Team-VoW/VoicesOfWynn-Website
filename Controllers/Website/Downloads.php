@@ -1,16 +1,17 @@
 <?php
 
-namespace VoicesOfWynn\Controllers;
+namespace VoicesOfWynn\Controllers\Website;
 
+use VoicesOfWynn\Controllers\Controller;
 use VoicesOfWynn\Models\VersionManager;
 
-class Downloads extends Controller
+class Downloads extends WebpageController
 {
     
     /**
      * @inheritDoc
      */
-    public function process(array $args): bool
+    public function process(array $args): int
     {
         self::$data['base_title'] = 'Downloads';
         self::$data['base_description'] = 'Downloads of all versions of the mod are available here. Download the latest version, install it to your Minecraft client and enjoy voiced Wynncraft.';

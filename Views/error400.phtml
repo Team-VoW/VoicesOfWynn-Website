@@ -16,17 +16,17 @@
     <meta name="msapplication-TileColor" content="#7b1a9b">
     <meta name="msapplication-config" content="browserconfig.xml">
     <meta name="theme-color" content="#7b1a9b">
-    
+
     <!-- Stylesheets -->
     <?php foreach (self::$cssFiles as $cssFile) : ?>
         <link rel="stylesheet" type="text/css" href="css/<?= $cssFile ?>.css">
     <?php endforeach ?>
 </head>
 <body>
-    <h1 class="error-header">403 – Forbidden</h1>
-    <p><i>It seems like you shouldn't be here...</i></p>
-	<p>Maybe your login session has expired. If that's the case, <a href="/login">logging back in</a> should help.</p>
-    <img src="images/lucio_where_the_frick_are_we.png" alt="An illustration of two Wynncraft characters looking for something." id="error-picture" /><br>
-    <span class="art-credit">Art by <a href="https://twitter.com/gleeokenspiel" target="blank_">Gleeokenspiel</a></span><br>
-    <a href="https://voicesofwynn.com"><button class="return-button">Back to Homepage</button></a>
+<h1 class="error-header">400 – Bad Request</h1>
+<p><i>Hey, I don't want to sound smart, but this doesn't seem correct...</i></p>
+<p>You probably entered some invalid information. Make sure you filled in everything properly and try again.</p>
+<img src="images/lucio_where_the_frick_are_we.png" alt="An illustration of two Wynncraft characters looking for something." id="error-picture" /><br>
+<span class="art-credit">Art by <a href="https://twitter.com/gleeokenspiel" target="blank_">Gleeokenspiel</a></span><br>
+<a href="https://voicesofwynn.com"><button class="return-button">Back to Homepage</button></a>
 </body>

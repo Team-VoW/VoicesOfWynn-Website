@@ -1,16 +1,17 @@
 <?php
 
-namespace VoicesOfWynn\Controllers;
+namespace VoicesOfWynn\Controllers\Website\Administration;
 
+use VoicesOfWynn\Controllers\Website\WebpageController;
 use VoicesOfWynn\Models\ContentManager;
 
-class Npcs extends Controller
+class Npcs extends WebpageController
 {
     
     /**
      * @inheritDoc
      */
-    public function process(array $args): bool
+    public function process(array $args): int
     {
         self::$data['base_description'] = 'Tool for the administrators to manage NPCs and assign voice actors to them.';
         

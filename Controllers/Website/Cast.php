@@ -1,23 +1,24 @@
 <?php
 
-namespace VoicesOfWynn\Controllers;
+namespace VoicesOfWynn\Controllers\Website;
 
+use VoicesOfWynn\Controllers\Controller;
 use VoicesOfWynn\Models\ContentManager;
 
-class Cast extends Controller
+class Cast extends WebpageController
 {
 	
 	/**
 	 * @inheritDoc
 	 */
-	public function process(array $args): bool
+	public function process(array $args): int
 	{
 		$voiceActorId = $args[0];
 		$cnm = new ContentManager();
 		$voiceActor = $cnm->getVoiceActor($voiceActorId);
 		if ($voiceActor === false) {
             //Voice actor with this ID doesn't exist
-            return false;
+            return 404;
         }
 
 		self::$data['base_title'] = $voiceActor->getName();
