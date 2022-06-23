@@ -2,9 +2,9 @@
 
 namespace VoicesOfWynn\Controllers\Website;
 
-use VoicesOfWynn\Models\ContentManager;
 use VoicesOfWynn\Models\Db;
-use VoicesOfWynn\Models\Recording;
+use VoicesOfWynn\Models\Website\ContentManager;
+use VoicesOfWynn\Models\Website\Recording;
 
 class Comments extends WebpageController
 {
@@ -74,8 +74,10 @@ class Comments extends WebpageController
 	 */
 	private function delete($args)
 	{
-		$commentId = array_shift($args);
-		$commentData = Db::fetchQuery('SELECT user_id,ip FROM comment WHERE comment_id = ?', array($commentId));
+        $db = new Db('Website/DbInfo.ini');
+
+		$commentId = array_shift( $args);
+		$commentData = $db->fetchQuery('SELECT user_id,ip FROM comment WHERE comment_id = ?', array($commentId));
 		if ($commentData === false) {
 			return 404; //No comment with this ID exists
 		}
@@ -91,7 +93,7 @@ class Comments extends WebpageController
 			return 401;
 		}
 		
-		if (Db::executeQuery('DELETE FROM comment WHERE comment_id = ?;', array($commentId))) {
+		if ($db->executeQuery('DELETE FROM comment WHERE comment_id = ?;', array($commentId))) {
 			return 204;
 		}
 		return 500;

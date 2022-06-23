@@ -1,8 +1,10 @@
 <?php
 
 
-namespace VoicesOfWynn\Models;
+namespace VoicesOfWynn\Models\Website;
 
+
+use VoicesOfWynn\Models\Db;
 
 class User
 {
@@ -31,7 +33,7 @@ class User
      * The user is not logged in
      * @param string $name
      * @oaran string $discordName
-     * @param string $checkAgainstOld If set to TRUE, users won't be able to pick names that are different from the
+     * @param bool $checkAgainstOld If set to TRUE, users won't be able to pick names that are different from the
      * old ones only in capitalisation, default FALSE
      * @return string
      * @throws UserException In case of an invalid name
@@ -51,9 +53,9 @@ class User
         for ($i = 0; $i < self::DEFAULT_PASSWORD_LENGTH; $i++) {
             $password .= self::DEFAULT_PASSWORD_CHARACTERS[rand(0, mb_strlen(self::DEFAULT_PASSWORD_CHARACTERS) - 1)];
         }
-        
+
         $this->hash = password_hash($password, PASSWORD_DEFAULT);
-        $result = Db::executeQuery('INSERT INTO user (display_name,password,discord) VALUES (?,?,?)', array(
+        $result = (new Db('Website/DbInfo.ini'))->executeQuery('INSERT INTO user (display_name,password,discord) VALUES (?,?,?)', array(
             $name,
             $this->hash,
 	        $discordName
@@ -79,7 +81,7 @@ class User
      */
     public function login(string $name, string $password): bool
     {
-        $userInfo = Db::fetchQuery('SELECT * FROM user WHERE email = ? OR display_name = ?', array($name, $name));
+        $userInfo = (new Db('Website/DbInfo.ini'))->fetchQuery('SELECT * FROM user WHERE email = ? OR display_name = ?', array($name, $name));
         if ($userInfo === false) {
             throw new UserException('The user with this name or e-mail doesn\'t exist');
         }
@@ -128,8 +130,7 @@ class User
         if (!$validator->validatePassword($newPassword)) {
             throw new UserException($validator->errors[0]);
         }
-        
-        $result = Db::executeQuery('UPDATE user SET password = ?, force_password_change = 0 WHERE email = ? OR display_name = ?', array(
+        $result = (new Db('Website/DbInfo.ini'))->executeQuery('UPDATE user SET password = ?, force_password_change = 0 WHERE email = ? OR display_name = ?', array(
             password_hash($newPassword, PASSWORD_DEFAULT),
             $name,
             $name
@@ -180,7 +181,7 @@ class User
         }
         
         try {
-            $result = Db::executeQuery($query, $parameters);
+            $result = (new Db('Website/DbInfo.ini'))->executeQuery($query, $parameters);
         } catch (\Exception $e) {
             return false;
         }
@@ -308,8 +309,8 @@ class User
         if (!empty($this->roles)) {
             return $this->roles;
         }
-        
-        $result = Db::fetchQuery('SELECT name,color,weight FROM discord_role JOIN user_discord_role ON user_discord_role.discord_role_id = discord_role.discord_role_id WHERE user_id = ? ORDER BY weight DESC;',
+
+        $result = (new Db('Website/DbInfo.ini'))->fetchQuery('SELECT name,color,weight FROM discord_role JOIN user_discord_role ON user_discord_role.discord_role_id = discord_role.discord_role_id WHERE user_id = ? ORDER BY weight DESC;',
             array($this->id), true);
         if ($result === false) {
             $this->roles = array();
@@ -437,7 +438,7 @@ class User
      */
     public function addRole(int $roleId): bool
     {
-        return Db::executeQuery('INSERT INTO user_discord_role (user_id,discord_role_id) VALUES (?,?)', array(
+        return (new Db('Website/DbInfo.ini'))->executeQuery('INSERT INTO user_discord_role (user_id,discord_role_id) VALUES (?,?)', array(
             $this->id,
             $roleId
         ));
@@ -452,7 +453,7 @@ class User
      */
     public function removeRole(int $roleId): bool
     {
-        return Db::executeQuery('DELETE FROM user_discord_role WHERE user_id = ? AND discord_role_id = ?', array(
+        return (new Db('Website/DbInfo.ini'))->executeQuery('DELETE FROM user_discord_role WHERE user_id = ? AND discord_role_id = ?', array(
             $this->id,
             $roleId
         ));
@@ -466,7 +467,7 @@ class User
     public function clearBio(): bool
     {
         $this->bio = '';
-        return Db::executeQuery('UPDATE user SET bio = NULL WHERE user_id = ?', array($this->id));
+        return (new Db('Website/DbInfo.ini'))->executeQuery('UPDATE user SET bio = NULL WHERE user_id = ?', array($this->id));
     }
     
     /**
@@ -477,7 +478,7 @@ class User
     public function clearAvatar(): bool
     {
         $this->avatarLink = 'default.png';
-        $result = Db::executeQuery('UPDATE user SET picture = DEFAULT WHERE user_id = ?', array($this->id));
+        $result = (new Db('Website/DbInfo.ini'))->executeQuery('UPDATE user SET picture = DEFAULT WHERE user_id = ?', array($this->id));
         if ($result) {
             array_map('unlink', glob('dynamic/avatars/'.$this->getId().'.*'));
         }
@@ -491,7 +492,7 @@ class User
      * @throws \Exception
      */
     public function delete(): bool {
-        return Db::executeQuery('DELETE FROM user WHERE user_id = ?', array($this->id));
+        return (new Db('Website/DbInfo.ini'))->executeQuery('DELETE FROM user WHERE user_id = ?', array($this->id));
     }
 }
 

@@ -2,9 +2,9 @@
 
 namespace VoicesOfWynn\Controllers\Website;
 
-use VoicesOfWynn\Models\AccountManager;
-use VoicesOfWynn\Models\ContentManager;
 use VoicesOfWynn\Models\Db;
+use VoicesOfWynn\Models\Website\AccountManager;
+use VoicesOfWynn\Models\Website\ContentManager;
 
 class Npc extends WebpageController
 {
@@ -122,7 +122,7 @@ class Npc extends WebpageController
 			}
 			
 			move_uploaded_file($tempName, 'dynamic/recordings/'.$filename);
-			Db::executeQuery('INSERT INTO recording (npc_id,quest_id,line,file) VALUES (?,?,?,?)', array(
+            (new Db('Website/DbInfo.ini'))->executeQuery('INSERT INTO recording (npc_id,quest_id,line,file) VALUES (?,?,?,?)', array(
 				$this->npcId,
 				$questId,
 				$line,
@@ -151,7 +151,7 @@ class Npc extends WebpageController
 		}
 		
 		//Update the database
-		$result = Db::executeQuery('UPDATE npc SET voice_actor_id = ? WHERE npc_id = ? LIMIT 1;', array($userId, $this->npcId));
+		$result = (new Db('Website/DbInfo.ini'))->executeQuery('UPDATE npc SET voice_actor_id = ? WHERE npc_id = ? LIMIT 1;', array($userId, $this->npcId));
 		exit($result);
 	}
 	
@@ -171,8 +171,9 @@ class Npc extends WebpageController
 		if (empty($this->npcId) || empty($recordingId)) {
 			return 400;
 		}
-		
-		$result = Db::fetchQuery('SELECT file FROM recording WHERE recording_id = ? AND npc_id = ?;',
+
+        $db = new Db('Website/DbInfo.ini');
+		$result = $db->fetchQuery('SELECT file FROM recording WHERE recording_id = ? AND npc_id = ?;',
 			array($recordingId, $this->npcId));
 		if (empty($result)) {
 			return 404;
@@ -180,7 +181,7 @@ class Npc extends WebpageController
 		
 		//Delete record from database
 		$filename = $result['file'];
-		$result = Db::executeQuery('DELETE FROM recording WHERE recording_id = ? AND npc_id = ? LIMIT 1;',
+		$result = $db->executeQuery('DELETE FROM recording WHERE recording_id = ? AND npc_id = ? LIMIT 1;',
 			array($recordingId, $this->npcId));
 		if ($result) {
 			//Delete file

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace VoicesOfWynn\Models;
+namespace VoicesOfWynn\Models\Website;
 
 
 class UserException extends \Exception

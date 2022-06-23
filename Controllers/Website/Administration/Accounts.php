@@ -3,8 +3,8 @@
 namespace VoicesOfWynn\Controllers\Website\Administration;
 
 use VoicesOfWynn\Controllers\Website\WebpageController;
-use VoicesOfWynn\Models\AccountManager;
-use VoicesOfWynn\Models\User;
+use VoicesOfWynn\Models\Website\AccountManager;
+use VoicesOfWynn\Models\Website\User;
 
 class Accounts extends WebpageController
 {

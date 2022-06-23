@@ -4,12 +4,12 @@ namespace VoicesOfWynn\Controllers\Website;
 
 use Exception;
 use VoicesOfWynn\Controllers\Controller;
-use VoicesOfWynn\Models\Comment;
-use VoicesOfWynn\Models\DiscordRole;
-use VoicesOfWynn\Models\Npc;
-use VoicesOfWynn\Models\Quest;
-use VoicesOfWynn\Models\Recording;
-use VoicesOfWynn\Models\User;
+use VoicesOfWynn\Models\Website\Comment;
+use VoicesOfWynn\Models\Website\DiscordRole;
+use VoicesOfWynn\Models\Website\Npc;
+use VoicesOfWynn\Models\Website\Quest;
+use VoicesOfWynn\Models\Website\Recording;
+use VoicesOfWynn\Models\Website\User;
 
 /**
  * Base class for all controllers displaying a webpage

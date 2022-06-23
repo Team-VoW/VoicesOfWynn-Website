@@ -1,6 +1,9 @@
 <?php
 
-namespace VoicesOfWynn\Models;
+namespace VoicesOfWynn\Models\Website;
+
+use Exception;
+use VoicesOfWynn\Models\Db;
 
 class DiscordRole
 {
@@ -26,7 +29,9 @@ class DiscordRole
 		if (empty($this->name)) {
 			throw new Exception('Attribute $name of the DiscordRole object mustn\'t be empty for the getId() method to be called!');
 		}
-		$result = Db::fetchQuery('SELECT discord_role_id FROM discord_role WHERE name = ? LIMIT 1', array($this->name));
+
+        $db = new Db('Website/DbInfo.ini');
+		$result = $db->fetchQuery('SELECT discord_role_id FROM discord_role WHERE name = ? LIMIT 1', array($this->name));
 		if (empty($result)) { return null; }
 		$this->roleId = $result['discord_role_id'];
 		return $result['discord_role_id'];

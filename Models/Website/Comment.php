@@ -1,6 +1,8 @@
 <?php
 
-namespace VoicesOfWynn\Models;
+namespace VoicesOfWynn\Models\Website;
+
+use VoicesOfWynn\Models\Db;
 
 class Comment
 {
@@ -95,7 +97,7 @@ class Comment
 	public function getAvatar(): string
 	{
 		if ($this->verified) {
-			$result = Db::fetchQuery("SELECT picture FROM user WHERE user_id = ?", array($this->userId));
+			$result = (new Db('Website/DbInfo.ini'))->fetchQuery("SELECT picture FROM user WHERE user_id = ?", array($this->userId));
 			if ($result === false) { $result['picture'] = "default.png"; }
 			return "dynamic/avatars/".$result['picture'];
 		}
@@ -111,7 +113,7 @@ class Comment
 	public function getName(): string
 	{
 		if ($this->verified) {
-			$result = Db::fetchQuery("SELECT display_name FROM user WHERE user_id = ?", array($this->userId));
+			$result = (new Db('Website/DbInfo.ini'))->fetchQuery("SELECT display_name FROM user WHERE user_id = ?", array($this->userId));
 			if ($result === false) { $result['display_name'] = "Deleted user"; }
 			return $result['display_name'];
 		}

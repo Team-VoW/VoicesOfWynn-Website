@@ -1,6 +1,8 @@
 <?php
 
-namespace VoicesOfWynn\Models;
+namespace VoicesOfWynn\Models\Website;
+
+use VoicesOfWynn\Models\Db;
 
 class ContentManager
 {
@@ -14,7 +16,7 @@ class ContentManager
 		LEFT JOIN user ON npc.voice_actor_id = user.user_id
 		ORDER BY quest.quest_id, npc.npc_id;
 		';
-		$result = Db::fetchQuery($query, array(), true);
+		$result = (new Db('Website/DbInfo.ini'))->fetchQuery($query, array(), true);
 		
 		$quests = array();
 		$currentQuest = null;
@@ -47,7 +49,7 @@ class ContentManager
 		FROM npc
 		LEFT JOIN user ON npc.voice_actor_id = user.user_id
 		WHERE npc_id = ?;';
-		$result = Db::fetchQuery($query, array($id));
+		$result = (new Db('Website/DbInfo.ini'))->fetchQuery($query, array($id));
 		
 		if ($result === false) {
 			return false;
@@ -68,7 +70,7 @@ class ContentManager
 	public function getVoiceActor($id)
 	{
 		$query = 'SELECT * FROM user WHERE user_id = ?;';
-		$result = Db::fetchQuery($query, array($id));
+		$result = (new Db('Website/DbInfo.ini'))->fetchQuery($query, array($id));
 		if ($result === false) {
             //Voice actor with this ID doesn't exist
             return false;
@@ -96,7 +98,7 @@ class ContentManager
 		GROUP BY user_id
 		ORDER BY `roles_weight` DESC;
 		';
-		$result = Db::fetchQuery($query, array(), true);
+		$result = (new Db('Website/DbInfo.ini'))->fetchQuery($query, array(), true);
 		
 		$users = array();
 		foreach ($result as $userData) {
@@ -130,7 +132,7 @@ class ContentManager
 		JOIN npc USING(npc_id)
 		WHERE npc.voice_actor_id = ?
 		ORDER BY quest_id, line;';
-		$result = Db::fetchQuery($query, array($id), true);
+		$result = (new Db('Website/DbInfo.ini'))->fetchQuery($query, array($id), true);
 		
 		if ($result === false) {
 			return array();
@@ -160,13 +162,15 @@ class ContentManager
 	
 	public function getNpcRecordings($id): array
 	{
+        $db = new Db('Website/DbInfo.ini');
+
 		$query = '
 		SELECT recording.recording_id, recording.quest_id, recording.line, recording.file, recording.upvotes, recording.downvotes, (SELECT COUNT(*) FROM comment WHERE comment.recording_id = recording.recording_id) AS "comments", quest.name
 		FROM recording
 		JOIN quest ON quest.quest_id = recording.quest_id
 		WHERE npc_id = ?
 		ORDER BY quest_id, line;';
-		$result = Db::fetchQuery($query, array($id), true);
+		$result = $db->fetchQuery($query, array($id), true);
 		
 		$quests = array();
 		if (gettype($result) !== 'array') {
@@ -176,7 +180,7 @@ class ContentManager
 			FROM quest
 		    JOIN npc_quest USING(quest_id)
 			WHERE npc_id = ?;';
-			$result = Db::fetchQuery($query, array($id), true);
+			$result = $db->fetchQuery($query, array($id), true);
 			
 			foreach ($result as $quest) {
 				$currentQuest = new Quest($quest);
@@ -214,7 +218,7 @@ class ContentManager
      */
 	public function getRecording($recordingId)
 	{
-		$result = Db::fetchQuery('SELECT * FROM recording WHERE recording_id = ?', array($recordingId));
+		$result = (new Db('Website/DbInfo.ini'))->fetchQuery('SELECT * FROM recording WHERE recording_id = ?', array($recordingId));
         if ($result === false) {
             return false;
         }
@@ -231,7 +235,7 @@ class ContentManager
 	
 	public function getComments($recordingId): array
 	{
-		$result = Db::fetchQuery('
+		$result = (new Db('Website/DbInfo.ini'))->fetchQuery('
 			SELECT comment_id,verified,user_id,ip,name,email,content,recording_id,
 			CONCAT("https://www.gravatar.com/avatar/",MD5(email),"?d=identicon") AS gravatar
 			FROM comment WHERE recording_id = ? ORDER BY comment_id DESC;
@@ -259,7 +263,7 @@ class ContentManager
 			$userId = $_SESSION['user']->getId();
 		}
 		
-		$result = Db::fetchQuery('SELECT comment_id FROM comment WHERE ip = ? OR user_id = ?',
+		$result = (new Db('Website/DbInfo.ini'))->fetchQuery('SELECT comment_id FROM comment WHERE ip = ? OR user_id = ?',
 			array(inet_pton($ip), $userId), true);
 		
 		$ids = array();
@@ -278,7 +282,7 @@ class ContentManager
  * @throws \Exception
  */
   public function getVotes(string $type) {
-      $result = Db::fetchQuery('SELECT recording_id FROM vote WHERE ip = ? AND type = ?;', array(inet_pton($_SERVER['REMOTE_ADDR']), $type), true);
+      $result = (new Db('Website/DbInfo.ini'))->fetchQuery('SELECT recording_id FROM vote WHERE ip = ? AND type = ?;', array(inet_pton($_SERVER['REMOTE_ADDR']), $type), true);
       if (empty($result)) {
           return array();
       }
@@ -291,23 +295,25 @@ class ContentManager
   
 	public function getRecordingTitle(Recording $recording): string
 	{
+        $db = new Db('Website/DbInfo.ini');
+
 		if (empty($recording->npc_id)) {
-			$npcName = Db::fetchQuery('SELECT name FROM npc WHERE npc_id = (SELECT npc_id FROM recording WHERE recording_id = ?);',
+			$npcName = $db->fetchQuery('SELECT name FROM npc WHERE npc_id = (SELECT npc_id FROM recording WHERE recording_id = ?);',
 				array($recording->id))['name'];
 		} else {
-			$npcName = Db::fetchQuery('SELECT name FROM npc WHERE npc_id = ?', array($recording->npc_id))['name'];
+			$npcName = $db->fetchQuery('SELECT name FROM npc WHERE npc_id = ?', array($recording->npc_id))['name'];
 		}
 		
 		if (empty($recording->quest_id)) {
-			$questName = Db::fetchQuery('SELECT name FROM quest WHERE quest_id = (SELECT quest_id FROM recording WHERE recording_id = ?);',
+			$questName = $db->fetchQuery('SELECT name FROM quest WHERE quest_id = (SELECT quest_id FROM recording WHERE recording_id = ?);',
 				array($recording->id))['name'];
 		} else {
-			$questName = Db::fetchQuery('SELECT name FROM quest WHERE quest_id = ?',
+			$questName = $db->fetchQuery('SELECT name FROM quest WHERE quest_id = ?',
 				array($recording->quest_id))['name'];
 		}
 		
 		if (empty($recording->line)) {
-			$lineNumber = Db::fetchQuery('SELECT line FROM recording WHERE recording_id = ?;',
+			$lineNumber = $db->fetchQuery('SELECT line FROM recording WHERE recording_id = ?;',
 				array($recording->id))['line'];
 		} else {
 			$lineNumber = $recording->line;

@@ -1,6 +1,8 @@
 <?php
 
-namespace VoicesOfWynn\Models;
+namespace VoicesOfWynn\Models\Website;
+
+use VoicesOfWynn\Models\Db;
 
 class Recording
 {
@@ -92,7 +94,7 @@ class Recording
      * @return bool TRUE if it was, FALSE if it wasn't
      */
     public function wasVotedFor(string $type): bool {
-        $result = Db::fetchQuery('
+        $result = (new Db('Website/DbInfo.ini'))->fetchQuery('
             SELECT COUNT(*) as "cnt" FROM vote WHERE recording_id = ? AND ip = ? AND type = ?
         ', array($this->id, inet_pton($_SERVER['REMOTE_ADDR']), $type));
         return !(($result['cnt'] === 0));
@@ -107,12 +109,12 @@ class Recording
 	{
         if ($this->wasVotedFor("-")) {
             //Remove upvote
-            Db::executeQuery('UPDATE vote SET type = "+" WHERE recording_id = ? AND ip = ?;',
+            (new Db('Website/DbInfo.ini'))->executeQuery('UPDATE vote SET type = "+" WHERE recording_id = ? AND ip = ?;',
                 array($this->id, inet_pton($_SERVER['REMOTE_ADDR'])));
         }
         else {
             //Add upvote
-            Db::executeQuery('INSERT INTO vote(recording_id, ip, type) VALUES (?,?,"+");',
+            (new Db('Website/DbInfo.ini'))->executeQuery('INSERT INTO vote(recording_id, ip, type) VALUES (?,?,"+");',
                 array($this->id, inet_pton($_SERVER['REMOTE_ADDR'])));
         }
 
@@ -128,12 +130,12 @@ class Recording
 	{
         if ($this->wasVotedFor("+")) {
             //Remove downvote
-            Db::executeQuery('UPDATE vote SET type = "-" WHERE recording_id = ? AND ip = ?;',
+            (new Db('Website/DbInfo.ini'))->executeQuery('UPDATE vote SET type = "-" WHERE recording_id = ? AND ip = ?;',
                 array($this->id, inet_pton($_SERVER['REMOTE_ADDR'])));
         }
         else {
             //Add downvote
-            Db::executeQuery('INSERT INTO vote(recording_id, ip, type) VALUES (?,?,"-");',
+            (new Db('Website/DbInfo.ini'))->executeQuery('INSERT INTO vote(recording_id, ip, type) VALUES (?,?,"-");',
                 array($this->id, inet_pton($_SERVER['REMOTE_ADDR'])));
         }
 
@@ -147,7 +149,7 @@ class Recording
      */
     public function resetVote(): bool
     {
-        Db::executeQuery('DELETE FROM vote WHERE recording_id = ? AND ip = ?',
+        (new Db('Website/DbInfo.ini'))->executeQuery('DELETE FROM vote WHERE recording_id = ? AND ip = ?',
             array($this->id, inet_pton($_SERVER['REMOTE_ADDR'])));
         return $this->updateVotesCounts();
     }
@@ -159,7 +161,7 @@ class Recording
      */
     private function updateVotesCounts()
     {
-        return Db::executeQuery('
+        return (new Db('Website/DbInfo.ini'))->executeQuery('
             UPDATE recording SET
             upvotes = (SELECT COUNT(*) FROM vote WHERE recording_id = ? AND type = "+"),
             downvotes = (SELECT COUNT(*) FROM vote WHERE recording_id = ? AND type = "-")
@@ -254,7 +256,7 @@ class Recording
 			}
 		}
 		
-		return Db::executeQuery('INSERT INTO comment (verified,user_id,ip,name,email,content,recording_id) VALUES (?,?,?,?,?,?,?);', array(
+		return (new Db('Website/DbInfo.ini'))->executeQuery('INSERT INTO comment (verified,user_id,ip,name,email,content,recording_id) VALUES (?,?,?,?,?,?,?);', array(
 			$verified,
             $userId,
 			inet_pton($ip),

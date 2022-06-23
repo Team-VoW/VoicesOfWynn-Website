@@ -2,9 +2,8 @@
 
 namespace VoicesOfWynn\Controllers\Website;
 
-use VoicesOfWynn\Controllers\Controller;
-use VoicesOfWynn\Models\Recording;
-use VoicesOfWynn\Models\UserException;
+use VoicesOfWynn\Models\Website\Recording;
+use VoicesOfWynn\Models\Website\UserException;
 
 class Rating extends WebpageController
 {

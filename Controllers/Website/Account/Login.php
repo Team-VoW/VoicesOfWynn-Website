@@ -5,9 +5,8 @@ namespace VoicesOfWynn\Controllers\Website\Account;
 
 
 use VoicesOfWynn\Controllers\Website\WebpageController;
-use VoicesOfWynn\Models\User;
-use VoicesOfWynn\Models\UserException;
-use function VoicesOfWynn\Controllers\setcookie;
+use VoicesOfWynn\Models\Website\User;
+use VoicesOfWynn\Models\Website\UserException;
 
 class Login extends WebpageController
 {

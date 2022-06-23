@@ -1,6 +1,6 @@
 <?php
 
-namespace VoicesOfWynn\Models;
+namespace VoicesOfWynn\Models\Website;
 
 class Npc
 {

@@ -4,7 +4,7 @@
 namespace VoicesOfWynn\Controllers\Website\Account;
 
 use VoicesOfWynn\Controllers\Website\WebpageController;
-use VoicesOfWynn\Models\AccountDataValidator;
+use VoicesOfWynn\Models\Website\AccountDataValidator;
 
 class Account extends WebpageController
 {

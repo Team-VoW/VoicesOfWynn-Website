@@ -1,14 +1,17 @@
 <?php
 
-namespace VoicesOfWynn\Models;
+namespace VoicesOfWynn\Models\Website;
+
+use VoicesOfWynn\Models\Db;
 
 class AccountManager
 {
     public function getUsers(): array
     {
-        $userData = Db::fetchQuery('SELECT user_id,picture,display_name,bio FROM user ORDER BY user_id ASC', array(),
+        $db = new Db('Website/DbInfo.ini');
+        $userData = $db->fetchQuery('SELECT user_id,picture,display_name,bio FROM user ORDER BY user_id ASC', array(),
             true);
-        $userRoles = Db::fetchQuery('SELECT user_discord_role.user_id,discord_role.name,discord_role.color,discord_role.weight FROM user_discord_role JOIN discord_role ON discord_role.discord_role_id = user_discord_role.discord_role_id ORDER BY user_id ASC',
+        $userRoles = $db->fetchQuery('SELECT user_discord_role.user_id,discord_role.name,discord_role.color,discord_role.weight FROM user_discord_role JOIN discord_role ON discord_role.discord_role_id = user_discord_role.discord_role_id ORDER BY user_id ASC',
             array(), true);
         
         $users = array();
@@ -51,7 +54,7 @@ class AccountManager
     
     public function getRoles(): array
     {
-        $roles = Db::fetchQuery('SELECT name,color,weight FROM discord_role ORDER BY weight DESC', array(), true);
+        $roles = (new Db('Website/DbInfo.ini'))->fetchQuery('SELECT name,color,weight FROM discord_role ORDER BY weight DESC', array(), true);
         $result = array();
         foreach ($roles as $roleInfo) {
             $result[] = new DiscordRole($roleInfo['name'], $roleInfo['color'], $roleInfo['weight']);

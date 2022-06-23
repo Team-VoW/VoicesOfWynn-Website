@@ -2,8 +2,7 @@
 
 namespace VoicesOfWynn\Controllers\Website;
 
-use VoicesOfWynn\Controllers\Controller;
-use VoicesOfWynn\Models\ContentManager;
+use VoicesOfWynn\Models\Website\ContentManager;
 
 class Cast extends WebpageController
 {

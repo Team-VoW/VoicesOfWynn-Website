@@ -2,8 +2,7 @@
 
 namespace VoicesOfWynn\Controllers\Website;
 
-use VoicesOfWynn\Controllers\Controller;
-use VoicesOfWynn\Models\VersionManager;
+use VoicesOfWynn\Models\Website\VersionManager;
 
 class Downloads extends WebpageController
 {

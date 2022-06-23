@@ -3,7 +3,7 @@
 namespace VoicesOfWynn\Controllers\Website\Administration;
 
 use VoicesOfWynn\Controllers\Website\WebpageController;
-use VoicesOfWynn\Models\ContentManager;
+use VoicesOfWynn\Models\Website\ContentManager;
 
 class Npcs extends WebpageController
 {
