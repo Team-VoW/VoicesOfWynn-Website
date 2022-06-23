@@ -12,7 +12,18 @@
     "authors": [
         {
             "name": "Jan Štěch",
-            "email": "honza.stech@gmail.com"
+            "email": "honza.stech@gmail.com",
+            "role" : "Author, Back-end developer"
+        },
+        {
+          "name": "Timo Angst",
+          "email": "timo.angst@bluewin.ch",
+          "role" : "Full-stack developer"
+        },
+        {
+          "name": "Just5MoreMinutes",
+          "email": "just5moreminutez@gmail.com",
+          "role" : "Front-end developer"
         }
     ]
 }
