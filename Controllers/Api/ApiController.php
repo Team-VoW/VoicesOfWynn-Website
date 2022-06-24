@@ -11,9 +11,9 @@ abstract class ApiController extends Controller
 {
 
     /* All API keys go here */
-    const REPORTING_API_KEY = '';
-    const COLLECTING_API_KEY = '';
-    const UPDATING_API_KEY = '';
+    const REPORTING_API_KEY = 'testing';
+    const COLLECTING_API_KEY = 'testing';
+    const UPDATING_API_KEY = 'testing';
 
     /**
      * Controller constructor enabling output buffering and setting the Content-Type header

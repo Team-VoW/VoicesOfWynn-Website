@@ -7,7 +7,8 @@
       "ext-pdo": "*",
       "ext-mbstring": "*",
       "ext-curl": "*",
-      "ezyang/htmlpurifier": "^4.14"
+      "ezyang/htmlpurifier": "^4.14",
+      "ext-json": "*"
     },
     "authors": [
         {

@@ -58,12 +58,12 @@ class Db
         if (!isset($this->connection)) {
             $this->connect();
         }
-        try {
-            $statement = $this->connection->prepare($query);
-            $result = $statement->execute($parameters);
-        } catch (PDOException $e) {
-            throw new Exception('Database query ['.$query.'] wasn\'t executed successfully.', $e->getCode(), $e);
-        }
+        //try { //Uncomment these lines for debugging purposes, when you need to see the queries causing the errorstry {
+        $statement = $this->connection->prepare($query);
+        $result = $statement->execute($parameters);
+        //} catch (PDOException $e) {
+        //    throw new Exception('Database query ['.$query.'] wasn\'t executed successfully.', $e->getCode(), $e);
+        //}
 		
 		if ($returnLastId) {
 			return $this->connection->lastInsertId();
@@ -74,31 +74,32 @@ class Db
     /**
      * Execute a query that returns some kind of data (suitable for SELECT queries)
      * @param string $query The query to execute, variables to insert need to be replaced with '?'
-     * @param array $parameters Variables that should replaces the '?'s in the query
+     * @param array $parameters Variables that should replace the '?'s in the query
      * @param bool $all TRUE, if multiple lines should be returned, FALSE, if only the first line is needed
+     * @param int $fetchMethod Constant of the PDO object, that will be passed to the fetch(All)() method
      * @return array|false|mixed An associative array containing the query result in case of success, false if no rows
      *     were returned
-     * @throws Exception In case of a database error
+     * @throws PDOException In case of a database error
      */
-    public function fetchQuery(string $query, array $parameters = array(), bool $all = false)
+    public function fetchQuery(string $query, array $parameters = array(), bool $all = false, int $fetchMethod = PDO::ATTR_DEFAULT_FETCH_MODE)
     {
         if (!isset($this->connection)) {
-            self::connect();
+            $this->connect();
         }
-        try {
-            $statement = $this->connection->prepare($query);
-            $statement->execute($parameters);
-        } catch (PDOException $e) {
-            throw new Exception('Database query ['.$query.'] wasn\'t executed successfully.', /*$e->getCode()*/0, $e);
-        }
+        //try { //Uncomment these lines for debugging purposes, when you need to see the queries causing the errors
+        $statement = $this->connection->prepare($query);
+        $statement->execute($parameters);
+        //} catch (PDOException $e) {
+        //    throw new Exception('Database query ['.$query.'] wasn\'t executed successfully.', /*$e->getCode()*/0, $e);
+        //}
         
         if ($statement->rowCount() === 0) {
             return false;
         }
         if ($all) {
-            return $statement->fetchAll();
+            return $statement->fetchAll($fetchMethod);
         } else {
-            return $statement->fetch();
+            return $statement->fetch($fetchMethod);
         }
     }
     

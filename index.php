@@ -45,11 +45,16 @@ if ($result >= 400) {
     $errorController = new $errorControllerName();
     $errorController->process(array($router->isWebpageRequest));
 
-    $website = $errorController->getResult();
+    if ($router->isWebpageRequest) {
+        $website = $errorController->getResult();
+    }
+    else {
+        $website = '';
+    }
 }
 else if ($result === 204) {
     //Don't render any views, simply don't echo anything into the response body
-    //This is mostly used for AJAX calles
+    //This is mostly used for AJAX calls
     $website = '';
 }
 else {

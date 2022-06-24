@@ -22,7 +22,7 @@ class Router extends Controller
 	 */
 	public function process(array $args): int
 	{
-		$requestedUrl = $args[0];
+		$requestedUrl = strtok($args[0], '?'); //Remove the query string
 		
 		//Separate variables from the URL
 		$urlArguments = explode('/', $requestedUrl);

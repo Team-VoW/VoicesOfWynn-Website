@@ -182,7 +182,7 @@ class User
         
         try {
             $result = (new Db('Website/DbInfo.ini'))->executeQuery($query, $parameters);
-        } catch (\Exception $e) {
+        } catch (PDOException $e) {
             return false;
         }
         
