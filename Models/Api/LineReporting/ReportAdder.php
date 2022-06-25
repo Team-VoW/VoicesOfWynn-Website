@@ -8,7 +8,7 @@ use VoicesOfWynn\Models\Db;
 class ReportAdder
 {
 
-    const ANONYMOUS_REPORT_NAME_INDICATOR = "Anonymous";
+    const ANONYMOUS_REPORT_NAME_INDICATOR = "anonymous";
 
     /**
      * Processing method for a request creating a new report
