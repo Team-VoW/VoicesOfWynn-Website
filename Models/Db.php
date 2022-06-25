@@ -10,6 +10,14 @@ use PDOException;
 
 class Db
 {
+    /**
+     * Associative array with all active PDO connections to prevent from creating many duplicate objects.
+     * Keys are in the format of "[database name]_[user name]" (without "[]")
+     * Values are the PDO objects themselves
+     * @var array
+     */
+    private static array $connections = array();
+
     private string $host;
     private string $database;
     private string $username;
@@ -19,7 +27,7 @@ class Db
         PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8",
         PDO::ATTR_EMULATE_PREPARES => false
     );
-    
+
     private PDO $connection;
 
     public function __construct($credentialsFilePath) {
@@ -35,15 +43,30 @@ class Db
      */
     private function connect()
     {
+        if (isset(self::$connections[$this->database.'_'.$this->username])) {
+            //Connection to this database with this account already exists, we'll just copy a reference to it
+            $this->connection = self::$connections[$this->database.'_'.$this->username];
+            return true;
+        }
+
         try {
-            $this->connection = new PDO('mysql:host='.$this->host.';dbname='.$this->database, $this->username,
-                $this->password, $this->settings);
+            $this->connection = new PDO('mysql:host='.$this->host.';dbname='.$this->database, $this->username, $this->password, $this->settings);
+            self::$connections[$this->database.'_'.$this->username] = $this->connection; //Save the connection for later use
         } catch (PDOException $e) {
             return false;
         }
         return true;
     }
-    
+
+    /**
+     * Method closing all existing PDO connections by destroying the references to their objects
+     * @return void
+     */
+    public function closeAllConnections(): void
+    {
+        self::$connections = array();
+    }
+
     /**
      * Execute a query that doesn't return any data (suitable for INSERT, UPDATE and DELETE queries)
      * @param string $query The query to execute, variables to insert need to be replaced with '?'
@@ -64,13 +87,13 @@ class Db
         //} catch (PDOException $e) {
         //    throw new Exception('Database query ['.$query.'] wasn\'t executed successfully.', $e->getCode(), $e);
         //}
-		
+
 		if ($returnLastId) {
 			return $this->connection->lastInsertId();
 		}
         return $result;
     }
-    
+
     /**
      * Execute a query that returns some kind of data (suitable for SELECT queries)
      * @param string $query The query to execute, variables to insert need to be replaced with '?'
@@ -84,15 +107,17 @@ class Db
     public function fetchQuery(string $query, array $parameters = array(), bool $all = false, int $fetchMethod = PDO::ATTR_DEFAULT_FETCH_MODE)
     {
         if (!isset($this->connection)) {
+            echo "Connectiong to the database";
             $this->connect();
         }
+
         //try { //Uncomment these lines for debugging purposes, when you need to see the queries causing the errors
         $statement = $this->connection->prepare($query);
         $statement->execute($parameters);
         //} catch (PDOException $e) {
         //    throw new Exception('Database query ['.$query.'] wasn\'t executed successfully.', /*$e->getCode()*/0, $e);
         //}
-        
+
         if ($statement->rowCount() === 0) {
             return false;
         }
@@ -102,5 +127,5 @@ class Db
             return $statement->fetch($fetchMethod);
         }
     }
-    
+
 }
