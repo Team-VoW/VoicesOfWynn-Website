@@ -20,17 +20,17 @@ class LineReporter extends ApiController
 
         switch ($args[0]) {
             case 'newUnvoicedLineReport':
-                $this->newReport();
+                return $this->newReport();
             case 'listUnvoicedLineReport':
-                $this->getUnvoicedLines();
+                return $this->getUnvoicedLines();
             case 'getRaw':
-                $this->getRawReportInfo();
+                return $this->getRawReportInfo();
             case 'updateReportStatus':
-                $this->updateReportStatus();
+                return $this->updateReportStatus();
             case 'resetForwarded':
-                $this->resetForwardedLines();
+                return $this->resetForwardedLines();
             case 'getAcceptedReports':
-                $this->getAcceptedLines();
+                return $this->getAcceptedLines();
             default:
                 return 400;
         }
