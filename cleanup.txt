@@ -9,7 +9,7 @@ well fuck.... that are more than expected heh
 
 __________________ CSS __________________
 
-account.css         -       not started
+account.css         -       finished
 accounts.css        -       not started
 administration.css  -       not started
 base.css            -       ditched *
@@ -30,7 +30,7 @@ downloads.css       -       finished            (new)
 
 ________________ (P)HTML ________________
 
-account.phtml       -       not started
+account.phtml       -       finished
 accounts.phtml      -       not started
 administration.phtml-       not started
 base.phtml          -       finished
