@@ -371,7 +371,32 @@ br { margin-top: 2rem; }
 .content { width: 100%; }
 
                 /* ----- SPECIAL STYLES FOR INDEX.PHTML ----- */
+        .downloadbtn { background: #26e94c; }
+        .downloadbtn:hover { border-color: #23d847;  }
 
+        .discordbtn { background: #5662F6;}
+        .discordbtn:hover { border-color: #656ffd; }
+
+        .creditsbtn { background: #AB5DFC; }
+        .creditsbtn:hover { border-color:#b16afd; }
+
+        .faqbtn { background: rgb(47, 104, 0); }
+        .faqbtn:hover { border-color: rgb(56, 99, 22); }
+
+        .contentsbtn { background: rgb(21, 220, 255); }
+        .contentsbtn:hover { border-color: rgb(103, 232, 255); }
+
+        .patreonbtn { background: #ffa599; }
+        .patreonbtn:hover { border-color: #ffb5aa; }
+
+        .loginbtn { background: #FFD751; }
+        .loginbtn:hover { border-color: #fadb76; }
+
+        .logoutbtn { background: rgb(255, 83, 83); }
+        .logoutbtn:hover { border-color: rgb(255, 131, 131); }  
+
+        .adminbtn { background: rgb(255, 146, 45); }
+        .adminbtn:hover { border-color: rgb(255, 176, 102); }
 
 /*                                                                */
 /* _________________________ RESPONSIVE _________________________ */

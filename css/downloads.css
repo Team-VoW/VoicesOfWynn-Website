@@ -29,8 +29,3 @@ confusing
     border: none;
     font-size: 20px;
 }
-
-
-    /* button */
-.downloadbtn { background: #26e94c; }
-.downloadbtn:hover { border-color: #23d847;  }

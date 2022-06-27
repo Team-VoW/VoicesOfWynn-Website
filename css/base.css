@@ -159,12 +159,6 @@ textarea { font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sa
 }
 
 /* buttons */
-.discordbtn { background: #5662F6;}
-.discordbtn:hover { border-color: #656ffd; }
-.creditsbtn { background: #AB5DFC; }
-.creditsbtn:hover { border-color:#b16afd; }
-.patreonbtn { background: #ffa599; }
-.patreonbtn:hover { border-color: #ffb5aa; }
 .backbtn {
     background: rgb(0, 107, 48);
     color: white;
@@ -173,22 +167,13 @@ textarea { font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sa
     border-color: rgb(51, 122, 83);
     color: white;
 }
-.contentsbtn { background: rgb(21, 220, 255); }
-.contentsbtn:hover { border-color: rgb(103, 232, 255); }
-.loginbtn { background: #FFD751; }
-.loginbtn:hover { border-color: #fadb76; }
-.logoutbtn { background: rgb(255, 83, 83); }
-.logoutbtn:hover { border-color: rgb(255, 131, 131); }
-.adminbtn { background: rgb(255, 146, 45); }
-.adminbtn:hover { border-color: rgb(255, 176, 102); }
 .clearbiobtn { background: rgb(247, 225, 32);}
 .clearbiobtn:hover { border-color: rgb(211, 195, 50);}
 .clearavatarbtn { background: rgb(255, 127, 0);}
 .clearavatarbtn:hover { border-color: rgb(214, 133, 53);}
 .deletebtn { background: rgb(255, 0, 0);}
 .deletebtn:hover { border-color: rgb(221, 55, 55);}
-.faqbtn { background: rgb(47, 104, 0); }
-.faqbtn:hover { border-color: rgb(56, 99, 22); }
+
 /* upvote/downvote/comment */
 /* Styles for upvotes and downvotes have been moved to voting.css */
 
