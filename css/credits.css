@@ -134,9 +134,55 @@ a:hover .roles {
 
 /* below will be expanded soon */
 @media (max-width: 1000px) {
-    .card {
-        width: 100%;
+    .row .col-3 {
+        flex: 0 0 25%;
     }
+    .card {
+        position: absolute;
+        z-index: 2;
+    
+        display: inline-block;
+        overflow: hidden;
+        margin: .5rem 0;
+        padding: .5rem 1rem 0.5rem; 
+        width: auto;
+    
+        font-family: Georgia, 'Times New Roman', Times, serif;
+        text-align: center;
+    
+        cursor: default;
+    
+        border-radius: .3rem;
+    
+        box-shadow: .1rem .1rem .4rem 0 #777;
+        background: aliceblue;
+    
+        min-height: auto;
+        max-height: fit-content;
+        min-width: 175px;
+        max-width: 175px;
+    }
+    .cardwrapper {
+        width: 5%;
+        margin-bottom: .625rem;
+        height: 400px;
+        display: flex;
+        justify-content: center;
+        margin-right: 9.375rem;
+    }
+    .roles {
+        display: block;
+        overflow: visible;
+    }
+        .roles li {
+            display: block;
+        }
+    .avatar {
+        min-width: 120px;
+        max-width: 120px;
+        border-radius: .3rem;
+    }
+    
 }
 
 
