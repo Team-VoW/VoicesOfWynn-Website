@@ -25,14 +25,13 @@
 </head>
 
 <body>
-<!-- <center> -->
     <main>
-    <div class="header0">
+    <div class="header">
         <ul class="nav">
-            <div style="float: left">
-                <li><a style="border-left: none"href="/"> Home </a></li>
+            <div class="f-l">
+                <li><a href="/"> Home </a></li>
                 <li><a href="/downloads"> Downloads </a></li>
-                <li><a style="border-right: none" href="/faq">FAQ </a></li>
+                <li><a href="/faq">FAQ </a></li>
             
                     <li><a target='_blank' rel="noopener" href="https://www.patreon.com/Voices_Of_Wynn"><img src="images/patreon.png" alt="Patreon logo" width="20px" height="20px"/> Patreon</a></li>
                     <li><a style="border-right: none" target='_blank' rel="noopener" href="https://discord.gg/kuEK3XH4Y5"><img src="images/discord.png" alt="Discord logo" width="20px" height="20px"/> Discord</a></li>
@@ -47,10 +46,9 @@
         <?php require $this->getNextView(); ?>
     </div>
     </main>
-<!-- </center> -->
-    <footer style="font-weight: bolder;">
-        <span id="about">Coded by &copy; <a href="https://github.com/ShadyMedic" target="_blank">Shady</a>, <?= ${basename(__FILE__, '.phtml').'_currentYear'} ?></span>
-        <span style="float: right"> designed with &hearts; by <a href="https://github.com/Just5MoreMinutes" target="_blank">Just5MoreMinutes</a><!-- temporary link till I can pay for my domain & host (◡︵◡) --> and <a href="https://github.com/t-d3v" target="_blank">TD3V</a></span> 
+    <footer class="fw-bb">
+        <span>Coded by &copy; <a href="https://github.com/ShadyMedic" target="_blank">Shady</a>, <?= ${basename(__FILE__, '.phtml').'_currentYear'} ?></span>
+        <span class="f-r"> designed with &hearts; by <a href="https://github.com/Just5MoreMinutes" target="_blank">Just5MoreMinutes</a><!-- temporary link till I can pay for my domain & host (◡︵◡) --> and <a href="https://github.com/t-d3v" target="_blank">TD3V</a></span> 
     </footer>
     <!-- JavaScript -->
     <?php foreach (self::$jsFiles as $jsFile) : ?>

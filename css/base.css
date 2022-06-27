@@ -151,12 +151,6 @@ textarea { font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sa
 /* logo */
 .header0 .imglink:hover { background: none; }
 .imglink {z-index: 1;}
-#vertical {
-    border-left: 2px solid #333;
-    height: 100px;
-    margin-top: auto;
-    margin-bottom: auto;
-}
 
 /* buttons */
 .backbtn {

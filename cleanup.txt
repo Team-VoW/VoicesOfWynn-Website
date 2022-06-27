@@ -33,7 +33,7 @@ ________________ (P)HTML ________________
 account.phtml       -       not started
 accounts.phtml      -       not started
 administration.phtml-       not started
-base.phtml          -       not started
+base.phtml          -       finished
 cast.phtml          -       finished
 comments.phtml      -       finished
 contents.phtml      -       finished

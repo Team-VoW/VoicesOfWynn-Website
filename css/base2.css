@@ -358,9 +358,13 @@ br { margin-top: 2rem; }
 .arial { font-family: Arial, Helvetica, sans-serif; }
 .monospace { font-family: monospace; }
 
-        /* font sizes */
+        /* font sizes & wieghts*/
 .default-font-size { font-size: 1rem; }
 .large-font-size { font-size: 1.375rem; }
+
+.fw-b { font-weight: bold; }
+.fw-bb{ font-weight: bolder; }
+.fw-ll{ font-weight: lighter; }
 
 
 
@@ -369,6 +373,8 @@ br { margin-top: 2rem; }
 
         /* content */
 .content { width: 100%; }
+
+
 
                 /* ----- SPECIAL STYLES FOR INDEX.PHTML ----- */
         .downloadbtn { background: #26e94c; }
@@ -397,6 +403,60 @@ br { margin-top: 2rem; }
 
         .adminbtn { background: rgb(255, 146, 45); }
         .adminbtn:hover { border-color: rgb(255, 176, 102); }
+
+
+        
+                /* ----- SPECIAL STYLES FOR BASE.PHTML ----- */
+        .header {
+                margin-top: 50px;
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                float: left;
+                width: 100%;
+                height: auto;
+                flex-wrap: wrap;
+        }
+        .nav {
+                padding: 10px;
+                margin: auto;
+                float: left;
+                width: auto;
+        }
+        .nav li {
+                float: left;
+                flex: 6 0 21%;
+                list-style: none;
+                text-decoration: none;
+        }
+        .nav li a {
+                float: left;
+                color: #333;
+                padding: 6px 20px;
+                text-decoration: none;
+                font-size: 18px;
+                border-radius: 4px;
+        }
+        .nav li a:hover {
+                background-color: #333;
+                color: white;
+                transform: translateY(-2px);
+                box-shadow: .1rem .1rem .4rem 0 #777;
+        }
+        .adminNav {
+                float: right;
+                padding-left: 800px;
+        }
+
+        #vertical {
+                border-left: 2px solid #333;
+                height: 100px;
+                margin-top: auto;
+                margin-bottom: auto;
+        }
+
+
+
 
 /*                                                                */
 /* _________________________ RESPONSIVE _________________________ */
