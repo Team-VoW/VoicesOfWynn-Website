@@ -42,7 +42,7 @@ downloads.phtml     -       finished
 error403.phtml      -       finished
 error404.phtml      -       finished
 faq.phtml           -       finished
-index.phtml         -       not started
+index.phtml         -       finished
 login.phtml         -       not started
 new-account.phtml   -       not started
 npc.phtml           -       not started

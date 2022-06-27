@@ -1,93 +1,90 @@
-<div id="vowi">
   <h1>Voices of Wynn</h1>
-    <p class="text-center">
+    <p class="txt-c">
         Do you want a more immersive Wynncraft experience? Are you tired of having to read dialogue while doing quests? Then Voices of Wynn is the mod for you! It adds voice acting for all 130+ quests in Wynncraft and more! You can download the mod below to the left, or join the Discord community below to the right!
     </p>
-    <p class="text-center">
+    <p class="txt-c">
         <a href="/files/mod/latest.jar"><button class="downloadbtn"><img src="images/download.png" alt="Download icon" class="buttonicon" /> Try it now! It's free!</button></a>
         <a href="https://discord.gg/kuEK3XH4Y5" target="_blank"><button class="discordbtn"><img src="images/discord.png" alt="Discord logo" class="buttonicon" /> Join our community!</button></a>
     </p>
-    <hr>
+    <hr class="hr-f">
     <h2>Credits</h2>
-    <p class="text-center">
+    <p class="txt-c">
         A lot of great people have put tons of effort into the Voices of Wynn mod. Take a minute to appreciate their work!<br>
     </p>
-    <p class="text-center">
+    <p class="txt-c">
         <a href="/credits"><button class="creditsbtn">💜 Credits</button></a>
     </p>
-    <hr>
+    <hr class="hr-f">
     <h2>Trailer & Teaser</h2>
-    <p class="text-center">
+    <p class="txt-c">
         Do you want a taste of the Voices of Wynn experience? Check out our teaser and trailer below!
     </p>
-    <p class="text-center">
+    <p class="txt-c">
         <iframe src="https://www.youtube.com/embed/RIeDziFpoWI" allowfullscreen></iframe>
         <iframe src="https://www.youtube.com/embed/7xkl_dOVkUI" allowfullscreen></iframe>
     </p>
 
-    <div class="mobilenav">
-        <hr>
+        <hr class="hr-f">
         <h2>FAQ</h2>
-        <p class="text-center">
+        <p class="txt-c">
             Do you have any unanswered questions? Check out the FAQ!
         </p>
-        <p class="text-center">
-            <a href="/faq"><button class="faqbtn"><b style="font-size: 22px; font-family: Arial;">? </b>FAQ</button></a>
+        <p class="txt-c">
+            <a href="/faq"><button class="faqbtn"><b class="arial large-font-size">? </b>FAQ</button></a>
         </p>
-    </div>
 
-    <hr>
+
+    <hr class="hr-f">
     <h2>What's in the Box?</h2>
-    <p class="text-center">
+    <p class="txt-c">
         Do you want to know who your favorite NPCs were voiced by? Want to listen to specific voice lines without having to create a whole new character? All the voiced NPCs and their voice actors are listed here. Give the voice actors some love!
     </p>
-    <p class="text-center">
+    <p class="txt-c">
         <a href="/contents"><button class="contentsbtn"><img src="images/contents0.png" alt="Contents" class="buttonicon" /> Mod Contents</button></a>
     </p>
-    <hr>
+    <hr class="hr-f">
     <h2>Show Some Love</h2>
-    <p class="text-center">
+    <p class="txt-c">
         Would you like to help keep this mod running and support the team? Feel free to become one of our spectacular Patrons and claim cool perks!
     </p>
-    <p class="text-center">
+    <p class="txt-c">
         <a href="https://www.patreon.com/Voices_Of_Wynn" target="_blank"><button class="patreonbtn"><img src="images/patreon.png" alt="Patreon icon" class="buttonicon" /> Become a Patron!</button></a>
     </p>
-    <hr>
+    <hr class="hr-f">
     <h2>Support</h2>
-    <p class="text-center">
+    <p class="txt-c">
         Need some help? Want to report a bug or suggest a feature? Our staff and community are always willing to give assistance on our discord!
     </p>
-    <p class="text-center">
+    <p class="txt-c">
         <a href="/downloads"><button class="downloadbtn"><img src="images/download.png" alt="Download icon" class="buttonicon"/> How to download</button></a>
     </p>
-    <hr>
+    <hr class="hr-f">
     
     <h2>Login</h2>
-    <p class="text-center">
+    <p class="txt-c">
         Are you a contributor? Make sure to log into your account!
     </p>
-    <p class="text-center">
+    <p class="txt-c">
         <?php if (!isset($_SESSION['user'])) : ?>
-            <a href="/login" style="display: contents;">
-                <button class="loginbtn w-25">
+            <a href="/login" class="display-contents">
+                <button class="loginbtn width-25">
                     <img src="images/user.png" alt="login icon" class="buttonicon"/>
                     Login
                 </button>
             </a>
         <?php else : ?>
-            <a href="/logout" style="display: contents;">
-                <button class="logoutbtn w-25">
+            <a href="/logout" class="display-contents">
+                <button class="logoutbtn width-25">
                     Logout
                 </button>
             </a>
-            <a href="/account" style="display: contents;">
-                <button class="adminbtn w-25">My Account</button>
+            <a href="/account" class="display-contents">
+                <button class="adminbtn width-25">My Account</button>
             </a>
             <?php if ($_SESSION['user']->isSysAdmin()) : ?>
-                <a href="/administration" style="display: contents;">
+                <a href="/administration" class="display-contents">
                     <button class="adminbtn w-25">Administration</button>
                 </a>
             <?php endif ?>
         <?php endif ?>
     </p>
-</div>

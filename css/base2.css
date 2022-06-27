@@ -30,7 +30,6 @@ _______________ CONTENTS _______________
 
         /* body styling, default layout */
 body { 
-    zoom: 90%; 
     margin: auto;                                                                   /* classless.css */
 	max-width: 50rem; 
 	padding: 2rem 0.5rem 0rem; 
@@ -345,6 +344,24 @@ br { margin-top: 2rem; }
 
         /* widths */
 .max-width { width: 100%; }
+.width-25 { width: 25%; }
+.width-50 { width: 50%; }
+.width-75 { width: 75%; }
+
+        /* display types */
+.display-block { display: block; }
+.display-contents { display: contents; }
+.display-flex { display: flex; }
+
+        /* fonts */
+.default-font { font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif; }
+.arial { font-family: Arial, Helvetica, sans-serif; }
+.monospace { font-family: monospace; }
+
+        /* font sizes */
+.default-font-size { font-size: 1rem; }
+.large-font-size { font-size: 1.375rem; }
+
 
 
 /* ---- 2.3) specific specifc classes (yikes) ---- */
@@ -353,13 +370,7 @@ br { margin-top: 2rem; }
         /* content */
 .content { width: 100%; }
 
-        /* fonts */
-.default-font { font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif; }
-.arial { font-family: Arial, Helvetica, sans-serif; }
-.monospace { font-family: monospace; }
-
-
-
+                /* ----- SPECIAL STYLES FOR INDEX.PHTML ----- */
 
 
 /*                                                                */
