@@ -352,6 +352,7 @@ br { margin-top: 2rem; }
 .display-block { display: block; }
 .display-contents { display: contents; }
 .display-flex { display: flex; }
+.display-none { display: none; }
 
         /* fonts */
 .default-font { font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif; }
