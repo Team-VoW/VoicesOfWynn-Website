@@ -153,14 +153,6 @@ textarea { font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sa
 .imglink {z-index: 1;}
 
 /* buttons */
-.backbtn {
-    background: rgb(0, 107, 48);
-    color: white;
-}
-.backbtn:hover {
-    border-color: rgb(51, 122, 83);
-    color: white;
-}
 .clearbiobtn { background: rgb(247, 225, 32);}
 .clearbiobtn:hover { border-color: rgb(211, 195, 50);}
 .clearavatarbtn { background: rgb(255, 127, 0);}
@@ -231,11 +223,6 @@ textarea:focus, input:focus {
 /* downloads */
 
 /* account stuff */
-.newaccform {
-    display: inline-block;
-    margin-left: auto;
-    margin-right: auto;
-}
 .acctable {
     min-width: min-content;
 }

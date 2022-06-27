@@ -44,7 +44,7 @@ error404.phtml      -       finished
 faq.phtml           -       finished
 index.phtml         -       finished
 login.phtml         -       finished
-new-account.phtml   -       not started
+new-account.phtml   -       finished
 npc.phtml           -       not started
 npcs.phtml          -       not started
 

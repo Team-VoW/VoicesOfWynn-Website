@@ -366,6 +366,10 @@ br { margin-top: 2rem; }
 .fw-bb{ font-weight: bolder; }
 .fw-ll{ font-weight: lighter; }
 
+        /* linebreaks */
+.lb-b::before { content: "\a"; white-space: pre; }
+.lb-a::after  { content: "\a"; white-space: pre; }
+
         /* colors */
 .error-color { color: rgb(255, 83, 83); }
                         /* will be extended further at some point... might be useful idk
@@ -379,6 +383,10 @@ br { margin-top: 2rem; }
 
         /* content */
 .content { width: 100%; }
+
+        /* back */
+.backbtn { background: rgb(0, 107, 48);color: white; }
+.backbtn:hover {border-color: rgb(51, 122, 83);color: white; }
 
 
 
@@ -464,7 +472,17 @@ br { margin-top: 2rem; }
 
 
                 /* ----- SPECIAL STYLES FOR LOGIN.PHTML ----- */
-        .login-form { border-right: none; border-left: none; border-top: none; }
+        .login-form:not(.submit) { border-right: none; border-left: none; border-top: none; min-width: 15rem; }
+        .submit { border-right: none; border-left: none; border-top: none; }
+
+
+
+                /* ----- SPECIAL STYLES FOR NEW-ACCOUNT.PHTML ----- */
+        .newaccform {
+                display: inline-block;
+                margin-left: auto;
+                margin-right: auto;
+        }
 /*                                                                */
 /* _________________________ RESPONSIVE _________________________ */
 /*                                                                */

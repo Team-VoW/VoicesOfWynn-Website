@@ -1,8 +1,8 @@
 <h1 class="mb-l">Voice actor login</h1>
 <div class="txt-c display-block" >
 <form method="post" class="newaccform">
-    <label for="name" class="mb-l">E-mail or Username</label>
-    <input class="login-form mb-d
+    <label for="name" class="mb-l lb-a">E-mail or Username</label>
+    <input class="login-form mb-d"
            size="35" maxlenght="200"
            id="name" type="text" 
            name="name" value="<?= ${basename(__FILE__, '.phtml').'_username'} ?>" 
@@ -12,7 +12,7 @@
     ?>disabled <?php
     endif ?>/>
 
-    <label for="password" class="mb-l"><br>Password<br></label>
+    <label for="password" class="mb-l lb-b lb-a">Password</label>
     <input class="login-form mb-d"
            size="35" maxlenght="200"
            id="password" type="password" 
@@ -28,9 +28,9 @@
         <label for="new-password">New Password</label>
         <input id="new-password" type="password" name="newPassword" />
     <?php endif ?>
-    <div class="txt-c mb-d error-color"><i><?= ${basename(__FILE__, '.phtml').'_error'} ?></i></div>
+    <div class="txt-c error-color"><i><?= ${basename(__FILE__, '.phtml').'_error'} ?></i></div>
     <input 
-        class="login-form"
+        class="login-form submit"
         size="20"
         type="submit" value="Login"/>
 </form>
