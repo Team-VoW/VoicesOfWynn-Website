@@ -25,7 +25,7 @@ _______________ CONTENTS _______________
 
 
         /*  */
-:root { font: 13pt 'Open Sherif', sans-serif; line-height: 1.5; color: #424456; } /* classless.css */
+:root { font: 13pt default-font-face, sans-serif; line-height: 1.5; color: #424456; } /* classless.css */
 * {box-sizing: border-box; border-spacing: 0;}                                      /* classless.css */
 
         /* body styling, default layout */
@@ -107,7 +107,7 @@ h5 { font-size: 1.2em; font-weight: 400; margin-top: 0.5em; color: #777; }      
 h6 { font-size: 1.0em; font-weight: 700; }                                          /* classless.css */
 
         /* paragraphs */
-p { font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif; }
+p { font-family: default-font-face; }
 p strong { color: #424456; font-weight: bold; font-size: 1.0rem; }
 
         /* smaller text types (small, sub, sup) */
@@ -555,4 +555,10 @@ br { margin-top: 2rem; }
 @font-face {
 	font-family: minecraft;
 	src: url(../fonts/Minecraftia-Regular.ttf);
+}
+
+
+@font-face {
+        font-family: default-font-face;
+        src: url(../fonts/Outfit-ExtraLight.ttf);
 }
