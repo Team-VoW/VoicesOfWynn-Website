@@ -366,6 +366,12 @@ br { margin-top: 2rem; }
 .fw-bb{ font-weight: bolder; }
 .fw-ll{ font-weight: lighter; }
 
+        /* colors */
+.error-color { color: rgb(255, 83, 83); }
+                        /* will be extended further at some point... might be useful idk
+                           if there is no use it'll be removed ofc
+                        */
+
 
 
 /* ---- 2.3) specific specifc classes (yikes) ---- */
@@ -405,7 +411,7 @@ br { margin-top: 2rem; }
         .adminbtn:hover { border-color: rgb(255, 176, 102); }
 
 
-        
+
                 /* ----- SPECIAL STYLES FOR BASE.PHTML ----- */
         .header {
                 margin-top: 50px;
@@ -457,7 +463,8 @@ br { margin-top: 2rem; }
 
 
 
-
+                /* ----- SPECIAL STYLES FOR LOGIN.PHTML ----- */
+        .login-form { border-right: none; border-left: none; border-top: none; }
 /*                                                                */
 /* _________________________ RESPONSIVE _________________________ */
 /*                                                                */

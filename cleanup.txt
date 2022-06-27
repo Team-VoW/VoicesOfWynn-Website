@@ -43,7 +43,7 @@ error403.phtml      -       finished
 error404.phtml      -       finished
 faq.phtml           -       finished
 index.phtml         -       finished
-login.phtml         -       not started
+login.phtml         -       finished
 new-account.phtml   -       not started
 npc.phtml           -       not started
 npcs.phtml          -       not started
