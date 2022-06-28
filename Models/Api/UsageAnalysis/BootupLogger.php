@@ -6,8 +6,8 @@ use VoicesOfWynn\Models\Db;
 
 class BootupLogger
 {
-    private const MINIMUM_DELAY_BETWEEN_PINGS_BY_IP = 3600; //Seconds that must pass between pings from one IP to be recorded
-    private const MINIMUM_DELAY_BETWEEN_PINGS_BY_UUID = 86400; //Seconds that must pass between pings from one player to be recorded
+    public const MINIMUM_DELAY_BETWEEN_PINGS_BY_IP = 3600; //Seconds that must pass between pings from one IP to be recorded
+    public const MINIMUM_DELAY_BETWEEN_PINGS_BY_UUID = 86400; //Seconds that must pass between pings from one player to be recorded
 
     public function logBootup(string $playerUUID, string $playerIp) {
         $db = new Db('Api/UsageAnalysis/DbInfo.ini');
