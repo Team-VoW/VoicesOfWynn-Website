@@ -41,7 +41,7 @@ class Db
     /**
      * Database wrapper method connecting to the database.
      */
-    private function connect()
+    private function connect(): bool
     {
         if (isset(self::$connections[$this->database.'_'.$this->username])) {
             //Connection to this database with this account already exists, we'll just copy a reference to it
@@ -104,10 +104,9 @@ class Db
      *     were returned
      * @throws PDOException In case of a database error
      */
-    public function fetchQuery(string $query, array $parameters = array(), bool $all = false, int $fetchMethod = PDO::ATTR_DEFAULT_FETCH_MODE)
+    public function fetchQuery(string $query, array $parameters = array(), bool $all = false, int $fetchMethod = PDO::FETCH_ASSOC)
     {
         if (!isset($this->connection)) {
-            echo "Connectiong to the database";
             $this->connect();
         }
 
