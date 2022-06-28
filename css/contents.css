@@ -6,7 +6,7 @@ styling for contents page
 
 
 
-#results { display: none; }		/* NOTE TO SELF: check if this is connected to js cuz searchbar is a thing */
+#results { display: none; }
 
 
 
@@ -148,5 +148,29 @@ styling for contents page
 	.q-voice {
 		height: 350px;
 		width: 350px;
+	}
+
+
+
+	@media (min-width: 37.5rem) {
+		.row {
+			display: flex;
+			align-items: stretch;
+			justify-content: center;
+		}
+		.card-wrapper {
+			display: flex;
+			flex-direction: row;
+			justify-content: center;
+		
+			padding-top: .6rem;
+		}
+		.q-voice {
+			width: auto;
+			min-width: 100px;
+			max-width: calc(50rem / 3 - 0.5rem - 1rem);
+			min-height: 200px;
+			max-height: fit-content;
+		}	
 	}
 }
