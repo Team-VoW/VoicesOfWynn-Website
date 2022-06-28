@@ -106,7 +106,7 @@ td a {
 
 .upvote:hover, .downvote:hover {
     /* Cancel the "prompting" hover effect that is defaultly applied to all buttons */
-    transform: translateY(0);
+    transform: translateY(-5px);
 }
 .clicked {
     border-style: inset;
@@ -117,4 +117,37 @@ td a {
 }
 .downvote.clicked {
     background: rgb(171, 81, 81);
+}
+
+
+
+
+
+
+
+
+@media (max-width: 62.5rem) {
+    .the-recording {
+        display: flex;
+        justify-content: center;
+        position: relative;
+        margin-bottom: 15px;
+    }
+    .voting-buttons {
+        display: inline;
+        margin-right: 15px;
+        margin-left: 12px;
+    }
+    .line-count {
+        display: block;
+        width: 100%;
+        text-align: center;
+    }
+    .mobile-hr {
+        display: block;
+    }
+    .voting-audio-box {
+        display: table;
+        margin-bottom: 70px;
+    }
 }

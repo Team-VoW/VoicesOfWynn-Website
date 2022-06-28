@@ -1,24 +1,24 @@
 <?php foreach (${basename(__FILE__, '.phtml').'_quests'} as $quest) : ?>
 <section>
-	<h3 style="text-align: center;"><?= $quest->getName() ?></h3>
+	<h3 class="txt-c"><?= $quest->getName() ?></h3>
 	<table class="table-npc-management">
 		<tr>
 			<th></th><th></th><th colspan="2">Voice actor</th><th></th>
 		</tr>
 	<?php foreach ($quest->getNpcs() as $npc) : ?>
 		<tr>
-			<td style="min-width: 150px; max-width: 150px;"><img src="dynamic/npcs/<?= $npc->getId() ?>.png" alt="NPC picture" class="avatar" /></td>
-			<td style="min-width: 150px; max-width: 150px;"><?= $npc->getName() ?></td>
+			<td class="width-150"><img src="dynamic/npcs/<?= $npc->getId() ?>.png" alt="NPC picture" class="avatar" /></td>
+			<td class="width-150"><?= $npc->getName() ?></td>
 			<?php if ($npc->getVoiceActor() === null) : ?>
-                <td style="min-width: 150px; max-width: 150px;"><img class="avatar" src="dynamic/avatars/nobody.png" alt="Profile picture"/></td>
-				<td style="min-width: 150px; max-width: 150px;"><i>Nobody</i></td>
+                <td class="width-150"><img class="avatar" src="dynamic/avatars/nobody.png" alt="Profile picture"/></td>
+				<td class="width-150"><i>Nobody</i></td>
 			<?php else : ?>
-                <td style="min-width: 150px; max-width: 150px;"><img class="avatar" src="dynamic/avatars/<?= $npc->getVoiceActor()->getAvatarLink() ?>" alt="Profile picture"/></td>
-				<td style="min-width: 150px; max-width: 150px;"><a href="cast/<?= $npc->getVoiceActor()->getId() ?>"><?= $npc->getVoiceActor()->getName() ?></a></td>
+                <td class="width-150"><img class="avatar" src="dynamic/avatars/<?= $npc->getVoiceActor()->getAvatarLink() ?>" alt="Profile picture"/></td>
+				<td class="width-150"><a href="cast/<?= $npc->getVoiceActor()->getId() ?>"><?= $npc->getVoiceActor()->getName() ?></a></td>
 			<?php endif ?>
-			<td><a id="managelink" href="administration/npcs/manage/<?= $npc->getId() ?>" style="min-width: 150px; max-width: 150px;">Manage</a></td>
+			<td><a id="managelink" href="administration/npcs/manage/<?= $npc->getId() ?>" class="width-150">Manage</a></td>
 		</tr>
 	<?php endforeach ?>
-	</table><hr>
+	</table><hr class="hr-f">
 </section>
 <?php endforeach ?>

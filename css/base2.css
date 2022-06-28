@@ -311,6 +311,7 @@ br { margin-top: 2rem; }
 .hr-l { min-width: 55%; }
 .hr-e { min-width: 75%; }
 .hr-f { min-width: 95%; }
+.mobile-hr { display: none !important; }
 
         /* floats */
 .f-r { float: right; }
@@ -347,6 +348,7 @@ br { margin-top: 2rem; }
 .width-25 { width: 25%; }
 .width-50 { width: 50%; }
 .width-75 { width: 75%; }
+.width-150 { min-width: 150px; max-width: 150px; }
 
         /* display types */
 .display-block { display: block; }

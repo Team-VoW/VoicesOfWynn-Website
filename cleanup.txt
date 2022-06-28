@@ -45,8 +45,8 @@ faq.phtml           -       finished
 index.phtml         -       finished
 login.phtml         -       finished
 new-account.phtml   -       finished
-npc.phtml           -       not started
-npcs.phtml          -       not started
+npc.phtml           -       finished
+npcs.phtml          -       finished
 
 
 

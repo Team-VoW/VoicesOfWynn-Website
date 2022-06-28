@@ -11,7 +11,7 @@
 
 <hr class="hr-f">
 
-<section>   <!-- "bio" has no styling?!??! interesting... -->
+<section>
     <div id="socials-container">
         <div class="socials-row txt-c" id="scoials-row-1">
             <div class="socials-card">  <!-- "socials-card" has no styling, will keep for later if someone needs it -->
@@ -86,23 +86,23 @@
                 </tr>
                 <?php $recordings = $quest->getNpcs()[0]->getRecordings(); ?>
                 <?php foreach ($recordings as $recording) : ?>
-                    <tr>
-                      <td># <?= $recording->line ?></td>
-                      <td>
+                    <tr class="voting-audio-box">
+                      <td class="ws-nw line-count" rowspan="1"># <?= $recording->line ?></td>
+                      <td class="the-recording lb-a">
                           <audio controls>
                               <source src="dynamic/recordings/<?= $recording->file ?>" type="audio/ogg">
                               Oops! Your browser doesnt support the OGG format :(
                           </audio>
-                      <td>
+                      <td class="voting-buttons">
                           <button class="upvote<?php if (in_array($recording->id, ${basename(__FILE__, '.phtml').'_upvoted'})) : ?> clicked<?php endif ?>" data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>">👍 <span><?= $recording->upvotes ?></span></button>
                       </td>
-                      <td>
+                      <td class="voting-buttons">
                           <button class="downvote<?php if (in_array($recording->id, ${basename(__FILE__, '.phtml').'_downvoted'})) : ?> clicked<?php endif ?>" data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>">👎 <span><?= $recording->downvotes ?></span></button>
                       </td>
-                      <td>
+                      <td class="voting-buttons">
                           <a href="contents/npc/<?= $recording->npcId ?>/comments/<?= $recording->id ?>"><button class="commentbtn">💬 <span><?= $recording->comments ?></span></button></a>
                       </td>
-                    </tr>
+                    </tr><hr class="hr-m mobile-hr">
                 <?php endforeach ?>
             </table>
         </section>
