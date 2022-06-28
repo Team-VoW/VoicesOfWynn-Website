@@ -131,12 +131,11 @@ td a {
         display: flex;
         justify-content: center;
         position: relative;
-        margin-bottom: 15px;
+        margin-bottom: .9rem;
     }
     .voting-buttons {
         display: inline;
-        margin-right: 15px;
-        margin-left: 12px;
+        margin-left: .75rem;
     }
     .line-count {
         display: block;
@@ -148,6 +147,6 @@ td a {
     }
     .voting-audio-box {
         display: table;
-        margin-bottom: 70px;
+        margin-bottom: 4.375rem;
     }
 }
