@@ -52,9 +52,9 @@ npcs.phtml          -       finished
 
 
 ________________ CHECKS ________________
-classless.css empty -       not passed
-base.css empty      -       not passed
-HTML files clean    -       not passed
+classless.css empty -       passed
+base.css empty      -       passed
+HTML files clean    -       passed, fixed
 
 
 ________________ EXTRA ________________

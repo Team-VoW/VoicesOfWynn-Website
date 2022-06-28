@@ -22,8 +22,8 @@
                 <td class="userinfo"><?= $user->getName() ?></td>
                 <td class="userinfo" class="txt-l"><a href="/cast/<?= $user->getId() ?>#bio" target="_blank">Bio User <?= $user->getId() ?></a></td>
                 <td class="buttons-column">
-                    <a href="administration/accounts/<?= $user->getId() ?>/clear-bio"><button class="clearbiobtn">Clear Bio</button></a><br>
-                    <a href="administration/accounts/<?= $user->getId() ?>/clear-avatar"><button class="clearavatarbtn">Clear Avatar</button></a><br>
+                    <a href="administration/accounts/<?= $user->getId() ?>/clear-bio" class="lb-a"><button class="clearbiobtn">Clear Bio</button></a>
+                    <a href="administration/accounts/<?= $user->getId() ?>/clear-avatar" class="lb-a"><button class="clearavatarbtn">Clear Avatar</button></a>
                     <a class="delete-account-link" data-user-id=<?= $user->getId() ?>><button class="deletebtn">Delete account</button></a>
                 </td>
                 <?php for ($i = 0; $i < count(${basename(__FILE__, '.phtml').'_roles'}); $i++) : ?>

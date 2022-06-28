@@ -7,7 +7,7 @@
 
 /* _________________________ general  _________________________ */
 
-body > div:not(.tox) {
+/* body > div:not(.tox) {
     position: fixed!important;
     width: 100%!important;
     height: 100%!important;
@@ -102,12 +102,12 @@ button:hover {
 input {
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
-textarea { font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; }
+textarea { font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; } */
 
 /* _________________________ specific _________________________ */
 
 /* navigation */
-.header0 {
+/* .header0 {
     margin-top: 50px;
     display: flex;
     flex-direction: row;
@@ -146,11 +146,11 @@ textarea { font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sa
 .adminNav {
     float: right;
     padding-left: 800px;
-}
+} */
 
 /* logo */
-.header0 .imglink:hover { background: none; }
-.imglink {z-index: 1;}
+/* .header0 .imglink:hover { background: none; }
+.imglink {z-index: 1;} */
 
 /* buttons */
 
@@ -159,19 +159,19 @@ textarea { font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sa
 
 
 
-.qsearchbtn { height: 48px; margin: 0; border-radius: 0px; border-left: 2px solid gray;}
+/* .qsearchbtn { height: 48px; margin: 0; border-radius: 0px; border-left: 2px solid gray;}
 .qsearchbtn:hover { transform: translateY(0px); box-shadow: none;}
-#q_search { width: 300px; }
+#q_search { width: 300px; } */
 
 
 
 /* href */
-a { color: #3a46f5; }
-a:hover:not([.imglink]) { background: #6670ff5b; border-radius: 2px;}
+/* a { color: #3a46f5; }
+a:hover:not([.imglink]) { background: #6670ff5b; border-radius: 2px;} */
 
 /* recording & user profiles */
 
-.npc-va-center-img { text-align: center; }
+/* .npc-va-center-img { text-align: center; }
 #voice-actor-avatar {
     max-width: 10vh;
     max-height: 10vh;
@@ -185,7 +185,7 @@ a:hover:not([.imglink]) { background: #6670ff5b; border-radius: 2px;}
 a.valink:hover { background: none; }
 .table-center {
     margin: 0px auto;
-}
+} */
 /* #contributerimg { max-width: 10vh; max-height: 10vh; border-radius: 4px; float: left;}
 #contributerimg a:hover { background: none; cursor: pointer;}
 .contact { margin-left: 100px; }
@@ -193,7 +193,7 @@ a.valink:hover { background: none; }
 
 
 /* login */
-input {
+/* input {
     border-bottom: 4px solid gray;
     border-radius: 3px;
     background: rgba(109, 109, 109, 0.13);
@@ -212,12 +212,12 @@ textarea {
 textarea:focus, input:focus {
     outline: none;
 }
-#name:focus { outline: none;}
+#name:focus { outline: none;} */
 
 /* downloads */
 
 /* account stuff */
-.acctable {
+/* .acctable {
     min-width: min-content;
 }
 #voice-actor-form {
@@ -229,7 +229,7 @@ textarea:focus, input:focus {
 }
 
 /* cast stuff */
-#socials-container {
+/* #socials-container {
     display: flex;
     justify-content: center;
     flex-direction: column;
@@ -252,11 +252,11 @@ textarea:focus, input:focus {
 
 #discord-tag-cast {
     font-size: 30px;
-}
+} */ 
 
 
 /* admin stuff */
-.spacing {
+/* .spacing {
     padding: 20px;
 }
 #table-npc-management td {
@@ -268,27 +268,27 @@ textarea:focus, input:focus {
 }
 #managelink:hover {
     background: rgba(255, 0, 0, 0.226);
-}
+} */
 /* ##################### */
 /*         other         */
 /* ##################### */
 
 /* fonts */
-@font-face {
+/* @font-face {
     font-family: minecraft;
     src: url(../fonts/Minecraftia-Regular.ttf);
-}
+} */
 
 /* ######################## */
 /*        responsive        */
 /* ######################## */
 
 /* #### MOBILE ####*/
-@media (max-width: 1000px) {                                    /** fuck mobile. had to be said. **/
+/* @media (max-width: 1000px) {                                     */
     /* below mainly focuses on removing the navigation
     bar which will only be available on full sitze screens
     (laptop, desktop, tablet/ipad maybe */
-    main li {z-index: -1;}
+    /* main li {z-index: -1;}
     #vertical, .nav li {overflow: hidden;}
     .nav, .nav li, li:not([id*="quest-npcs"]),
     .bio .bio0 {display: none;}
@@ -303,12 +303,12 @@ textarea:focus, input:focus {
         position: relative;
         float: none;
     }
-    .avatar0 p {text-align:left;}
+    .avatar0 p {text-align:left;} */
 
 
     /* fixing <main> */
     /* in case this is problematic in the future remove it asap */
-    body { width: 100%; background: whitesmoke; 
+    /* body { width: 100%; background: whitesmoke; 
     box-shadow: none;}
     main {
         max-width: 100%;
@@ -333,6 +333,6 @@ textarea:focus, input:focus {
 
 @media (max-width:465px) {
     iframe { height: 130px; width: 210px;}
-}
+} */
 
 /* fuck media-queries :) */

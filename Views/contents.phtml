@@ -22,9 +22,8 @@
 					<div class="quest-info" class="mb-s mt-s pt-s pb-s">
 						<?php foreach ($quest->getNpcs() as $npc) : ?>
 						<div class="quest-npcs">
-							<p class="txt-c mb-s mt-s"><img class="npc-avatar" src="dynamic/npcs/<?= $npc->getId() ?>.png" alt="NPC avatar" /></p>
-							<p class="txt-c mb-s mt-s pb-l sub-line"><a href="contents/npc/<?= $npc->getId() ?>"><?= $npc->getName() ?></a></p>
-							<br>
+							<p class="txt-c mb-s mt-s"><img class="npc-avatar mt-l" src="dynamic/npcs/<?= $npc->getId() ?>.png" alt="NPC avatar" /></p>
+							<p class="txt-c mb-s mt-s pb-l sub-line lb-a"><a href="contents/npc/<?= $npc->getId() ?>"><?= $npc->getName() ?></a></p>
 						</div>
 						<?php endforeach ?>
 						</div>

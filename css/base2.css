@@ -84,6 +84,7 @@ ul, ol, dl, fieldset, pre, pre > code {
 	overflow-x: auto;
 	overflow-y: hidden;
 }
+fieldset { border-radius: 5px; }
 
 
 /* ---- 1.2) text styling ---- */

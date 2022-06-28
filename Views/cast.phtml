@@ -15,10 +15,10 @@
     <div id="socials-container">
         <div class="socials-row txt-c" id="scoials-row-1">
             <div class="socials-card">  <!-- "socials-card" has no styling, will keep for later if someone needs it -->
-                <img class="contributor-img" src="dynamic/avatars/<?= $voiceActor->getAvatarLink() ?>" alt="Voice actor's avatar">
+                <img class="contributor-img lb-a" src="dynamic/avatars/<?= $voiceActor->getAvatarLink() ?>" alt="Voice actor's avatar">
 
                 <?php if (!empty($voiceActor->getEmail()) && $voiceActor->hasPublicEmail()) : ?>
-                    <br>
+
                     <a href="mailto:<?= $voiceActor->getEmail() ?>"><button class="contactbtn">
                         ✉ Contact
                     </button></a>
@@ -31,7 +31,7 @@
             <div>
                 <a href="<?= $voiceActor->getSocial('youtube') ?>" target="_blank" class="youtube">
                 <span class="txt-c">
-                    <img src="images/youtube_icon.png" alt="YouTube icon" /><br>
+                    <img src="images/youtube_icon.png" alt="YouTube icon" class="lb-a"/>
                     <button class="youtubebtn">
                         YouTube
                     </button>
@@ -43,7 +43,7 @@
             <div class="socials-card">
                 <a href="https://twitter.com/<?= $voiceActor->getSocial('twitter') ?>" target="_blank" class="twitter">
                 <span class="txt-c">
-                    <img src="images/twitter_icon.png" alt="Twitter icon" /><br>
+                    <img src="images/twitter_icon.png" alt="Twitter icon" class="lb-a"/>
                     <button class="twitterbtn">
                         @<?= $voiceActor->getSocial('twitter') ?>
                     </button>
@@ -55,7 +55,7 @@
             <div class="socials-card">
                 <a href="https://castingcall.club/<?= $voiceActor->getSocial('castingcallclub') ?>" target="_blank"     class="castingcallclub">
                 <span class="txt-c">
-                    <img src="images/castingcallclub_icon.png" alt="Casting Call Club icon" /><br>
+                    <img src="images/castingcallclub_icon.png" alt="Casting Call Club icon" class="lb-a"/>
                     <button class="castingcallclubbtn">
                         <?= $voiceActor->getSocial('castingcallclub') ?>
                     </button>

@@ -1,7 +1,7 @@
 <h1>Contributors</h1>
 <p class="txt-c">A lot of people worked hard on this mod. Take a moment to appreciate their work.</p>
 <?php $currentHighestRole = ${basename(__FILE__, '.phtml').'_contributors'}[0]->getRoles()[0]->name; ?>
-<hr>
+<hr class="hr-f">
 <h2>Owner</h2>
 <div class="row">
 <?php foreach (${basename(__FILE__, '.phtml').'_contributors'} as $contributor) : ?>
@@ -12,7 +12,7 @@
     ?>
 </div> <!-- ending for <div class="row"> -->
 
-    <hr>
+    <hr class="hr-f">
 
 <h2><?= $contributor->getRoles()[0]->name ?><?php if ($contributor->getRoles()[0]->name !== 'Owner') : ?>s<?php endif ?></h2>
 <div class="row">
@@ -23,7 +23,7 @@
 		<div class="card">
 			<img class="avatar" src="dynamic/avatars/<?= $contributor->getAvatarLink(); ?>" alt="Contributor's profile picture" /><br>
 			<p class="contributor_name"><strong><?= $contributor->getName(); ?></strong></p>
-				<hr> 
+				<hr class="hr-f"> 
 				<?php if (!empty($contributor->getLore())) : ?>
 				<i><?= $contributor->getLore() ?></i>
 				<?php endif ?>
@@ -32,7 +32,7 @@
 					<li style="color:#<?= $role->color ?>;"><?= $role->name ?></li>
 					<?php endforeach ?>
 				</ul>
-				<hr>
+				<hr class="hr-f">
 			</div>
 	</a></div>
 	</div>
