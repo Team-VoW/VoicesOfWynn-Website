@@ -5,7 +5,7 @@
 <i>Looking for a quest in particular? Search it!</i>
 </p>
 
-<input id="q_search" type="text" name="searchbar" placeholder="Search quest..."></input>
+<p class="txt-c"><input id="q_search" class="login-form" type="text" name="searchbar" placeholder="Search quest..."></input></p>
 
 <div class="mod-contents">
 	<div id="results_container"></div>
@@ -19,7 +19,7 @@
 				<div class="card q-voice">
 					<h3 class="quest-name"><?= $quest->getName(); ?></h3>
 					
-					<div class="quest-info" style="margin-bottom: 0px; margin-top: 0px; padding-top: 0px; padding-bottom: 0px;">
+					<div class="quest-info" class="mb-s mt-s pt-s pb-s">
 						<?php foreach ($quest->getNpcs() as $npc) : ?>
 						<div class="quest-npcs">
 							<p class="txt-c mb-s mt-s"><img class="npc-avatar" src="dynamic/npcs/<?= $npc->getId() ?>.png" alt="NPC avatar" /></p>

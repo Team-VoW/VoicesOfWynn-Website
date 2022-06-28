@@ -162,6 +162,7 @@ input {
     outline: none;
     padding: 0.3rem;
     font-family: Arial, Helvetica, sans-serif;
+    font-size: 18px;
     background: rgba(168, 168, 168, 0.13);
     height: 2.8rem;
 }

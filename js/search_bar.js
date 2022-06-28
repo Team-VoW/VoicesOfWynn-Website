@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded",function() {
         var q_elements = []
 
         for(var i = 0; i< rows_list.length; i++) {
-            rows_list[i].querySelectorAll(".questName").forEach(element => {
+            rows_list[i].querySelectorAll(".quest-name").forEach(element => {
                 q_elements.push(element)
             })
         }
