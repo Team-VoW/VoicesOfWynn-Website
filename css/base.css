@@ -153,12 +153,6 @@ textarea { font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sa
 .imglink {z-index: 1;}
 
 /* buttons */
-.clearbiobtn { background: rgb(247, 225, 32);}
-.clearbiobtn:hover { border-color: rgb(211, 195, 50);}
-.clearavatarbtn { background: rgb(255, 127, 0);}
-.clearavatarbtn:hover { border-color: rgb(214, 133, 53);}
-.deletebtn { background: rgb(255, 0, 0);}
-.deletebtn:hover { border-color: rgb(221, 55, 55);}
 
 /* upvote/downvote/comment */
 /* Styles for upvotes and downvotes have been moved to voting.css */

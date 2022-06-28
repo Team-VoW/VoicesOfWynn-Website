@@ -1,6 +1,8 @@
-.checkbox-large {
-    width: 5vh;
-    height: 5vh;
+main {
+    width:fit-content;
+    margin-left:auto;
+    margin-right:auto;
+    max-width:100%;
 }
 
 table {
@@ -10,6 +12,11 @@ table {
 td th {
     text-align: center;
     max-height: 10vh;
+}
+
+.checkbox-large {
+    width: 5vh;
+    height: 5vh;
 }
 
 .role-header {
@@ -23,7 +30,7 @@ td th {
 }
 
 .role-column {
-    width: 30px;
+    width: 80px;
 }
 
 .adnav {
@@ -39,9 +46,9 @@ td th {
     padding: 10px 5px;
 }
 
-main {
-    width:fit-content;
-    margin-left:auto;
-    margin-right:auto;
-    max-width:100%;
-}
+.clearbiobtn { background: rgb(247, 225, 32);}
+.clearbiobtn:hover { border-color: rgb(211, 195, 50);}
+.clearavatarbtn { background: rgb(255, 127, 0);}
+.clearavatarbtn:hover { border-color: rgb(214, 133, 53);}
+.deletebtn { background: rgb(255, 0, 0);}
+.deletebtn:hover { border-color: rgb(221, 55, 55);}

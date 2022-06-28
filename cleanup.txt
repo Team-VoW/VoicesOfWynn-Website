@@ -10,8 +10,8 @@ well fuck.... that are more than expected heh
 __________________ CSS __________________
 
 account.css         -       finished
-accounts.css        -       not started
-administration.css  -       not started
+accounts.css        -       finished
+administration.css  -       finished
 base.css            -       ditched *
 base2.css           -       ongoing
 bubble.css          -       finished
@@ -21,7 +21,7 @@ contents.css        -       finished
 credits.css         -       finished
 errors.css          -       finished
 faq.css             -       finished
-npc.css             -       not started
+npc.css             -       finished
 voting.css          -       finished
 downloads.css       -       finished            (new)
 
@@ -31,8 +31,8 @@ downloads.css       -       finished            (new)
 ________________ (P)HTML ________________
 
 account.phtml       -       finished
-accounts.phtml      -       not started
-administration.phtml-       not started
+accounts.phtml      -       finished
+administration.phtml-       finished
 base.phtml          -       finished
 cast.phtml          -       finished
 comments.phtml      -       finished
@@ -49,6 +49,12 @@ npc.phtml           -       finished
 npcs.phtml          -       finished
 
 
+
+
+________________ CHECKS ________________
+classless.css empty -       not passed
+base.css empty      -       not passed
+HTML files clean    -       not passed
 
 
 ________________ EXTRA ________________
