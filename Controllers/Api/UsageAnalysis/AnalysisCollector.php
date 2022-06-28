@@ -29,9 +29,9 @@ class AnalysisCollector extends ApiController
 
     private function logBootup()
     {
-        /*if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return 405;
-        }*/
+        }
         if ($_REQUEST['apiKey'] !== self::PING_API_KEY) {
             return 401;
         }
