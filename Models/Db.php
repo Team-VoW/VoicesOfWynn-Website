@@ -127,4 +127,42 @@ class Db
         }
     }
 
+    /**
+     * Starts a transaction
+     * @return bool
+     */
+    public function startTransaction(): bool
+    {
+        if (!isset($this->connection)) {
+            $this->connect();
+        }
+
+        return $this->connection->beginTransaction();
+    }
+
+    /**
+     * Rollbacks an active transaction
+     * @return bool
+     */
+    public function rollbackTransaction(): bool
+    {
+        if (!isset($this->connection)) {
+            $this->connect();
+        }
+
+        return $this->connection->rollBack();
+    }
+
+    /**
+     * Commits an active transaction
+     * @return bool
+     */
+    public function commitTransaction(): bool
+    {
+        if (!isset($this->connection)) {
+            $this->connect();
+        }
+
+        return $this->connection->commit();
+    }
 }
