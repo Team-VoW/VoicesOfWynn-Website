@@ -2,6 +2,7 @@
 
 namespace VoicesOfWynn\Models\Api\UsageAnalysis;
 
+use DateTime;
 use VoicesOfWynn\Models\Db;
 
 class BootupLogger
@@ -21,7 +22,8 @@ class BootupLogger
         $playerUUID = hash('sha256', $playerUUID);
         $playerIp = hash('sha256', $playerIp);
 
-        $result = $db->executeQuery('INSERT INTO ping(uuid,ip,time) VALUES (?,?,?)', array($playerUUID, $playerIp, time()));
+        $result = $db->executeQuery('INSERT INTO ping(uuid,ip,time) VALUES (?,?,?)', array($playerUUID, $playerIp,
+            (new DateTime('now'))->format('Y-m-d H:i:s')));
         return ($result) ? 201 : 500;
     }
 
@@ -29,7 +31,7 @@ class BootupLogger
         $db = new Db('Api/UsageAnalysis/DbInfo.ini');
         $ip = hash('sha256', $ip);
         $result = $db->fetchQuery('SELECT time FROM ping WHERE ip = ? ORDER BY time DESC LIMIT 1;', array($ip));
-        if ($result && time() - $result['time'] < self::MINIMUM_DELAY_BETWEEN_PINGS_BY_IP) {
+        if ($result && time() - (new DateTime($result['time']))->getTimestamp() < self::MINIMUM_DELAY_BETWEEN_PINGS_BY_IP) {
             return false;
         }
         return true;
@@ -39,7 +41,7 @@ class BootupLogger
         $db = new Db('Api/UsageAnalysis/DbInfo.ini');
         $uuid = hash('sha256', $uuid);
         $result = $db->fetchQuery('SELECT time FROM ping WHERE uuid = ? ORDER BY time DESC LIMIT 1;', array($uuid));
-        if ($result && time() - $result['time'] < self::MINIMUM_DELAY_BETWEEN_PINGS_BY_UUID) {
+        if ($result && time() - (new DateTime($result['time']))->getTimestamp() < self::MINIMUM_DELAY_BETWEEN_PINGS_BY_UUID) {
             return false;
         }
         return true;

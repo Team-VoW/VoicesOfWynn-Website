@@ -34,9 +34,9 @@ class AnalysisProcessor extends ApiController
         }
         $logger = new PingAggregator();
         return $logger->aggregateDay(
-            new DateTime(time() - (
+            new DateTime('@'.(time() - (
                 max(BootupLogger::MINIMUM_DELAY_BETWEEN_PINGS_BY_IP, BootupLogger::MINIMUM_DELAY_BETWEEN_PINGS_BY_UUID)
-            ))
+            )))
         );
     }
 }
