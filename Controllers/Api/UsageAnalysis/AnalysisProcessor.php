@@ -26,9 +26,9 @@ class AnalysisProcessor extends ApiController
 
     private function aggregate(): int
     {
-        /*if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
+        if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
             return 405;
-        }*/
+        }
         if ($_REQUEST['apiKey'] !== self::AGGREGATE_API_KEY) {
             return 401;
         }
