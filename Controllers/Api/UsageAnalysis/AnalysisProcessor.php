@@ -12,7 +12,9 @@ class AnalysisProcessor extends ApiController
 
     public function process(array $args): int
     {
-        if (!isset($_REQUEST['apiKey'])) {
+        parse_str(file_get_contents("php://input"),$_PUT);
+        
+        if (!isset($_REQUEST['apiKey']) && !isset($_PUT['apiKey'])) {
             return 401;
         }
 
@@ -29,7 +31,8 @@ class AnalysisProcessor extends ApiController
         if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
             return 405;
         }
-        if ($_REQUEST['apiKey'] !== self::AGGREGATE_API_KEY) {
+        parse_str(file_get_contents("php://input"),$_PUT);
+        if ($_PUT['apiKey'] !== self::AGGREGATE_API_KEY) {
             return 401;
         }
         $logger = new PingAggregator();
