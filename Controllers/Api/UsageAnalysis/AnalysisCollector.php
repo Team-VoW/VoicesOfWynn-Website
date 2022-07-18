@@ -10,7 +10,9 @@ class AnalysisCollector extends ApiController
 
     public function process(array $args): int
     {
-        if (!isset($_REQUEST['apiKey'])) {
+        parse_str(file_get_contents("php://input"),$_PUT);
+        
+        if (!isset($_REQUEST['apiKey'] && !isset($_PUT['apiKey'])) {
             return 401;
         }
 
