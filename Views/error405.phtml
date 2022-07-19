@@ -16,17 +16,18 @@
     <meta name="msapplication-TileColor" content="#7b1a9b">
     <meta name="msapplication-config" content="browserconfig.xml">
     <meta name="theme-color" content="#7b1a9b">
-    
+
     <!-- Stylesheets -->
     <?php foreach (self::$cssFiles as $cssFile) : ?>
         <link rel="stylesheet" type="text/css" href="css/<?= $cssFile ?>.css">
     <?php endforeach ?>
 </head>
 <body>
-    <h1 class="error-header">403 – Forbidden</h1>
-    <p><i>It seems like you shouldn't be here...</i></p>
-	<p>Maybe your login session has expired. If that's the case, <a href="/login">logging back in</a> should help.</p>
-    <img src="images/lucio_where_the_frick_are_we.png" alt="An illustration of two Wynncraft characters looking for something." id="error-picture" /><br>
-    <span class="art-credit">Art by <a href="https://twitter.com/gleeokenspiel" target="blank_">Gleeokenspiel</a></span><br>
-    <a href="https://voicesofwynn.com"><button class="return-button">Back to Homepage</button></a>
+<h1 class="error-header">405 – Method not Allowed</h1>
+<p><i>You like to experiment, don't you?</i></p>
+<p>An invalid request method has been used to access this webpage.</p>
+<p>In case you didn't cause this error by forging a request, report this on <a target="_blank" rel="noopener" href="https://discord.gg/kuEK3XH4Y5">our Discord server</a> please.</p>
+<img src="images/lucio_where_the_frick_are_we.png" alt="An illustration of two Wynncraft characters looking for something." id="error-picture" /><br>
+<span class="art-credit">Art by <a href="https://twitter.com/gleeokenspiel" target="blank_">Gleeokenspiel</a></span><br>
+<a href="https://voicesofwynn.com"><button class="return-button">Back to Homepage</button></a>
 </body>

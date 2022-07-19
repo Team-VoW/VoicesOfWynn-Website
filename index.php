@@ -2,7 +2,6 @@
 
 namespace VoicesOfWynn;
 
-use VoicesOfWynn\Controllers\Error404;
 use VoicesOfWynn\Controllers\Router;
 
 //Set autoloader for dependencies
@@ -40,13 +39,28 @@ $requestedUrl = $_SERVER['REQUEST_URI'];
 //Process the request
 $router = new Router();
 $result = $router->process(array($requestedUrl));
-if ($result !== true) {
+if ($result >= 400) {
     //Display the error webpage, overwrite the page headers (title, description, keywords)
-    $errorController = new Error404();
-    $errorController->process(array());
+    $errorControllerName = "VoicesOfWynn\Controllers\Errors\Error".$result;
+    $errorController = new $errorControllerName();
+    $errorController->process(array($router->isWebpageRequest));
+
+    if ($router->isWebpageRequest) {
+        $website = $errorController->getResult();
+    }
+    else {
+        $website = '';
+    }
+}
+else if ($result === 204) {
+    //Don't render any views, simply don't echo anything into the response body
+    //This is mostly used for AJAX calls
+    $website = '';
+}
+else {
+    $website = $router->getResult();
 }
 
 //Display the generated website
-$website = $router->displayView();
 echo $website;
 
