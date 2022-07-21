@@ -3,7 +3,7 @@
 <?php if (!empty($voiceActor->getSocial('discord'))) : ?>
   <h6 class="txt-c txt-main">
       <div id='discord-container'>
-        <img src="images/discord_icon.png" alt="Discord icon" width="3.125rem" height="3.125rem"/>
+        <img src="images/discord_icon.png" alt="Discord icon" width="50px" height="50px"/>
         <span class="vertical-bottom-text-span arial" id="discord-tag-cast"><?= $voiceActor->getSocial('discord') ?></span>
     </div>
   </h6>
@@ -14,7 +14,7 @@
 <section>
     <div id="socials-container">
         <div class="socials-row txt-c" id="scoials-row-1">
-            <div class="socials-card">  <!-- "socials-card" has no styling, will keep for later if someone needs it -->
+            <div class="socials-card">
                 <img class="contributor-img lb-a" src="dynamic/avatars/<?= $voiceActor->getAvatarLink() ?>" alt="Voice actor's avatar">
 
                 <?php if (!empty($voiceActor->getEmail()) && $voiceActor->hasPublicEmail()) : ?>
@@ -73,7 +73,7 @@
 <section>
     <h3 class="txt-c">Recordings</h3>
     <?php if (count(${basename(__FILE__, '.phtml').'_quest_recordings'}) === 0) : ?>
-    <i class="txt-c">This contributor didn't submit any recordings.</i>
+    <p class="txt-c error-color"><i>This contributor didn't submit any recordings.</i></p>
     <?php endif ?>
     <?php foreach (${basename(__FILE__, '.phtml').'_quest_recordings'} as $quest) : ?>
     <div class="reccenter">
