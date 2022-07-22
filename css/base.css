@@ -372,8 +372,8 @@ br { margin-top: 2rem; }
 .fw-ll{ font-weight: lighter; }
 
         /* linebreaks */
-.lb-b::before { content: "\a"; white-space: pre; }
-.lb-a::after  { content: "\a"; white-space: pre; }
+.lb-b::before { line-break: normal; }
+.lb-a::after  { line-break: normal; }
 
         /* colors */
 .error-color { color: rgb(255, 83, 83); }
