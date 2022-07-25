@@ -372,7 +372,7 @@ br { margin-top: 2rem; }
 .fw-ll{ font-weight: lighter; }
 
         /* linebreaks */
-.lb-b::before { line-break: normal; }
+.lb-b { line-break: normal; }
 .lb-a::after  { line-break: normal; }
 
         /* colors */
@@ -479,6 +479,7 @@ br { margin-top: 2rem; }
                 /* ----- SPECIAL STYLES FOR LOGIN.PHTML ----- */
         .login-form:not(.submit) { border-right: none; border-left: none; border-top: none; min-width: 15rem; }
         .submit { border-right: none; border-left: none; border-top: none; }
+        .pw-box { margin-left: 80px; }
 
 
 
@@ -487,6 +488,10 @@ br { margin-top: 2rem; }
                 display: inline-block;
                 margin-left: auto;
                 margin-right: auto;
+        }
+        .admin-pfp {
+                max-height: 9.375rem;
+                min-height: 9.375rem;
         }
 /*                                                                */
 /* _________________________ RESPONSIVE _________________________ */
