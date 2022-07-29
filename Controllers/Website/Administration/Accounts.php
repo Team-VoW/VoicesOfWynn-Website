@@ -17,6 +17,11 @@ class Accounts extends WebpageController
     	if (count($args) > 0)
     	{
     		switch (array_shift($args)) {
+                case 'reset-password':
+                    $user = new User();
+                    $user->setData(array('id' => $args[0]));
+                    $newPassword = $user->resetPassword();
+                    exit($newPassword); //TODO Not ideal
 			    case 'clear-bio':
 			    	$user = new User();
 			    	$user->setData(array('id' => $args[0]));
@@ -46,18 +51,19 @@ class Accounts extends WebpageController
 				    return 400;
 		    }
 	    }
+        else {
+            self::$data['base_description'] = 'Tool for the administrators to manage accounts of the contributors.';
 
-        self::$data['base_description'] = 'Tool for the administrators to manage accounts of the contributors.';
-    
-        $accountManager = new AccountManager();
-        self::$data['accounts_roles'] = $accountManager->getRoles();
-        self::$data['accounts_accounts'] = $accountManager->getUsers();
-    
-        self::$cssFiles[] = 'accounts';
-        self::$jsFiles[] = 'accounts';
-        self::$views[] = 'accounts';
-        
-        return true;
+            $accountManager = new AccountManager();
+            self::$data['accounts_roles'] = $accountManager->getRoles();
+            self::$data['accounts_accounts'] = $accountManager->getUsers();
+
+            self::$cssFiles[] = 'accounts';
+            self::$jsFiles[] = 'accounts';
+            self::$views[] = 'accounts';
+
+            return true;
+        }
     }
 }
 

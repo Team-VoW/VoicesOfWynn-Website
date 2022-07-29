@@ -49,10 +49,7 @@ class User
 			throw new UserException($verifier->errors[0]);
 		}
         
-        $password = '';
-        for ($i = 0; $i < self::DEFAULT_PASSWORD_LENGTH; $i++) {
-            $password .= self::DEFAULT_PASSWORD_CHARACTERS[rand(0, mb_strlen(self::DEFAULT_PASSWORD_CHARACTERS) - 1)];
-        }
+        $password = $this->generateTempPassword();
 
         $this->hash = password_hash($password, PASSWORD_DEFAULT);
         $result = (new Db('Website/DbInfo.ini'))->executeQuery('INSERT INTO user (display_name,password,discord) VALUES (?,?,?)', array(
@@ -112,7 +109,16 @@ class User
         
         return true;
     }
-    
+
+    private function generateTempPassword(): string
+    {
+        $password = '';
+        for ($i = 0; $i < self::DEFAULT_PASSWORD_LENGTH; $i++) {
+            $password .= self::DEFAULT_PASSWORD_CHARACTERS[rand(0, mb_strlen(self::DEFAULT_PASSWORD_CHARACTERS) - 1)];
+        }
+        return $password;
+    }
+
     public function changeTempPassword(string $name, string $newPassword): bool
     {
         if (!(
@@ -458,7 +464,19 @@ class User
             $roleId
         ));
     }
-    
+
+    public function resetPassword(): string
+    {
+        $newPassword = $this->generateTempPassword();
+        $db = new Db('Website/DbInfo.ini');
+        $this->hash = password_hash($newPassword, PASSWORD_DEFAULT);
+        $db->executeQuery('UPDATE user SET password = ?, force_password_change = 1 WHERE user_id = ? LIMIT 1', array(
+            $this->hash,
+            $this->id
+        ));
+        return $newPassword;
+    }
+
     /**
      * Removes bio of this user
      * @return bool
