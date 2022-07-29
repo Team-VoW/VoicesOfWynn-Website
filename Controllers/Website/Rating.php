@@ -39,7 +39,7 @@ class Rating extends WebpageController
                     else {
 	                    $commentId = $recording->comment(false, $_SERVER['REMOTE_ADDR'], $_POST['name'], $_POST['email'], $_POST['content'], $_SESSION['antispam'], $_POST['antispam']);
                     }
-					exit($commentId);
+					exit($commentId); //TODO Not ideal
 				} catch (UserException $e) {
 					header('HTTP/1.1 418 '.$e->getMessage());
 					exit(); //TODO replace this

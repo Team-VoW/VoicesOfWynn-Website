@@ -67,7 +67,7 @@ class Comments extends WebpageController
 	}
 	
 	/**
-	 * Processing method for DELETE requests to this controller (a comment is being deleted by a system admin)
+	 * Processing method for DELETE requests to this controller (a comment is being deleted by a system admin or the author)
 	 * Verification is done before affecting database
 	 * @param array $args
 	 * @return bool
