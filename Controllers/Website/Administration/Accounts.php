@@ -3,6 +3,7 @@
 namespace VoicesOfWynn\Controllers\Website\Administration;
 
 use VoicesOfWynn\Controllers\Website\WebpageController;
+use VoicesOfWynn\Models\Website\UserException;
 use VoicesOfWynn\Models\Website\AccountManager;
 use VoicesOfWynn\Models\Website\User;
 
@@ -20,8 +21,19 @@ class Accounts extends WebpageController
                 case 'reset-password':
                     $user = new User();
                     $user->setData(array('id' => $args[0]));
-                    $newPassword = $user->resetPassword();
-                    exit($newPassword); //TODO Not ideal
+                    try {
+                        $newPassword = $user->resetPassword();
+                    } catch (UserException $e) {
+                        exit($e->getMessage());
+                    }
+                    exit('The new password for this user account is:
+                    
+' . $newPassword . '
+
+Be sure to send it to the voice actor.
+
+Tip: Just screenshot the password and send it as an image, if you don\'t want to rewrite it.
+I know that it would be great if it was copied automatically, but I\'m having some issues with implementing that.'); //TODO Not ideal
 			    case 'clear-bio':
 			    	$user = new User();
 			    	$user->setData(array('id' => $args[0]));

@@ -6,8 +6,7 @@ $(".reset-password-link").on('click', function(event) {
         url: "administration/accounts/" + userId + "/reset-password",
         type: 'PUT',
         success: function(result, message, error) {
-            console.log(result);
-            alert("The new password for this user account is:\n" + result + "\nBe sure to send it to the voice actor.\n\nTip: Just screenshot the password and send it as an image, if you don't want to rewrite it.\nI know that it would be great if it was copied automaticaly, but I'm having some issues with implementing that.");
+            alert(result);
         },
         error: function(result, message, error) {
             alert("An error ocurred: " + error);
