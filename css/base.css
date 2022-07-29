@@ -188,6 +188,8 @@ textarea { font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sa
 .adminbtn:hover { border-color: rgb(255, 176, 102); }
 .contactbtn { background:rgb(255, 239, 102); }
 .contactbtn:hover { border-color: rgb(239, 228, 143); }
+.resetpasswordbtn { background: rgb(94, 96, 255);}
+.resetpasswordbtn:hover { border-color: rgb(116, 117, 220);}
 .clearbiobtn { background: rgb(247, 225, 32);}
 .clearbiobtn:hover { border-color: rgb(211, 195, 50);}
 .clearavatarbtn { background: rgb(255, 127, 0);}

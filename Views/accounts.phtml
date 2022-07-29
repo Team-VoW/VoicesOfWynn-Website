@@ -22,9 +22,10 @@
                 <td id="userinfo"><?= $user->getName() ?></td>
                 <td id="userinfo" style="text-align: left;"><a href="/cast/<?= $user->getId() ?>#bio" target="_blank">Bio User <?= $user->getId() ?></a></td>
                 <td class="buttons-column">
-                    <a href="administration/accounts/<?= $user->getId() ?>/clear-bio"><button class="clearbiobtn">Clear Bio</button></a><br>
-                    <a href="administration/accounts/<?= $user->getId() ?>/clear-avatar"><button class="clearavatarbtn">Clear Avatar</button></a><br>
-                    <a class="delete-account-link" data-user-id=<?= $user->getId() ?>><button class="deletebtn">Delete account</button></a>
+                    <span class="reset-password-link"><button class="resetpasswordbtn">Reset Password</button></span>
+                    <span class="clear-bio-link"><button class="clearbiobtn">Clear Bio</button></span>
+                    <span class="clear-avatar-link"><button class="clearavatarbtn">Clear Avatar</button></span>
+                    <span class="delete-account-link"><button class="deletebtn">Delete account</button></span>
                 </td>
                 <?php for ($i = 0; $i < count(${basename(__FILE__, '.phtml').'_roles'}); $i++) : ?>
                     <td class="role-column" style="background-color: #<?= ${basename(__FILE__, '.phtml').'_roles'}[$i]->color

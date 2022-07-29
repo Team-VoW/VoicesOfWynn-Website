@@ -4,6 +4,7 @@
 namespace VoicesOfWynn\Models\Website;
 
 
+use PDOException;
 use VoicesOfWynn\Models\Db;
 
 class User
@@ -11,7 +12,9 @@ class User
     private const DEFAULT_PASSWORD_CHARACTERS = 'abcdefghijklmnopqrstuvwxyz0123456789';
     public const DEFAULT_PASSWORD_LENGTH = 12;
     private const LOG_PASSWORDS = false; //Turn this on when mass-creating user accounts, so you can message the temporary passwords to users all at once
-    
+
+    private bool $loaded = false;
+
     private int $id = 0;
     private $email = '';
     private string $hash = '';
@@ -27,7 +30,35 @@ class User
     private bool $publicEmail = false;
     
     private array $roles = array();
-    
+
+    /**
+     * Function loading all user information from the database and saving them into attributes
+     * @return void
+     * @throws UserException If this object doesn't have its ID specified (necessary for the database search)
+     */
+    public function load(): void
+    {
+        if (empty($this->id)) {
+            throw new UserException('The User object cannot be loaded, because it doesn\'t have its ID specified.');
+        }
+        $userInfo = (new Db('Website/DbInfo.ini'))->fetchQuery('SELECT * FROM user WHERE user_id = ?', array($this->id));
+
+        $this->id = $userInfo['user_id'];
+        $this->email = $userInfo['email'];
+        $this->hash = $userInfo['password'];
+        $this->systemAdmin = $userInfo['system_admin'];
+        $this->displayName = $userInfo['display_name'];
+        $this->avatarLink = $userInfo['picture'];
+        $this->bio = $userInfo['bio'];
+        $this->discord = $userInfo['discord'];
+        $this->youtube = $userInfo['youtube'];
+        $this->twitter = $userInfo['twitter'];
+        $this->castingcallclub = $userInfo['castingcallclub'];
+        $this->publicEmail = $userInfo['public_email'];
+
+        $this->loaded = true;
+    }
+
     /**
      * Registers a new user account, generates a password and returns it
      * The user is not logged in
@@ -49,10 +80,7 @@ class User
 			throw new UserException($verifier->errors[0]);
 		}
         
-        $password = '';
-        for ($i = 0; $i < self::DEFAULT_PASSWORD_LENGTH; $i++) {
-            $password .= self::DEFAULT_PASSWORD_CHARACTERS[rand(0, mb_strlen(self::DEFAULT_PASSWORD_CHARACTERS) - 1)];
-        }
+        $password = $this->generateTempPassword();
 
         $this->hash = password_hash($password, PASSWORD_DEFAULT);
         $result = (new Db('Website/DbInfo.ini'))->executeQuery('INSERT INTO user (display_name,password,discord) VALUES (?,?,?)', array(
@@ -109,10 +137,21 @@ class User
         $this->publicEmail = $userInfo['public_email'];
         
         $_SESSION['user'] = $this;
+
+        $this->loaded = true;
         
         return true;
     }
-    
+
+    private function generateTempPassword(): string
+    {
+        $password = '';
+        for ($i = 0; $i < self::DEFAULT_PASSWORD_LENGTH; $i++) {
+            $password .= self::DEFAULT_PASSWORD_CHARACTERS[rand(0, mb_strlen(self::DEFAULT_PASSWORD_CHARACTERS) - 1)];
+        }
+        return $password;
+    }
+
     public function changeTempPassword(string $name, string $newPassword): bool
     {
         if (!(
@@ -167,6 +206,8 @@ class User
 	    $this->twitter = '';
 	    $this->castingcallclub = '';
         $this->publicEmail = false;
+
+        $this->loaded = false;
     }
     
     public function update($email, string $password, string $displayName, string $avatarLink, $bio, $discord, $youtube, $twitter, $castingcallclub, bool $publicEmail): bool
@@ -198,6 +239,8 @@ class User
 		$this->twitter = $twitter;
 		$this->castingcallclub = $castingcallclub;
         $this->publicEmail = $publicEmail;
+
+        $this->loaded = true;
         return $result;
     }
     
@@ -216,6 +259,9 @@ class User
      */
     public function getEmail()
     {
+        if (!$this->loaded && empty($this->email)) {
+            $this->load();
+        }
         return $this->email;
     }
     
@@ -225,6 +271,9 @@ class User
      */
     public function getName(): string
     {
+        if (!$this->loaded && empty($this->displayName)) {
+            $this->load();
+        }
         return $this->displayName;
     }
     
@@ -235,6 +284,9 @@ class User
      */
     public function getAvatarLink(bool $appendRandom = true)
     {
+        if (!$this->loaded && empty($this->avatarLink)) {
+            $this->load();
+        }
         if ($appendRandom && $this->avatarLink !== 'default.png') {
             return $this->avatarLink.'?'.rand(0, 31);
         }
@@ -247,6 +299,9 @@ class User
      */
     public function getBio()
     {
+        if (!$this->loaded && empty($this->bio)) {
+            $this->load();
+        }
         return $this->bio;
     }
     
@@ -256,6 +311,9 @@ class User
      */
     public function getLore()
     {
+        if (!$this->loaded && empty($this->lore)) {
+            $this->load();
+        }
         return $this->lore;
     }
     
@@ -264,15 +322,27 @@ class User
 		$network = strtolower($network);
 		switch ($network) {
 			case 'discord':
+                if (!$this->loaded && empty($this->discord)) {
+                    $this->load();
+                }
 				return $this->discord;
 			case 'youtube':
 			case 'yt':
+                if (!$this->loaded && empty($this->youtube)) {
+                    $this->load();
+                }
 				return $this->youtube;
 			case 'twitter':
+                if (!$this->loaded && empty($this->twitter)) {
+                    $this->load();
+                }
 				return $this->twitter;
 			case 'castingcallclub':
 			case 'casting_call_club':
 			case 'ccc':
+            if (!$this->loaded && empty($this->castingcallclub)) {
+                $this->load();
+            }
 				return $this->castingcallclub;
 			default:
 				return false;
@@ -285,6 +355,9 @@ class User
      */
     public function isSysAdmin(): bool
     {
+        if (!$this->loaded) {
+            $this->load();
+        }
         return $this->systemAdmin;
     }
     
@@ -294,6 +367,9 @@ class User
      */
     public function hasPublicEmail(): bool
     {
+        if (!$this->loaded) {
+            $this->load();
+        }
         return $this->publicEmail;
     }
     
@@ -458,7 +534,31 @@ class User
             $roleId
         ));
     }
-    
+
+    /**
+     * Resets the password and replaces it with a new temporary, randomly generated one
+     * @param bool $allowForSysadmins Should this functions be able to reset the password of system administrators
+     * @return string The new password
+     * @throws \Exception
+     */
+    public function resetPassword(bool $allowForSysadmins = false): string
+    {
+        if (!$allowForSysadmins) {
+            if ($this->isSysAdmin()) {
+                throw new UserException("Password of a system administrator cannot be reset this way for security reasons. Contact Shady#2948 for assistance.");
+            }
+        }
+
+        $newPassword = $this->generateTempPassword();
+        $db = new Db('Website/DbInfo.ini');
+        $this->hash = password_hash($newPassword, PASSWORD_DEFAULT);
+        $db->executeQuery('UPDATE user SET password = ?, force_password_change = 1 WHERE user_id = ? LIMIT 1', array(
+            $this->hash,
+            $this->id
+        ));
+        return $newPassword;
+    }
+
     /**
      * Removes bio of this user
      * @return bool
