@@ -34,12 +34,13 @@
         </h3>
         <table style="margin:auto;">
             <tr>
-                <th>Minecraft version</th><th>Size</th><th>Release Date</th>
+                <th>Minecraft version</th><th>Size</th><th>Release Date</th><th>Times Downloaded</th>
             </tr>
             <tr>
                 <td><?= $version->mcVersion ?></td>
                 <td><?= round($version->size / 1000000, 2) ?> MB</td>
                 <td><?= $version->releaseDate->format('jS F Y') ?></td>
+                <td><?= $version->downloadedTimes ?></td>
             </tr>
         </table>
         <a href="/downloads/<?= $version->id ?>">
