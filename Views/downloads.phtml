@@ -21,8 +21,8 @@
 <ul>
 <?php foreach (${basename(__FILE__, '.phtml').'_versions'} as $version) : ?>
     <li>
-        <?= $version['name'] ?><p style="text-align: center;">
-        <a href="<?= $version['link'] ?>">
+        <?= $version->version ?><p style="text-align: center;">
+        <a href="/download-mod/<?= $version->id ?>"> <!-- TODO: expand the download information section -->
         <button class="downloadbtn" >
             <img src="images/download.png" alt="Download icon" width="20px" height="20px"/> Download
         </button>

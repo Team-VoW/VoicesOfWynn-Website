@@ -2,7 +2,7 @@
 
 namespace VoicesOfWynn\Controllers\Website;
 
-use VoicesOfWynn\Models\Website\VersionManager;
+use VoicesOfWynn\Models\Website\DownloadsManager;
 
 class Downloads extends WebpageController
 {
@@ -16,8 +16,8 @@ class Downloads extends WebpageController
         self::$data['base_description'] = 'Downloads of all versions of the mod are available here. Download the latest version, install it to your Minecraft client and enjoy voiced Wynncraft.';
         self::$data['base_keywords'] = 'Minecraft,Wynncraft,Mod,Voice,Downloads,Download';
     
-		$versionManager = new VersionManager();
-		self::$data['downloads_versions'] = $versionManager->getVersions();
+		$downloadsManager = new DownloadsManager();
+		self::$data['downloads_versions'] = $downloadsManager->listDownloads();
 
         self::$views[] = 'downloads';
         return true;

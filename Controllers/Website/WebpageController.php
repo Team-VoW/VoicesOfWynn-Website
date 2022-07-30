@@ -2,10 +2,12 @@
 
 namespace VoicesOfWynn\Controllers\Website;
 
+use DateTime;
 use Exception;
 use VoicesOfWynn\Controllers\Controller;
 use VoicesOfWynn\Models\Website\Comment;
 use VoicesOfWynn\Models\Website\DiscordRole;
+use VoicesOfWynn\Models\Website\ModDownload;
 use VoicesOfWynn\Models\Website\Npc;
 use VoicesOfWynn\Models\Website\Quest;
 use VoicesOfWynn\Models\Website\Recording;
@@ -105,7 +107,11 @@ abstract class WebpageController extends Controller
                 }
                 break;
             case 'object':
-                if ($value instanceof DiscordRole) {
+                if ($value instanceof DateTime) {
+                    //According to https://stackoverflow.com/a/64624314/14011077, DateTime is safe in terms of XSS
+                    $return = $value;
+                }
+                else if ($value instanceof DiscordRole) {
                     $return = new DiscordRole("TempName");
                     $return->name = $this->sanitize($value->name);
                     $return->color = $this->sanitize($value->color);
@@ -166,7 +172,7 @@ abstract class WebpageController extends Controller
                     $attr['upvotes'] = $this->sanitize($value->upvotes);
                     $attr['downvotes'] = $this->sanitize($value->downvotes);
                     $attr['comments'] = $this->sanitize($value->comments);
-                    return new Recording($attr);
+                    $return = new Recording($attr);
                 }
                 else if ($value instanceof Comment) {
                     $attr = array();
@@ -179,7 +185,20 @@ abstract class WebpageController extends Controller
                     $attr['content'] = nl2br($this->sanitize($value->content));
                     $attr['recording_id'] = $this->sanitize($value->recordingId);
                     $attr['gravatar'] = $this->sanitize($value->gravatar);
-                    return new Comment($attr);
+                    $return = new Comment($attr);
+                }
+                else if ($value instanceof ModDownload) {
+                    $attr = array();
+                    $attr['id'] = $this->sanitize($value->id);
+                    $attr['releaseType'] = $this->sanitize($value->releaseType);
+                    $attr['mcVersion'] = $this->sanitize($value->mcVersion);
+                    $attr['version'] = $this->sanitize($value->version);
+                    $attr['changelog'] = $this->sanitize($value->changelog);
+                    $attr['releaseDate'] = $this->sanitize($value->releaseDate);
+                    $attr['fileName'] = $this->sanitize($value->fileName);
+                    $attr['size'] = $this->sanitize($value->size);
+                    $attr['downloadedTimes'] = $this->sanitize($value->downloadedTimes);
+                    $return = new ModDownload($attr);
                 }
                 else {
                     throw new Exception('Object variable of class '.get_class($value).' couldn\'t be sanitized');
