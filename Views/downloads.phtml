@@ -1,34 +1,54 @@
-<h1>How to Install</h1>
-<p style="text-align: center;">Follow the directions below to activate the mod!
-<ol>
-    <li>If you don’t have forge 1.12.2, download it <a href="https://files.minecraftforge.net/net/minecraftforge/forge/index_1.12.2.html" target="_blank">here</a>! After setup, start Minecraft once and close it.</li>
-    <li><a id="ahover" href="/files/mod/latest.jar">Download the latest version of the mod.</a></li>
-    <li>In your files, navigate to <code>C:\users\[USERNAME]\Appdata\Roaming\.minecraft\mods</code>.</li>
-    <li>Move the downloaded file to this folder.</li>
-    <li>Open Forge.</li>
-</ol>
-</p><br>
-
+<h1>Download Voices of Wynn</h1>
 <p style="text-align: center;">
-<a href="/files/mod/latest.jar"><button class="downloadbtn"><img src="images/download.png" alt="Download icon" width="20px" height="20px" /> Download Latest Version</button></a>
+    <a href="/downloads/<?= ${basename(__FILE__, '.phtml').'_versions'}[0]->id; ?>"><button class="downloadbtn"><img src="images/download.png" alt="Download icon" width="20px" height="20px" /> Download Latest Version</button></a>
 </p>
-<br><hr>
-<h3 style="text-align: center;">Older Versions of the Mod</h3>
+
+<hr>
+<h2 style="text-align: center;">Older Versions of the Mod</h2>
 <p style="text-align: center;">Want an older version of the mod? They are linked below! The oldest are at the bottom and the newest are at the top.</p>
-<br><hr><br>
 
 <div class="dlwrapper">
-<ul>
 <?php foreach (${basename(__FILE__, '.phtml').'_versions'} as $version) : ?>
-    <li>
-        <?= $version->version ?><p style="text-align: center;">
-        <a href="/download/<?= $version->id ?>"> <!-- TODO: expand the download information section -->
-        <button class="downloadbtn" >
-            <img src="images/download.png" alt="Download icon" width="20px" height="20px"/> Download
-        </button>
+    <div style="text-align: center;">
+        <h3 style="color:<?php
+            switch ($version->releaseType)
+            {
+                case 'alpha':
+                    echo '#FF5000';
+                    break;
+                case 'beta':
+                    echo '#FC8F00';
+                    break;
+                case 'pre-release':
+                    echo '#FCB400';
+                    break;
+                case 'release':
+                    echo '#6ad10a';
+                    break;
+                case 'patch':
+                    echo '#356FF4';
+                    break;
+            }
+        ?>">
+            <?= ucfirst($version->releaseType).' '.$version->version; ?>
+        </h3>
+        <table style="margin:auto;">
+            <tr>
+                <th>Minecraft version</th><th>Size</th><th>Release Date</th>
+            </tr>
+            <tr>
+                <td><?= $version->mcVersion ?></td>
+                <td><?= round($version->size / 1000000, 2) ?> MB</td>
+                <td><?= $version->releaseDate->format('jS F Y') ?></td>
+            </tr>
+        </table>
+        <a href="/downloads/<?= $version->id ?>">
+            <button class="downloadbtn">
+                <img src="images/download.png" alt="Download icon" width="20px" height="20px"/> More information and download
+            </button>
         </a>
-        <hr class="dlhr">
-    </li>
+    </div>
+    <hr class="dlhr">
 <?php endforeach ?>
-</ul>
 </div>
+
