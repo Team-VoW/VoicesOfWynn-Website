@@ -58,7 +58,7 @@ class Account extends WebpageController
         self::$views[] = 'account';
         self::$cssFiles[] = 'account';
         self::$jsFiles[] = 'account';
-        self::$jsFiles[] = 'tinymce';
+        self::$jsFiles[] = 'tinymce_bio';
         
         return true;
     }
