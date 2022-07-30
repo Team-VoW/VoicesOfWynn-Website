@@ -45,3 +45,17 @@ main {
     margin-right:auto;
     max-width:100%;
 }
+
+#filename {
+    width: 26rem;
+}
+.error {
+    text-align: center;
+    color: red;
+}
+
+#release-published {
+    margin: 2rem;
+    text-align: center;
+    color: green;
+}

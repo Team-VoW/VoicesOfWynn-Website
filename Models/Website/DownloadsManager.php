@@ -6,7 +6,7 @@ use VoicesOfWynn\Models\Db;
 
 class DownloadsManager
 {
-    private const ROOT_DOWNLOADS_DIRECTORY = 'files/mod';
+    public const ROOT_DOWNLOADS_DIRECTORY = 'files/mod';
     private const FILE_NAME_FORMATS = 'VoicesOfWynn-MC{mcVersion}-v{version}.jar';
 
     /**
@@ -64,9 +64,36 @@ class DownloadsManager
         return $db->executeQuery('UPDATE download SET downloaded_times = downloaded_times + 1 WHERE download_id = ?', array($downloadId));
     }
 
-    public function createDownload(string $type, string $mcVersion, string $version, string $changelog, string $path)
+    /**
+     * @param string $type Type of the release, must be one of the constants of the ModDownload class
+     * @param string $mcVersion Version of Minecraft for which this download is made
+     * @param string $version Version of the mod
+     * @param string $changelog HTML text containing the changelog for the new version
+     * @param string $filename Name of the file on the server. NOTE: The .jar file must be uploaded into the /files/mod directory when this function is run
+     * @return int ID of the new release if the download has successfully been created
+     * @throws UserException In case one or more of the provided strings is invalid
+     */
+    public function createDownload(string $type, string $mcVersion, string $version, string $changelog, string $filename): int
     {
-        //TODO
+        $download = new ModDownload(array(
+            'type' => $type,
+            'mcVersion' => $mcVersion,
+            'version' => $version,
+            'changelog' => $changelog,
+            'filename' => $filename,
+        ));
+
+        $download->validate();
+
+        $db = new Db('Website/DbInfo.ini');
+        return $db->executeQuery('INSERT INTO download(release_type,mc_version,version,changelog,filename,size) VALUES (?,?,?,?,?,?)', array(
+            $download->releaseType,
+            $download->mcVersion,
+            $download->version,
+            $download->changelog,
+            $download->fileName,
+            $download->size
+        ), true);
     }
 }
 

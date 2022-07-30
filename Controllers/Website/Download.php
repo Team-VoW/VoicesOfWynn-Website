@@ -13,9 +13,16 @@ class Download extends Controller
      */
     public function process(array $args): int
     {
-        $downloadId = $args[0];
-        $downloadManager = new DownloadsManager();
-        $downloadManager->downloadFile($downloadId);
+        switch ($args[0]) {
+            case 'view':
+                //TODO render a release details webpage
+                break;
+            case 'get':
+                $downloadId = $args[0];
+                $downloadManager = new DownloadsManager();
+                $downloadManager->downloadFile($downloadId);
+                break;
+        }
 
         return true;
     }

@@ -285,6 +285,8 @@ class AccountDataValidator
   
   public function sanitizeBio(string $bio): string
 	{
+        /* NOTE: This function is also used to sanitize changelogs for downloads written by admins */
+
 		//Unify linebreaks
 		$bio = str_replace('<br>', '<br />', $bio);
 		
