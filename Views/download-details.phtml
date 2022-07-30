@@ -1,0 +1,64 @@
+<?php $downloadDetails = ${str_replace('-', '', basename(__FILE__, '.phtml')).'_download'}; ?>
+<h1>Download Voices of Wynn</h1>
+<h2><?= $downloadDetails->version; ?></h2>
+<span>Released on <?= $downloadDetails->releaseDate->format('jS F Y') ?></span>
+<table>
+    <tr>
+        <td>Version type</td>
+        <td id="release-type" title="<?php
+        switch ($downloadDetails->releaseType) {
+            case 'alpha':
+                echo 'This version comes from an early development and might be very unstable.
+It should be only used by testers who are looking for issues to report.';
+                break;
+            case 'beta':
+                echo 'This version is supposed to contain some bugs, but should be relatively stable.
+If you decide to use this version and encounter a bug, please report it on our Discord.';
+                break;
+            case 'pre-release':
+                echo 'This version is most likely stable and can be used by regular users, although a rare bug might occur.';
+                break;
+            case 'release':
+                echo 'This version has been thoroughly tested and can be safely used by all users.';
+                break;
+            case 'patch':
+                echo 'This version fixes some bugs that somewhat slip into the previous release.
+It doesn\'t contain much new content';
+                break;
+        }
+        ?>"><?= ucfirst($downloadDetails->releaseType) ?></td>
+    </tr>
+    <tr>
+        <td>Mod version</td>
+        <td><?= $downloadDetails->version ?></td>
+    </tr>
+    <tr>
+        <td>Minecraft version</td>
+        <td><?= $downloadDetails->mcVersion ?></td>
+    </tr>
+    <tr>
+        <td>Size</td>
+        <td><?= round($downloadDetails->size / 1000000, 2) ?> MB</td>
+    </tr>
+    <tr>
+        <td>Downloaded times</td>
+        <td id="download-count"><?= $downloadDetails->downloadedTimes ?></td>
+    </tr>
+</table>
+
+<a href="/download/<?= $downloadDetails->id ?>">
+    <button id="download-btn">Download this file</button>
+</a>
+<span id="download-started">Your download has started.</span>
+<br>
+<small id="report-download-issue">
+    <a href="mailto:team@voicesofwynn.com?subject=Problems%20downloading%20mod%20version%20<?= urlencode($downloadDetails->version) ?>&body=Feel%20free%20to%20include%20any%20additional%20information%20here.%0AOur%20team%20will%20check%20the%20download%20as%20soon%20as%20they%20can.%0A%0AIn%20the%20meantime%2C%20you%20can%20try%20to%20download%20a%20different%20version%20or%20join%20our%20Discord%20and%20ask%20for%20an%20alternative%20download.">
+        Report a problem with this download
+    </a>
+</small>
+
+<h2>Changelog</h2>
+<article id="changelog">
+    <?= $downloadDetails->changelog ?>
+</article>
+

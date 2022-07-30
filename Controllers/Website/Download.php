@@ -2,10 +2,11 @@
 
 namespace VoicesOfWynn\Controllers\Website;
 
+use VoicesOfWynn\Models\Db;
 use VoicesOfWynn\Models\Website\DownloadsManager;
-use VoicesOfWynn\Controllers\Controller;
+use VoicesOfWynn\Models\Website\ModDownload;
 
-class Download extends Controller
+class Download extends WebpageController
 {
 
     /**
@@ -15,13 +16,35 @@ class Download extends Controller
     {
         switch ($args[0]) {
             case 'view':
-                //TODO render a release details webpage
+                self::$data['base_title'] = 'Download Voices of Wynn';
+                self::$data['base_description'] = 'Download your desired version of the mod quickly and easily.';
+                self::$data['base_keywords'] = 'Minecraft,Wynncraft,Mod,Voice,Download';
+
+                self::$views[] = "download-details";
+                self::$cssFiles[] = "download-details";
+                self::$jsFiles[] = "download-details";
+
+                $result = (new Db('Website/DbInfo.ini'))->fetchQuery(
+                    'SELECT * FROM download WHERE download_id = ? LIMIT 1;',
+                    array($args[1])
+                );
+                if ($result === false) {
+                    return 404;
+                }
+                $downloadObject = new ModDownload($result);
+                self::$data['downloaddetails_download'] = $downloadObject;
+
                 break;
             case 'get':
-                $downloadId = $args[0];
+                $downloadId = (int)$args[1];
                 $downloadManager = new DownloadsManager();
-                $downloadManager->downloadFile($downloadId);
-                break;
+                $result = $downloadManager->downloadFile($downloadId);
+                if ($result) {
+                    exit;
+                }
+                else {
+                    return 404;
+                }
         }
 
         return true;
