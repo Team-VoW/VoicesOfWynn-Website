@@ -296,7 +296,7 @@ class AccountDataValidator
 		$config->set('HTML.DefinitionRev', 1);
 		//$config->set('Cache.DefinitionImpl', null); // TODO: remove this later!
 
-		$config->set('HTML.Allowed', 'p[style],span[style],strong,em,sup,sub,h1,h2,h3,a[title|href|target|rel],img[src|alt|width|height],br');
+		$config->set('HTML.Allowed', 'p[style],span[style],strong,em,ul,ol,li,h1,h2,h3,a[title|href|target|rel],img[src|alt|width|height],br');
 		$config->set('Attr.AllowedClasses', '');
 		$config->set('CSS.MaxImgLength', '800px');
 		$config->set('CSS.AllowedFonts', '');

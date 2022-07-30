@@ -4,10 +4,10 @@ $.getScript("https://cdn.tiny.cloud/1/kpiricxjt3ddplrd8k4ex78xpjn6i6iy99gp4lln5p
 		tinymce.init({
 			selector: '#changelog',
 			height: 500,
-			toolbar: 'undo redo cut copy paste | removeformat | bold italic underline strikethrough | h1 h2 h3 superscript subscript | link image | alignleft aligncenter alignright alignjustify',
+			toolbar: 'undo redo cut copy paste | removeformat | bold italic underline strikethrough | h1 h2 h3 bullist numlist | link image | alignleft aligncenter alignright alignjustify',
 			menubar: '',
 			contextmenu: '',
-			plugins: 'link image'
+			plugins: 'lists link image'
 		});
 	}
 );
