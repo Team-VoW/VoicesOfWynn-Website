@@ -1,8 +1,12 @@
+<!-- NOTE: inline style tags are being replaced with corresponding classes,
+this, however, will not work until better-downloads is merged with newest
+styling branch. -->
+
 <?php $downloadDetails = ${str_replace('-', '', basename(__FILE__, '.phtml')).'_download'}; ?>
 <h1>Download Voices of Wynn</h1>
 <h2><?= $downloadDetails->version; ?></h2>
-<span>Released on <?= $downloadDetails->releaseDate->format('jS F Y') ?></span>
-<table>
+<p class="txt-c"><span>Released on <?= $downloadDetails->releaseDate->format('jS F Y') ?></span></p>
+<table class="dl-details-table">
     <tr>
         <td>Version type</td>
         <td id="release-type" title="<?php
@@ -46,9 +50,11 @@ It doesn\'t contain much new content';
     </tr>
 </table>
 
+<p class="txt-c">
 <a href="/download/<?= $downloadDetails->id ?>">
-    <button id="download-btn">Download this file</button>
+    <button id="download-btn" class="downloadbtn">Download this file</button>
 </a>
+</p>
 <span id="download-started">Your download has started.</span>
 <br>
 <small id="report-download-issue">
@@ -56,7 +62,7 @@ It doesn\'t contain much new content';
         Report a problem with this download
     </a>
 </small>
-
+<hr class="hr-f">
 <h2>Changelog</h2>
 <article id="changelog">
     <?= $downloadDetails->changelog ?>

@@ -1,3 +1,8 @@
+.dl-details-table {
+    position: relative;
+    left: 31%;
+}
+
 #download-started {
     display:none;
     color: green;

@@ -1,15 +1,19 @@
+<!-- NOTE: inline style tags are being replaced with corresponding classes,
+this, however, will not work until better-downloads is merged with newest
+styling branch. -->
+
 <h1>Download Voices of Wynn</h1>
-<p style="text-align: center;">
+<p class="txt-c">
     <a href="/downloads/<?= ${basename(__FILE__, '.phtml').'_versions'}[0]->id; ?>"><button class="downloadbtn"><img src="images/download.png" alt="Download icon" width="20px" height="20px" /> Download Latest Version</button></a>
 </p>
 
 <hr>
-<h2 style="text-align: center;">Older Versions of the Mod</h2>
-<p style="text-align: center;">Want an older version of the mod? They are linked below! The oldest are at the bottom and the newest are at the top.</p>
+<h2 class="txt-c">Older Versions of the Mod</h2>
+<p class="txt-c">Want an older version of the mod? They are linked below! The oldest are at the bottom and the newest are at the top.</p>
 
 <div class="dlwrapper">
 <?php foreach (${basename(__FILE__, '.phtml').'_versions'} as $version) : ?>
-    <div style="text-align: center;">
+    <div class="txt-c">
         <h3 style="color:<?php
             switch ($version->releaseType)
             {
@@ -32,7 +36,7 @@
         ?>">
             <?= ucfirst($version->releaseType).' '.$version->version; ?>
         </h3>
-        <table style="margin:auto;">
+        <table class="m-a dl-table">
             <tr>
                 <th>Minecraft version</th><th>Size</th><th>Release Date</th><th>Times Downloaded</th>
             </tr>
