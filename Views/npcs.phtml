@@ -1,14 +1,19 @@
 <?php foreach (${basename(__FILE__, '.phtml').'_quests'} as $quest) : ?>
-<section>
+<section data-quest-id="<?= $quest->getId() ?>">
 	<h3 style="text-align: center;"><?= $quest->getName() ?></h3>
 	<table class="table-npc-management">
 		<tr>
-			<th></th><th></th><th colspan="2">Voice actor</th><th></th>
+			<th>Rearrange</th><th colspan="2">NPC</th><th colspan="2">Voice actor</th><th></th>
 		</tr>
 	<?php foreach ($quest->getNpcs() as $npc) : ?>
-		<tr>
+		<tr data-npc-id="<?= $npc->getId() ?>">
+            <td>
+                <button class="rearrange-up-btn">🔼</button>
+                <br>
+                <button class="rearrange-down-btn">🔽</button>
+            </td>
 			<td style="min-width: 150px; max-width: 150px;"><img src="dynamic/npcs/<?= $npc->getId() ?>.png" alt="NPC picture" class="avatar" /></td>
-			<td style="min-width: 150px; max-width: 150px;"><?= $npc->getName() ?></td>
+			<td style="min-width: 150px; max-width: 150px;"><a href="contents/npc/<?= $npc->getId() ?>"><?= $npc->getName() ?></a></td>
 			<?php if ($npc->getVoiceActor() === null) : ?>
                 <td style="min-width: 150px; max-width: 150px;"><img class="avatar" src="dynamic/avatars/nobody.png" alt="Profile picture"/></td>
 				<td style="min-width: 150px; max-width: 150px;"><i>Nobody</i></td>
