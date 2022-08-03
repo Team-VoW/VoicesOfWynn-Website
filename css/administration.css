@@ -53,9 +53,17 @@ main {
     text-align: center;
     color: red;
 }
-
 #release-published {
     margin: 2rem;
     text-align: center;
     color: green;
+}
+
+.rearrange-up-btn, .rearrange-down-btn {
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+}
+.rearrange-up-btn:hover, .rearrange-down-btn:hover {
+    transform: none;
 }
