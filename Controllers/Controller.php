@@ -3,46 +3,20 @@
 
 namespace VoicesOfWynn\Controllers;
 
-
+/**
+ * Base class for all controllers
+ * Can be used as a direct class directly for controllers, that are performing some kind of operation and then redirect
+ * to a different controller.
+ * Parent class for WebpageController and ApiController
+ */
 abstract class Controller
 {
-    
-    /**
-     * @var $data array Data obtained by all controllers in the process
-     */
-    protected static array $data = array();
-    
-    /**
-     * @var $views array List of views to use, from the most outer one to the most inner one
-     */
-    protected static array $views = array('base');
-    
-    /**
-     * @var $cssFiles array List of CSS files to include into the final webpage; all CSS files must be in the 'css'
-     *     folder
-     */
-    protected static array $cssFiles = array('base');
-    
-    /**
-     * @var $jsFiles array List of JS files to include into the final webpage; all JS files must be in the 'js' folder
-     */
-    protected static array $jsFiles = array('jquery','jquery.bgswitcher','bg');
-    
-    /**
-     * Controller constructor setting data for the basic view
-     * Since specific controllers don't have a constructor, this will be invoked every time a new constructor is
-     * instantiated
-     */
-    public function __construct()
-    {
-        self::$data['base_currentYear'] = date('Y');
-    }
-    
+
     /**
      * Public method processing passed data, specific for each controller
      * @param array $args Arguments to process
-     * @return bool TRUE, if everything worked as expected, FALSE otherwise
+     * @return int 1 (or TRUE), if everything worked as expected, HTTP error code otherwise
      */
-    public abstract function process(array $args): bool;
+    public abstract function process(array $args): int;
 }
 

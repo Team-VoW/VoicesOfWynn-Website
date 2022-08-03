@@ -5,6 +5,11 @@ main {
     max-width:100%;
 }
 
+.checkbox-large {
+    width: 5vh;
+    height: 5vh;
+}
+
 table {
     border-spacing: 10px 40px!important;
 }
@@ -59,3 +64,25 @@ td th {
 .clearavatarbtn:hover { border-color: rgb(214, 133, 53);}
 .deletebtn { background: rgb(255, 0, 0);}
 .deletebtn:hover { border-color: rgb(221, 55, 55);}
+
+#filename {
+    width: 26rem;
+}
+.error {
+    text-align: center;
+    color: red;
+}
+#release-published {
+    margin: 2rem;
+    text-align: center;
+    color: green;
+}
+
+.rearrange-up-btn, .rearrange-down-btn {
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+}
+.rearrange-up-btn:hover, .rearrange-down-btn:hover {
+    transform: none;
+}

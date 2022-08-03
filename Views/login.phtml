@@ -18,15 +18,15 @@
            size="35" maxlenght="200"
            id="password" type="password" 
            name="password" placeholder="Password"
-           
+
            <?php
         if (${basename(__FILE__, '.phtml').'_change_password'}) :
-    ?>value="<?= str_repeat('F', VoicesOfWynn\Models\User::DEFAULT_PASSWORD_LENGTH) ?>" disabled <?php
+    ?>value="<?= str_repeat('F', VoicesOfWynn\Models\Website\User::DEFAULT_PASSWORD_LENGTH) ?>" disabled <?php
     endif ?>/>
     </div>
-    
+
     <?php if (${basename(__FILE__, '.phtml').'_change_password'}) : ?>
-        <p>You logged in using a temporary password. You need to set a new password before proceeding (<?= VoicesOfWynn\Models\AccountDataValidator::PASSWORD_MIN_LENGTH ?> characters minimum).</p>
+        <p>You logged in using a temporary password. You need to set a new password before proceeding (<?= \VoicesOfWynn\Models\Website\AccountDataValidator::PASSWORD_MIN_LENGTH ?> characters minimum).</p>
         <label for="new-password">New Password</label>
         <input id="new-password" type="password" name="newPassword" />
     <?php endif ?>

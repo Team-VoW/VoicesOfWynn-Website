@@ -14,11 +14,11 @@ table {
     justify-content: space-around;
 }
 
-.buttons-column>a {
+.buttons-column>span {
     margin: 0!important;
 }
 
-.buttons-column>a>button{
+.buttons-column>span>button{
     font-size: 13px;
     border-radius: 0;
     min-width: 125px;

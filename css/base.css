@@ -1,4 +1,4 @@
-/* 
+/*
 _______________ CONTENTS _______________
 |        1) General styling             |
 |        2) Specific styling            |
@@ -8,7 +8,7 @@ _______________ CONTENTS _______________
     NOTE: if code is overtaken/slightly edited from the original
           version of classless.css it is marked with "classless.css".
           The original classless.css can be found here:
-            https://github.com/emareg/classlesscss 
+            https://github.com/emareg/classlesscss
 */
 
 
@@ -29,10 +29,10 @@ _______________ CONTENTS _______________
 * {box-sizing: border-box; border-spacing: 0;}                                      /* classless.css */
 
         /* body styling, default layout */
-body { 
+body {
     margin: auto;                                                                   /* classless.css */
-	max-width: 50rem; 
-	padding: 2rem 0.5rem 0rem; 
+	max-width: 50rem;
+	padding: 2rem 0.5rem 0rem;
 	overflow-x: hidden;
 }
 body > div:not(.tox) {
@@ -77,10 +77,10 @@ footer { margin: 10rem 0rem 0rem; }                                             
 
         /* default styling for a lot of stuffs :') */
 header, footer, figure ,table, video, blockquote,                                   /* classless.css */
-ul, ol, dl, fieldset, pre, pre > code { 
-	display: block; 
+ul, ol, dl, fieldset, pre, pre > code {
+	display: block;
 	margin: 0.5rem 0rem 1rem;
-	width: 100%; 
+	width: 100%;
 	overflow-x: auto;
 	overflow-y: hidden;
 }
@@ -91,7 +91,7 @@ fieldset { border-radius: 5px; }
 
 
         /* headings */
-h1,h2,h3,h4,h5,h6 { 
+h1,h2,h3,h4,h5,h6 {
     margin: 1.5rem 0rem 0rem;
     padding: 0.3rem 0;
     font-family: minecraft;
@@ -156,7 +156,7 @@ button img { width: 20px; height: 20px; vertical-align: bottom; }
     classes */
 
 
-input { 
+input {
     border-right: none; border-left: none; border-top: none;
     border-bottom: 4px solid gray;
     border-radius: 3px;
@@ -185,9 +185,9 @@ label{font-style: italic;}                                                      
 
         /* lists */
 li,dd { margin-bottom: 0.5rem; }                                                    /* classless.css */
-dt{font-weight: bold;}                                                              /* classless.css */ 
-/* ul { width: auto; 
-    display: flex; flex-direction: row; flex-wrap: wrap; 
+dt{font-weight: bold;}                                                              /* classless.css */
+/* ul { width: auto;
+    display: flex; flex-direction: row; flex-wrap: wrap;
     justify-content: center; }   */
 
         /* tables */
@@ -222,7 +222,7 @@ br { margin-top: 2rem; }
         /* grid */
 .row {                                                                              /* classless.css */
 	margin: 0 auto;
-	display: flex; 
+	display: flex;
 	margin: 0 -0.5rem;
 	align-items: stretch;
 	flex-wrap: wrap;
@@ -233,13 +233,13 @@ br { margin-top: 2rem; }
 	padding-left: 15px;
 }
 .row .col   {                                                                       /* classless.css */
-	flex: 1 1 100%; 
+	flex: 1 1 100%;
 	margin: 0 auto;
 	position: relative;
 	left: 50%;
 }
 .row .col-2 {                                                                       /* classless.css */
-	flex: 0 0 16.66%; 
+	flex: 0 0 16.66%;
 }
 .row .col-3 {                                                                       /* classless.css */
 	flex: 0 0 25%;
@@ -247,10 +247,10 @@ br { margin-top: 2rem; }
 	justify-content: center;
 }
 .row .col-4 {                                                                       /* classless.css */
-	flex: 0 0 33.33%; 
+	flex: 0 0 33.33%;
 }
 .row .col-6 {                                                                       /* classless.css */
-	flex: 0 0 50%; 
+	flex: 0 0 50%;
 }
 
 
@@ -418,7 +418,7 @@ br { margin-top: 2rem; }
         .loginbtn:hover { border-color: #fadb76; }
 
         .logoutbtn { background: rgb(255, 83, 83); }
-        .logoutbtn:hover { border-color: rgb(255, 131, 131); }  
+        .logoutbtn:hover { border-color: rgb(255, 131, 131); }
 
         .adminbtn { background: rgb(255, 146, 45); }
         .adminbtn:hover { border-color: rgb(255, 176, 102); }
@@ -503,8 +503,8 @@ br { margin-top: 2rem; }
 
 
 @media (max-width: 62.5rem) {
-        body { 
-                width: 100%; background: whitesmoke; 
+        body {
+                width: 100%; background: whitesmoke;
                 box-shadow: none;}
         main {
                 max-width: 100%;
@@ -518,9 +518,9 @@ br { margin-top: 2rem; }
                 max-width: 100%;
                 min-width: 100%;
         }
-        p { 
+        p {
                 padding-left: .625rem;
-                padding-right: .625rem; 
+                padding-right: .625rem;
         }
         a {
                 color: none;
@@ -542,7 +542,7 @@ br { margin-top: 2rem; }
 
         .avatar0 p {text-align:left;}
 }
-    
+
 @media (max-width:29.0rem) {
         iframe { height: 8.125rem; width: 13.125rem;}
 }
