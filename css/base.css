@@ -8,6 +8,15 @@
 /*        general        */
 /*#######################*/
 
+/* ------------------------------------------------ */
+/* OVERWRITE THIS TO CORRESPONDING FILE AFTER MERGE */
+/* ------------------------------------------------ */
+/* downloads.css */
+.dl-table {
+        position: relative;
+        left: 11%;
+}
+
 body > div:not(.tox) {
     position: fixed!important;
     width: 100%!important;

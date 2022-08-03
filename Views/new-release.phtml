@@ -1,0 +1,81 @@
+<?php if (@${str_replace('-', '', basename(__FILE__, '.phtml')).'_releaseId'}) : ?>
+<div id="release-published">
+    The release has successfully been published.<br>
+    Check it out on <a href="/downloads/<?= @${str_replace('-', '', basename(__FILE__, '.phtml')).'_releaseId'} ?>">its webpage</a>.
+</div>
+<?php else : ?>
+<h2 style="text-align: center;">Create a new release</h2>
+<p>
+    To create a new release, you must first log in to FTP (login details will be provided by Shady#2948 upon request)
+    and upload the .jar file into the 📁<code>files/mod</code> folder. Note the name of the file and fill it in the form
+    below, along with other details about the release.
+</p>
+<div style="text-align: center;
+display: block;">
+    <form method="post" class="newaccform">
+        <label for="type">Release type</label><br>
+        <select name="type" id="type" required>
+            <option selected disabled hidden></option>
+            <option value="alpha"<?php if (@${str_replace('-', '', basename(__FILE__, '.phtml')).'_type'} === 'alpha') : ?> selected<?php endif ?>>Alpha</option>
+            <option value="beta"<?php if (@${str_replace('-', '', basename(__FILE__, '.phtml')).'_type'} === 'beta') : ?> selected<?php endif ?>>Beta</option>
+            <option value="pre-release"<?php if (@${str_replace('-', '', basename(__FILE__, '.phtml')).'_type'} === 'pre-release') : ?> selected<?php endif ?>>Pre-release</option>
+            <option value="release"<?php if (@${str_replace('-', '', basename(__FILE__, '.phtml')).'_type'}=== 'release') : ?> selected<?php endif ?>>Release</option>
+            <option value="patch"<?php if (@${str_replace('-', '', basename(__FILE__, '.phtml')).'_type'} === 'patch') : ?> selected<?php endif ?>>Patch</option>
+        </select><br><br>
+
+        <div style="display: flex; justify-content: center;">
+            <div style="margin: 10px;">
+                <label for="version">Mod version</label><br>
+                <input type="text" name="version" id="version" maxlength="8" placeholder="1.0.0" value="<?= @${str_replace('-', '', basename(__FILE__, '.phtml')).'_version'};?>" required/><br><br>
+            </div>
+
+            <div style="margin: 10px;">
+                <label for="mcVersion">Minecraft version</label><br>
+                <input type="text" name="mcVersion" id="mcVersion" maxlength="8" placeholder="1.12.2" value="<?= @${str_replace('-', '', basename(__FILE__, '.phtml')).'_mc_version'};?>" required/><br><br>
+            </div>
+        </div>
+
+        <label for="filename">File name on the server</label><br>
+        <input type="text" name="filename" id="filename" placeholder="VoicesOfWynn-MC1.12.2-v1.0.0.jar" value="<?= @${str_replace('-', '', basename(__FILE__, '.phtml')).'_filename'};?>" required/><br><br>
+
+        <label for="changelog">Changelog</label><br>
+        <textarea name="changelog" id="changelog">
+            <?php if (empty(${str_replace('-', '', basename(__FILE__, '.phtml')).'_changelog'})) : ?>
+                <i style="color: #070;">The text below is an example of a proper changelog. Replace it with your own text.</i>
+                <h1>1.0.0 is out!</h1>
+                <p>This is a major release. We added voices for all quest NPCs across all provinces and fixed some issues with playing the sounds.</p>
+                <p>Updating to this version is <i>strongly</i> recommended, as the older versions contain various bugs and are no longer supported</p>
+                <h2>New Voices</h2>
+                <ul>
+                    <li><a href="https://vow.local/contents/npc/14">Jenprest</a> (voiced by <a href="https://vow.local/cast/58">Dani</a>)</li>
+                    <li><a href="https://vow.local/contents/npc/18">Drale</a> (voiced by <a href="https://vow.local/cast/63">Trįçkpåtøż</a>)</li>
+                    <li><a href="https://vow.local/contents/npc/27">Asher</a> (voiced by <a href="https://vow.local/cast/81">Ēthan</a>)</li>
+                    <li><a href="https://vow.local/contents/npc/47">Nohno</a> (voiced by <a href="https://vow.local/cast/25">Liferay</a>)</li>
+                    <li><a href="https://vow.local/contents/npc/81">Santa</a> (voiced by <a href="https://vow.local/cast/130">ColinCarlton</a>)</li>
+                    <li>...</li>
+                </ul>
+                <h2>Recast NPCs</h2>
+                <ul>
+                    <li><a href="https://vow.local/contents/npc/48">Merloni</a> (now voiced by <a href="https://vow.local/cast/294">Dani</a>)</li>
+                    <li><a href="https://vow.local/contents/npc/49">General Graken</a> (now voiced by <a href="https://vow.local/cast/302">Bubblemage</a>)</li>
+                    <li><a href="https://vow.local/contents/npc/68">Laen</a> (now voiced by <a href="https://vow.local/cast/296">TomDiamond</a>)</li>
+                    <li>...</li>
+                </ul>
+                <h2>Other Changes</h2>
+                <ul>
+                    <li>Fixed the bug with recordings of the same line not playing again unless the player logs out and in.</li>
+                    <li>Added automatic unvoiced line reporter, that sends us all unvoiced dialogue lines.</li>
+                    <li>Speedrun mode is now toggleable with <b>/toggle speedrun</b></li>
+                </ul>
+            <?php else : ?>
+                <?= ${str_replace('-', '', basename(__FILE__, '.phtml')).'_changelog'} ?>
+            <?php endif ?>
+        </textarea><br>
+
+        <input type="submit" value="Publish"/>
+    </form>
+</div>
+<div class="error"><?= ${str_replace('-', '', basename(__FILE__, '.phtml')).'_error'}; ?></div>
+
+<button class="backbtn" onclick="history.go(-1)">< Go Back</button>
+<?php endif ?>

@@ -285,6 +285,8 @@ class AccountDataValidator
   
   public function sanitizeBio(string $bio): string
 	{
+        /* NOTE: This function is also used to sanitize changelogs for downloads written by admins */
+
 		//Unify linebreaks
 		$bio = str_replace('<br>', '<br />', $bio);
 		
@@ -294,7 +296,7 @@ class AccountDataValidator
 		$config->set('HTML.DefinitionRev', 1);
 		//$config->set('Cache.DefinitionImpl', null); // TODO: remove this later!
 
-		$config->set('HTML.Allowed', 'p[style],span[style],strong,em,sup,sub,h1,h2,h3,a[title|href|target|rel],img[src|alt|width|height],br');
+		$config->set('HTML.Allowed', 'p[style],span[style],strong,em,ul,ol,li,h1,h2,h3,a[title|href|target|rel],img[src|alt|width|height],br');
 		$config->set('Attr.AllowedClasses', '');
 		$config->set('CSS.MaxImgLength', '800px');
 		$config->set('CSS.AllowedFonts', '');

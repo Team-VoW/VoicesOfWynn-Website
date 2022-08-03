@@ -46,6 +46,19 @@ main {
     max-width:100%;
 }
 
+#filename {
+    width: 26rem;
+}
+.error {
+    text-align: center;
+    color: red;
+}
+#release-published {
+    margin: 2rem;
+    text-align: center;
+    color: green;
+}
+
 .rearrange-up-btn, .rearrange-down-btn {
     border: 0;
     border-radius: 0;

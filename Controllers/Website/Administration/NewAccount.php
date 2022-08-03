@@ -24,7 +24,7 @@ class NewAccount extends WebpageController
         }
     }
     
-    public function get(array $args): bool
+    public function get(array $args): int
     {
         self::$data['base_description'] = 'Tool for the administrators to create new accounts for new contributors.';
         
@@ -35,7 +35,7 @@ class NewAccount extends WebpageController
         return true;
     }
     
-    public function post(array $args): bool
+    public function post(array $args): int
     {
         $result = $this->get(array());
         

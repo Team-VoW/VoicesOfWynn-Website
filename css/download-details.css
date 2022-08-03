@@ -1,0 +1,32 @@
+.dl-details-table {
+    position: relative;
+    left: 31%;
+}
+
+#download-started {
+    display:none;
+    color: green;
+    font-weight: bold;
+}
+
+#report-download-issue {
+    display: none;
+}
+
+#report-download-issue {
+    color: orangered;
+}
+
+#release-type {
+    border-bottom: 1px dotted black;
+}
+
+#changelog {
+    border: 3px dashed black;
+    background-color: #FFFFCC;
+    padding: 2rem;
+}
+
+#changelog h1, #changelog h2, #changelog h3 {
+    margin-top: 0;
+}
