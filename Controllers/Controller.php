@@ -11,7 +11,7 @@ namespace VoicesOfWynn\Controllers;
  */
 abstract class Controller
 {
-    
+
     /**
      * Public method processing passed data, specific for each controller
      * @param array $args Arguments to process

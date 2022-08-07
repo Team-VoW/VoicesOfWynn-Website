@@ -1,27 +1,28 @@
 <script>var npcId = <?= ${basename(__FILE__, '.phtml').'_npc'}->getId() ?>;</script>
 
-<h1><?= ${basename(__FILE__, '.phtml').'_npc'}->getName() ?></h1>
+<h1 class="mb-l"><?= ${basename(__FILE__, '.phtml').'_npc'}->getName() ?></h1>
 
-<br>
-<p class="npc-va-center-img"><img class="avatar" src="dynamic/npcs/<?= ${basename(__FILE__, '.phtml').'_npc'}->getId() ?>.png" alt="NPC picture" /></p>
-<br><hr>
-<p style="text-align: center;">
-    <strong>Voice actor: <br></strong>
+<p class="npc-va-center-img txt-c mb-l">
+    <img class="avatar" src="dynamic/npcs/<?= ${basename(__FILE__, '.phtml').'_npc'}->getId() ?>.png" alt="NPC picture" width="200px" height="200px"/>
+</p>
+<hr class="hr-f">
+<p class="txt-c">
+    <strong class="lb-a">Voice actor: </strong>
     <?php if (${basename(__FILE__, '.phtml').'_voice_actor'} === null) : ?>
         <img id="voice-actor-avatar" class="avatarcontents" src="dynamic/avatars/nobody.png" alt="Profile picture" />
-        <span id="voice-actor-name"><br><i>Nobody</i></span>
-        <hr>
+        <span id="voice-actor-name" class="lb-b"><i>Nobody</i></span>
+        <hr class="hr-f">
     <?php else : ?>
         <a class="valink" href="cast/<?= ${basename(__FILE__, '.phtml').'_voice_actor'}->getId() ?>">
             <img id="voice-actor-avatar" class="avatarcontents" src="dynamic/avatars/<?= ${basename(__FILE__, '.phtml').'_voice_actor'}->getAvatarLink() ?>" alt="Profile picture" />
-            <span id="voice-actor-name"><br><?= ${basename(__FILE__, '.phtml').'_voice_actor'}->getName() ?></span>
+            <span id="voice-actor-name" class="lb-b"><?= ${basename(__FILE__, '.phtml').'_voice_actor'}->getName() ?></span>
         </a>
-        <hr>
+        <hr class="hr-f">
     <?php endif ?>
     <?php if (${basename(__FILE__, '.phtml').'_admin'}) : ?>
-        <p style="text-align: center;"><button id="change-actor-btn">Change</button></p><br>
+        <p class="txt-c mb-l"><button id="change-actor-btn">Change</button></p>
         <form id="voice-actor-form">
-            <select name="actor">
+            <select name="actor" class="mb-d">
                 <?php if (${basename(__FILE__, '.phtml').'_voice_actor'} === null) : ?>
                     <option selected disabled hidden></option>
                 <?php endif ?>
@@ -32,14 +33,14 @@
                     <option value="<?= $vactor->getId() ?>" data-avatar-link="<?= $vactor->getAvatarLink() ?>"><?= $vactor->getName() ?></option>
                     <?php endif ?>
                 <?php endforeach ?>
-            </select><br><br>
+            </select>
             <input type="submit" value="Confirm" id="va-confirm-change"/>
         </form>
-        <hr>
+        <hr class="hr-f">
     <?php endif ?>
 </p>
 
-<h3 style="text-align: center;">Recordings</h3>
+<h3 class="txt-c">Recordings</h3>
 <?php foreach (${basename(__FILE__, '.phtml').'_quest_recordings'} as $quest) : ?>
 
 <div class="reccenter">
@@ -50,24 +51,24 @@
         </tr>
 	    <?php $recordings = $quest->getNpcs()[0]->getRecordings(); ?>
         <?php foreach ($recordings as $recording) : ?>
-        <tr>
-            <td># <?= $recording->line ?></td>
-            <td>
+        <tr class="voting-audio-box">
+            <td class="ws-nw line-count"># <?= $recording->line ?></td>
+            <td class="the-recording lb-a">
                 <audio controls>
                     <source src="dynamic/recordings/<?= $recording->file ?>" type="audio/ogg">
                     Your browser does not support the OGG audio format.
                 </audio>
             </td>
-            <td>
+            <td class="voting-buttons">
                 <button class="upvote<?php if (in_array($recording->id, ${basename(__FILE__, '.phtml').'_upvoted'})) : ?> clicked<?php endif ?>" data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>">👍 <span><?= $recording->upvotes ?></span></button>
             </td>
-            <td>
+            <td class="voting-buttons">
                 <button class="downvote<?php if (in_array($recording->id, ${basename(__FILE__, '.phtml').'_downvoted'})) : ?> clicked<?php endif ?>" data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>">👎 <span><?= $recording->downvotes ?></span></button>
             </td>
-            <td>
+            <td class="voting-buttons">
                 <a href="contents/npc/<?= $recording->npcId ?>/comments/<?= $recording->id ?>"><button class="commentbtn">💬 <span><?= $recording->comments ?></span></button></a>
             </td>
-            <td>
+            <td class="voting-buttons">
                 <?php if (${basename(__FILE__, '.phtml').'_admin'}) : ?>
                     <button class="delete-recording-btn" data-recording-id="<?= $recording->id ?>">×</button>
                 <?php endif ?>

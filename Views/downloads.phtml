@@ -3,15 +3,15 @@ this, however, will not work until better-downloads is merged with newest
 styling branch. -->
 
 <h1>Download Voices of Wynn</h1>
-<p class="txt-c">
+<p class="txt-c mb-l">
     <a href="/downloads/<?= ${basename(__FILE__, '.phtml').'_versions'}[0]->id; ?>"><button class="downloadbtn"><img src="images/download.png" alt="Download icon" width="20px" height="20px" /> Download Latest Version</button></a>
 </p>
 
-<hr>
+<hr class="hr-f">
 <h2 class="txt-c">Older Versions of the Mod</h2>
-<p class="txt-c">Want an older version of the mod? They are linked below! The oldest are at the bottom and the newest are at the top.</p>
+<p class="txt-c mb-l">Want an older version of the mod? They are linked below! The oldest are at the bottom and the newest are at the top.</p>
 
-<div class="dlwrapper">
+<div class="download-wrapper mt-l">
 <?php foreach (${basename(__FILE__, '.phtml').'_versions'} as $version) : ?>
     <div class="txt-c">
         <h3 style="color:<?php

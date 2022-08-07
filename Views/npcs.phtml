@@ -1,6 +1,6 @@
 <?php foreach (${basename(__FILE__, '.phtml').'_quests'} as $quest) : ?>
 <section data-quest-id="<?= $quest->getId() ?>">
-	<h3 style="text-align: center;"><?= $quest->getName() ?></h3>
+	<h3 class="txt-c"><?= $quest->getName() ?></h3>
 	<table class="table-npc-management">
 		<tr>
 			<th>Rearrange</th><th colspan="2">NPC</th><th colspan="2">Voice actor</th><th></th>
@@ -12,18 +12,18 @@
                 <br>
                 <button class="rearrange-down-btn">🔽</button>
             </td>
-			<td style="min-width: 150px; max-width: 150px;"><img src="dynamic/npcs/<?= $npc->getId() ?>.png" alt="NPC picture" class="avatar" /></td>
-			<td style="min-width: 150px; max-width: 150px;"><a href="contents/npc/<?= $npc->getId() ?>"><?= $npc->getName() ?></a></td>
+			<td class="width-150"><img src="dynamic/npcs/<?= $npc->getId() ?>.png" alt="NPC picture" class="avatar" /></td>
+			<td class="width-150 pl-l"><a href="contents/npc/<?= $npc->getId() ?>"><?= $npc->getName() ?></a></td>
 			<?php if ($npc->getVoiceActor() === null) : ?>
-                <td style="min-width: 150px; max-width: 150px;"><img class="avatar" src="dynamic/avatars/nobody.png" alt="Profile picture"/></td>
-				<td style="min-width: 150px; max-width: 150px;"><i>Nobody</i></td>
+                <td class="width-150"><img class="avatar" src="dynamic/avatars/nobody.png" alt="Profile picture"/></td>
+				<td class="width-150 pl-l"><i>Nobody</i></td>
 			<?php else : ?>
-                <td style="min-width: 150px; max-width: 150px;"><img class="avatar" src="dynamic/avatars/<?= $npc->getVoiceActor()->getAvatarLink() ?>" alt="Profile picture"/></td>
-				<td style="min-width: 150px; max-width: 150px;"><a href="cast/<?= $npc->getVoiceActor()->getId() ?>"><?= $npc->getVoiceActor()->getName() ?></a></td>
+                <td class="width-150"><img class="avatar admin-pfp" src="dynamic/avatars/<?= $npc->getVoiceActor()->getAvatarLink() ?>" alt="Profile picture"/></td>
+				<td class="width-150 pl-l"><a href="cast/<?= $npc->getVoiceActor()->getId() ?>"><?= $npc->getVoiceActor()->getName() ?></a></td>
 			<?php endif ?>
-			<td><a id="managelink" href="administration/npcs/manage/<?= $npc->getId() ?>" style="min-width: 150px; max-width: 150px;">Manage</a></td>
+			<td><a id="managelink" href="administration/npcs/manage/<?= $npc->getId() ?>" class="width-150">Manage</a></td>
 		</tr>
 	<?php endforeach ?>
-	</table><hr>
+	</table><hr class="hr-f">
 </section>
 <?php endforeach ?>

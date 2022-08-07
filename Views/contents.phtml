@@ -1,13 +1,13 @@
 <h1>Mod Contents</h1>
-<p style="text-align: center;">On this page you can find all voiced NPCs and listen to their lines.</p>
+<p class="txt-c">On this page you can find all voiced NPCs and listen to their lines.</p>
 
-<p style="text-align: center;">
+<p class="txt-c">
 <i>Looking for a quest in particular? Search it!</i>
 </p>
 
-<input id="q_search" type="text" name="searchbar" placeholder="Search quest..."></input>
+<p class="txt-c"><input id="q_search" class="login-form" type="text" name="searchbar" placeholder="Search quest..."></input></p>
 
-<div id="mod_contents">
+<div class="mod-contents">
 	<div id="results_container"></div>
 	<?php for ($i = 0; $i < count(${basename(__FILE__, '.phtml').'_quests'}); $i++) : ?>
 		<?php $quest = ${basename(__FILE__, '.phtml').'_quests'}[$i]; ?>
@@ -16,19 +16,14 @@
 		<?php endif ?>
 			<div class="col-4">
 				<div class="card-wrapper">
-				<div class="card npcvoice">
-					<h3 class="questName"><?= $quest->getName(); ?></h3>
+				<div class="card q-voice">
+					<h3 class="quest-name"><?= $quest->getName(); ?></h3>
 					
-					<div class="questInfo" style="margin-bottom: 0px; margin-top: 0px; padding-top: 0px; padding-bottom: 0px;">
+					<div class="quest-info" class="mb-s mt-s pt-s pb-s">
 						<?php foreach ($quest->getNpcs() as $npc) : ?>
 						<div class="quest-npcs">
-							<p style="text-align: center; margin-bottom: 0px; margin-top: 0px;"><img class="npc-avatar" src="dynamic/npcs/<?= $npc->getId() ?>.png" alt="NPC avatar" /></p>
-							<p style="text-align: center;
-										border-bottom: 1px solid black;
-										margin-top: 0px; margin-bottom: 0px;
-										padding-bottom: 15px;
-							"><a href="contents/npc/<?= $npc->getId() ?>"><?= $npc->getName() ?></a></p>
-							<br>
+							<p class="txt-c mb-s mt-s"><img class="npc-avatar mt-l" src="dynamic/npcs/<?= $npc->getId() ?>.png" alt="NPC avatar" /></p>
+							<p class="txt-c mb-s mt-s pb-l sub-line lb-a"><a href="contents/npc/<?= $npc->getId() ?>"><?= $npc->getName() ?></a></p>
 						</div>
 						<?php endforeach ?>
 						</div>

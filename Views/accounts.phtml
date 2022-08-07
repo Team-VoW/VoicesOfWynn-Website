@@ -17,14 +17,14 @@
         </tr>
         <?php foreach (${basename(__FILE__, '.phtml').'_accounts'} as $user) : ?>
             <tr data-user-id="<?= $user->getId() ?>">
-                <td id="userinfo"><?= $user->getId() ?></td>
+                <td class="userinfo"><?= $user->getId() ?></td>
                 <td><img class="avatar" src="dynamic/avatars/<?= $user->getAvatarLink() ?>" alt="Profile picture"/></td>
-                <td id="userinfo"><?= $user->getName() ?></td>
-                <td id="userinfo" style="text-align: left;"><a href="/cast/<?= $user->getId() ?>#bio" target="_blank">Bio User <?= $user->getId() ?></a></td>
+                <td class="userinfo"><?= $user->getName() ?></td>
+                <td class="userinfo" class="txt-l"><a href="/cast/<?= $user->getId() ?>#bio" target="_blank">Bio User <?= $user->getId() ?></a></td>
                 <td class="buttons-column">
-                    <span class="reset-password-link"><button class="resetpasswordbtn">Reset Password</button></span>
-                    <span class="clear-bio-link"><button class="clearbiobtn">Clear Bio</button></span>
-                    <span class="clear-avatar-link"><button class="clearavatarbtn">Clear Avatar</button></span>
+                    <span class="reset-password-link"><button class="resetpasswordbtn" class="lb-a">Reset Password</button></span>
+                    <span class="clear-bio-link"><button class="clearbiobtn" class="lb-a">Clear Bio</button></span>
+                    <span class="clear-avatar-link"><button class="clearavatarbtn" class="lb-a">Clear Avatar</button></span>
                     <span class="delete-account-link"><button class="deletebtn">Delete account</button></span>
                 </td>
                 <?php for ($i = 0; $i < count(${basename(__FILE__, '.phtml').'_roles'}); $i++) : ?>

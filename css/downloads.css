@@ -1,0 +1,31 @@
+/* ------------------------------------------------------------------
+
+styling for downloads. extra file to make the structure less
+confusing
+
+--------------------------------------------------------------------- */
+
+
+
+
+/*                                                          */
+/* _________________________ MAIN _________________________ */
+/*                                                          */
+
+
+
+    /* wrapper */
+.download-wrapper {text-align: center;}
+
+.download-wrapper ul {
+    padding: 0;
+    display: inline;
+    list-style: none;
+    text-decoration: wavy;
+}
+
+.download-wrapper li {
+    padding: 1.25rem 1.25rem;
+    border: none;
+    font-size: 20px;
+}

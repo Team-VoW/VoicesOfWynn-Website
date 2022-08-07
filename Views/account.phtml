@@ -94,21 +94,13 @@
                 Titles
             </div>
             <div class="account-edit-field-right input-change">
-                <hr class="input-change" style="display:hidden;">
+                <hr class="input-change display-none">
                 <?php foreach (${basename(__FILE__, '.phtml').'_roles'} as $role) : ?>
-                <div class="acc0" style="color:#<?= $role->color ?>; 
-                                        border-width: 1px; 
-                                        border-color: #<?= $role->color?>; 
-                                        border-radius: 1rem; 
-                                        border-style: solid; padding: 5px; 
-                                        text-align: center; display:inline-box;
-                                        min-width:150px; max-width: 150px;
-                                        float: left; margin-right: 5px;
-                                        margin-bottom: 5px;
-                                        align-items: center;">
+                <div class="acc" style="color:#<?= $role->color ?>; 
+                                        border-color: #<?= $role->color?>;">
                     <?= $role->name ?></div>
                 <?php endforeach ?>
-                <hr class="input-change" style="display:none;">
+                <hr class="input-change display-none">
             </div>
         </div>
         <div class="account-edit-row">
@@ -127,7 +119,7 @@
         </div>
     </div>
 </form>
-<p style="text-align: center;"><a href="/cast/<?= ${basename(__FILE__, '.phtml').'_id'} ?>"><button class="viewbtn">View
+<p class="txt-c"><a href="/cast/<?= ${basename(__FILE__, '.phtml').'_id'} ?>"><button class="viewbtn">View
             your portfolio</button></a></p>
 
 <button class="backbtn" onclick="history.go(-1)">

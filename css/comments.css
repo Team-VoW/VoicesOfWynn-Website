@@ -1,12 +1,16 @@
-form, #hide-form-button{
-    display: none;
-}
-input {
-    width: 100%;
-}
-#antispam {
-    height: 64px;
-}
+/* ------------------------------------------------------------------
+
+styling for comments page. it was a pain in the ass.
+
+--------------------------------------------------------------------- */
+
+
+
+/*                                                             */
+/* _________________________ DEFAULT _________________________ */
+/*                                                             */
+form, #hide-form-button { display: none; }
+input { width: 100%; }
 textarea {
     resize: vertical;
     width: 100%;
@@ -18,14 +22,34 @@ form fieldset {
     margin-right: 25%;
     width: 50%;
 }
-
 fieldset fieldset {
     width: 100%;
     margin: 0;
 }
+td { vertical-align: top; }
+
+
+
+
+/*                                                          */
+/* _________________________ FORM _________________________ */
+/*                                                          */
+
+
+
+        /* while form hidden */
+#new-comment-button, #hide-form-button {
+    background: rgb(79, 146, 221);
+}
+#new-comment-button:hover, #hide-form-button:hover {
+    border-color:  rgb(66, 126, 194);
+}
+
+        /* general */
 .comment-form-wrapper {
     background-color: whitesmoke;
 }
+
 .comment-disclaimer {
     width: 100%;
     text-align: center;
@@ -34,49 +58,94 @@ fieldset fieldset {
     text-align: center;
     display: inline-block;
 }
-.as-contributor, .as-guest{ background-color: #d1d1d1;} 
-.as-contributor.selected { background-color: cornflowerblue; border-color: #39578b;}
-.as-guest.selected { background-color: #efe867; border-color: #a5a147;}
+
 .comment-tab {
     border-top: 3px solid #d1d1d1;border-left: 3px solid #d1d1d1;border-right: 3px solid #d1d1d1;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
-    display: inline-block;
-    padding: 10px;
+    padding: .6rem;
     width: 49%;
     text-align: center;
-    z-index: 0;
     overflow: hidden;
 }
+
+        /* selection */
+#contributor-option { float: left; }
+#guest-option { float: right; }
+
+            /* if option is selected */
 .selected {
     border-bottom: none;
     transform: translateY(3px);
 }
-#contributor-option {
-    float: left;
-}
-#guest-option {
-    float: right;
-}
+            /* selection combinations */
+.as-contributor, .as-guest{ background-color: #d1d1d1;} 
 
-#comments { border: none; }
-.comment {
+.as-contributor.selected { background-color: cornflowerblue; 
+border-color: #39578b;}
+
+.as-guest.selected { background-color: #efe867; 
+border-color: #a5a147;}
+
+            /* the field shown upon selection */
+    .comment-field {
+        border-radius: 5px;
+        border-top: 3px solid #bdbdbd;
+        border-top-left-radius: 0px; border-top-right-radius: 0px;
+    }
+
+            /* spam protection at bottom of form */
+#antispam { height: 64px; }
+
+
+
+
+/*                                                              */
+/* _________________________ COMMENTS _________________________ */
+/*                                                              */
+
+
+        /* main containers */
+#comments { border: none; }                     /* for all comments */
+
+.comment {                                      /* for singular comment */
     max-height: fit-content;
     min-height: fit-content;
     width: 100%;
     border: 2px solid thistle;
     border-radius: 4px;
 }
-td {
-    vertical-align: top;
+
+        /* in comment field */
+            /* general */
+.comment-main-column {
+    width: 100%;
+    display: table-cell;
 }
 
-#new-comment-button, #hide-form-button {
-    background: rgb(79, 146, 221);
+                /* styling for avatar */
+.comment-picture { 
+    position: absolute;
+    z-index: 0;
 }
-#new-comment-button:hover, #hide-form-button:hover {
-    border-color:  rgb(66, 126, 194);
+    .comment-avatar {
+        height: 5rem;
+        width: 5rem;
+        border-radius: 5px;
+    }
+
+                /* name alignment */
+.go-to-the-fucking-image-pls {                  /* yes, thats for the name, i got frustrated stfu */
+    position: absolute;
+    left: 150px;
 }
+
+                /* deletion button */
+.comment-deletion {                             /* positioning */
+    position: relative;
+    z-index: 2;
+}
+
 .delete-comment-button {
     display: block;
     float: right;
@@ -84,21 +153,15 @@ td {
     background: rgb(255, 35, 35);
     margin-right: -10px;
 }
-.delete-comment-button:hover {
-    display: block;
-    float: right;
-    margin: 10px;
-    border-color: rgb(255, 57, 57);
-    margin-right: -10px;
-}
-.comment-main-column {
-    width: 100%;
-}
-.comment-avatar {
-    height: 80px;
-    width: 80px;
-    border-radius: 5px;
-}
+    .delete-comment-button:hover {
+        display: block;
+        float: right;
+        margin: 10px;
+        border-color: rgb(255, 57, 57);
+        margin-right: -10px;
+    }
+
+                /* badges */
 .contributor-badge {
     display: inline-block;
     font-size: small;
@@ -122,9 +185,15 @@ td {
     padding-right: 10px; padding-left: 10px;
 }
 
-.comment-container {
-    margin-top: -20px;display: block;min-width: 700%;
-}
+
+
+
+/*                                                                */
+/* _________________________ RESPONSIVE _________________________ */
+/*                                                                */
+
+
+
 @media (max-width: 1000px) {
     .comment-container {
         display: block;

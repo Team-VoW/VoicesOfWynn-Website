@@ -1,15 +1,19 @@
-<h2 style="text-align: center;">Create a new account</h2>
-<div style="text-align: center;
-display: block;" >
+<h2 class="txt-c">Create a new account</h2>
+<div class="txt-c display-block">
     <form method="post" class="newaccform">
-        <label for="name">Display name</label><br>
-        <input type="text" name="name" id="name" /><br><br>
-        <label for="discord">Discord handle</label><br>
-        <input type="text" name="discord" id="discord" /><br><br>
-        <label for="password">Password</label><br>
-        <input type="text" name="password" id="password" value="<?= ${str_replace('-', '', basename(__FILE__, '.phtml')).'_password'}; ?>" placeholder="Will be generated" readonly/><br>
-        <br>
-        <input type="submit" value="Create" />
+        <div class="pw-box">
+        <label for="name" class="mb-l lb-a">Display name</label>
+        <input class="login-form" type="text" name="name" id="name" class="mb-d"/>
+        </div>
+        <div class="pw-box">
+        <label for="discord" class="mb-l lb-b lb-a">Discord handle</label>
+        <input class="login-form" type="text" name="discord" id="discord" class="mb-d"/>
+        </div>
+        <div class="pw-box">
+        <label for="password" class="mb-l lb-b lb-a">Password</label>
+        <input class="login-form" type="text" name="password" id="password" class="mb-d lb-a" value="<?= ${str_replace('-', '', basename(__FILE__, '.phtml')).'_password'}; ?>" placeholder="Will be generated" readonly/>
+        </div>
+        <p class="lb-b mb-s mt-s"><input class="login-form submit" type="submit" value="Create" /></p>
     </form>
 </div>
 <div class="error"><?= ${str_replace('-', '', basename(__FILE__, '.phtml')).'_error'}; ?></div>

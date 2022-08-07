@@ -1,27 +1,24 @@
 <?php $voiceActor = ${basename(__FILE__, '.phtml').'_voice_actor'}; ?>
 <h1><?= $voiceActor->getName(); ?></h1>
 <?php if (!empty($voiceActor->getSocial('discord'))) : ?>
-  <h6 class="text-center text-secondary">
+  <h6 class="txt-c txt-main">
       <div id='discord-container'>
-        <img src="images/discord_icon.png" alt="Discord icon" />
-        <span class="vertical-bottom-text-span" id="discord-tag-cast"><?= $voiceActor->getSocial('discord') ?></span>
+        <img src="images/discord_icon.png" alt="Discord icon" width="50px" height="50px"/>
+        <span class="vertical-bottom-text-span arial" id="discord-tag-cast"><?= $voiceActor->getSocial('discord') ?></span>
     </div>
   </h6>
 <?php endif ?>
 
-<hr>
+<hr class="hr-f">
 
-<section class="bio">
+<section>
     <div id="socials-container">
-        <div class="socials-row text-center" id="scoials-row-1">
+        <div class="socials-row txt-c" id="scoials-row-1">
             <div class="socials-card">
-                <img id="contributerimg" src="dynamic/avatars/<?= $voiceActor->getAvatarLink() ?>" alt="Voice actor's avatar"
-                style="max-width: 10vh;
-                max-height: 10vh;
-                border-radius: 5px">
+                <img class="contributor-img lb-a" src="dynamic/avatars/<?= $voiceActor->getAvatarLink() ?>" alt="Voice actor's avatar">
 
                 <?php if (!empty($voiceActor->getEmail()) && $voiceActor->hasPublicEmail()) : ?>
-                    <br>
+
                     <a href="mailto:<?= $voiceActor->getEmail() ?>"><button class="contactbtn">
                         ✉ Contact
                     </button></a>
@@ -29,12 +26,12 @@
             </div>
         </div>
                 
-        <div class="socials-row text-center" id="socials-row-2">
+        <div class="socials-row txt-c" id="socials-row-2">
             <?php if (!empty($voiceActor->getSocial('youtube'))) : ?>
-            <div class="socials-card">
+            <div>
                 <a href="<?= $voiceActor->getSocial('youtube') ?>" target="_blank" class="youtube">
-                <span class="text-center">
-                    <img src="images/youtube_icon.png" alt="YouTube icon" /><br>
+                <span class="txt-c">
+                    <img src="images/youtube_icon.png" alt="YouTube icon" class="lb-b"/><br>
                     <button class="youtubebtn">
                         YouTube
                     </button>
@@ -45,8 +42,8 @@
             <?php if (!empty($voiceActor->getSocial('twitter'))) : ?>
             <div class="socials-card">
                 <a href="https://twitter.com/<?= $voiceActor->getSocial('twitter') ?>" target="_blank" class="twitter">
-                <span class="text-center">
-                    <img src="images/twitter_icon.png" alt="Twitter icon" /><br>
+                <span class="txt-c">
+                    <img src="images/twitter_icon.png" alt="Twitter icon" class="lb-a"/><br>
                     <button class="twitterbtn">
                         @<?= $voiceActor->getSocial('twitter') ?>
                     </button>
@@ -56,9 +53,9 @@
             <?php endif ?>
             <?php if (!empty($voiceActor->getSocial('castingcallclub'))) : ?>
             <div class="socials-card">
-                <a href="https://castingcall.club/<?= $voiceActor->getSocial('castingcallclub') ?>" target="_blank"     class="castingcallclub">
-                <span class="text-center">
-                    <img src="images/castingcallclub_icon.png" alt="Casting Call Club icon" /><br>
+                <a href="https://castingcall.club/<?= $voiceActor->getSocial('castingcallclub') ?>" target="_blank"     class="castingcallclub"><br>
+                <span class="txt-c">
+                    <img src="images/castingcallclub_icon.png" alt="Casting Call Club icon" class="lb-a"/>
                     <button class="castingcallclubbtn">
                         <?= $voiceActor->getSocial('castingcallclub') ?>
                     </button>
@@ -70,13 +67,13 @@
     </div>
     
     <hr>
-    <article class="bio0 text-center" id="bio" style="word-break:break-all;"><?= $voiceActor->getBio(); ?></article>
-    <hr id="hr-past-bio">
+    <article class="wb-a txt-c"><?= $voiceActor->getBio(); ?></article>
+    <hr class="hr-f">
 </section>
 <section>
-    <h3 class="text-center">Recordings</h3>
+    <h3 class="txt-c">Recordings</h3>
     <?php if (count(${basename(__FILE__, '.phtml').'_quest_recordings'}) === 0) : ?>
-    <i class="text-center">This contributor didn't submit any recordings.</i>
+    <p class="txt-c error-color"><i>This contributor didn't submit any recordings.</i></p>
     <?php endif ?>
     <?php foreach (${basename(__FILE__, '.phtml').'_quest_recordings'} as $quest) : ?>
     <div class="reccenter">
@@ -89,23 +86,23 @@
                 </tr>
                 <?php $recordings = $quest->getNpcs()[0]->getRecordings(); ?>
                 <?php foreach ($recordings as $recording) : ?>
-                    <tr>
-                      <td># <?= $recording->line ?></td>
-                      <td>
+                    <tr class="voting-audio-box">
+                      <td class="ws-nw line-count" rowspan="1"># <?= $recording->line ?></td>
+                      <td class="the-recording lb-a">
                           <audio controls>
                               <source src="dynamic/recordings/<?= $recording->file ?>" type="audio/ogg">
                               Oops! Your browser doesnt support the OGG format :(
                           </audio>
-                      <td>
+                      <td class="voting-buttons">
                           <button class="upvote<?php if (in_array($recording->id, ${basename(__FILE__, '.phtml').'_upvoted'})) : ?> clicked<?php endif ?>" data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>">👍 <span><?= $recording->upvotes ?></span></button>
                       </td>
-                      <td>
+                      <td class="voting-buttons">
                           <button class="downvote<?php if (in_array($recording->id, ${basename(__FILE__, '.phtml').'_downvoted'})) : ?> clicked<?php endif ?>" data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>">👎 <span><?= $recording->downvotes ?></span></button>
                       </td>
-                      <td>
+                      <td class="voting-buttons">
                           <a href="contents/npc/<?= $recording->npcId ?>/comments/<?= $recording->id ?>"><button class="commentbtn">💬 <span><?= $recording->comments ?></span></button></a>
                       </td>
-                    </tr>
+                    </tr><hr class="hr-m mobile-hr">
                 <?php endforeach ?>
             </table>
         </section>

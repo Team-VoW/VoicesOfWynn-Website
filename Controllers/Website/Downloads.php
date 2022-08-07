@@ -20,6 +20,7 @@ class Downloads extends WebpageController
 		self::$data['downloads_versions'] = $downloadsManager->listDownloads();
 
         self::$views[] = 'downloads';
+        self::$cssFiles[] = 'downloads';
         return true;
     }
 }
