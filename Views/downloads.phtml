@@ -1,7 +1,3 @@
-<!-- NOTE: inline style tags are being replaced with corresponding classes,
-this, however, will not work until better-downloads is merged with newest
-styling branch. -->
-
 <h1>Download Voices of Wynn</h1>
 <p class="txt-c mb-l">
     <a href="/downloads/<?= ${basename(__FILE__, '.phtml').'_versions'}[0]->id; ?>"><button class="downloadbtn"><img src="images/download.png" alt="Download icon" width="20px" height="20px" /> Download Latest Version</button></a>
@@ -38,9 +34,14 @@ styling branch. -->
         </h3>
         <table class="m-a dl-table">
             <tr>
-                <th>Minecraft version</th><th>Size</th><th>Release Date</th><th>Times Downloaded</th>
+                <th>Wynncraft version</th>
+                <th>Minecraft version</th>
+                <th>Size</th>
+                <th>Release Date</th>
+                <th>Times Downloaded</th>
             </tr>
             <tr>
+                <td><?= $version->wynnVersion ?></td>
                 <td><?= $version->mcVersion ?></td>
                 <td><?= round($version->size / 1000000, 2) ?> MB</td>
                 <td><?= $version->releaseDate->format('jS F Y') ?></td>
