@@ -15,6 +15,22 @@
 	<p>The mod was developed for Minecraft version <b class="monospace">1.12.2</b>. It's also compatible with Wynntils.</p>
 </div>
 <hr class="hr-f">
+<div class="faq-element question-bubble" id="data-processing">What user data does the mod collect and how are they processed?</div>
+<div class="faq-element answer-bubble">
+    <p>When you log in to Wynncraft with the mod enabled, it sends a request to our servers to check whether there's an update available and also to log some things for analytical purposes.</p>
+    <p>The main information sent to our servers with this request is a <code>sha256</code> hash of your player UUID. This hash can never be turned back into your UUID and serves as an anonymous and unique identificator of a user.</p>
+    <p>Because of how HTTP requests work, your IP (or IP of any VPN or Tor exit node used) is also visible to us. This information is also hashed using the same algorithm (server-side this time).</p>
+    <p>These two pieces of information are stored securely in our database. The hash of your IP address is deleted after 2 days at most, the hash of your UUID is kept permanently, but after two days at most, the timestamp when it was submitted is deleted.</p>
+    <p>This image probably does a better job at explaining the flow of the whole process:</p>
+    <img src="images/data-processing.svg" />
+    <p>In the end, we're left with the following statistics:</p>
+    <ol>
+        <li>How many players used our mod on any given day.</li>
+        <li>The total number of unique players who used our mod at least once.</li>
+    </ol>
+    <p>The hash of your UUID is kept to not count you into the second statistic more than once.</p>
+</div>
+<hr class="hr-f">
 <div class="faq-element question-bubble">Can I voice a character?</div>
 <div class="faq-element answer-bubble">
 	<p>Of course, we’d be more than happy to have another voice actor. Simply <a href="https://discord.gg/kuEK3XH4Y5" target="_blank">join our discord</a> and we’ll guide you from there.</p>

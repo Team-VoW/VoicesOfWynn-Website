@@ -8,3 +8,7 @@ hr { margin: 2.5rem 0; }
 }
 
 .answer-bubble { margin-left: 25%; }
+
+img {
+    max-width: 100%;
+}
