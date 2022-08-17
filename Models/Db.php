@@ -81,7 +81,7 @@ class Db
         if (!isset($this->connection)) {
             $this->connect();
         }
-        //try { //Uncomment these lines for debugging purposes, when you need to see the queries causing the errorstry {
+        //try { //Uncomment these lines for debugging purposes, when you need to see the queries causing the errors
         $statement = $this->connection->prepare($query);
         $result = $statement->execute($parameters);
         //} catch (PDOException $e) {
