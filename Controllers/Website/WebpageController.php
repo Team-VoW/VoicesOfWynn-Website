@@ -192,6 +192,7 @@ abstract class WebpageController extends Controller
                     $attr['id'] = $this->sanitize($value->id);
                     $attr['releaseType'] = $this->sanitize($value->releaseType);
                     $attr['mcVersion'] = $this->sanitize($value->mcVersion);
+                    $attr['wynnVersion'] = $this->sanitize($value->wynnVersion);
                     $attr['version'] = $this->sanitize($value->version);
                     $attr['changelog'] = $value->changelog; //Don't sanitize, dangerous tags are removed before saving to the database
                     $attr['releaseDate'] = $this->sanitize($value->releaseDate);

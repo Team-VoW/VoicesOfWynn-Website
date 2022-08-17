@@ -14,6 +14,7 @@ class ModDownload
     private const RELEASE_TYPE_PATCH = 'patch';
 
     private const MINECRAFT_VERSION_REGEX = '/^\d\.\d\d?(\.\d\d?)?$/';
+    private const WYNNCRAFT_VERSION_REGEX = '/^\d\.\d\d?(\.\d\d?)?$/';
     private const MOD_VERSION_REGEX = '/^\d\d?\.\d\d?\d?(\.\d\d?\d?)?$/';
 
     private const CHANGELOG_MAX_LENGTH = 65535; //In bytes / ASCII characters
@@ -22,6 +23,7 @@ class ModDownload
     public int $id;
     public string $releaseType;
     public string $mcVersion;
+    public string $wynnVersion;
     public string $version;
     public string $changelog;
     public DateTime $releaseDate;
@@ -50,6 +52,12 @@ class ModDownload
                 case 'minecraftVersion':
                 case 'minecraft_version':
                     $this->mcVersion = $value;
+                    break;
+                case 'wynnVersion':
+                case 'wynn_version':
+                case 'wynncraftVersion':
+                case 'wynncraft_version':
+                    $this->wynnVersion = $value;
                     break;
                 case 'version':
                     $this->version = $value;
@@ -95,6 +103,7 @@ class ModDownload
      * The following attributes are validated:
      * - releaseType
      * - mcVersion
+     * - wynnVersion
      * - version
      * - changelog
      * - fileName
@@ -111,6 +120,7 @@ class ModDownload
         if (
             empty($this->releaseType) ||
             empty($this->mcVersion) ||
+            empty($this->wynnVersion) ||
             empty($this->version) ||
             empty($this->changelog) ||
             empty($this->fileName)
@@ -132,6 +142,11 @@ class ModDownload
         //Validate Minecraft version
         if (!preg_match(self::MINECRAFT_VERSION_REGEX, $this->mcVersion)) {
             throw new UserException('Invalid format of Minecraft version');
+        }
+
+        //Validate Wynncraft version
+        if (!preg_match(self::WYNNCRAFT_VERSION_REGEX, $this->wynnVersion)) {
+            throw new UserException('Invalid format of Wynncraft version');
         }
 
         //Validate mod version

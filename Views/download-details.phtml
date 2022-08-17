@@ -37,6 +37,10 @@ It doesn\'t contain much new content';
         <td><?= $downloadDetails->version ?></td>
     </tr>
     <tr>
+        <td>Wynncraft version</td>
+        <td><?= $downloadDetails->wynnVersion ?></td>
+    </tr>
+    <tr>
         <td>Minecraft version</td>
         <td><?= $downloadDetails->mcVersion ?></td>
     </tr>
@@ -50,18 +54,26 @@ It doesn\'t contain much new content';
     </tr>
 </table>
 
-<p class="txt-c">
-<a href="/download/<?= $downloadDetails->id ?>">
-    <button id="download-btn" class="downloadbtn">Download this file</button>
-</a>
-</p>
-<span id="download-started">Your download has started.</span>
-<br>
-<small id="report-download-issue">
-    <a href="mailto:team@voicesofwynn.com?subject=Problems%20downloading%20mod%20version%20<?= urlencode($downloadDetails->version) ?>&body=Feel%20free%20to%20include%20any%20additional%20information%20here.%0AOur%20team%20will%20check%20the%20download%20as%20soon%20as%20they%20can.%0A%0AIn%20the%20meantime%2C%20you%20can%20try%20to%20download%20a%20different%20version%20or%20join%20our%20Discord%20and%20ask%20for%20an%20alternative%20download.">
-        Report a problem with this download
+<div id="download-info" class="txt-c">
+    <a href="/download/<?= $downloadDetails->id ?>">
+        <button id="download-btn" class="downloadbtn">Download this file</button>
     </a>
-</small>
+    <div id="terms" class="txt-c">
+        This mod uses a unique identificator to measure the global usage of the mod.<br>
+        Any information sent to our servers is anonymous and cannot be traced to any specific user.<br>
+        <strong>By downloading and using this mod, you agree to these terms.</strong><br>
+        To learn more about what exactly is sent and processed, read the <a href="/faq#data-processing">appropriate section in FAQ</a>.
+    </div>
+</div>
+<div class="txt-c">
+    <span id="download-started">Your download has started.</span>
+    <br>
+    <small id="report-download-issue">
+        <a href="mailto:team@voicesofwynn.com?subject=Problems%20downloading%20mod%20version%20<?= urlencode($downloadDetails->version) ?>&body=Feel%20free%20to%20include%20any%20additional%20information%20here.%0AOur%20team%20will%20check%20the%20download%20as%20soon%20as%20they%20can.%0A%0AIn%20the%20meantime%2C%20you%20can%20try%20to%20download%20a%20different%20version%20or%20join%20our%20Discord%20and%20ask%20for%20an%20alternative%20download.">
+            Report a problem with this download
+        </a>
+    </small>
+</div>
 <hr class="hr-f">
 <h2>Changelog</h2>
 <article id="changelog">

@@ -11,10 +11,13 @@
 
 #report-download-issue {
     display: none;
+    color: orangered; /* TODO: Force this to display */
 }
 
-#report-download-issue {
-    color: orangered;
+#terms {
+    color: gray;
+    display: block;
+    font-size: small;
 }
 
 #release-type {
