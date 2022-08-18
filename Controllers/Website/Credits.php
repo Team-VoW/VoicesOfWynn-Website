@@ -21,7 +21,7 @@ class Credits extends WebpageController
 		self::$data['credits_contributors'] = $cnm->getContributors();
 		
 		self::$cssFiles[] = 'credits';
-	    self::$jsFiles[] = 'credits';
+	    //self::$jsFiles[] = 'credits';
 	    self::$jsFiles[] = 'font_rescale';
         self::$views[] = 'credits';
         return true;
