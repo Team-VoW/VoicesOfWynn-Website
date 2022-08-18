@@ -140,7 +140,7 @@ abstract class WebpageController extends Controller
                 }
                 else if ($value instanceof Quest) {
                     $id = $this->sanitize($value->getId());
-                    $name = $this->sanitize($value->getName());
+                    $name = $value->getName();
                     $quest = new Quest(array('id' => $id, 'name' => $name));
                     foreach ($value->getNpcs() as $npc) {
                         $quest->addNpc($this->sanitize($npc));
