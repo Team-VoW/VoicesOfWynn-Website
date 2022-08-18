@@ -28,12 +28,14 @@ _______________ CONTENTS _______________
 :root { font: 13pt default-font-face, sans-serif; line-height: 1.5; color: #424456; } /* classless.css */
 * {box-sizing: border-box; border-spacing: 0;}                                      /* classless.css */
 
-        /* body styling, default layout */
+
 body {
-    margin: auto;                                                                   /* classless.css */
-	max-width: 50rem;
-	padding: 2rem 0.5rem 0rem;
-	overflow-x: hidden;
+  background: url(../images/Website_background.jpg);
+  background-repeat: repeat!important;
+  margin: auto;                                                                   /* classless.css */
+  max-width: 50rem;
+  padding: 2rem 0.5rem 0rem;
+  overflow-x: hidden;
 }
 body > div:not(.tox) {
     position: fixed!important;
@@ -42,9 +44,6 @@ body > div:not(.tox) {
     left: 0!important;
     top: 0!important;
     margin: 0!important;
-    background-position: center center!important;
-    background-repeat: no-repeat!important;
-    background-size: cover!important;
 }
 body > div:not(.tox) > div {
     position: fixed!important;
@@ -53,10 +52,8 @@ body > div:not(.tox) > div {
     left: 0!important;
     top: 0!important;
     margin: 0!important;
-    background-position: center center!important;
-    background-repeat: no-repeat!important;
-    background-size: cover!important;
 }
+        /* body styling, default layout */
 
         /* make main & footer fit needs */
 main {

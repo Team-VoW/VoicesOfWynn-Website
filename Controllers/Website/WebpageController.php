@@ -36,12 +36,12 @@ abstract class WebpageController extends Controller
      * @var $cssFiles array List of CSS files to include into the final webpage; all CSS files must be in the 'css'
      *     folder
      */
-    protected static array $cssFiles = array('classless', 'base');
+    protected static array $cssFiles = array('base');
 
     /**
      * @var $jsFiles array List of JS files to include into the final webpage; all JS files must be in the 'js' folder
      */
-    protected static array $jsFiles = array('jquery','jquery.bgswitcher','bg');
+    protected static array $jsFiles = array('jquery');
 
     /**
      * Controller constructor setting data for the base view and setting the Content-Type header

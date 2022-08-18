@@ -66,16 +66,15 @@ It doesn\'t contain much new content';
     </div>
 </div>
 <div class="txt-c">
-    <span id="download-started">Your download has started.</span>
-    <br>
-    <small id="report-download-issue">
+    <p class="txt-c"><span id="download-started">Your download has started.</span></p> 
+    <p class="txt-c"><small id="report-download-issue">
         <a href="mailto:team@voicesofwynn.com?subject=Problems%20downloading%20mod%20version%20<?= urlencode($downloadDetails->version) ?>&body=Feel%20free%20to%20include%20any%20additional%20information%20here.%0AOur%20team%20will%20check%20the%20download%20as%20soon%20as%20they%20can.%0A%0AIn%20the%20meantime%2C%20you%20can%20try%20to%20download%20a%20different%20version%20or%20join%20our%20Discord%20and%20ask%20for%20an%20alternative%20download.">
             Report a problem with this download
         </a>
-    </small>
+    </small></p><br>
 </div>
 <hr class="hr-f">
-<h2>Changelog</h2>
+<div class="default-font">Changelog</div>
 <article id="changelog">
     <?= $downloadDetails->changelog ?>
 </article>

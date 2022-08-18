@@ -19,6 +19,7 @@ else ://
     height: 400px; /* Default value that is changed by JavaScript once the webpage fully loads */
     width: 25%;
     margin-bottom: .625rem;
+    margin-right: 20px;
 }
 
 .card {

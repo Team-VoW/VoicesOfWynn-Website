@@ -29,3 +29,22 @@ confusing
     border: none;
     font-size: 20px;
 }
+
+.dl-details-table {
+    position: relative;
+    left: 0%;  /* da bin ich mir nicht mehr sicher, auch nicht ganz so best-practice aber juckt grad nicht */
+}
+
+@media (max-width: 62.5rem) {
+  .dl-details-table {
+    position: relative;
+    left: 5%;
+  }
+}
+
+@media (max-width:29.0rem) {
+  .dl-details-table {
+    position: relative;
+    left: -5%;
+  }
+}
