@@ -135,7 +135,6 @@ a:hover .roles {
         flex: 0 0 25%;
     }
     .card {
-        position: absolute;
         z-index: 2;
     
         display: inline-block;
@@ -153,27 +152,21 @@ a:hover .roles {
     
         box-shadow: .1rem .1rem .4rem 0 #777;
         background: aliceblue;
-    
+        
+        height: 100%;
         min-height: auto;
         max-height: fit-content;
         min-width: 175px;
         max-width: 175px;
     }
+    .col-3 {
+        height: 100%;
+    }
     .cardwrapper {
         width: 5%;
         margin-bottom: .625rem;
-        height: 400px;
-        display: flex;
-        justify-content: center;
         margin-right: 9.375rem;
     }
-    .roles {
-        display: block;
-        overflow: visible;
-    }
-        .roles li {
-            display: block;
-        }
     .avatar {
         min-width: 120px;
         max-width: 120px;
