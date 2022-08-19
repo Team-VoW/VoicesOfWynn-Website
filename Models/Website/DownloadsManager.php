@@ -53,7 +53,7 @@ class DownloadsManager
         $fileSize = $result['size'];
 
 		$obContent = ob_get_contents(); //Pause the output bufferer to prevent memory overflow caused by "readfile()"
-		ob_end_clean;
+		ob_end_clean();
 
         header('Content-Description: File Transfer');
         header('Content-Type: application/java-archive');
