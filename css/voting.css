@@ -109,6 +109,29 @@ td a {
     max-width: 100%;
 }
 
+.valink-container {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+}
+
+.valink {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+#voice-actor-avatar{
+    padding-top: .1rem;
+	min-width: 9.375rem;
+	max-width: 9.375rem;
+	border-radius: .3rem;
+    height: 9.375rem;
+}
+
 
             /* buttons */
 .contactbtn { background:rgb(255, 239, 102); }
