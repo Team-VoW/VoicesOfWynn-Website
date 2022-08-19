@@ -6,6 +6,15 @@
   const SOCIAL_NAME = ['youtube' => 'YouTube', 'twitter' => 'Twitter', 'castingcallclub' => 'Casting Call Club'];
 ?>
 <h1><?= $voiceActor->getName(); ?></h1>
+<hr class="hr-f">
+<div class="roles-display">
+  <?php foreach ($voiceActor->getRoles() as $role) : ?>
+  <div class="role" style="color:#<?= $role->color ?>; 
+                          border-color: #<?= $role->color?>;">
+      <?= $role->name ?></div>
+  <?php endforeach ?>
+</div>
+<hr class="hr-f">
 <?php if (!empty($voiceActor->getSocial('discord'))) : ?>
   <h6 class="txt-c txt-main">
       <div id='discord-container'>
@@ -52,7 +61,7 @@
     
     <hr>
     <article class="wb-a txt-c"><?= $voiceActor->getBio(); ?></article>
-    <hr class="hr-f">
+    <?= $voiceActor->getBio() ===''?'':'<hr class="hr-f">'?>
 </section>
 <section>
     <h3 class="txt-c">Recordings</h3>
