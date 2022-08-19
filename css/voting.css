@@ -105,6 +105,10 @@ td a {
     border-radius: 5px;
 }
 
+.wb-a.txt-c img {
+    max-width: 100%;
+}
+
 
             /* buttons */
 .contactbtn { background:rgb(255, 239, 102); }
