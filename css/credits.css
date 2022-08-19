@@ -16,14 +16,16 @@ else ://
 
 
 .cardwrapper {
-    height: 400px; /* Default value that is changed by JavaScript once the webpage fully loads */
     width: 25%;
     margin-bottom: .625rem;
     margin-right: 20px;
 }
 
+.col-3 {
+    height: 100%;
+}
+
 .card {
-    position: absolute;
     z-index: 2;
 
     display: inline-block;
@@ -42,6 +44,7 @@ else ://
 	box-shadow: .1rem .1rem .4rem 0 #777;
 	background: aliceblue;
 
+    height: 100%;
 	min-height: auto;
 	max-height: fit-content;
 	min-width: 200px;
@@ -58,18 +61,11 @@ a>.card {
 }
 
 a>.card:hover {
-    position: relative;
-    z-index: 15;
-
-    visibility: visible;
-    overflow: hidden;
-    
     cursor: pointer;
     pointer-events: visible;
 
     box-shadow: .2rem .2rem .7rem 0 #777;
 
-    transform: translateY(3px);
 }
 
 
@@ -87,15 +83,14 @@ a>.card:hover {
 	display: none;
 	text-align: center;
 	overflow: hidden;
-	z-index: 1; 
+	z-index: 1;
 }
 
 .roles li {
-	white-space: nowrap;
 	list-style: none;
 }
 
-.roles a.card:hover {           /* not 100% if that is actually necessary heh */
+/* .roles a.card:hover {
 	cursor: pointer;
 	display: block;
 	overflow: visible;
@@ -105,8 +100,8 @@ a>.card:hover {
 a:hover .roles {
     display: block;
     cursor: pointer;
-    z-index: 1;
-}
+    z-index: 10;
+} */
 
 
 

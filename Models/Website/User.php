@@ -386,7 +386,7 @@ class User
             return $this->roles;
         }
 
-        $result = (new Db('Website/DbInfo.ini'))->fetchQuery('SELECT name,color,weight FROM discord_role JOIN user_discord_role ON user_discord_role.discord_role_id = discord_role.discord_role_id WHERE user_id = ? ORDER BY weight DESC;',
+        $result = (new Db('Website/DbInfo.ini'))->fetchQuery('SELECT `name`,`color`,`weight` FROM discord_role JOIN user_discord_role ON user_discord_role.discord_role_id = discord_role.discord_role_id WHERE user_id = ? ORDER BY weight DESC;',
             array($this->id), true);
         if ($result === false) {
             $this->roles = array();
