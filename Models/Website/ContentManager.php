@@ -6,7 +6,7 @@ use VoicesOfWynn\Models\Db;
 
 class ContentManager
 {
-	public function getQuests(?int questId = null): array
+	public function getQuests(?int $questId = null): array
 	{
 		$query = '
 		SELECT quest.quest_id, quest.name AS "qname", npc.npc_id, npc.name AS "nname", npc.voice_actor_id, user.user_id, user.display_name, user.picture
@@ -17,7 +17,7 @@ class ContentManager
 		'.(is_null($questId) ? '' : 'WHERE quest.quest_id = ?').'
 		ORDER BY quest.quest_id, npc_quest.sorting_order;
 		';
-		$result = (new Db('Website/DbInfo.ini'))->fetchQuery($query, (is_null($questId) ? array() : array($questId), true);
+		$result = (new Db('Website/DbInfo.ini'))->fetchQuery($query, (is_null($questId) ? array() : array($questId)), true);
 		
 		$quests = array();
 		$currentQuest = null;
