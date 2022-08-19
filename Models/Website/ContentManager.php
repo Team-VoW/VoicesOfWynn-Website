@@ -108,7 +108,7 @@ class ContentManager
 			$roleWeights = explode(',', $userData['role_weights']);
 			$roles = array();
 			for ($i = 0; $i < count($roleNames); $i++) {
-				$roles[] = new DiscordRole($roleNames[$i], $roleColors[$i], $roleWeights[$i]); //Weight is not needed for the view
+				$roles[] = new DiscordRole($roleNames[$i], $roleColors[$i], $roleWeights[$i]);
 			}
 			
 			$user = new User();
