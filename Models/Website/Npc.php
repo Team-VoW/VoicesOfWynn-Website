@@ -2,7 +2,9 @@
 
 namespace VoicesOfWynn\Models\Website;
 
-class Npc
+use \JsonSerializable;
+
+class Npc implements JsonSerializable
 {
 	private int $id = 0;
 	private string $name = '';
@@ -29,6 +31,11 @@ class Npc
 					break;
 			}
 		}
+	}
+	
+	public function jsonSerialize()
+	{
+	    return (object) get_object_vars($this);
 	}
 	
 	/**

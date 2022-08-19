@@ -25,11 +25,6 @@ styling for contents page
 
 
 		/* avatar/picture of NPC */
-.npc-avatar {
-    height: 64px;
-    width: 64px;
-	border-radius: .3rem;
-}
 
 	/* ---- quest card ---- */
 
@@ -78,19 +73,8 @@ styling for contents page
 }
 
 .q-voice:hover {
-	position: absolute;
-	z-index: 15;
-
-	transform: translateY(3px);
-	visibility: visible;
-	float: none;
-	overflow: hidden;
-
-	content: none;
-
 	pointer-events: visible;
 	cursor: pointer;
-
 	box-shadow: .2rem .2rem .7rem 0 #777;
 }
 
@@ -108,8 +92,6 @@ styling for contents page
 	height:min-content;
 }
 
-.q-voice:hover h3 {margin-top: 2rem;}
-
 
 		/* all NPCs in quest */
 .quest-info {
@@ -124,7 +106,6 @@ styling for contents page
 	width: 100%;
 }
 
-.q-voice:hover .quest-info { display: block; }
 
 
 		/*overwrite classles*/
@@ -140,11 +121,6 @@ styling for contents page
 
 
 @media (max-width: 62.5rem) {
-	.quest-info {
-		display: block;
-		visibility: visible;
-		overflow: auto;
-	}
 	.q-voice {
 		height: 350px;
 		width: 350px;
@@ -172,5 +148,94 @@ styling for contents page
 			min-height: 200px;
 			max-height: fit-content;
 		}	
+	}
+}
+
+/* Content Modal */
+
+#content-modal {
+	display: none;	
+	z-index: 100;
+	position: fixed;
+	height: 100%;
+	width: 100%;
+	top: 0;
+	right: 0;
+	background-color: rgba(0, 0, 0, 0.9);
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+}
+
+#content-modal > #modal {
+	width: 25%;
+	max-height: 100%;
+	background-color: whitesmoke;
+	display: flex;
+	flex-direction: column;
+	justify-content: start;
+	align-items: center;
+}
+
+#content-modal > #modal > .head {
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-end;
+	align-items: center;
+}
+
+#content-modal > #modal > .head > .close {
+	color: black;
+	border: none;
+	background-color: transparent;
+	display: inline-flex;
+    width: 10%;
+	padding: 0!important;
+}
+
+#content-modal > #modal > .head > .close > svg {
+	width: 100%;
+	height: 100%;
+}
+
+#content-modal > #modal > .head > .close:hover {
+	border: none;
+	background-color: transparent;
+	box-shadow: none;
+	border-radius: 0;
+	transform: translateY(0);
+}
+
+#content-modal > #modal > #content {
+	overflow-y: auto;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: start;
+	gap: 5px;
+	width: 100%;
+}
+
+#content-modal > #modal > #content > .npc {
+	width: 50%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+#content-modal > #modal > #content > .npc > .image {
+	height: 128px;
+    width: 128px;
+	border-radius: 5px;
+}
+
+#content-modal > #modal > #content > .npc > .name {
+	font-size: 1.5rem;
+}
+@media  screen and (max-width: 1000px) {
+	#content-modal > #modal {
+		width: 100%;
 	}
 }

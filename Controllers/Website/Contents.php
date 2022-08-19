@@ -21,6 +21,7 @@ class Contents extends WebpageController
 		
 		self::$cssFiles[] = 'contents';
 		self::$jsFiles[] = 'search_bar';
+		self::$jsFiles[] = 'content_modal';
 		self::$views[] = 'contents';
 		return true;
 	}

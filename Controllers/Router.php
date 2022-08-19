@@ -7,6 +7,7 @@ namespace VoicesOfWynn\Controllers;
 use Exception;
 use VoicesOfWynn\Controllers\Api\ApiController;
 use VoicesOfWynn\Controllers\Errors\ErrorController;
+use VoicesOfWynn\Controllers\Website\WebDataController;
 use VoicesOfWynn\Controllers\Website\WebpageController;
 
 class Router extends Controller
