@@ -42,7 +42,7 @@
                 
         <div class="socials-row txt-c" id="socials-row-2">
           <?php foreach(SOCIALS as $social):?>
-            <? if($voiceActor->getSocial($social)):?>
+            <?php if($voiceActor->getSocial($social)):?>
               <div class="socials-card">
                 <a href="<?= SOCIAL_PRE_LINK[$social]?><?= $voiceActor->getSocial($social)?>" target="_blank" class="<?= $social?>">
                   <span class="social-component">
