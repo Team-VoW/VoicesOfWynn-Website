@@ -175,6 +175,7 @@ styling for contents page
 	flex-direction: column;
 	justify-content: start;
 	align-items: center;
+	border-radius: 1%;
 }
 
 #content-modal > #modal > .head {
@@ -233,7 +234,9 @@ styling for contents page
 
 #content-modal > #modal > #content > .npc > .name {
 	font-size: 1.5rem;
+	text-decoration: underline;
 }
+
 @media  screen and (max-width: 1000px) {
 	#content-modal > #modal {
 		width: 100%;
