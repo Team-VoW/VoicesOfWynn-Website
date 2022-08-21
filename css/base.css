@@ -95,7 +95,7 @@ h1,h2,h3,h4,h5,h6 {
     text-align: center;
     letter-spacing: .125rem;
     text-decoration: none;
-    overflow-wrap: break-word;
+    word-break: break-word;
 }
 h1,h2 { font-weight: bold; }
 h1 { font-size: 2.5em; font-weight: 300; }                                          /* classless.css */
@@ -106,7 +106,7 @@ h5 { font-size: 1.2em; font-weight: 400; margin-top: 0.5em; color: #777; }      
 h6 { font-size: 1.0em; font-weight: 700; }                                          /* classless.css */
 
         /* paragraphs */
-p { font-family: default-font-face; }
+p { font-family: default-font-face; word-break: break-word; }
 p strong { color: #424456; font-weight: bold; font-size: 1.0rem; }
 
         /* smaller text types (small, sub, sup) */
