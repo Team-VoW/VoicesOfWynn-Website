@@ -1,10 +1,10 @@
 <h1>Contribu&shy;tors</h1>
 <p class="txt-c">A lot of people worked hard on this mod. Take a moment to appreciate their work.</p>
 <?php foreach (${basename(__FILE__, '.phtml').'_contributors'} as $contributor) : ?>
-  <?php if ($currentHighestRole > $contributor->getRoles()[0]->weight && $currentHighestRole !== null) :?>
+  <?php if (@$currentHighestRole > $contributor->getRoles()[0]->weight && $currentHighestRole !== null) :?>
     </div>
   <?php endif ?>
-	<?php if ($currentHighestRole > $contributor->getRoles()[0]->weight || $currentHighestRole === null) : /*New highest role*/ $currentHighestRole = $contributor->getRoles()[0]->weight;?>
+	<?php if (@$currentHighestRole > $contributor->getRoles()[0]->weight || @$currentHighestRole === null) : /*New highest role*/ $currentHighestRole = $contributor->getRoles()[0]->weight;?>
     <hr class="hr-f">
     <h2 style="color:#<?= $contributor->getRoles()[0]->color ?>;"><?= $contributor->getRoles()[0]->name ?><?php if ($contributor->getRoles()[0]->name !== 'Owner') : ?>s<?php endif ?></h2>
     <div class="row">
