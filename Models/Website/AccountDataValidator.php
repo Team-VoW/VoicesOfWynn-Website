@@ -127,7 +127,7 @@ class AccountDataValidator
         }
 
         $uppercaseBio = strtoupper($bio);
-        $badwords = file('Models/BadWords.txt');
+        $badwords = file('Models/Website/BadWords.txt');
         foreach ($badwords as $badword) {
             if (mb_strpos($uppercaseBio, $badword) !== false) {
                 $this->errors[] = 'Your bio contains a bad word: '.$badword.
