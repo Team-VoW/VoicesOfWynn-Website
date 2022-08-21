@@ -30,7 +30,8 @@ class Cast extends WebpageController
         self::$data['cast_upvoted'] = $cnm->getVotes('+');
         self::$data['cast_downvoted'] = $cnm->getVotes('-');
 
-		self::$cssFiles[] = 'voting';
+        self::$cssFiles[] = 'voting';
+        self::$cssFiles[] = 'article-css-reset';
 		self::$jsFiles[] = 'voting';
 		self::$jsFiles[] = 'cast';
 		self::$views[] = 'cast';

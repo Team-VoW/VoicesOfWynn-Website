@@ -22,6 +22,7 @@ class Download extends WebpageController
 
                 self::$views[] = "download-details";
                 self::$cssFiles[] = "download-details";
+                self::$cssFiles[] = 'article-css-reset';
                 self::$jsFiles[] = "download-details";
 
                 $result = (new Db('Website/DbInfo.ini'))->fetchQuery(
