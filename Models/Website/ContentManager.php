@@ -6,7 +6,7 @@ use VoicesOfWynn\Models\Db;
 
 class ContentManager
 {
-	public function getQuests(): array
+	public function getQuests(?int $questId = null): array
 	{
 		$query = '
 		SELECT quest.quest_id, quest.name AS "qname", npc.npc_id, npc.name AS "nname", npc.voice_actor_id, user.user_id, user.display_name, user.picture
@@ -14,9 +14,10 @@ class ContentManager
 		JOIN npc_quest ON npc_quest.quest_id = quest.quest_id
 		JOIN npc ON npc.npc_id = npc_quest.npc_id
 		LEFT JOIN user ON npc.voice_actor_id = user.user_id
+		'.(is_null($questId) ? '' : 'WHERE quest.quest_id = ?').'
 		ORDER BY quest.quest_id, npc_quest.sorting_order;
 		';
-		$result = (new Db('Website/DbInfo.ini'))->fetchQuery($query, array(), true);
+		$result = (new Db('Website/DbInfo.ini'))->fetchQuery($query, (is_null($questId) ? array() : array($questId)), true);
 		
 		$quests = array();
 		$currentQuest = null;
@@ -86,7 +87,8 @@ class ContentManager
 		$query = '
 		SELECT `user`.user_id, `user`.display_name, `user`.picture, `user`.lore,
 		GROUP_CONCAT(discord_role.name ORDER BY weight DESC) AS `roles`,
-		GROUP_CONCAT(discord_role.color ORDER BY weight DESC) AS `role_colors`, (
+		GROUP_CONCAT(discord_role.color ORDER BY weight DESC) AS `role_colors`,
+		GROUP_CONCAT(discord_role.weight ORDER BY weight DESC) AS `role_weights`, (
 			SELECT SUM(weight)
 			FROM discord_role
 			JOIN user_discord_role USING(discord_role_id)
@@ -104,9 +106,10 @@ class ContentManager
 		foreach ($result as $userData) {
 			$roleNames = explode(',', $userData['roles']);
 			$roleColors = explode(',', $userData['role_colors']);
+			$roleWeights = explode(',', $userData['role_weights']);
 			$roles = array();
 			for ($i = 0; $i < count($roleNames); $i++) {
-				$roles[] = new DiscordRole($roleNames[$i], $roleColors[$i]); //Weight is not needed for the view
+				$roles[] = new DiscordRole($roleNames[$i], $roleColors[$i], $roleWeights[$i]);
 			}
 			
 			$user = new User();

@@ -13,7 +13,7 @@
                 <th class="role-header" style="background-color: #<?= ${basename(__FILE__, '.phtml').'_roles'}[$i]->color ?>;" dir="ltr">
                     <?= ${basename(__FILE__, '.phtml').'_roles'}[$i]->name ?>
                 </th>
-            <?php endfor ?>
+            <?php endfor; ?>
         </tr>
         <?php foreach (${basename(__FILE__, '.phtml').'_accounts'} as $user) : ?>
             <tr data-user-id="<?= $user->getId() ?>">
@@ -28,16 +28,11 @@
                     <span class="delete-account-link"><button class="deletebtn">Delete account</button></span>
                 </td>
                 <?php for ($i = 0; $i < count(${basename(__FILE__, '.phtml').'_roles'}); $i++) : ?>
-                    <td class="role-column" style="background-color: #<?= ${basename(__FILE__, '.phtml').'_roles'}[$i]->color
-                    ?>">
-                        <?php if ($user->hasRole(${basename(__FILE__, '.phtml').'_roles'}[$i]->name)) : ?>
-                            <input type="checkbox" checked data-role-id="<?= ${basename(__FILE__, '.phtml').'_roles'}[$i]->getId() ?>" class="checkbox-large" />
-                        <?php else : ?>
-                            <input type="checkbox" data-role-id="<?= ${basename(__FILE__, '.phtml').'_roles'}[$i]->getId() ?>" class="checkbox-large" />
-                        <?php endif ?>
+                    <td class="role-column" style="background-color: #<?= ${basename(__FILE__, '.phtml').'_roles'}[$i]->color?>">
+                        <input type="checkbox" <?= $user->hasRole(${basename(__FILE__, '.phtml').'_roles'}[$i]->name) ? 'checked' : ''?> data-role-id="<?= ${basename(__FILE__, '.phtml').'_roles'}[$i]->getId() ?>" class="checkbox-large">
                     </td>
-                <?php endfor ?>
+                <?php endfor; ?>
             </tr>
-        <?php endforeach ?>
+        <?php endforeach; ?>
     </table>
 </div>                       

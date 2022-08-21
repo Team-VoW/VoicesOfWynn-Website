@@ -16,7 +16,6 @@ abstract class ApiController extends Controller
     const COLLECTING_API_KEY = 'testing';
     const UPDATING_API_KEY = 'testing';
     //Usage analysis api keys
-    const PING_API_KEY = 'testing';
     const AGGREGATE_API_KEY = 'testing';
 
     /**

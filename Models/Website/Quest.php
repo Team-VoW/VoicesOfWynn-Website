@@ -2,7 +2,9 @@
 
 namespace VoicesOfWynn\Models\Website;
 
-class Quest
+use \JsonSerializable;
+
+class Quest implements JsonSerializable
 {
 	private int $id;
 	private string $name;
@@ -27,6 +29,11 @@ class Quest
 					break;
 			}
 		}
+	}
+	
+	public function jsonSerialize()
+	{
+	    return (object) get_object_vars($this);
 	}
 	
 	/**

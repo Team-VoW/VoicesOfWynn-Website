@@ -54,7 +54,7 @@ class AccountManager
     
     public function getRoles(): array
     {
-        $roles = (new Db('Website/DbInfo.ini'))->fetchQuery('SELECT name,color,weight FROM discord_role ORDER BY weight DESC', array(), true);
+        $roles = (new Db('Website/DbInfo.ini'))->fetchQuery('SELECT `name`,`color`,`weight` FROM discord_role ORDER BY weight DESC', array(), true);
         $result = array();
         foreach ($roles as $roleInfo) {
             $result[] = new DiscordRole($roleInfo['name'], $roleInfo['color'], $roleInfo['weight']);

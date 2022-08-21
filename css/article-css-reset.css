@@ -1,0 +1,80 @@
+#bio, #changelog {
+    font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Open Sans','Helvetica Neue',sans-serif;
+	line-height: 1.4;
+    margin: 1rem;
+    font-size: unset;
+    word-break: unset;
+    text-align: unset;
+    color: unset;
+}
+
+#bio h1, #changelog h1 {
+    display: block;
+    font-size: 2em;
+    margin-block-start: 0.67em;
+    margin-block-end: 0.67em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: bold;
+    font-family: unset;
+}
+
+#bio h2, #changelog h2 {
+    display: block;
+    font-size: 1.5em;
+    margin-block-start: 0.83em;
+    margin-block-end: 0.83em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: bold;
+    font-family: unset;
+}
+
+#bio h3, #changelog h3 {
+	display: block;
+    font-size: 1.17em;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: bold;
+    font-family: unset;
+}
+
+#bio p, #changelog p {
+    font-family: unset;
+    padding: unset;
+}
+
+#bio a, #changelog a {
+    color: -webkit-link;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+#bio ol, #changelog ol {
+    display: block;
+    list-style-type: decimal;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    padding-inline-start: 40px;
+}
+
+#bio ul, #changelog ul {
+    display: block;
+    list-style-type: disc;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    padding-inline-start: 40px;
+}
+
+#bio li, #changelog li {
+	display: list-item;
+    text-align: -webkit-match-parent;
+    margin: unset;
+    z-index: unset;
+}

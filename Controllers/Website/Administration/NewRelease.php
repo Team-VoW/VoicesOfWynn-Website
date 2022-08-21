@@ -30,6 +30,7 @@ class NewRelease extends WebpageController
 
         self::$data['newrelease_type'] = '';
         self::$data['newrelease_version'] = '';
+        self::$data['newrelease_wynn_version'] = '';
         self::$data['newrelease_mc_version'] = '';
         self::$data['newrelease_filename'] = '';
         self::$data['newrelease_changelog'] = '';
@@ -50,6 +51,7 @@ class NewRelease extends WebpageController
             $releaseId = $downloadManager->createDownload(
                 $_POST['type'],
                 $_POST['mcVersion'],
+                $_POST['wynnVersion'],
                 $_POST['version'],
                 $_POST['changelog'],
                 $_POST['filename']
@@ -59,6 +61,7 @@ class NewRelease extends WebpageController
         } catch (UserException $e) {
             self::$data['newrelease_type'] = $_POST['type'];
             self::$data['newrelease_version'] = $_POST['version'];
+            self::$data['newrelease_wynn_version'] = $_POST['wynnVersion'];
             self::$data['newrelease_mc_version'] = $_POST['mcVersion'];
             self::$data['newrelease_filename'] = $_POST['filename'];
             self::$data['newrelease_changelog'] = $_POST['changelog'];

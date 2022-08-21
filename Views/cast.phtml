@@ -1,5 +1,20 @@
-<?php $voiceActor = ${basename(__FILE__, '.phtml').'_voice_actor'}; ?>
+<?php 
+  $voiceActor = ${basename(__FILE__, '.phtml').'_voice_actor'}; 
+  const SOCIALS = ['twitter','youtube','castingcallclub'];
+  const SOCIAL_PRE_LINK = ['youtube' => '', 'twitter' => 'https://twitter.com/', 'castingcallclub' => 'https://castingcall.club/'];
+  const SOCIAL_ICONS = ['youtube' =>'images/youtube_icon.png', 'twitter' => 'images/twitter_icon.png', 'castingcallclub' => 'images/castingcallclub_icon.png'];
+  const SOCIAL_NAME = ['youtube' => 'YouTube', 'twitter' => 'Twitter', 'castingcallclub' => 'Casting Call Club'];
+?>
 <h1><?= $voiceActor->getName(); ?></h1>
+<hr class="hr-f">
+<div class="roles-display">
+  <?php foreach ($voiceActor->getRoles() as $role) : ?>
+  <div class="role" style="color:#<?= $role->color ?>; 
+                          border-color: #<?= $role->color?>;">
+      <?= $role->name ?></div>
+  <?php endforeach ?>
+</div>
+<hr class="hr-f">
 <?php if (!empty($voiceActor->getSocial('discord'))) : ?>
   <h6 class="txt-c txt-main">
       <div id='discord-container'>
@@ -7,9 +22,8 @@
         <span class="vertical-bottom-text-span arial" id="discord-tag-cast"><?= $voiceActor->getSocial('discord') ?></span>
     </div>
   </h6>
+  <hr class="hr-f">
 <?php endif ?>
-
-<hr class="hr-f">
 
 <section>
     <div id="socials-container">
@@ -27,48 +41,26 @@
         </div>
                 
         <div class="socials-row txt-c" id="socials-row-2">
-            <?php if (!empty($voiceActor->getSocial('youtube'))) : ?>
-            <div>
-                <a href="<?= $voiceActor->getSocial('youtube') ?>" target="_blank" class="youtube">
-                <span class="txt-c">
-                    <img src="images/youtube_icon.png" alt="YouTube icon" class="lb-b"/><br>
-                    <button class="youtubebtn">
-                        YouTube
+          <?php foreach(SOCIALS as $social):?>
+            <?php if($voiceActor->getSocial($social)):?>
+              <div class="socials-card">
+                <a href="<?= SOCIAL_PRE_LINK[$social]?><?= $voiceActor->getSocial($social)?>" target="_blank" class="<?= $social?>">
+                  <span class="social-component">
+                    <img src="<?= SOCIAL_ICONS[$social]?>" alt="<?= SOCIAL_NAME[$social]?> icon" class="lb-b"/>
+                    <button class="<?= $social?>btn">
+                      <?= $social === 'youtube' ? SOCIAL_NAME[$social]: $voiceActor->getSocial($social) ?>
                     </button>
-                </span>
+                  </span>
                 </a>
-            </div>
-            <?php endif ?>
-            <?php if (!empty($voiceActor->getSocial('twitter'))) : ?>
-            <div class="socials-card">
-                <a href="https://twitter.com/<?= $voiceActor->getSocial('twitter') ?>" target="_blank" class="twitter">
-                <span class="txt-c">
-                    <img src="images/twitter_icon.png" alt="Twitter icon" class="lb-a"/><br>
-                    <button class="twitterbtn">
-                        @<?= $voiceActor->getSocial('twitter') ?>
-                    </button>
-                </span>
-                </a>
-            </div>
-            <?php endif ?>
-            <?php if (!empty($voiceActor->getSocial('castingcallclub'))) : ?>
-            <div class="socials-card">
-                <a href="https://castingcall.club/<?= $voiceActor->getSocial('castingcallclub') ?>" target="_blank"     class="castingcallclub"><br>
-                <span class="txt-c">
-                    <img src="images/castingcallclub_icon.png" alt="Casting Call Club icon" class="lb-a"/>
-                    <button class="castingcallclubbtn">
-                        <?= $voiceActor->getSocial('castingcallclub') ?>
-                    </button>
-                </span>
-                </a>
-            </div>
-            <?php endif ?>
+              </div>
+            <?php endif;?>
+          <?php endforeach;?>
         </div>
     </div>
     
     <hr>
-    <article class="wb-a txt-c"><?= $voiceActor->getBio(); ?></article>
-    <hr class="hr-f">
+    <article class="wb-a txt-c" id="bio"><?= $voiceActor->getBio(); ?></article>
+    <?= $voiceActor->getBio() ===''?'':'<hr class="hr-f">'?>
 </section>
 <section>
     <h3 class="txt-c">Recordings</h3>

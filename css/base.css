@@ -28,12 +28,14 @@ _______________ CONTENTS _______________
 :root { font: 13pt default-font-face, sans-serif; line-height: 1.5; color: #424456; } /* classless.css */
 * {box-sizing: border-box; border-spacing: 0;}                                      /* classless.css */
 
-        /* body styling, default layout */
+
 body {
-    margin: auto;                                                                   /* classless.css */
-	max-width: 50rem;
-	padding: 2rem 0.5rem 0rem;
-	overflow-x: hidden;
+  background: url(../images/Website_background.jpg);
+  background-repeat: repeat!important;
+  margin: auto;                                                                   /* classless.css */
+  max-width: 50rem;
+  padding: 2rem 0.5rem 0rem;
+  overflow-x: hidden;
 }
 body > div:not(.tox) {
     position: fixed!important;
@@ -42,9 +44,6 @@ body > div:not(.tox) {
     left: 0!important;
     top: 0!important;
     margin: 0!important;
-    background-position: center center!important;
-    background-repeat: no-repeat!important;
-    background-size: cover!important;
 }
 body > div:not(.tox) > div {
     position: fixed!important;
@@ -53,10 +52,8 @@ body > div:not(.tox) > div {
     left: 0!important;
     top: 0!important;
     margin: 0!important;
-    background-position: center center!important;
-    background-repeat: no-repeat!important;
-    background-size: cover!important;
 }
+        /* body styling, default layout */
 
         /* make main & footer fit needs */
 main {
@@ -98,6 +95,7 @@ h1,h2,h3,h4,h5,h6 {
     text-align: center;
     letter-spacing: .125rem;
     text-decoration: none;
+    word-break: break-word;
 }
 h1,h2 { font-weight: bold; }
 h1 { font-size: 2.5em; font-weight: 300; }                                          /* classless.css */
@@ -108,7 +106,7 @@ h5 { font-size: 1.2em; font-weight: 400; margin-top: 0.5em; color: #777; }      
 h6 { font-size: 1.0em; font-weight: 700; }                                          /* classless.css */
 
         /* paragraphs */
-p { font-family: default-font-face; }
+p { font-family: default-font-face; word-break: break-word; }
 p strong { color: #424456; font-weight: bold; font-size: 1.0rem; }
 
         /* smaller text types (small, sub, sup) */
@@ -384,6 +382,24 @@ br { margin-top: 2rem; }
 
 
 /* ---- 2.3) specific specifc classes (yikes) ---- */
+
+.session-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.session-buttons > a {
+  display: inline-flex;
+}
+
+.session-buttons > a > button {
+  height: 100%;
+  width: 100%;
+}
 
 
         /* content */

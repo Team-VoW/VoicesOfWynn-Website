@@ -36,12 +36,12 @@ abstract class WebpageController extends Controller
      * @var $cssFiles array List of CSS files to include into the final webpage; all CSS files must be in the 'css'
      *     folder
      */
-    protected static array $cssFiles = array('classless', 'base');
+    protected static array $cssFiles = array('base');
 
     /**
      * @var $jsFiles array List of JS files to include into the final webpage; all JS files must be in the 'js' folder
      */
-    protected static array $jsFiles = array('jquery','jquery.bgswitcher','bg');
+    protected static array $jsFiles = array('jquery');
 
     /**
      * Controller constructor setting data for the base view and setting the Content-Type header
@@ -140,7 +140,7 @@ abstract class WebpageController extends Controller
                 }
                 else if ($value instanceof Quest) {
                     $id = $this->sanitize($value->getId());
-                    $name = $this->sanitize($value->getName());
+                    $name = $value->getName();
                     $quest = new Quest(array('id' => $id, 'name' => $name));
                     foreach ($value->getNpcs() as $npc) {
                         $quest->addNpc($this->sanitize($npc));
@@ -192,6 +192,7 @@ abstract class WebpageController extends Controller
                     $attr['id'] = $this->sanitize($value->id);
                     $attr['releaseType'] = $this->sanitize($value->releaseType);
                     $attr['mcVersion'] = $this->sanitize($value->mcVersion);
+                    $attr['wynnVersion'] = $this->sanitize($value->wynnVersion);
                     $attr['version'] = $this->sanitize($value->version);
                     $attr['changelog'] = $value->changelog; //Don't sanitize, dangerous tags are removed before saving to the database
                     $attr['releaseDate'] = $this->sanitize($value->releaseDate);

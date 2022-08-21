@@ -64,7 +64,7 @@
     <p class="txt-c">
         Are you a contributor? Make sure to log into your account!
     </p>
-    <p class="txt-c">
+    <div class="session-buttons">
         <?php if (!isset($_SESSION['user'])) : ?>
             <a href="/login" class="display-contents">
                 <button class="loginbtn width-25">
@@ -87,4 +87,4 @@
                 </a>
             <?php endif ?>
         <?php endif ?>
-    </p>
+    </div>

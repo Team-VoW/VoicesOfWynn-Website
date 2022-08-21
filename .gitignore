@@ -7,3 +7,4 @@
 /vendor/
 profiles.php
 composer.phar
+.devcontainer

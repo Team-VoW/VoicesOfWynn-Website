@@ -1,39 +1,32 @@
-<h1>Contributors</h1>
+<h1>Contribu&shy;tors</h1>
 <p class="txt-c">A lot of people worked hard on this mod. Take a moment to appreciate their work.</p>
-<?php $currentHighestRole = ${basename(__FILE__, '.phtml').'_contributors'}[0]->getRoles()[0]->name; ?>
-<hr class="hr-f">
-<h2>Owner</h2>
-<div class="row">
 <?php foreach (${basename(__FILE__, '.phtml').'_contributors'} as $contributor) : ?>
-	<?php
-        if ($currentHighestRole !== $contributor->getRoles()[0]->name) :
-            //New highest role
-	        $currentHighestRole = $contributor->getRoles()[0]->name;
-    ?>
-</div> <!-- ending for <div class="row"> -->
-
+  <?php if ($currentHighestRole > $contributor->getRoles()[0]->weight && $currentHighestRole !== null) :?>
+    </div>
+  <?php endif ?>
+	<?php if ($currentHighestRole > $contributor->getRoles()[0]->weight || $currentHighestRole === null) : /*New highest role*/ $currentHighestRole = $contributor->getRoles()[0]->weight;?>
     <hr class="hr-f">
-
-<h2><?= $contributor->getRoles()[0]->name ?><?php if ($contributor->getRoles()[0]->name !== 'Owner') : ?>s<?php endif ?></h2>
-<div class="row">
+    <h2 style="color:#<?= $contributor->getRoles()[0]->color ?>;"><?= $contributor->getRoles()[0]->name ?><?php if ($contributor->getRoles()[0]->name !== 'Owner') : ?>s<?php endif ?></h2>
+    <div class="row">
 	<?php endif ?>
-	<div class="cardwrapper">
-	<div class="col-3">
-		<a class="a-no-hover" href="/cast/<?= $contributor->getId(); ?>">
-		<div class="card">
-			<img class="avatar" src="dynamic/avatars/<?= $contributor->getAvatarLink(); ?>" alt="Contributor's profile picture" /><br>
-			<p class="contributor_name"><strong><?= $contributor->getName(); ?></strong></p>
-				<hr class="hr-f"> 
-				<?php if (!empty($contributor->getLore())) : ?>
-				<i><?= $contributor->getLore() ?></i>
-				<?php endif ?>
-				<ul class="roles">
-					<?php foreach ($contributor->getRoles() as $role) : ?>
-					<li style="color:#<?= $role->color ?>;"><?= $role->name ?></li>
-					<?php endforeach ?>
-				</ul>
-				<hr class="hr-f">
-			</div>
-	</a></div>
-	</div>
+	    <div class="cardwrapper">
+	      <div class="col-3">
+		      <a class="a-no-hover" href="/cast/<?= $contributor->getId(); ?>">
+		        <div class="card">
+			        <img class="avatar" src="dynamic/avatars/<?= $contributor->getAvatarLink(); ?>" alt="Contributor's profile picture" /><br>
+			        <p class="contributor_name"><strong><?= $contributor->getName(); ?></strong></p>
+				      <hr class="hr-f"> 
+				      <?php if (!empty($contributor->getLore())) : ?>
+				        <i><?= $contributor->getLore() ?></i>
+				      <?php endif ?>
+				      <ul class="roles">
+					      <?php foreach ($contributor->getRoles() as $role) : ?>
+					      <li style="color:#<?= $role->color ?>;"><?= $role->name ?></li>
+					      <?php endforeach ?>
+				      </ul>
+              <hr class="hr-f">
+			      </div>
+          </a>
+			  </div>
+      </div>
 <?php endforeach ?>

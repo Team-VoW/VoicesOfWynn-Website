@@ -52,6 +52,9 @@ class DownloadsManager
         );
         $fileSize = $result['size'];
 
+		$obContent = ob_get_contents(); //Pause the output bufferer to prevent memory overflow caused by "readfile()"
+		ob_end_clean();
+
         header('Content-Description: File Transfer');
         header('Content-Type: application/java-archive');
         header('Content-Disposition: attachment; filename="'.$fileName.'"');
@@ -61,23 +64,28 @@ class DownloadsManager
         header('Content-Length: '.$fileSize);
         readfile($filePath);
 
+		ob_start(); //Resume the output bufferer
+		echo $obContent;
+
         return $db->executeQuery('UPDATE download SET downloaded_times = downloaded_times + 1 WHERE download_id = ?', array($downloadId));
     }
 
     /**
      * @param string $type Type of the release, must be one of the constants of the ModDownload class
      * @param string $mcVersion Version of Minecraft for which this download is made
+     * @param string $wynnVersion Version of Wynncraft for which this download is made
      * @param string $version Version of the mod
      * @param string $changelog HTML text containing the changelog for the new version
      * @param string $filename Name of the file on the server. NOTE: The .jar file must be uploaded into the /files/mod directory when this function is run
      * @return int ID of the new release if the download has successfully been created
      * @throws UserException In case one or more of the provided strings is invalid
      */
-    public function createDownload(string $type, string $mcVersion, string $version, string $changelog, string $filename): int
+    public function createDownload(string $type, string $mcVersion, string $wynnVersion, string $version, string $changelog, string $filename): int
     {
         $download = new ModDownload(array(
             'type' => $type,
             'mcVersion' => $mcVersion,
+            'wynnVersion' => $wynnVersion,
             'version' => $version,
             'changelog' => $changelog,
             'filename' => $filename,
@@ -86,9 +94,10 @@ class DownloadsManager
         $download->validate();
 
         $db = new Db('Website/DbInfo.ini');
-        return $db->executeQuery('INSERT INTO download(release_type,mc_version,version,changelog,filename,size) VALUES (?,?,?,?,?,?)', array(
+        return $db->executeQuery('INSERT INTO download(release_type,mc_version,wynn_version,version,changelog,filename,size) VALUES (?,?,?,?,?,?,?)', array(
             $download->releaseType,
             $download->mcVersion,
+            $download->wynnVersion,
             $download->version,
             $download->changelog,
             $download->fileName,
