@@ -63,7 +63,6 @@ I know that it would be great if it was copied automatically, but I\'m having so
 				    return 400;
 		    }
 	    }
-        else {
             self::$data['base_description'] = 'Tool for the administrators to manage accounts of the contributors.';
 
             $accountManager = new AccountManager();
@@ -74,8 +73,7 @@ I know that it would be great if it was copied automatically, but I\'m having so
             self::$jsFiles[] = 'accounts';
             self::$views[] = 'accounts';
 
-            return true;
-        }
+            return 200;
     }
 }
 
