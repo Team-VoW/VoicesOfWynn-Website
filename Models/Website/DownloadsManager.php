@@ -10,7 +10,7 @@ class DownloadsManager
     public const DOWNLOAD_TYPE_INSTALLER = 'exe';
     
     public const ROOT_DOWNLOADS_DIRECTORY = 'files/mod';
-    private const INSTALLER_FILE_NAME = 'VoicesOfWynn-Installer-v1.0.exe'; //Both on the server and when downloaded
+    public const INSTALLER_FILE_NAME = 'VoicesOfWynn-Installer-v1.0.exe'; //Both on the server and when downloaded
     private const FILE_NAME_FORMATS = 'VoicesOfWynn-MC{mcVersion}-v{version}.jar';
 
     /**

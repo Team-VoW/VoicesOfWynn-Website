@@ -69,13 +69,13 @@ It doesn\'t contain much new content';
             <td><strong>Recommended for updating and people with unstable internet connection.</strong></td>
         </tr><tr>
             <td><?= round($downloadDetails->size / 1000000, 2) ?> MB <code>.jar</code> file</td>
-            <td>343 KB <code>.exe</code> file</td>
+            <td><?= round(${str_replace('-', '', basename(__FILE__, '.phtml')).'_installerSize'} / 1000, 2) ?> kB <code>.exe</code> file</td>
         </tr><tr>
             <td>Download must be restarted from the beginning in case of a failure.</td>
             <td>In case of a failure, the installation can be resumed.</td>
         </tr><tr>
             <td>Keeps antivirus calm.</td>
-            <td>
+            <td id="false-positive-info">
                 Might be flagged by your antivirus as malicious.<br>
                 <small style="font-size: 0.8rem;"><em>This is a false positive. The installer is open-source and you can check what exactly it does <a href="https://github.com/Team-VoW/500mb_jar_installer" target="_blank">on GitHub</a>.</em></small>
             </td>

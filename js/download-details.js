@@ -7,5 +7,6 @@ $("#download-btn").click(function (){
 $("#install-btn").click(function (){
     $("#install-btn").closest("a").hide();
     $("#install-started").show();
+    $("#false-positive-info").css('border', '3px solid red');
     $("#download-count").text((Number)($("#download-count").text()) + 1);
 })
