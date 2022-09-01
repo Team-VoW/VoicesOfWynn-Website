@@ -38,8 +38,9 @@ class Download extends WebpageController
                 break;
             case 'get':
                 $downloadId = (int)$args[1];
+				$downloadType = ($args[2] === 'installer') ? DownloadsManager::DOWNLOAD_TYPE_INSTALLER : DownloadsManager::DOWNLOAD_TYPE_MODFILE;
                 $downloadManager = new DownloadsManager();
-                $result = $downloadManager->downloadFile($downloadId);
+                $result = $downloadManager->downloadFile($downloadType, $downloadId);
                 if ($result) {
                     exit;
                 }
