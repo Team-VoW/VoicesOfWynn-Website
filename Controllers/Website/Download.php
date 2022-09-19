@@ -34,12 +34,14 @@ class Download extends WebpageController
                 }
                 $downloadObject = new ModDownload($result);
                 self::$data['downloaddetails_download'] = $downloadObject;
+                self::$data['downloaddetails_installerSize'] = filesize(DownloadsManager::ROOT_DOWNLOADS_DIRECTORY.'/'.DownloadsManager::INSTALLER_FILE_NAME);
 
                 break;
             case 'get':
                 $downloadId = (int)$args[1];
+                $downloadType = ($args[2] === 'installer') ? DownloadsManager::DOWNLOAD_TYPE_INSTALLER : DownloadsManager::DOWNLOAD_TYPE_MODFILE;
                 $downloadManager = new DownloadsManager();
-                $result = $downloadManager->downloadFile($downloadId);
+                $result = $downloadManager->downloadFile($downloadType, $downloadId);
                 if ($result) {
                     exit;
                 }

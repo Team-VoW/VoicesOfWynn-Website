@@ -17,7 +17,8 @@ RewriteCond %{REQUEST_FILENAME} -s [OR]
 RewriteCond %{REQUEST_FILENAME} -l [OR]
 RewriteCond %{REQUEST_FILENAME} -d [OR]
 RewriteCond %{REQUEST_FILENAME} -f
-RewriteRule \.(css|js|txt|ico|ttf|xml|svg|gif|png|ogg|jpg|bpr\.gz)$ - [NC,L]
+RewriteCond %{REQUEST_URI} !^/files/updater-data
+RewriteRule \.(css|js|txt|ico|ttf|xml|svg|gif|png|ogg|jpg)$ - [NC,L]
 
 RewriteCond %{REQUEST_URI}::$1 ^(/.+)(.+)::\2$
 RewriteRule ^(.*) - [E=BASE:%1]

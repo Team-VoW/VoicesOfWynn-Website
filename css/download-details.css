@@ -3,14 +3,21 @@
     left: 31%;
 }
 
-#download-started {
+#false-positive-info {
+    border: 3px solid rgba(255, 0, 0, 0);
+    border-radius: 10px;
+}
+
+.updatebtn { background: cornflowerblue; }
+.updatebtn:hover { border-color: #4a89e4;  }
+
+#download-started, #install-started {
     display:none;
     color: green;
     font-weight: bold;
 }
 
 #report-download-issue {
-    display: none;
     color: orangered; /* TODO: Force this to display */
 }
 
