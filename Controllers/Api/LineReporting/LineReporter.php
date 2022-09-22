@@ -155,7 +155,7 @@ class LineReporter extends ApiController
         return 200;
     }
 
-    private function getNonRejectedLines()
+    private function getNonRejectedLines(): int
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
             return 405;

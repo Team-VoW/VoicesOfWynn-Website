@@ -100,7 +100,7 @@ class ReportReader
         if (!empty($npcName)) {
             $npcName = $_GET['npc'];
             $query = 'SELECT npc_name,pos_x,pos_y,pos_z,chat_message FROM report WHERE status IN '.$inString.' AND npc_name = ?;';
-            array_unshift($statuses, $npcName);
+            array_push($statuses, $npcName);
         }
         else {
             $query = 'SELECT npc_name,pos_x,pos_y,pos_z,chat_message FROM report WHERE status IN '.$inString.';';
