@@ -94,10 +94,10 @@
                 <ul>
                     <li><code><b style="color: red">C</b>owfusion-<b style="color: red">I</b>bele-1.ogg</code></li>
                     <li><code>crop<b style="color: red">-</b>failure-anast<b style="color: red">6</b>.ogg</code></li>
-                    <li><code>a<b style="color: red">_</b>grave_mistak<b style="color: red">e h</b>anging<b style="color: red">S</b>keleton-<b style="color: red">I</b>.<b style="color: red">mp3</b></code></li>
+                    <li><code>a<b style="color: red">_</b>grave<b style="color: red">_</b>mistak<b style="color: red">e h</b>anging<b style="color: red">S</b>keleton-<b style="color: red">I</b>.<b style="color: red">mp3</b></code></li>
                 </ul>
             </p>
-            <input name="recordings" type="file" accept="audio/ogg" class="recording-input" multiple="multiple" required/>
+            <input name="recordings[]" type="file" accept="audio/ogg" class="recording-input" multiple="multiple" required/>
             <input type="submit" value="Upload"/>
         </form>
         <?php if (isset(${basename(__FILE__, '.phtml').'_uploadErrors'}[$quest->getId()])) : ?>
