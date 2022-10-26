@@ -97,6 +97,7 @@ class Npc extends WebpageController
         }
 
         $questId = $_POST['questId'];
+        $overwriteFiles = isset($_POST['overwrite']) && $_POST['overwrite'] === 'on';
         self::$data['npc_uploadErrors'] = array();
         $recordingsCount = count($_FILES['recordings']['name']);
         for ($i = 0; $i < $recordingsCount; $i++) {
@@ -123,9 +124,14 @@ class Npc extends WebpageController
             //In case a file with this name already exists, append "_([number])" to it (before the extension)
             //Increase the number for as long as files with the name exist (a bit like in Windows)
             if (file_exists('dynamic/recordings/'.$filename)) {
-                $filename = str_replace('.ogg', '_(1).ogg', $filename);
-                for ($j = 2; file_exists('dynamic/recordings/'.$filename); $j++) {
-                    $filename = preg_replace('/_\(\d*\)\.ogg$/', '_('.$j.').ogg', $filename);
+                if ($overwriteFiles) {
+                    unlink('dynamic/recordings/'.$filename);
+                }
+                else {
+                    $filename = str_replace('.ogg', '_(1).ogg', $filename);
+                    for ($j = 2; file_exists('dynamic/recordings/'.$filename); $j++) {
+                        $filename = preg_replace('/_\(\d*\)\.ogg$/', '_('.$j.').ogg', $filename);
+                    }
                 }
             }
 

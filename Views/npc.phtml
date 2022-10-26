@@ -28,7 +28,7 @@
                 <?php endif ?>
                 <?php foreach (${basename(__FILE__, '.phtml').'_voice_actors'} as $vactor) : ?>
                     <?php if (!${basename(__FILE__, '.phtml').'_voice_actor'} === null && ${basename(__FILE__, '.phtml').'_voice_actor'}->getId() === $vactor->getId) : ?>
-                    <option checked value="<?= $vactor->getId() ?>" data-avatar-link="<?= $vactor->getAvatarLink() ?>"><?= $vactor->getName() ?></option>
+                    <option selected value="<?= $vactor->getId() ?>" data-avatar-link="<?= $vactor->getAvatarLink() ?>"><?= $vactor->getName() ?></option>
                     <?php else : ?>
                     <option value="<?= $vactor->getId() ?>" data-avatar-link="<?= $vactor->getAvatarLink() ?>"><?= $vactor->getName() ?></option>
                     <?php endif ?>
@@ -98,6 +98,11 @@
                 </ul>
             </p>
             <input name="recordings[]" type="file" accept="audio/ogg" class="recording-input" multiple="multiple" required/>
+            <p>
+                <label for="overwrite-checkbox">Should files with the same name be overwritten on the server?</label>
+                <input name="overwrite" type="checkbox" id="overwrite-checkbox" />
+            </p>
+            <p>Note: You don't want this to be checked, unless you <i>really</i> know what you want to achieve.</p>
             <input type="submit" value="Upload"/>
         </form>
         <?php if (isset(${basename(__FILE__, '.phtml').'_uploadErrors'}[$quest->getId()])) : ?>
