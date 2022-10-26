@@ -90,22 +90,22 @@ class ReportReader
     }
 
     /**
-     * Processing method for a GET request used to list all accepted records
+     * Processing method for a GET request used to list all records of a certain status
      * @param string|null $npcName Name of the NPC, whose lines should be returned
      * @return int HTTP response code
      */
-    public function getAcceptedReports(string $npcName = null): int
+    public function getReportsByNpc(string $npcName = null, array $statuses): int
     {
-        $query = null;
+        $inString = '('.rtrim(str_repeat('?,', count($statuses)), ',').')';
         if (!empty($npcName)) {
             $npcName = $_GET['npc'];
-            $query = 'SELECT npc_name,pos_x,pos_y,pos_z,chat_message FROM report WHERE status = "accepted" AND npc_name = ?';
-            $parameters = array($npcName);
+            $query = 'SELECT npc_name,pos_x,pos_y,pos_z,chat_message FROM report WHERE status IN '.$inString.' AND npc_name = ?;';
+            array_push($statuses, $npcName);
         }
         else {
-            $query = 'SELECT npc_name,pos_x,pos_y,pos_z,chat_message FROM report WHERE status = "accepted"';
-            $parameters = array();
+            $query = 'SELECT npc_name,pos_x,pos_y,pos_z,chat_message FROM report WHERE status IN '.$inString.';';
         }
+        $parameters = $statuses;
 
         $db = new Db('Api/LineReporting/DbInfo.ini');
 
