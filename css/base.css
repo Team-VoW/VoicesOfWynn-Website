@@ -118,6 +118,10 @@ a { color: #0065bd; text-decoration: none; cursor: pointer; }
 footer { color: #fff; }
 footer a { color: #2398ff; }
 
+a, button, [type="submit"] {
+        transition: all .1s ease-in-out;
+}
+
 
 /* ---- 1.3) button default styles ---- */
 
@@ -496,8 +500,34 @@ br { margin-top: 2rem; }
 
 
                 /* ----- SPECIAL STYLES FOR LOGIN.PHTML ----- */
-        .login-form:not(.submit) { border-right: none; border-left: none; border-top: none; min-width: 15rem; }
-        .submit { border-right: none; border-left: none; border-top: none; }
+        .login-form:not([type="submit"]) { border-right: none; border-left: none; border-top: none; min-width: 15rem; }
+        [type="submit"] {        
+                font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+                font-size: 1.25rem;
+                font-weight: lighter;
+                color: #333;
+                border-radius: .625rem;
+                border: 5px solid transparent;
+                padding-top: .3rem;
+                padding-bottom: .4rem;
+                padding-right: .625rem;
+                padding-left: .625rem;
+                width: fit-content;
+        }
+
+        [type="submit"]:hover {
+                transform: translateY(-5px);
+                color: #333;
+                box-shadow: .0rem .2rem .4rem #777;
+                pointer-events: visible;
+                position: relative;
+                z-index: 0;
+                visibility: visible;
+                float: none;
+                cursor: pointer;    
+                border-radius: .625rem;
+                border: 5px solid transparent;
+        }
         .pw-box { margin-left: 80px; }
 
 
