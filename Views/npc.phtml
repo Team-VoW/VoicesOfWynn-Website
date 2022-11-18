@@ -47,7 +47,7 @@
 <div class="reccenter">
 <section class="table-center">
     <table>
-        <tr>
+        <tr class="recordings-table-quest-header">
             <th colspan="<?php if (${basename(__FILE__, '.phtml').'_admin'}) : ?>6<?php else : ?>5<?php endif ?>"><?= $quest->getName() ?></th>
         </tr>
 	    <?php $recordings = $quest->getNpcs()[0]->getRecordings(); ?>

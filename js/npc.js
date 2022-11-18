@@ -84,6 +84,8 @@ $(".delete-recording-btn").on('click', function(event){
     });
 });
 
+var $archivingRecordings;
+
 $(".archive-all-recordings-btn").on('click', function(event) {
     if (!confirm('Are you sure you want to archive all recordings of this NPC in this quest?\n' +
         'THIS IS A DESTRUCTIVE ACTION WHICH CANNOT BE UNDONE WITHOUT WEBMASTER\'S ASSISTANCE\n' +
@@ -95,15 +97,13 @@ $(".archive-all-recordings-btn").on('click', function(event) {
         return;
     }
 
-    //TODO
     let questId = $(event.target).attr('data-quest-id');
+    $archivingRecordings = $(event.target).closest('.table-center').find('tr:not(.recordings-table-quest-header)');
     $.ajax({
-        url: "administration/npcs/manage/" + npcId + "/recast/" + $(event.target).find("select").val(),
+        url: "administration/npcs/manage/" + npcId + "/archive-quest-recordings/" + questId,
         type: 'PUT',
         success: function(result, message) {
-            $("#voice-actor-avatar").attr('src', 'dynamic/avatars/' + voiceActorAvatar);
-            $("#voice-actor-name").text(voiceActorName);
-            toggleRecastingButton();
+            $archivingRecordings.remove();
         },
         error: function(result, message, error) {
             alert("An error occurred: " + error);

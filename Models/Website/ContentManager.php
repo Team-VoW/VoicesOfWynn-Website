@@ -133,7 +133,7 @@ class ContentManager
 		FROM recording
 		JOIN quest USING(quest_id)
 		JOIN npc USING(npc_id)
-		WHERE npc.voice_actor_id = ?
+		WHERE npc.voice_actor_id = ? AND recording.archived = 0
 		ORDER BY quest_id, line;';
 		$result = (new Db('Website/DbInfo.ini'))->fetchQuery($query, array($id), true);
 		
@@ -171,7 +171,7 @@ class ContentManager
 		SELECT recording.recording_id, recording.quest_id, recording.line, recording.file, recording.upvotes, recording.downvotes, (SELECT COUNT(*) FROM comment WHERE comment.recording_id = recording.recording_id) AS "comments", quest.name
 		FROM recording
 		JOIN quest ON quest.quest_id = recording.quest_id
-		WHERE npc_id = ?
+		WHERE npc_id = ? AND archived = 0
 		ORDER BY quest_id, line;';
 		$result = $db->fetchQuery($query, array($id), true);
 		

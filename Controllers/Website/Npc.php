@@ -145,22 +145,29 @@ class Npc extends WebpageController
             return 403;
         }
 
+        if (empty($this->npc)) {
+            return 400;
+        }
+
         switch (array_shift($args)) {
             case 'recast':
                 $user = new User();
                 $user->setData(array('id' => array_shift($args)));
-                if (empty($this->npc->getId()) || empty($user)) {
+                if (empty($user)) {
                     return 400;
                 }
                 $result = $this->npc->recast($user);
                 return ($result) ? 204 : 500;
-                break;
             case 'archive':
-                //TODO
-                break;
+                $result = $this->npc->archive();
+                return ($result) ? 201 : 500;
             case 'archive-quest-recordings':
-                //TODO
-                break;
+                $questId = array_shift($args);
+                if (empty($questId)) {
+                    return 400;
+                }
+                $result = $this->npc->archiveQuestRecordings($questId);
+                return ($result) ? 204 : 500;
             default:
                 return 400;
         }

@@ -14,7 +14,7 @@ class Recording
 		'purple' => '#CC33CC'
 	);
 	private const ANTISPAM_TOLLERANCE = 20; //In % out of 256
-	
+
 	private int $id = 0;
 	private int $npcId = 0;
 	private int $questId = 0;
@@ -23,7 +23,8 @@ class Recording
 	private int $upvotes = 0;
 	private int $downvotes = 0;
 	private int $comments = 0;
-	
+    private bool $archived = false;
+
 	/**
 	 * @param array $data Data returned from database, invalid items are skipped, multiple key names are supported for
 	 * each attribute
@@ -71,10 +72,14 @@ class Recording
 				case 'commentCount':
 					$this->comments = $value;
 					break;
+                case 'archived':
+                case 'hidden':
+                    $this->archived = $value;
+                    break;
 			}
 		}
 	}
-	
+
 	/**
 	 * Generic getter
 	 * @param $attr
@@ -87,7 +92,7 @@ class Recording
 		}
 		return null;
 	}
-	
+
     /**
      * Checks if this recording has been voted for by the client communicating from the current IP
      * @param string $type Either "+" to check for upvotes or "-" to check for downvotes
@@ -120,7 +125,7 @@ class Recording
 
         return $this->updateVotesCounts();
 	}
-	
+
 	/**
 	 * Downvotes this recording and sets the cookie preventing duplicate votes
 	 * @return bool
@@ -188,11 +193,11 @@ class Recording
 			$greenPart = hexdec(substr($idealColor, 3, 2));
 			$bluePart = hexdec(substr($idealColor, 5, 2));
 			$absoluteTollerance = round(256 * self::ANTISPAM_TOLLERANCE / 100);
-			
+
 			$redPartAnswer = hexdec(substr($antispamAnswer, 1, 2));
 			$greenPartAnswer = hexdec(substr($antispamAnswer, 3, 2));
 			$bluePartAnswer = hexdec(substr($antispamAnswer, 5, 2));
-			
+
 			if (
 				$redPartAnswer + $absoluteTollerance < $redPart || $redPartAnswer - $absoluteTollerance > $redPart ||
 				$greenPartAnswer + $absoluteTollerance < $greenPart || $greenPartAnswer - $absoluteTollerance > $greenPart ||
@@ -201,7 +206,7 @@ class Recording
 				throw new UserException('The colour you picked was too distinct from '.$antispamQuestion.'. Try again please.');
 			}
 		}
-		
+
         if ($verified) {
             if (!isset($_SESSION['user'])) {
                 throw new UserException('No contributor is logged in.');
@@ -219,7 +224,7 @@ class Recording
             if (mb_strlen($author) > 31) {
                 throw new UserException('Name is too long, 31 characters is the limit.');
             }
-	
+
 	        $email = trim($email);
 	        if (empty($email)) {
 		        $email = ""; //NULL would mess up with the SQL MD5 function used inside the CONCAT function
@@ -231,10 +236,10 @@ class Recording
 	        if ($email !== "" && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
 		        throw new UserException('E-mail address doesn\'t seem to be in the correct format. If you are sure that you entered your e-mail address properly, ping Shady#2948 on Discord.');
 	        }
-			
+
 	        $userId = null;
         }
-		
+
 		$content = trim($content);
 		if (empty($content)) {
 			throw new UserException('No content submitted');
@@ -248,14 +253,14 @@ class Recording
 		if (strlen($content) > 65535) { //Not using mb_strlen, because we need to count single-bit characters
 			throw new UserException('Comment is too long, 65,535 characters is the limit.');
 		}
-		
+
 		$badwords = file('Models/BadWords.txt');
 		foreach ($badwords as $badword) {
 			if (mb_stripos($content, trim($badword)) !== false) {
 				throw new UserException('The comment contains a bad word: "'.trim($badword).'". If you believe that it\'s not used as a profanity, join our Discord (link in the footer) and ping Shady#2948.');
 			}
 		}
-		
+
 		return (new Db('Website/DbInfo.ini'))->executeQuery('INSERT INTO comment (verified,user_id,ip,name,email,content,recording_id) VALUES (?,?,?,?,?,?,?);', array(
 			$verified,
             $userId,
@@ -266,5 +271,24 @@ class Recording
 			$this->id
 		), true);
 	}
+
+    /**
+     * Method archiving this recording by marking it as archived in the database and renaming the recording file
+     * @param string $prefix Custom prefix to be appended to the current file name of the recording file; "_archived" as default
+     * @return bool Whether the database query was executed successfully
+     */
+    public function archive(string $prefix = '_archived') : bool
+    {
+        //Rename the file
+        rename('dynamic/recordings/'.$this->file, 'dynamic/recordings/'.$prefix.$this->file);
+
+        //Change the attributes
+        $this->archived = true;
+        $this->file = $prefix.$this->file;
+
+        //Update the database
+        $db = new Db('Website/DbInfo.ini');
+        return $db->executeQuery('UPDATE recording SET archived = 1, file = ? WHERE recording_id = ?;', array($this->file, $this->id));
+    }
 }
 
