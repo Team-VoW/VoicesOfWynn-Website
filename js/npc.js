@@ -1,3 +1,4 @@
+var voiceActorId;
 var voiceActorName;
 var voiceActorAvatar;
 // var npcId; - filled by PHP in the view
@@ -14,14 +15,25 @@ $("#change-actor-btn").on('click', toggleRecastingButton);
 
 $("#voice-actor-form").on('submit', function(event) {
     event.preventDefault();
+    if (!confirm('Are you sure you want to recast this character?\n' +
+        '\n' +
+        'If there are any recordings by the original voice actor, you should archive this NPC instead.\n' +
+        'Archiving an NPC will create a new one without any recordings and replace this one with it.\n' +
+        'You\'ll be able to upload new recordings without deleting the current ones and nothing will be lost.\n' +
+        '\n' +
+        'Recasting should be done only in the case of the original voice actor not submitting their lines or not getting their voice in the mod for other reasons.')) {
+        return;
+    }
+    voiceActorId = $(event.target).find("select").val();
     voiceActorName = $(event.target).find('select option:selected').text();
     voiceActorAvatar = $(event.target).find('select option:selected').attr('data-avatar-link');
     $.ajax({
-        url: "administration/npcs/manage/" + npcId + "/recast/" + $(event.target).find("select").val(),
+        url: "administration/npcs/manage/" + npcId + "/recast/" + voiceActorId,
         type: 'PUT',
         success: function(result, message) {
             $("#voice-actor-avatar").attr('src', 'dynamic/avatars/' + voiceActorAvatar);
             $("#voice-actor-name").text(voiceActorName);
+            $(".valink").attr("href", "cast/" + voiceActorId)
             toggleRecastingButton();
         },
         error: function(result, message, error) {
@@ -29,6 +41,26 @@ $("#voice-actor-form").on('submit', function(event) {
         }
     });
 });
+
+//-----------------------------------ARCHIVING SECTION-----------------------------------
+
+$("#archive-btn").on('click', function() {
+    if (!confirm('Are you sure you want to archive this NPC?\n' +
+        'THIS IS A DESTRUCTIVE ACTION WHICH CANNOT BE UNDONE WITHOUT WEBMASTER\'S ASSISTANCE\n' +
+        '\n' +
+        'Archiving an NPC will unlink it from its quest and so this webpage will no longer be accessible by browsing the "Mod contents" page.\n' +
+        'All recording files of this NPC will be renamed on the server to indicate, that they belong to an archived NPC.\n' +
+        'At the same time, a new NPC object will be created, with the same name and profile picture, but without any recordings or voice actor.\n' +
+        'This "empty" NPC will then replace this one and will be accessible on the "Mod contents" page.\n' +
+        '\n' +
+        'This option should be used only in case the quest got a rework and this NPC has been severely altered or removed, or in case of an recast.'
+    )) {
+        return;
+    }
+
+    //TODO
+});
+
 
 //------------------------------DELETING RECORDINGS SECTION------------------------------
 
@@ -52,28 +84,29 @@ $(".delete-recording-btn").on('click', function(event){
     });
 });
 
-//------------------------------UPLOADING RECORDINGS SECTION------------------------------
+$(".archive-all-recordings-btn").on('click', function(event) {
+    if (!confirm('Are you sure you want to archive all recordings of this NPC in this quest?\n' +
+        'THIS IS A DESTRUCTIVE ACTION WHICH CANNOT BE UNDONE WITHOUT WEBMASTER\'S ASSISTANCE\n' +
+        '\n' +
+        'All the recordings listed above will be hidden from public view, but will still be accessible by entering a direct link.\n' +
+        'No comments will be lost and the files on the server will be renamed to indicate that they contain an archived recording.\n' +
+        '\n' +
+        'This option should be used only in the case the dialogue receives a large revamp and is revoiced by the original voice actor.')) {
+        return;
+    }
 
-var recordingItemHtml = '<tr class="new-recording-item"><td><input name="recording{NUM}" type="file" accept="application/ogg" class="recording-input" required/></td><td><input name="line{NUM}" type="number" min="1" max="32767" value="{LINE}" class="line-input" required/></td></tr>';
-
-function toggleAddingButton(event)
-{
-    $(event.target).closest('.new-recording-form').find('.add-more-recordings-button').toggle();
-}
-
-$(".recording-input").on('change', toggleAddingButton);
-
-$(".add-more-recordings-button").on('click', function(event) {
-    event.preventDefault();
-    let item = recordingItemHtml;
-    let num = $(event.target).parent().find('.new-recording-items-container').children().length; //Header row included - we start from 1 anyway
-    num++;
-    let line = $(event.target).parent().find('.new-recording-items-container').children().last().find('.line-input').val();
-    line++;
-    item = item.replace(/{NUM}/g, num);
-    item = item.replace(/{LINE}/g, line);
-    $(event.target).parent().find('.new-recording-items-container').children().last().find('.recording-input').off('change');
-    $(event.target).parent().find('.new-recording-items-container').append(item);
-    $(event.target).parent().find('.new-recording-items-container').children().last().find('.recording-input').on('change', toggleAddingButton);
-    $(event.target).hide();
+    //TODO
+    let questId = $(event.target).attr('data-quest-id');
+    $.ajax({
+        url: "administration/npcs/manage/" + npcId + "/recast/" + $(event.target).find("select").val(),
+        type: 'PUT',
+        success: function(result, message) {
+            $("#voice-actor-avatar").attr('src', 'dynamic/avatars/' + voiceActorAvatar);
+            $("#voice-actor-name").text(voiceActorName);
+            toggleRecastingButton();
+        },
+        error: function(result, message, error) {
+            alert("An error occurred: " + error);
+        }
+    });
 });

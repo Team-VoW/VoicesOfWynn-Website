@@ -1,3 +1,11 @@
+#change-actor-btn { background: rgb(255, 204, 0);}
+#change-actor-btn:hover { border-color: rgb(210, 176, 43); }
+
+#archive-btn { background: rgb(140, 140, 140);}
+#archive-btn:hover { border-color: rgb(197, 16, 16); }
+
+.archive-all-recordings-btn { background: rgb(255, 79, 79);}
+.archive-all-recordings-btn:hover  { border-color: rgb(187, 79, 79);}
 
 #voice-actor-form {
     display: none;

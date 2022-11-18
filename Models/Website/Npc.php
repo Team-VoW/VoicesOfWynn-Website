@@ -3,6 +3,7 @@
 namespace VoicesOfWynn\Models\Website;
 
 use \JsonSerializable;
+use VoicesOfWynn\Models\Db;
 
 class Npc implements JsonSerializable
 {
@@ -33,7 +34,7 @@ class Npc implements JsonSerializable
 		}
 	}
 	
-	public function jsonSerialize()
+	public function jsonSerialize() : object
 	{
 	    return (object) get_object_vars($this);
 	}
@@ -42,16 +43,29 @@ class Npc implements JsonSerializable
 	 * VoiceActor setter
 	 * @param User $voiceActor
 	 */
-	public function setVoiceActor(User $voiceActor)
+	public function setVoiceActor(User $voiceActor) : void
 	{
 		$this->voiceActor = $voiceActor;
 	}
-	
+
+    /**
+     * Method setting a new voice actor and updating the database
+     * @param User $voiceActor
+     * @return bool Whether the database query has successfully been executed
+     */
+    public function recast(User $voiceActor) : bool
+    {
+        $this->setVoiceActor($voiceActor);
+
+        //Update the database
+        return (new Db('Website/DbInfo.ini'))->executeQuery('UPDATE npc SET voice_actor_id = ? WHERE npc_id = ? LIMIT 1;', array($voiceActor->getId(), $this->id));
+    }
+
 	/**
 	 * ID getter
 	 * @return int|null ID of this NPC or NULL if it wasn't set
 	 */
-	public function getId()
+	public function getId() : ?int
 	{
 		return $this->id;
 	}
@@ -60,7 +74,7 @@ class Npc implements JsonSerializable
 	 * Name getter
 	 * @return string|null Name of this NPC or NULL if it wasn't set
 	 */
-	public function getName()
+	public function getName() : ?string
 	{
 		return $this->name;
 	}
@@ -69,7 +83,7 @@ class Npc implements JsonSerializable
 	 * VoiceActor getter
 	 * @return User|null Object representing the user voicing this NPC or NULL if it wasn't set
 	 */
-	public function getVoiceActor()
+	public function getVoiceActor() : ?User
 	{
 		return $this->voiceActor;
 	}
@@ -78,7 +92,7 @@ class Npc implements JsonSerializable
 	 * Method adding a Recording object to this NPC's $recordings attribute
 	 * @param Recording $recording The Recording object to add
 	 */
-	public function addRecording(Recording $recording)
+	public function addRecording(Recording $recording) : void
 	{
 		$this->recordings[] = $recording;
 	}
@@ -87,7 +101,7 @@ class Npc implements JsonSerializable
 	 * Recordings getter
 	 * @return array
 	 */
-	public function getRecordings()
+	public function getRecordings() : array
 	{
 		return $this->recordings;
 	}

@@ -5,10 +5,12 @@ namespace VoicesOfWynn\Controllers\Website;
 use VoicesOfWynn\Models\Db;
 use VoicesOfWynn\Models\Website\AccountManager;
 use VoicesOfWynn\Models\Website\ContentManager;
+use VoicesOfWynn\Models\Website\User;
+use VoicesOfWynn\Models\Website\Npc as NpcModel;
 
 class Npc extends WebpageController
 {
-	private int $npcId;
+	private NpcModel $npc;
 	private bool $disallowAdministration;
 	
 	/**
@@ -16,7 +18,7 @@ class Npc extends WebpageController
 	 */
 	public function process(array $args): int
 	{
-		$this->npcId = array_shift($args);
+        $this->npc = new NpcModel(array('id' => array_shift($args)));
 		$this->disallowAdministration = !((array_shift($args) === 'false'));
 		switch ($_SERVER['REQUEST_METHOD']) {
 			case 'GET':
@@ -51,7 +53,7 @@ class Npc extends WebpageController
 		self::$data['npc_admin'] = !$this->disallowAdministration;
 		
 		$cnm = new ContentManager();
-		$npc = $cnm->getNpc($this->npcId);
+		$npc = $cnm->getNpc($this->npc->getId());
         if ($npc === false) {
             return 404; //NPC with this ID doesn't exist in the database
         }
@@ -67,7 +69,7 @@ class Npc extends WebpageController
 			self::$data['base_keywords'] .= $npc->getName();
 		}
 		
-		self::$data['npc_quest_recordings'] = $cnm->getNpcRecordings($this->npcId);
+		self::$data['npc_quest_recordings'] = $cnm->getNpcRecordings($this->npc->getId());
 		if (!$this->disallowAdministration && !isset(self::$data['npc_uploadErrors'])) {
 			self::$data['npc_uploadErrors'] = array();
 		}
@@ -87,8 +89,7 @@ class Npc extends WebpageController
 	}
 	
 	/**
-	 * Processing method for POST requests to this controller (new recordings were uploaded or a voice actor was
-	 * changed)
+	 * Processing method for POST requests to this controller (new recordings were uploaded)
 	 * @param array $args
 	 * @return int|bool
 	 */
@@ -123,7 +124,7 @@ class Npc extends WebpageController
 			
 			move_uploaded_file($tempName, 'dynamic/recordings/'.$filename);
             (new Db('Website/DbInfo.ini'))->executeQuery('INSERT INTO recording (npc_id,quest_id,line,file) VALUES (?,?,?,?)', array(
-				$this->npcId,
+				$this->npc->getId(),
 				$questId,
 				$line,
 				$filename
@@ -134,30 +135,40 @@ class Npc extends WebpageController
 	}
 	
 	/**
-	 * Processing method for PUT requests to this controller (new voice actor was set for this NPC)
-	 * @param array $args NPC id as the first element, User ID as the second element
+	 * Processing method for PUT requests to this controller (recast, archivation of NPC or archivation of recordings)
+	 * @param array $args Voice actor id as the first element
 	 * @return int|bool
 	 */
 	private function put(array $args): int
 	{
-		if ($this->disallowAdministration) {
-			return 403;
-		}
-		
-		$userId = $args[0];
-		
-		if (empty($this->npcId) || empty($userId)) {
-			return 400;
-		}
-		
-		//Update the database
-		$result = (new Db('Website/DbInfo.ini'))->executeQuery('UPDATE npc SET voice_actor_id = ? WHERE npc_id = ? LIMIT 1;', array($userId, $this->npcId));
-		exit($result);
+        if ($this->disallowAdministration) {
+            return 403;
+        }
+
+        switch (array_shift($args)) {
+            case 'recast':
+                $user = new User();
+                $user->setData(array('id' => array_shift($args)));
+                if (empty($this->npc->getId()) || empty($user)) {
+                    return 400;
+                }
+                $result = $this->npc->recast($user);
+                return ($result) ? 204 : 500;
+                break;
+            case 'archive':
+                //TODO
+                break;
+            case 'archive-quest-recordings':
+                //TODO
+                break;
+            default:
+                return 400;
+        }
 	}
 	
 	/**
 	 * Processing method for DELETE requests to this controller (a recording is supposed to be deleted)
-	 * @param array $args NPC id as the first element, Recording ID as the second element
+	 * @param array $args Recording ID as the first element
 	 * @return int|bool
 	 */
 	private function delete(array $args): int
@@ -168,13 +179,13 @@ class Npc extends WebpageController
 		
 		$recordingId = $args[0];
 		
-		if (empty($this->npcId) || empty($recordingId)) {
+		if (empty($this->npc->getId()) || empty($recordingId)) {
 			return 400;
 		}
 
         $db = new Db('Website/DbInfo.ini');
 		$result = $db->fetchQuery('SELECT file FROM recording WHERE recording_id = ? AND npc_id = ?;',
-			array($recordingId, $this->npcId));
+			array($recordingId, $this->npc->getId()));
 		if (empty($result)) {
 			return 404;
 		}
@@ -182,7 +193,7 @@ class Npc extends WebpageController
 		//Delete record from database
 		$filename = $result['file'];
 		$result = $db->executeQuery('DELETE FROM recording WHERE recording_id = ? AND npc_id = ? LIMIT 1;',
-			array($recordingId, $this->npcId));
+			array($recordingId, $this->npc->getId()));
 		if ($result) {
 			//Delete file
 			unlink('dynamic/recordings/'.$filename);

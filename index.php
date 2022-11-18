@@ -53,6 +53,7 @@ if ($result >= 400) {
     }
 }
 else if ($result === 204) {
+    header('HTTP/1.1 204 No Content');
     //Don't render any views, simply don't echo anything into the response body
     //This is mostly used for AJAX calls
     $website = '';
