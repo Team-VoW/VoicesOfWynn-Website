@@ -98,11 +98,11 @@
                 </ul>
             </p>
             <input name="recordings[]" type="file" accept="audio/ogg" class="recording-input" multiple="multiple" required/>
-            <p>
+            <div class="upload-form-overwrite">
                 <label for="overwrite-checkbox">Should files with the same name be overwritten on the server?</label>
+                <span>Note: You don't want this to be checked, unless you <i>really</i> know what you want to achieve.</span>
                 <input name="overwrite" type="checkbox" id="overwrite-checkbox" />
-            </p>
-            <p>Note: You don't want this to be checked, unless you <i>really</i> know what you want to achieve.</p>
+            </div>
             <input type="submit" value="Upload"/>
         </form>
         <?php if (isset(${basename(__FILE__, '.phtml').'_uploadErrors'}[$quest->getId()])) : ?>
