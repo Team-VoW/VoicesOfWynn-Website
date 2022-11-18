@@ -151,6 +151,7 @@ abstract class WebpageController extends Controller
                     $attr = array();
                     $attr['id'] = $this->sanitize($value->getId());
                     $attr['name'] = $this->sanitize($value->getName());
+                    $attr['archived'] = $this->sanitize($value->isArchived());
                     $voiceActor = $this->sanitize($value->getVoiceActor());
                     $npc = new Npc($attr);
                     if ($voiceActor !== null) {
@@ -172,6 +173,7 @@ abstract class WebpageController extends Controller
                     $attr['upvotes'] = $this->sanitize($value->upvotes);
                     $attr['downvotes'] = $this->sanitize($value->downvotes);
                     $attr['comments'] = $this->sanitize($value->comments);
+                    $attr['archived'] = $this->sanitize($value->archived);
                     $return = new Recording($attr);
                 }
                 else if ($value instanceof Comment) {

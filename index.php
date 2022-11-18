@@ -39,6 +39,8 @@ $requestedUrl = $_SERVER['REQUEST_URI'];
 //Process the request
 $router = new Router();
 $result = $router->process(array($requestedUrl));
+
+$website = '';
 if ($result >= 400) {
     //Display the error webpage, overwrite the page headers (title, description, keywords)
     $errorControllerName = "VoicesOfWynn\Controllers\Errors\Error".$result;
@@ -48,16 +50,13 @@ if ($result >= 400) {
     if ($router->isWebpageRequest) {
         $website = $errorController->getResult();
     }
-    else {
-        $website = '';
-    }
 }
 else if ($result === 204) {
+    header('HTTP/1.1 204 No Content');
     //Don't render any views, simply don't echo anything into the response body
     //This is mostly used for AJAX calls
-    $website = '';
 }
-else {
+else if ($result < 300) {
     $website = $router->getResult();
 }
 

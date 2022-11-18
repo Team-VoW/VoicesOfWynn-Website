@@ -72,9 +72,12 @@
         <section>
             <table>
                 <tr>
-                  <th colspan="5">
-                      <b><?= $quest->getNpcs()[0]->getName() ?></b> in <i><?= $quest->getName() ?></i>
-                  </th>
+                    <th colspan="5">
+                        <b><?= $quest->getNpcs()[0]->getName() ?></b> in <i><?= $quest->getName() ?></i>
+                        <?php if ($quest->getNpcs()[0]->isArchived()) : ?>
+                            (outdated)
+                        <?php endif ?>
+                    </th>
                 </tr>
                 <?php $recordings = $quest->getNpcs()[0]->getRecordings(); ?>
                 <?php foreach ($recordings as $recording) : ?>
