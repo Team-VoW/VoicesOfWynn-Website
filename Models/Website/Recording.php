@@ -288,7 +288,7 @@ class Recording
 
         //Update the database
         $db = new Db('Website/DbInfo.ini');
-        return $db->executeQuery('UPDATE recording SET archived = 1, file = ? WHERE recording_id = ?;', array($this->file, $this->id));
+        return $db->executeQuery('UPDATE recording SET archived = TRUE, file = ? WHERE recording_id = ?;', array($this->file, $this->id));
     }
 }
 

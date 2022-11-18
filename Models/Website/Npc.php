@@ -10,6 +10,7 @@ class Npc implements JsonSerializable
 	private int $id = 0;
 	private string $name = '';
 	private $voiceActor;
+    private bool $archived = false;
 
 	private array $recordings = array();
 
@@ -30,6 +31,10 @@ class Npc implements JsonSerializable
 				case 'npc_name':
 					$this->name = $value;
 					break;
+                case 'archived':
+                case 'hidden':
+                    $this->archived = $value;
+                    break;
 			}
 		}
 	}
@@ -61,9 +66,44 @@ class Npc implements JsonSerializable
         return (new Db('Website/DbInfo.ini'))->executeQuery('UPDATE npc SET voice_actor_id = ? WHERE npc_id = ? LIMIT 1;', array($voiceActor->getId(), $this->id));
     }
 
-    public function archive() : bool
+    /**
+     * Method archiving this whole NPC by unlinking it from all quests, archiving all its recordings and replacing
+     * its position in quests with a newly created NPC with the same name and profile picture.
+     * @return int ID of the newly created NPC
+     */
+    public function archive() : int
     {
-        //TODO
+        $db = new Db('Website/DbInfo.ini');
+
+        //Archive all recordings
+        $questIdsRaw = $db->fetchQuery('SELECT quest_id FROM npc_quest WHERE npc_id = ?;', array($this->id), true);
+        $questIds = array();
+        foreach($questIdsRaw as $questId) {
+            $this->archiveQuestRecordings($questId['quest_id']);
+            $questIds[] = $questId['quest_id'];
+        }
+
+        //Create new NPC
+        $this->loadName(); //Needed to be copied
+        $replacementId = $db->executeQuery('INSERT INTO npc(name) VALUES (?);', array($this->name), true);
+        $replacementNpc = new Npc(array('id' => $replacementId, 'name' => $this->name));
+        unset($replacementId);
+
+        //Copy profile picture
+        copy('dynamic/npcs/'.$this->id.'.png', 'dynamic/npcs/'.$replacementNpc->getId().'.png');
+
+        //Unlink this NPC from all quests and link the new one
+        $inString = trim(str_repeat('?,', count($questIds)), ',');
+        $parameters = $questIds;
+        array_unshift($parameters, $replacementNpc->id);
+        array_push($parameters, $this->id);
+        $db->executeQuery('UPDATE npc_quest SET npc_id = ? WHERE quest_id IN ('.$inString.') AND npc_id = ?;', $parameters);
+
+        //Set this NPC as archived in the database and in the property
+        $db->executeQuery('UPDATE npc SET archived = TRUE WHERE npc_id = ?;', array($this->id));
+        $this->archived = true;
+
+        return $replacementNpc->getId();
     }
 
     /**
@@ -99,6 +139,27 @@ class Npc implements JsonSerializable
 		return $this->id;
 	}
 
+    /**
+     * Method loading the name of this NPC from the database.
+     * The ID property must be filled for this method to work
+     * @return bool TRUE on success, FALSE on failure (ID is not known or no database results)
+     */
+    private function loadName() : bool
+    {
+        if (empty($this->id)) {
+            return false;
+        }
+
+        $db = new Db('Website/DbInfo.ini');
+        $result = $db->fetchQuery('SELECT name FROM npc WHERE npc_id = ?;', array($this->id));
+
+        if (!empty($result)) {
+            $this->name = $result['name'];
+            return true;
+        }
+        return false;
+    }
+
 	/**
 	 * Name getter
 	 * @return string|null Name of this NPC or NULL if it wasn't set
@@ -116,6 +177,11 @@ class Npc implements JsonSerializable
 	{
 		return $this->voiceActor;
 	}
+
+    public function isArchived() : bool
+    {
+        return $this->archived;
+    }
 
 	/**
 	 * Method adding a Recording object to this NPC's $recordings attribute

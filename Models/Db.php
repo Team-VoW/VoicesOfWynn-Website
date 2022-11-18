@@ -70,11 +70,11 @@ class Db
     /**
      * Execute a query that doesn't return any data (suitable for INSERT, UPDATE and DELETE queries)
      * @param string $query The query to execute, variables to insert need to be replaced with '?'
-     * @param array $parameters Variables that should replaces the '?'s in the query
+     * @param array $parameters Variables that should replace the '?'s in the query
      * @param bool $returnLastId TRUE, if the ID of the last inserted row should be returned instead of true/false
      * @return bool|string TRUE on success, FALSE on failure; in case the last parameter is set to TRUE, the ID of the
      * inserter row is returned
-     * @throws Exception In case of a database error
+     * @throws PDOException In case of a database error
      */
     public function executeQuery(string $query, array $parameters = array(), bool $returnLastId = false)
     {

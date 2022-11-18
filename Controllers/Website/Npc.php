@@ -160,7 +160,10 @@ class Npc extends WebpageController
                 return ($result) ? 204 : 500;
             case 'archive':
                 $result = $this->npc->archive();
-                return ($result) ? 201 : 500;
+                header('Content-Type: application/json');
+                header('HTTP/1.1 303 See Other');
+                echo json_encode(array('Location' => '/administration/npcs/manage/'.$result));
+                return ($result) ? 303 : 500;
             case 'archive-quest-recordings':
                 $questId = array_shift($args);
                 if (empty($questId)) {

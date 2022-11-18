@@ -58,7 +58,22 @@ $("#archive-btn").on('click', function() {
         return;
     }
 
-    //TODO
+    $.ajax({
+        url: "/administration/npcs/manage/" + npcId + "/archive",
+        type: 'PUT',
+        success: function(result, message) { /* Shouldn't happen */ },
+        error: function(result, message, error) {
+            if (error === "See Other") {
+                //Actually success
+                if (confirm('This NPC has successfully been archived and a new one was created.\n\nWould you like to go to the new NPC\'s administration page?')) {
+                    window.location = JSON.parse(result.responseText).Location;
+                }
+                return;
+            }
+
+            alert("An error occurred: " + error);
+        }
+    });
 });
 
 
@@ -107,6 +122,7 @@ $(".archive-all-recordings-btn").on('click', function(event) {
         },
         error: function(result, message, error) {
             alert("An error occurred: " + error);
+            $archivingRecordings = undefined;
         }
     });
 });

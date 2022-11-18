@@ -9,7 +9,7 @@ class ContentManager
 	public function getQuests(?int $questId = null): array
 	{
 		$query = '
-		SELECT quest.quest_id, quest.name AS "qname", npc.npc_id, npc.name AS "nname", npc.voice_actor_id, user.user_id, user.display_name, user.picture
+		SELECT quest.quest_id, quest.name AS "qname", npc.npc_id, npc.name AS "nname", npc.voice_actor_id, npc.archived, user.user_id, user.display_name, user.picture
 		FROM quest
 		JOIN npc_quest ON npc_quest.quest_id = quest.quest_id
 		JOIN npc ON npc.npc_id = npc_quest.npc_id
@@ -46,7 +46,7 @@ class ContentManager
 	public function getNpc($id)
 	{
 		$query = '
-		SELECT npc.npc_id, npc.name, user.user_id, user.display_name, user.picture
+		SELECT npc.npc_id, npc.name, user.user_id, user.display_name, user.picture, npc.archived
 		FROM npc
 		LEFT JOIN user ON npc.voice_actor_id = user.user_id
 		WHERE npc_id = ?;';
@@ -129,11 +129,11 @@ class ContentManager
 	public function getVoiceActorRecordings($id): array
 	{
 		$query = '
-		SELECT recording.recording_id, recording.quest_id, recording.line, recording.file, recording.upvotes, recording.downvotes, (SELECT COUNT(*) FROM comment WHERE comment.recording_id = recording.recording_id) AS "comments", npc.npc_id AS `npc` , npc.name AS `nname`, quest.name as `qname`
+		SELECT recording.recording_id, recording.quest_id, recording.line, recording.file, recording.upvotes, recording.downvotes, (SELECT COUNT(*) FROM comment WHERE comment.recording_id = recording.recording_id) AS "comments", recording.archived AS "recarchived", npc.npc_id AS `npc`, npc.name AS `nname`, npc.archived, quest.name as `qname`
 		FROM recording
 		JOIN quest USING(quest_id)
 		JOIN npc USING(npc_id)
-		WHERE npc.voice_actor_id = ? AND recording.archived = 0
+		WHERE npc.voice_actor_id = ? AND (recording.archived = FALSE OR npc.archived = TRUE)
 		ORDER BY quest_id, line;';
 		$result = (new Db('Website/DbInfo.ini'))->fetchQuery($query, array($id), true);
 		
@@ -152,7 +152,7 @@ class ContentManager
 					$quests[] = $currentQuest;
 				}
 				$currentQuest = new Quest($recording);
-				$currentNpc = new Npc(array('id' => $recording['npc'], 'name' => $recording['nname'])); //"npc" is a key for NPC's ID
+				$currentNpc = new Npc(array('id' => $recording['npc'], 'name' => $recording['nname'], 'archived' => $recording['archived'])); //"npc" is a key for NPC's ID
 			}
 			
 			$recordingObj = new Recording($recording);
@@ -171,7 +171,8 @@ class ContentManager
 		SELECT recording.recording_id, recording.quest_id, recording.line, recording.file, recording.upvotes, recording.downvotes, (SELECT COUNT(*) FROM comment WHERE comment.recording_id = recording.recording_id) AS "comments", quest.name
 		FROM recording
 		JOIN quest ON quest.quest_id = recording.quest_id
-		WHERE npc_id = ? AND archived = 0
+		JOIN npc ON recording.npc_id = npc.npc_id
+		WHERE recording.npc_id = ? AND (recording.archived = FALSE OR npc.archived = TRUE)
 		ORDER BY quest_id, line;';
 		$result = $db->fetchQuery($query, array($id), true);
 		
@@ -184,7 +185,10 @@ class ContentManager
 		    JOIN npc_quest USING(quest_id)
 			WHERE npc_id = ?;';
 			$result = $db->fetchQuery($query, array($id), true);
-			
+			if (empty($result)) {
+                $result = array();
+            }
+
 			foreach ($result as $quest) {
 				$currentQuest = new Quest($quest);
 				$currentQuest->addNpc(new Npc(array('id' => $id)));
@@ -232,7 +236,8 @@ class ContentManager
 			'line' => $result['line'],
 			'file' => $result['file'],
 			'upvotes' => $result['upvotes'],
-			'downvotes' => $result['downvotes']
+			'downvotes' => $result['downvotes'],
+            'archived' => $result['archived']
 		));
 	}
 	
@@ -321,9 +326,16 @@ class ContentManager
 		} else {
 			$lineNumber = $recording->line;
 		}
-		
-		//<NPC name> in <quest name>, line n. <line number>
-		return $npcName.' in '.$questName.', line n. '.$lineNumber;
+
+        if (empty($recording->archived)) {
+            $isArchived = $db->fetchQuery('SELECT archived FROM recording WHERE recording_id = ?;',
+                array($recording->id))['archived'];
+        } else {
+            $isArchived = $recording->archived;
+        }
+
+		//<NPC name> in <quest name>, line n. <line number> [(outdated)]
+		return ($npcName.' in '.$questName.', line n. '.$lineNumber.(($isArchived) ? ' (outdated)' : ''));
 	}
 }
 

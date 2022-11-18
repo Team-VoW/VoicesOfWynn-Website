@@ -1,6 +1,11 @@
 <script>var npcId = <?= ${basename(__FILE__, '.phtml').'_npc'}->getId() ?>;</script>
 
-<h1 class="mb-l"><?= ${basename(__FILE__, '.phtml').'_npc'}->getName() ?></h1>
+<h1 class="mb-l">
+    <?= ${basename(__FILE__, '.phtml').'_npc'}->getName() ?>
+    <?php if (${basename(__FILE__, '.phtml').'_npc'}->isArchived()) : ?>
+     (outdated)
+    <?php endif ?>
+</h1>
 
 <p class="npc-va-center-img txt-c mb-l">
     <img class="avatar" src="dynamic/npcs/<?= ${basename(__FILE__, '.phtml').'_npc'}->getId() ?>.png" alt="NPC picture" width="200px" height="200px"/>
