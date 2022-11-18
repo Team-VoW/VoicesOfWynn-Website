@@ -11,6 +11,11 @@
     display: none;
 }
 
+#overwrite-checkbox {
+    height: 1.25rem;
+    width: 1.25rem;
+}
+
 .delete-recording-btn {
     background-color: #f63613;
     color: white;
@@ -23,4 +28,18 @@
 .add-more-recordings-button {
     /* Will be displayed again by jQuery when the initial field is filled */
     display:none;
+}
+
+.upload-form-overwrite {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: .2rem;
+    margin: 2rem 0rem;
+}
+
+.upload-form-overwrite > span {
+    color: red;
 }

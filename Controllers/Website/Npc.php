@@ -88,51 +88,69 @@ class Npc extends WebpageController
 		return true;
 	}
 	
-	/**
-	 * Processing method for POST requests to this controller (new recordings were uploaded)
-	 * @param array $args
-	 * @return int|bool
-	 */
-	private function post(array $args): int
-	{
-		if ($this->disallowAdministration) {
-			return 403;
-		}
-		
-		$questId = $_POST['questId'];
-		self::$data['npc_uploadErrors'] = array();
-		
-		for ($i = 1; isset($_FILES['recording'.$i]); $i++) {
-			$filename = $_FILES['recording'.$i]['name'];
-			$tempName = $_FILES['recording'.$i]['tmp_name'];
-			$type = $_FILES['recording'.$i]['type'];
-			$error = $_FILES['recording'.$i]['error'];
-			$line = $_POST['line'.$i];
-			
-			if ($error !== UPLOAD_ERR_OK) {
-				header("HTTP/1.1 422 Unprocessable Entity");
-				self::$data['npc_uploadErrors'][$questId] = 'An error occurred during the file uploading: error code '.
-				                                            $error;
-				return $this->get($args);
-			}
-			
-			if ($type !== 'audio/ogg') {
-				header("HTTP/1.1 415 Unsupported Media Type");
-				self::$data['npc_uploadErrors'][$questId] = 'One or more of the uploaded files is not in the correct format, only OGG files are allowed.';
-				return $this->get($args);
-			}
-			
-			move_uploaded_file($tempName, 'dynamic/recordings/'.$filename);
-            (new Db('Website/DbInfo.ini'))->executeQuery('INSERT INTO recording (npc_id,quest_id,line,file) VALUES (?,?,?,?)', array(
-				$this->npc->getId(),
-				$questId,
-				$line,
-				$filename
-			));
-		}
-		header('Location: '.$_SERVER['REQUEST_URI']);
-		return $this->get($args);
-	}
+  /**
+   * Processing method for POST requests to this controller (new recordings were uploaded or a voice actor was
+   * changed)
+   * @param array $args
+   * @return int|bool
+   */
+  private function post(array $args): int
+  {
+      if ($this->disallowAdministration) {
+          return 403;
+      }
+
+      $questId = $_POST['questId'];
+      $overwriteFiles = isset($_POST['overwrite']) && $_POST['overwrite'] === 'on';
+      self::$data['npc_uploadErrors'] = array();
+      $recordingsCount = count($_FILES['recordings']['name']);
+      for ($i = 0; $i < $recordingsCount; $i++) {
+          $filename = $_FILES['recordings']['name'][$i];
+          $tempName = $_FILES['recordings']['tmp_name'][$i];
+          $type = $_FILES['recordings']['type'][$i];
+          $error = $_FILES['recordings']['error'][$i];
+
+          if ($error !== UPLOAD_ERR_OK) {
+              header("HTTP/1.1 422 Unprocessable Entity");
+              self::$data['npc_uploadErrors'][$questId] = 'An error occurred during the file uploading: error code '.
+                  $error;
+              return $this->get($args);
+          }
+
+          if ($type !== 'audio/ogg') {
+              header("HTTP/1.1 415 Unsupported Media Type");
+              self::$data['npc_uploadErrors'][$questId] = 'One or more of the uploaded files is not in the correct format, only OGG files are allowed.';
+              return $this->get($args);
+          }
+
+          $line = explode('.', explode('-', $filename)[2])[0];
+
+          //In case a file with this name already exists, append "_([number])" to it (before the extension)
+          //Increase the number for as long as files with the name exist (a bit like in Windows)
+          if (file_exists('dynamic/recordings/'.$filename)) {
+              if ($overwriteFiles) {
+                  unlink('dynamic/recordings/'.$filename);
+              }
+              else {
+                  $filename = str_replace('.ogg', '_(1).ogg', $filename);
+                  for ($j = 2; file_exists('dynamic/recordings/'.$filename); $j++) {
+                      $filename = preg_replace('/_\(\d*\)\.ogg$/', '_('.$j.').ogg', $filename);
+                  }
+              }
+          }
+
+          move_uploaded_file($tempName, 'dynamic/recordings/'.$filename);
+
+          (new Db('Website/DbInfo.ini'))->executeQuery('INSERT INTO recording (npc_id,quest_id,line,file) VALUES (?,?,?,?)', array(
+              $this->npcId,
+              $questId,
+              $line,
+              $filename
+          ));
+      }
+      header('Location: '.$_SERVER['REQUEST_URI']);
+      return $this->get($args);
+  }
 	
 	/**
 	 * Processing method for PUT requests to this controller (recast, archivation of NPC or archivation of recordings)
