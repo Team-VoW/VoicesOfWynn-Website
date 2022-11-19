@@ -82,9 +82,10 @@
         </tr>
         <?php endforeach ?>
     </table>
-    <p class="txt-c mb-l"><button class="archive-all-recordings-btn" data-quest-id="<?= $quest->getId() ?>">Archive all recordings</button></p>
     <?php if (${basename(__FILE__, '.phtml').'_admin'}) : ?>
-        <form method="post" enctype="multipart/form-data" class="new-recording-form">
+        <p class="txt-c mb-l"><button class="archive-all-recordings-btn" data-quest-id="<?= $quest->getId() ?>">Archive all recordings</button></p>
+	
+	<form method="post" enctype="multipart/form-data" class="new-recording-form">
             <h4>Add new recordings</h4>
             <input name="questId" type="hidden" value="<?= $quest->getId() ?>" />
             <p>
