@@ -142,7 +142,7 @@ class Npc extends WebpageController
           move_uploaded_file($tempName, 'dynamic/recordings/'.$filename);
 
           (new Db('Website/DbInfo.ini'))->executeQuery('INSERT INTO recording (npc_id,quest_id,line,file) VALUES (?,?,?,?)', array(
-              $this->npcId,
+              $this->npc->getId(),
               $questId,
               $line,
               $filename
