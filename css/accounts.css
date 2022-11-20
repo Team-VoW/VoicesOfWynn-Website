@@ -18,7 +18,7 @@ table {
     margin: 0!important;
 }
 
-.buttons-column>span>button{
+.buttons-column>span>button, .buttons-column>a>button{
     font-size: 13px;
     border-radius: 0;
     min-width: 125px;

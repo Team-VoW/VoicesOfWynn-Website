@@ -58,6 +58,10 @@ td th {
     padding: 10px 5px;
 }
 
+.resetpasswordbtn { background: rgb(54, 150, 243);}
+.resetpasswordbtn:hover { background: rgb(57, 151, 185);}
+.manageaccbtn { background: rgb(243, 54, 120);}
+.manageaccbtn:hover { background: rgb(185, 57, 149);}
 .clearbiobtn { background: rgb(247, 225, 32);}
 .clearbiobtn:hover { border-color: rgb(211, 195, 50);}
 .clearavatarbtn { background: rgb(255, 127, 0);}
