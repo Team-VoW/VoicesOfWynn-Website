@@ -63,36 +63,43 @@ class User
      * Registers a new user account, generates a password and returns it
      * The user is not logged in
      * @param string $name
-     * @oaran string $discordName
+     * @oaran string $discordName Discord handle
+     * @oaran string $discordName CCC username
      * @param bool $checkAgainstOld If set to TRUE, users won't be able to pick names that are different from the
      * old ones only in capitalisation, default FALSE
      * @return string
      * @throws UserException In case of an invalid name
      */
-    public function register(string $name, string $discordName = '', bool $checkAgainstOld = false)
+    public function register(string $name, string $discordName = '', string $cccName = '', bool $checkAgainstOld = false)
     {
         $verifier = new AccountDataValidator();
         if (!$verifier->validateName($name, $checkAgainstOld)) {
             throw new UserException($verifier->errors[0]);
         }
-		
-		if (!$verifier->validateDiscord($discordName, $checkAgainstOld)) {
+
+		if (!empty($discordName) && !$verifier->validateDiscord($discordName, $checkAgainstOld)) {
 			throw new UserException($verifier->errors[0]);
 		}
+
+        if (!empty($cccName) && !$verifier->validateCastingCallClub($cccName, $checkAgainstOld)) {
+            throw new UserException($verifier->errors[0]);
+        }
         
         $password = $this->generateTempPassword();
 
         $this->hash = password_hash($password, PASSWORD_DEFAULT);
-        $result = (new Db('Website/DbInfo.ini'))->executeQuery('INSERT INTO user (display_name,password,discord) VALUES (?,?,?)', array(
+        $result = (new Db('Website/DbInfo.ini'))->executeQuery('INSERT INTO user (display_name,password,discord,castingcallclub) VALUES (?,?,?,?)', array(
             $name,
             $this->hash,
-	        $discordName
-        ));
+	        $discordName,
+            $cccName
+        ), true);
         
         if ($result) {
             if (self::LOG_PASSWORDS) {
                 file_put_contents('profiles.php', $name.':'.$password.PHP_EOL, FILE_APPEND|LOCK_EX);
             }
+            $this->id = $result;
             return $password;
         }
         else {

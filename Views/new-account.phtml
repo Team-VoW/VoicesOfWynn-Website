@@ -2,16 +2,23 @@
 <div class="txt-c display-block">
     <form method="post" class="newaccform">
         <div class="pw-box">
-        <label for="name" class="mb-l lb-a">Display name</label>
-        <input class="login-form" type="text" name="name" id="name" class="mb-d"/>
+            <label for="name" class="mb-l lb-a">Display name</label>
+            <input class="login-form" type="text" name="name" id="name" class="mb-d"/>
         </div>
         <div class="pw-box">
-        <label for="discord" class="mb-l lb-b lb-a">Discord handle</label>
-        <input class="login-form" type="text" name="discord" id="discord" class="mb-d"/>
+            <label for="discord" class="mb-l lb-b lb-a">Discord handle</label>
+            <input class="login-form" type="text" name="discord" id="discord" class="mb-d"/>
         </div>
         <div class="pw-box">
-        <label for="password" class="mb-l lb-b lb-a">Password</label>
-        <input class="login-form" type="text" name="password" id="password" class="mb-d lb-a" value="<?= ${str_replace('-', '', basename(__FILE__, '.phtml')).'_password'}; ?>" placeholder="Will be generated" readonly/>
+            <label for="ccc" class="mb-l lb-b lb-a">CCC username</label>
+            <input class="login-form" type="text" name="ccc" id="ccc" class="mb-d"/>
+        </div>
+        <div class="pw-box">
+            <label for="password" class="mb-l lb-b lb-a">Password</label>
+            <input class="login-form" type="text" name="password" id="password" class="mb-d lb-a" value="<?= ${str_replace('-', '', basename(__FILE__, '.phtml')).'_password'}; ?>" placeholder="Will be generated" readonly/>
+        </div>
+        <div class="pw-box" <?php if (empty(${str_replace('-', '', basename(__FILE__, '.phtml')).'_userId'})) : ?>style="display:none"<?php endif ?>>
+            <a href="/account/<?= ${str_replace('-', '', basename(__FILE__, '.phtml')).'_userId'}; ?>">Edit the account info</a>
         </div>
         <p class="lb-b mb-s mt-s"><input class="login-form submit" type="submit" value="Create" /></p>
     </form>

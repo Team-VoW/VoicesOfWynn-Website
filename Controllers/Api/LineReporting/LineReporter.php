@@ -33,6 +33,8 @@ class LineReporter extends ApiController
                 return $this->getAcceptedLines();
             case 'getActiveReports':
                 return $this->getNonRejectedLines();
+            case 'getValidReports':
+                return $this->getValidNpcLines();
             default:
                 return 400;
         }
@@ -169,6 +171,29 @@ class LineReporter extends ApiController
             $npcName = $_GET['npc'];
         }
         $responseCode = $reportReader->getReportsByNpc($npcName, array('accepted', 'forwarded', 'unprocessed'));
+        if ($responseCode >= 400) {
+            //An error occurred
+            return $responseCode;
+        }
+        $reports = $reportReader->result;
+        echo json_encode($reports, JSON_PRETTY_PRINT);
+        return 200;
+    }
+
+    private function getValidNpcLines(): int
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+            return 405;
+        }
+        if ($_REQUEST['apiKey'] !== self::COLLECTING_API_KEY) {
+            return 401;
+        }
+        $reportReader = new ReportReader();
+        $npcName = null;
+        if (isset($_GET['npc'])) {
+            $npcName = $_GET['npc'];
+        }
+        $responseCode = $reportReader->getReportsByNpc($npcName, array('voiced', 'accepted', 'forwarded', 'unprocessed'));
         if ($responseCode >= 400) {
             //An error occurred
             return $responseCode;

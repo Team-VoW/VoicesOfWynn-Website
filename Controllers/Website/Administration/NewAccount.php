@@ -29,6 +29,7 @@ class NewAccount extends WebpageController
         self::$data['base_description'] = 'Tool for the administrators to create new accounts for new contributors.';
         
         self::$data['newaccount_password'] = '';
+        self::$data['newaccount_userId'] = 0;
         self::$data['newaccount_error'] = '';
         
         self::$views[] = 'new-account';
@@ -41,8 +42,9 @@ class NewAccount extends WebpageController
         
         $user = new User();
         try {
-            $password = $user->register($_POST['name'], $_POST['discord'], true);
+            $password = $user->register($_POST['name'], $_POST['discord'], $_POST['ccc'], true);
             self::$data['newaccount_password'] = $password;
+            self::$data['newaccount_userId'] = $user->getId();
         } catch (UserException $e) {
             self::$data['newaccount_error'] = $e->getMessage();
         }
