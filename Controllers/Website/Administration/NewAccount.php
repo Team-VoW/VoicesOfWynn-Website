@@ -42,7 +42,7 @@ class NewAccount extends WebpageController
         
         $user = new User();
         try {
-            $password = $user->register($_POST['name'], $_POST['discord'], $_POST['ccc'], true);
+            $password = $user->register($_POST['name'], $_POST['discord'], $_POST['ccc']);
             self::$data['newaccount_password'] = $password;
             self::$data['newaccount_userId'] = $user->getId();
         } catch (UserException $e) {

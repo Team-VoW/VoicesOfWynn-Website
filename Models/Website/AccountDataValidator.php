@@ -26,7 +26,7 @@ class AccountDataValidator
     public array $errors = array();
     public array $warnings = array();
 
-    public function validateEmail(string $email): bool
+    public function validateEmail(string $email, int $allowDuplicateForUserId): bool
     {
         //Check length
         if (mb_strlen($email) > self::EMAIL_MAX_LENGTH) {
@@ -42,7 +42,7 @@ class AccountDataValidator
 
         //Check uniqueness
         $result = (new Db('Website/DbInfo.ini'))->fetchQuery('SELECT COUNT(*) AS "cnt" FROM user WHERE email = ? AND user_id != ?',
-            array($email, $_SESSION['user']->getId()));
+            array($email, $allowDuplicateForUserId));
         if ($result['cnt'] > 0) {
             $this->errors[] = 'This e-mail address is already in use.';
             return false;
@@ -70,13 +70,14 @@ class AccountDataValidator
     /**
      * Method validating display name
      * @param string $name Name to validate
-     * @param bool $checkAgainstOld TRUE, if the name should be also checked against the currently logged user's name
-     * (default FALSE and TRUE should be used only when accounts are created by an admin, to permit changes in
-     * capitalisation to causal users)
+     * @param int $allowDuplicateForUserId ID of the user, whose display name is allowed to be the same as the name that
+     * was chosen by the currently logged-in user. 0 to check against all user names. This value should be set to the
+     * user ID of the user, whose account is being edited to allow changes in capitalizasion. Set this to 0 for account
+     * creation by system administrators.
      * @return bool TRUE, if the name is valid
      * @throws \Exception
      */
-    public function validateName(string $name, bool $checkAgainstOld = false): bool
+    public function validateName(string $name, int $allowDuplicateForUserId): bool
     {
         //Check length
         if (mb_strlen($name) > self::NAME_MAX_LENGTH) {
@@ -91,7 +92,7 @@ class AccountDataValidator
 
         //Check uniqueness
         $result = (new Db('Website/DbInfo.ini'))->fetchQuery('SELECT COUNT(*) AS "cnt" FROM user WHERE UPPER(display_name) = ? AND user_id != ?',
-            array(strtoupper($name), $checkAgainstOld ? 0 : $_SESSION['user']->getId()));
+            array(strtoupper($name), $allowDuplicateForUserId));
         if ($result['cnt'] > 0) {
             $this->errors[] = 'This display name is already in use.';
             return false;
@@ -138,7 +139,7 @@ class AccountDataValidator
          return true;
     }
 	
-	public function validateDiscord(string $discordName, bool $checkAgainstOld = false): bool
+	public function validateDiscord(string $discordName, int $allowDuplicateForUserId): bool
 	{
 		//Check length
 		if (mb_strlen($discordName) > self::DISCORD_NAME_MAX_LENGTH) {
@@ -153,7 +154,7 @@ class AccountDataValidator
 		
 		//Check uniqueness
 		$result = (new Db('Website/DbInfo.ini'))->fetchQuery('SELECT COUNT(*) AS "cnt" FROM user WHERE UPPER(discord) = ? AND user_id != ?',
-			array(strtoupper($discordName), $checkAgainstOld ? 0 : $_SESSION['user']->getId()));
+			array(strtoupper($discordName), $allowDuplicateForUserId));
 		if ($result['cnt'] > 0) {
 			$this->errors[] = 'This Discord username is already in use.';
 			return false;
@@ -171,7 +172,7 @@ class AccountDataValidator
 		return true;
 	}
 	
-	public function validateYouTubeLink(string $youtubeLink, bool $checkAgainstOld = false): bool
+	public function validateYouTubeLink(string $youtubeLink, int $allowDuplicateForUserId): bool
 	{
 		//Check length
 		if (mb_strlen($youtubeLink) > self::YOUTUBE_NAME_MAX_LENGTH) {
@@ -186,7 +187,7 @@ class AccountDataValidator
 		
 		//Check uniqueness
 		$result = (new Db('Website/DbInfo.ini'))->fetchQuery('SELECT COUNT(*) AS "cnt" FROM user WHERE UPPER(youtube) = ? AND user_id != ?',
-			array(strtoupper($youtubeLink), $checkAgainstOld ? 0 : $_SESSION['user']->getId()));
+			array(strtoupper($youtubeLink), $allowDuplicateForUserId));
 		if ($result['cnt'] > 0) {
 			$this->errors[] = 'This YouTube channel is already linked by another user.';
 			return false;
@@ -212,7 +213,7 @@ class AccountDataValidator
 		return true;
 	}
 	
-	public function validateTwitter(string $twitterHandle, bool $checkAgainstOld = false): bool
+	public function validateTwitter(string $twitterHandle, int $allowDuplicateForUserId): bool
 	{
 		//Check length
 		if (mb_strlen($twitterHandle) > self::TWITTER_NAME_MAX_LENGTH) {
@@ -227,7 +228,7 @@ class AccountDataValidator
 		
 		//Check uniqueness
 		$result = (new Db('Website/DbInfo.ini'))->fetchQuery('SELECT COUNT(*) AS "cnt" FROM user WHERE UPPER(twitter) = ? AND user_id != ?',
-			array(strtoupper($twitterHandle), $checkAgainstOld ? 0 : $_SESSION['user']->getId()));
+			array(strtoupper($twitterHandle), $allowDuplicateForUserId));
 		if ($result['cnt'] > 0) {
 			$this->errors[] = 'This Twitter account is already linked by another user.';
 			return false;
@@ -248,7 +249,7 @@ class AccountDataValidator
 		return true;
 	}
 	
-	public function validateCastingCallClub(string $castingCallClubName, bool $checkAgainstOld = false): bool
+	public function validateCastingCallClub(string $castingCallClubName, int $allowDuplicateForUserId): bool
 	{
 		//Check length
 		if (mb_strlen($castingCallClubName) > self::CCC_NAME_MAX_LENGTH) {
@@ -263,7 +264,7 @@ class AccountDataValidator
 		
 		//Check uniqueness
 		$result = (new Db('Website/DbInfo.ini'))->fetchQuery('SELECT COUNT(*) AS "cnt" FROM user WHERE UPPER(castingcallclub) = ? AND user_id != ?',
-			array(strtoupper($castingCallClubName), $checkAgainstOld ? 0 : $_SESSION['user']->getId()));
+			array(strtoupper($castingCallClubName), $allowDuplicateForUserId));
 		if ($result['cnt'] > 0) {
 			$this->errors[] = 'This Casting Call Club account is already linked by another user.';
 			return false;

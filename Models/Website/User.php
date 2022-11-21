@@ -65,23 +65,21 @@ class User
      * @param string $name
      * @oaran string $discordName Discord handle
      * @oaran string $discordName CCC username
-     * @param bool $checkAgainstOld If set to TRUE, users won't be able to pick names that are different from the
-     * old ones only in capitalisation, default FALSE
      * @return string
      * @throws UserException In case of an invalid name
      */
-    public function register(string $name, string $discordName = '', string $cccName = '', bool $checkAgainstOld = false)
+    public function register(string $name, string $discordName = '', string $cccName = '')
     {
         $verifier = new AccountDataValidator();
-        if (!$verifier->validateName($name, $checkAgainstOld)) {
+        if (!$verifier->validateName($name, 0)) {
             throw new UserException($verifier->errors[0]);
         }
 
-		if (!empty($discordName) && !$verifier->validateDiscord($discordName, $checkAgainstOld)) {
+		if (!empty($discordName) && !$verifier->validateDiscord($discordName, 0)) {
 			throw new UserException($verifier->errors[0]);
 		}
 
-        if (!empty($cccName) && !$verifier->validateCastingCallClub($cccName, $checkAgainstOld)) {
+        if (!empty($cccName) && !$verifier->validateCastingCallClub($cccName, 0)) {
             throw new UserException($verifier->errors[0]);
         }
         

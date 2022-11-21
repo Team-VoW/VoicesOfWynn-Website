@@ -106,42 +106,42 @@ class Account extends WebpageController
 
         $validator = new AccountDataValidator();
 
-        $validator->validateName($displayName);
+        $validator->validateName($displayName, $this->user->getId());
 
         if (!empty($password)) {
             $validator->validatePassword($password);
         }
 
 	    if (!empty($email)) {
-		    $validator->validateEmail($email);
+		    $validator->validateEmail($email, $this->user->getId());
 	    }
 	    else {
 		    $email = null;
 	    }
 
 	    if (!empty($discord)) {
-		    $validator->validateDiscord($discord);
+		    $validator->validateDiscord($discord, $this->user->getId());
 	    }
 	    else {
 		    $discord = null;
 	    }
 
 	    if (!empty($youtube)) {
-		    $validator->validateYouTubeLink($youtube);
+		    $validator->validateYouTubeLink($youtube, $this->user->getId());
 	    }
 	    else {
 		    $youtube = null;
 	    }
 
 	    if (!empty($twitter)) {
-		    $validator->validateTwitter($twitter);
+		    $validator->validateTwitter($twitter, $this->user->getId());
 	    }
 	    else {
 		    $twitter = null;
 	    }
 
 	    if (!empty($castingcallclub)) {
-		    $validator->validateCastingCallClub($castingcallclub);
+		    $validator->validateCastingCallClub($castingcallclub, $this->user->getId());
 	    }
 	    else {
 		    $castingcallclub = null;
