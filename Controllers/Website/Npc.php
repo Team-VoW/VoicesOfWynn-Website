@@ -127,9 +127,11 @@ class Npc extends WebpageController
 
           //In case a file with this name already exists, append "_([number])" to it (before the extension)
           //Increase the number for as long as files with the name exist (a bit like in Windows)
+          $fileReplaced = false;
           if (file_exists('dynamic/recordings/'.$filename)) {
               if ($overwriteFiles) {
                   unlink('dynamic/recordings/'.$filename);
+                  $fileReplaced = true;
               }
               else {
                   $filename = str_replace('.ogg', '_(1).ogg', $filename);
@@ -141,12 +143,16 @@ class Npc extends WebpageController
 
           move_uploaded_file($tempName, 'dynamic/recordings/'.$filename);
 
-          (new Db('Website/DbInfo.ini'))->executeQuery('INSERT INTO recording (npc_id,quest_id,line,file) VALUES (?,?,?,?)', array(
-              $this->npc->getId(),
-              $questId,
-              $line,
-              $filename
-          ));
+          if (!$fileReplaced)
+          {
+              //Insert a new database record only if a new recording file was created on the server
+              (new Db('Website/DbInfo.ini'))->executeQuery('INSERT INTO recording (npc_id,quest_id,line,file) VALUES (?,?,?,?)', array(
+                  $this->npc->getId(),
+                  $questId,
+                  $line,
+                  $filename
+              ));
+          }
       }
       header('Location: '.$_SERVER['REQUEST_URI']);
       return $this->get($args);
