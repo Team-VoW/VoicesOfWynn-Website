@@ -21,7 +21,7 @@ class DownloadsManager
     public function listDownloads(): array
     {
         $db = new Db('Website/DbInfo.ini');
-        $result = $db->fetchQuery('SELECT * FROM download ORDER BY release_date DESC', array(), true);
+        $result = $db->fetchQuery('SELECT * FROM download ORDER BY release_date DESC, version DESC, mc_version DESC', array(), true);
 
         if ($result === false) {
             return array();
