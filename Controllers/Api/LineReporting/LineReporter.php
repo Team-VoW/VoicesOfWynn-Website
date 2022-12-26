@@ -193,7 +193,7 @@ class LineReporter extends ApiController
         if (isset($_GET['npc'])) {
             $npcName = $_GET['npc'];
         }
-        $responseCode = $reportReader->getReportsByNpc($npcName, array('voiced', 'accepted', 'forwarded', 'unprocessed'));
+        $responseCode = $reportReader->getReportsByNpc($npcName, array('fixed', 'accepted', 'forwarded', 'unprocessed'));
         if ($responseCode >= 400) {
             //An error occurred
             return $responseCode;

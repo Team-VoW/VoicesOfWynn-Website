@@ -39,6 +39,6 @@ class ModBootupLogger extends ApiController
         $response = array_merge($versionInfo, array('fact' => $funFact));
 
         echo json_encode($response);
-        return $logResult;
+        return ($logResult !== 204) ? $logResult : 200;
     }
 }
