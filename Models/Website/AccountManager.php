@@ -8,13 +8,19 @@ class AccountManager
 {
     public function getUsers(): array
     {
-        $db = new Db('Website/DbInfo.ini');
-        $userData = $db->fetchQuery('SELECT user_id,picture,display_name,bio FROM user ORDER BY user_id ASC', array(),
-            true);
-        $userRoles = $db->fetchQuery('SELECT user_discord_role.user_id,discord_role.name,discord_role.color,discord_role.weight FROM user_discord_role JOIN discord_role ON discord_role.discord_role_id = user_discord_role.discord_role_id ORDER BY user_id ASC',
-            array(), true);
-        
-        $users = array();
+        $db                   = new Db('Website/DbInfo.ini');
+        $userData             = $db->fetchQuery(
+            'SELECT user_id,picture,display_name,bio,discord_id FROM user ORDER BY user_id ASC',
+            array(),
+            true
+        );
+        $userRoles            = $db->fetchQuery(
+            'SELECT user_discord_role.user_id,discord_role.name,discord_role.color,discord_role.weight FROM user_discord_role JOIN discord_role ON discord_role.discord_role_id = user_discord_role.discord_role_id ORDER BY user_id ASC',
+            array(),
+            true
+        );
+
+        $users                = array();
         $role_array_itterator = 0;
         foreach ($userData as $userInfo) {
             $roles = array();
@@ -26,30 +32,55 @@ class AccountManager
                 } else {
                     $skip = false;
                 }
-                
-                for (; $role_array_itterator < count($userRoles) &&
-                       $userRoles[$role_array_itterator]['user_id'] === $userInfo['user_id']; $role_array_itterator++) {
-                    $roles[] = new DiscordRole($userRoles[$role_array_itterator]['name'],
-                        $userRoles[$role_array_itterator]['color'], $userRoles[$role_array_itterator]['weight']);
+
+                for (
+                ;
+                    $role_array_itterator < count($userRoles) &&
+                    $userRoles[$role_array_itterator]['user_id'] === $userInfo['user_id'];
+                    $role_array_itterator++
+                ) {
+                    $roles[] = new DiscordRole(
+                        $userRoles[$role_array_itterator]['name'],
+                        $userRoles[$role_array_itterator]['color'], $userRoles[$role_array_itterator]['weight']
+                    );
                 }
-                
+
                 if (!$skip) {
                     $role_array_itterator--;
                 }
             }
-            
+
             $user = new User();
-            $user->setData(array(
-                'id' => $userInfo['user_id'],
-                'displayName' => $userInfo['display_name'],
-                'avatarLink' => $userInfo['picture'],
-                'bio' => $userInfo['bio'],
-            ));
+            $user->setData(
+                array(
+                    'id' => $userInfo['user_id'],
+                    'displayName' => $userInfo['display_name'],
+                    'avatarLink' => $userInfo['picture'],
+                    'bio' => $userInfo['bio'],
+                    'discordId' => $userInfo['discord_id']
+                )
+            );
             $user->setRoles($roles);
             $users[] = $user;
         }
-        
+
         return $users;
+    }
+
+    public function checkUserExistsByDiscordId($discordId):bool
+    {
+        $user = (new Db('Website/DbInfo.ini'))->fetchQuery('SELECT * FROM user where `discord_id` = '.$discordId.'', array(), true);
+
+        if(!is_array($user))
+        {
+            return false;
+        }
+        if(count($user) >= 1)
+        {
+            return true;
+        }
+
+        return false;
     }
     
     public function getRoles(): array

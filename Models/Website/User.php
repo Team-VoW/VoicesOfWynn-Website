@@ -4,10 +4,11 @@
 namespace VoicesOfWynn\Models\Website;
 
 
+use JsonSerializable;
 use PDOException;
 use VoicesOfWynn\Models\Db;
 
-class User
+class User implements JsonSerializable
 {
     private const DEFAULT_PASSWORD_CHARACTERS = 'abcdefghijklmnopqrstuvwxyz0123456789';
     public const DEFAULT_PASSWORD_LENGTH = 12;
@@ -16,6 +17,7 @@ class User
     private bool $loaded = false;
 
     private int $id = 0;
+    private $discordId = '';
     private $email = '';
     private string $hash = '';
     private bool $systemAdmin = false;
@@ -31,6 +33,11 @@ class User
     
     private array $roles = array();
 
+    public function jsonSerialize()
+	{
+	    return (object) get_object_vars($this);
+	}
+
     /**
      * Function loading all user information from the database and saving them into attributes
      * @return void
@@ -44,6 +51,7 @@ class User
         $userInfo = (new Db('Website/DbInfo.ini'))->fetchQuery('SELECT * FROM user WHERE user_id = ?', array($this->id));
 
         $this->id = $userInfo['user_id'];
+        $this->discordId = $userInfo['discord_id'];
         $this->email = $userInfo['email'];
         $this->hash = $userInfo['password'];
         $this->systemAdmin = $userInfo['system_admin'];

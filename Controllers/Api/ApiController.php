@@ -17,6 +17,8 @@ abstract class ApiController extends Controller
     const UPDATING_API_KEY = 'testing';
     //Usage analysis api keys
     const AGGREGATE_API_KEY = 'testing';
+    //Discord Integration Key
+    const DISCORD_INTEGRATION_API_KEY = 'testing';
 
     /**
      * Controller constructor enabling output buffering and setting the Content-Type header
