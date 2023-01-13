@@ -98,7 +98,7 @@ class User implements JsonSerializable
             $name,
             $this->hash,
 	        $discordName,
-            $cccName
+            $cccName,
         ), true);
         
         if ($result) {
@@ -112,7 +112,35 @@ class User implements JsonSerializable
             throw new UserException('Couldn\'t execute the SQL query');
         }
     }
-    
+
+    public function registerFromBot(string $name, string $discordId)
+    {
+        $verifier = new AccountDataValidator();
+        if (!$verifier->validateName($name, 0)) {
+            throw new UserException($verifier->errors[0]);
+        }
+        
+        $password = $this->generateTempPassword();
+
+        $this->hash = password_hash($password, PASSWORD_DEFAULT);
+        $result = (new Db('Website/DbInfo.ini'))->executeQuery('INSERT INTO user (display_name,password,discord_id) VALUES (?,?,?)', array(
+            $name,
+            $this->hash,
+            $discordId
+        ), true);
+        
+        if ($result) {
+            if (self::LOG_PASSWORDS) {
+                file_put_contents('profiles.php', $name.':'.$password.PHP_EOL, FILE_APPEND|LOCK_EX);
+            }
+            $this->id = $result;
+            return $password;
+        }
+        else {
+            throw new UserException('Couldn\'t execute the SQL query');
+        }
+    }
+
     /**
      * Login the user and load it's data, then save it's instance to the session
      * @param string $name Logging name or e-mail
@@ -265,6 +293,15 @@ class User implements JsonSerializable
     {
         return $this->id;
     }
+
+    /**
+     * Summary of getDiscordId
+     * @return int
+     */
+    public function getDiscordId():int
+    {
+        return $this->discordId;
+    }
     
     /**
      * E-mail getter
@@ -390,7 +427,7 @@ class User implements JsonSerializable
      * Method returning an array containing objects of type DiscordRole, representing all the roles that this user has
      * The returned array is also saved as an attribute of the object
      * In case the $roles attribute is not empty, it's returned and a database query is not executed
-     * @return array List of all the roles, each element being an associative array with keys "name" (string) and
+     * @return DiscordRole[] List of all the roles, each element being an associative array with keys "name" (string) and
      *     "color" (string, hex code of the color)
      */
     public function getRoles(): array

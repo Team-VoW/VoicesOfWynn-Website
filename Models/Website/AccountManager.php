@@ -6,6 +6,10 @@ use VoicesOfWynn\Models\Db;
 
 class AccountManager
 {
+    /**
+     * Summary of getUsers
+     * @return User[]
+     */
     public function getUsers(): array
     {
         $db                   = new Db('Website/DbInfo.ini');
@@ -69,7 +73,23 @@ class AccountManager
 
     public function checkUserExistsByDiscordId($discordId):bool
     {
-        $user = (new Db('Website/DbInfo.ini'))->fetchQuery('SELECT * FROM user where `discord_id` = '.$discordId.'', array(), true);
+        $user = (new Db('Website/DbInfo.ini'))->fetchQuery('SELECT * FROM user where `discord_id` = ?', array($discordId), true);
+
+        if(!is_array($user))
+        {
+            return false;
+        }
+        if(count($user) >= 1)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function checkUserExistsByDiscordName($discordName):bool
+    {
+        $user = (new Db('Website/DbInfo.ini'))->fetchQuery('SELECT * FROM user where `discord` = ?', array($discordName), true);
 
         if(!is_array($user))
         {

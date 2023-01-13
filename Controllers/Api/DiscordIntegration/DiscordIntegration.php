@@ -4,6 +4,7 @@ namespace VoicesOfWynn\Controllers\Api\DiscordIntegration;
 
 use VoicesOfWynn\Controllers\Api\ApiController;
 use VoicesOfWynn\Models\Website\AccountManager;
+use VoicesOfWynn\Models\Website\DiscordRole;
 use VoicesOfWynn\Models\Website\User;
 
 class DiscordIntegration extends ApiController 
@@ -61,8 +62,10 @@ class DiscordIntegration extends ApiController
   private function syncUser():int
   {
     $discordId = $_POST['discordId'];
-    $role = $_POST['role'];
-    $imgUrl    = $_POST['imgurl'];
+    $rolesDiscord = $_POST['roles'];
+    $discordName    = $_POST['discordName'];
+    // Open for suggestion on how to implement the auto addition of the avatar
+    //$imgUrl    = $_POST['imgurl'];
     $displayName = $_POST['name'];
 
     $accountManager = new AccountManager();
@@ -71,12 +74,50 @@ class DiscordIntegration extends ApiController
     {
       foreach($users as $user) {
         $user->load();
+        if($user->getDiscordId() === $discordId){
+          $roles = $user->getRoles();
+          foreach($roles as $role){
+            $user->removeRole($role->name);
+          }
+        
+          foreach($rolesDiscord as $role){
+            $r = new DiscordRole($role);
+            $user->addRole($r->getId());
+          }
+        }
+      }
+      echo "allready exists";
+      return 200;
+    }
+    else if($accountManager->checkUserExistsByDiscordName($discordName)){
+      foreach($users as $user) {
+        $user->load();
+        if($user->getSocial("discord") === $discordName){
+          $roles = $user->getRoles();
+          foreach($roles as $role){
+            $user->removeRole($role->name);
+          }
+        
+          foreach($rolesDiscord as $role){
+            $r = new DiscordRole($role);
+            $user->addRole($r->getId());
+          }
+        }
       }
       echo "allready exists";
       return 200;
     }
     $user = new User();
-    $user->register($displayName);
+    $user->registerFromBot($displayName,$discordId);
+    $roles = $user->getRoles();
+    foreach($roles as $role){
+      $user->removeRole($role->name);
+    }
+
+    foreach($rolesDiscord as $role){
+      $r = new DiscordRole($role);
+      $user->addRole($r->getId());
+    }
     return 200;
   }
 }
