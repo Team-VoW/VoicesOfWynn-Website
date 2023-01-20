@@ -2,6 +2,7 @@
 
 namespace VoicesOfWynn\Models\Api\DiscordIntegration;
 
+use VoicesOfWynn\Controllers\Website\Account\Account;
 use VoicesOfWynn\Models\Website\AccountManager;
 use VoicesOfWynn\Models\Website\DiscordRole;
 use VoicesOfWynn\Models\Website\User;
@@ -53,11 +54,39 @@ class DiscordManager
             }
         }
 
-        $user->updateRoles($discordRoles);
+        if ($user->updateRoles($discordRoles) &&
+            $this->updateDiscordAvatar($user->getId(), $avatarUrl)) {
+            return 200;
+        }
+        return 500;
+    }
 
-        //TODO: Save the Discord avatar
+    /**
+     * Method downloading an avatar image from a specified URL, saving it in a specific directory
+     * and linking it to the profile of a specific user
+     * @param int $userId ID of the user to which the avatar should belong; will be used in the file name
+     * @param string $avatarUrl Direct URL from which the avatar can be downloaded
+     * @return bool TRUE if everything succeeds, FALSE otherwise
+     */
+    private function updateDiscordAvatar(int $userId, string $avatarUrl): bool
+    {
+        $fh = fopen(Account::DISCORD_AVATAR_DIRECTORY.$userId.'.png', 'w'); //Also clears the current file, if it exists
+        $ch = curl_init();
 
-        return 200;
+        curl_setopt($ch, CURLOPT_URL, $avatarUrl);
+        curl_setopt($ch, CURLOPT_FILE, $fh);
+        curl_setopt($ch, CURLOPT_HEADER, false);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Voices of Wynn +https://www.voicesofwynn.com');
+        curl_exec($ch);
+        $error = curl_errno($ch);
+
+        curl_close($ch);
+        fclose($fh);
+
+        if ($error === 0) {
+            return true;
+        }
+        return false;
     }
 }
 
