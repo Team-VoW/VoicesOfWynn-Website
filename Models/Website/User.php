@@ -4,6 +4,7 @@
 namespace VoicesOfWynn\Models\Website;
 
 
+use InvalidArgumentException;
 use JsonSerializable;
 use PDOException;
 use VoicesOfWynn\Models\Db;
@@ -113,7 +114,14 @@ class User implements JsonSerializable
         }
     }
 
-    public function registerFromBot(string $name, string $discordId)
+    /**
+     * Registers a new user account with a set Discord user ID, generates a password and returns it
+     * The user is not logged in
+     * @param string $name String that will be used as a display name for the new user account
+     * @param int $discordId Discord account ID for this account
+     * @throws UserException
+     */
+    public function registerFromBot(string $name, int $discordId)
     {
         $verifier = new AccountDataValidator();
         if (!$verifier->validateName($name, 0)) {
@@ -558,31 +566,94 @@ class User implements JsonSerializable
     /**
      * Adds a role to this user in the database
      * Doesn't affect this object's $roles attribute
-     * @param int $roleId
+     * Both arguments are optional, but at least one needs to be specified
+     * @param int|null $roleId Role ID to add, if specified, the second argument is ignored
+     * @param DiscordRole|null $role Role object to add, must have its name filled in, the other attributes aren't important
      * @return bool
-     * @throws \Exception
+     * @throws InvalidArgumentException If none of the arguments are specified
      */
-    public function addRole(int $roleId): bool
+    public function addRole(?int $roleId = null, DiscordRole $role = null): bool
     {
-        return (new Db('Website/DbInfo.ini'))->executeQuery('INSERT INTO user_discord_role (user_id,discord_role_id) VALUES (?,?)', array(
+        if (!is_null($roleId)) {
+            return (new Db('Website/DbInfo.ini'))->executeQuery('INSERT INTO user_discord_role (user_id,discord_role_id) VALUES (?,?)', array(
+                $this->id,
+                $roleId
+            ));
+        }
+
+        if (is_null($role)) {
+            throw new InvalidArgumentException("At least one argument needs to be specified for the User::addRole() method.");
+        }
+        return (new Db('Website/DbInfo.ini'))->executeQuery('INSERT INTO user_discord_role (user_id,discord_role_id) VALUES (?,(SELECT discord_role_id FROM discord_role WHERE name = ? LIMIT 1))', array(
             $this->id,
-            $roleId
+            $role->name
         ));
     }
-    
+
     /**
      * Removes a role from this user in the database
      * Doesn't affect this object's $roles attribute
-     * @param int $roleId
+     * Both arguments are optional, but at least one needs to be specified
+     * @param int|null $roleId Role ID to remove, if specified, the second argument is ignored
+     * @param DiscordRole|null $role Role object to remove, must have its name filled in, the other attributes aren't important
      * @return bool
-     * @throws \Exception
+     * @throws InvalidArgumentException If none of the arguments are specified
      */
-    public function removeRole(int $roleId): bool
+    public function removeRole(?int $roleId = null, DiscordRole $role = null): bool
     {
-        return (new Db('Website/DbInfo.ini'))->executeQuery('DELETE FROM user_discord_role WHERE user_id = ? AND discord_role_id = ?', array(
+        if (!is_null($roleId)) {
+            return (new Db('Website/DbInfo.ini'))->executeQuery('DELETE FROM user_discord_role WHERE user_id = ? AND discord_role_id = ?', array(
+                $this->id,
+                $roleId
+            ));
+        }
+
+        if (is_null($role)) {
+            throw new InvalidArgumentException("At least one argument needs to be specified for the User::removeRole() method.");
+        }
+        return (new Db('Website/DbInfo.ini'))->executeQuery('DELETE FROM user_discord_role WHERE user_id = ? AND discord_role_id = (SELECT discord_role_id FROM discord_role WHERE name = ? LIMIT 1)', array(
             $this->id,
-            $roleId
+            $role->name
         ));
+    }
+
+    /**
+     * Replaces all the current Discord roles of this user with the new ones.
+     * Roles that persist aren't removed from the databases, diff between the current and the new roles is computed
+     * so as few SQL queries need to be executed as possible.
+     * @param DiscordRole[] $newRoles List of all the Discord roles the user should have
+     * @return bool
+     */
+    public function updateRoles(array $newRoles): bool
+    {
+        $currentRoles = $this->getRoles();
+
+        //Compare the role arrays by role names
+        $compareFunction = function(DiscordRole $r1, DiscordRole $r2) {
+            if ($r1->name === $r2->name) {
+                return 0;
+            } else if ($r1->name < $r2->name) {
+                return -1;
+            } else {
+                return 1;
+            }
+        };
+
+        $changedRoles = array_udiff($newRoles, $currentRoles, $compareFunction);
+
+        foreach ($changedRoles as $role) {
+            $removingRole = array_uintersect(array($role), $currentRoles, $compareFunction);
+            if ($removingRole) {
+                //Removing a role
+                $this->removeRole(null, $role);
+            }
+            else {
+                //Granting a role
+                $this->addRole(null, $role);
+            }
+        }
+
+        return true;
     }
 
     /**

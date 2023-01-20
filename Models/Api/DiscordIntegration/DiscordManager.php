@@ -5,77 +5,58 @@ namespace VoicesOfWynn\Models\Api\DiscordIntegration;
 use VoicesOfWynn\Models\Website\AccountManager;
 use VoicesOfWynn\Models\Website\DiscordRole;
 use VoicesOfWynn\Models\Website\User;
+use VoicesOfWynn\Models\Website\UserException;
 
 class DiscordManager
 {
-    public function getAllUsers(): int
+
+    /**
+     * Method echoing all user accounts registered in the system, along with all their information
+     * @warning Do not use this function for frequent and automated request, as it puts quite a lot of load on the database
+     * @return string JSON-encoded user account list
+     * @throws UserException
+     */
+    public function getAllUsers(): string
     {
         $accountManager = new AccountManager();
         $users = $accountManager->getUsers();
         foreach ($users as $user) {
             $user->load();
         }
-        echo json_encode($users);
-        return 200;
+        return json_encode($users);
     }
 
-    public function syncUser(): int
+    /**
+     * Method updating Discord-related information of a single user
+     * @param int $discordId Discord account ID of the user to update
+     * @param string $discordName Discord account username of the user to update
+     * @param string $avatarUrl URL of the Discord avatar of the user
+     * @param DiscordRole[] $discordRoles List of Discord roles that the user should have
+     * @param string $displayName Display name of the user for the website
+     * @return int HTTP response code
+     * @throws UserException
+     * @throws \Exception If the $discordRoles argument contains an unknown role
+     */
+    public function syncUser(int $discordId, string $discordName, string $avatarUrl, array $discordRoles, string $displayName): int
     {
-        $discordId = $_POST['discordId'];
-        $rolesDiscord = $_POST['roles'];
-        $discordName = $_POST['discordName'];
-        // Open for suggestion on how to implement the auto addition of the avatar
-        //$imgUrl    = $_POST['imgurl'];
-        $displayName = $_POST['name'];
-
         $accountManager = new AccountManager();
-        $users = $accountManager->getUsers();
-        if ($accountManager->checkUserExistsByDiscordId($discordId)) {
-            foreach ($users as $user) {
-                $user->load();
-                if ($user->getDiscordId() === $discordId) {
-                    $roles = $user->getRoles();
-                    foreach ($roles as $role) {
-                        $user->removeRole($role->name);
-                    }
 
-                    foreach ($rolesDiscord as $role) {
-                        $r = new DiscordRole($role);
-                        $user->addRole($r->getId());
-                    }
-                }
+        //Get user by Discord ID
+        $user = $accountManager->getUserByDiscordId($discordId);
+        if (!$user) {
+            //Get user by Discord social
+            $user = $accountManager->getUserByDiscordName($discordName);
+            if (!$user) {
+                //Register new user
+                $user = new User();
+                $user->registerFromBot($displayName, $discordId);
             }
-            echo "allready exists";
-            return 200;
-        } else if ($accountManager->checkUserExistsByDiscordName($discordName)) {
-            foreach ($users as $user) {
-                $user->load();
-                if ($user->getSocial("discord") === $discordName) {
-                    $roles = $user->getRoles();
-                    foreach ($roles as $role) {
-                        $user->removeRole($role->name);
-                    }
-
-                    foreach ($rolesDiscord as $role) {
-                        $r = new DiscordRole($role);
-                        $user->addRole($r->getId());
-                    }
-                }
-            }
-            echo "allready exists";
-            return 200;
-        }
-        $user = new User();
-        $user->registerFromBot($displayName, $discordId);
-        $roles = $user->getRoles();
-        foreach ($roles as $role) {
-            $user->removeRole($role->name);
         }
 
-        foreach ($rolesDiscord as $role) {
-            $r = new DiscordRole($role);
-            $user->addRole($r->getId());
-        }
+        $user->updateRoles($discordRoles);
+
+        //TODO: Save the Discord avatar
+
         return 200;
     }
 }
