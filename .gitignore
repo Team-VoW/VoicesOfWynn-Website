@@ -3,6 +3,7 @@
 /dynamic/*
 !/dynamic/avatars/default.png
 !/dynamic/avatars/nobody.png
+!/dynamic/discord-avatars/default.png
 /files/*
 /vendor/
 profiles.php
