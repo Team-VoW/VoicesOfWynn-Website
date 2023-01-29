@@ -12,6 +12,11 @@ class DiscordManager
 {
 
     /**
+     * @var string $lastUserPassword The generated password of the last user registered using its Discord ID
+     */
+    public string $lastUserPassword;
+    
+    /**
      * Method echoing all user accounts registered in the system, along with all their information
      * @warning Do not use this function for frequent and automated request, as it puts quite a lot of load on the database
      * @return string JSON-encoded user account list
@@ -50,7 +55,7 @@ class DiscordManager
             if (!$user) {
                 //Register new user
                 $user = new User();
-                $user->registerFromBot($displayName, $discordId);
+                $this->lastUserPassword = $user->registerFromBot($displayName, $discordId);
             }
         }
 
