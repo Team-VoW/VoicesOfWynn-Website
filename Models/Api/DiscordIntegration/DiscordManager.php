@@ -61,7 +61,7 @@ class DiscordManager
 
         if ($user->updateRoles($discordRoles) &&
             $this->updateDiscordAvatar($user->getId(), $avatarUrl)) {
-            return (empty($this->lastUserPassword) ? 200 : 201;
+            return (empty($this->lastUserPassword)) ? 200 : 201;
         }
         return 500;
     }
