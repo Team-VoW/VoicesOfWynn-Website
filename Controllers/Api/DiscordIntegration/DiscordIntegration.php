@@ -4,6 +4,7 @@ namespace VoicesOfWynn\Controllers\Api\DiscordIntegration;
 
 use VoicesOfWynn\Controllers\Api\ApiController;
 use VoicesOfWynn\Models\Api\DiscordIntegration\DiscordManager;
+use VoicesOfWynn\Models\Website\DiscordRole;
 use VoicesOfWynn\Models\Website\UserException;
 
 class DiscordIntegration extends ApiController
@@ -52,11 +53,18 @@ class DiscordIntegration extends ApiController
         $manager = new DiscordManager();
         switch ($_GET['action']) {
             case 'syncUser':
+                //Parse the JSON array of role names into array of DiscordRole objects
+                $roles = array();
+                $jsonData = json_decode($_POST['roles']);
+                foreach ($jsonData as $roleName) {
+                    $roles[] = new DiscordRole($roleName);
+                }
+                
                 return $manager->syncUser(
                     $_POST['discordId'],
                     $_POST['discordName'],
                     $_POST['imgurl'],
-                    $_POST['roles'],
+                    $roles,
                     $_POST['name']
                 );
             default:
