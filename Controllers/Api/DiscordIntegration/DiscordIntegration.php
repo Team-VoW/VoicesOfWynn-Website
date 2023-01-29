@@ -60,13 +60,18 @@ class DiscordIntegration extends ApiController
                     $roles[] = new DiscordRole($roleName);
                 }
                 
-                return $manager->syncUser(
+                $responseCode = $manager->syncUser(
                     $_POST['discordId'],
                     $_POST['discordName'],
                     $_POST['imgurl'],
                     $roles,
                     $_POST['name']
                 );
+                
+                if ($responseCode === 201) {
+                    echo json_encode(['tempPassword' => $manager->lastUserPassword]);
+                }
+                return $responseCode;
             default:
                 return 400;
         }
