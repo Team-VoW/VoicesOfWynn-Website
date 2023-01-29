@@ -46,12 +46,12 @@ class DiscordIntegration extends ApiController
      */
     private function post(): int
     {
-        if ($_GET['apiKey'] !== self::DISCORD_INTEGRATION_API_KEY) {
+        if ($_POST['apiKey'] !== self::DISCORD_INTEGRATION_API_KEY) {
             return 401;
         }
 
         $manager = new DiscordManager();
-        switch ($_GET['action']) {
+        switch ($_POST['action']) {
             case 'syncUser':
                 //Parse the JSON array of role names into array of DiscordRole objects
                 $roles = array();
