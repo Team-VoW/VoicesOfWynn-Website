@@ -55,7 +55,12 @@ class DiscordManager
             if (!$user) {
                 //Register new user
                 $user = new User();
-                $this->lastUserPassword = $user->registerFromBot($displayName, $discordId);
+                try {
+                    $this->lastUserPassword = $user->registerFromBot($displayName, $discordId);
+                } catch (UserException $e) {
+                    echo json_encode(['error' => $e->getMessage()]);
+                    return 500;
+                }
             }
         }
 
