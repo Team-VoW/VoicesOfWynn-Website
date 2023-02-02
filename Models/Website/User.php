@@ -7,6 +7,7 @@ namespace VoicesOfWynn\Models\Website;
 use InvalidArgumentException;
 use JsonSerializable;
 use PDOException;
+use VoicesOfWynn\Controllers\Website\Account\Account;
 use VoicesOfWynn\Models\Db;
 
 class User implements JsonSerializable
@@ -347,6 +348,12 @@ class User implements JsonSerializable
         }
         if ($appendRandom && $this->avatarLink !== 'default.png') {
             return $this->avatarLink.'?'.rand(0, 31);
+        }
+        if (!$appendRandom && $this->avatarLink !== 'default.png') {
+            return $this->avatarLink;
+        }
+        if (file_exists(Account::DISCORD_AVATAR_DIRECTORY.$this->id.'.png') && $this->avatarLink === 'default.png') {
+            return Account::DISCORD_AVATAR_DIRECTORY . $this->id . '.png';
         }
         return $this->avatarLink;
     }
