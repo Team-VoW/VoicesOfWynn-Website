@@ -119,6 +119,7 @@ abstract class WebpageController extends Controller
                 }
                 else if ($value instanceof User) {
                     $id = $this->sanitize($value->getId());
+                    $discordId = $this->sanitize($value->getDiscordId());
                     $email = $this->sanitize($value->getEmail());
                     $name = $this->sanitize($value->getName());
                     $avatarLink = $this->sanitize($value->getAvatarLink(false));
@@ -128,6 +129,7 @@ abstract class WebpageController extends Controller
 
                     $value->setData(array(
                         'id' => $id,
+                        'discordId' => $discordId,
                         'email' => $email,
                         'displayName' => $name,
                         'avatarLink' => $avatarLink,

@@ -507,6 +507,11 @@ class User implements JsonSerializable
                 case 'voice_actor_id':
                     $this->id = $value;
                     break;
+                case 'discordId':
+                case 'discord_id':
+                case 'dId':
+                    $this->discordId = $value;
+                    break;
                 case 'email':
                     $this->email = $value;
                     break;
