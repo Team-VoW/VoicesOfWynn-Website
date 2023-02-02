@@ -337,9 +337,13 @@ class User implements JsonSerializable
     }
     
     /**
-     * Avatar link getter
+     * Method returning filename of avatar image that should be displayed.
+     * By defualt, the avatar set manually by the user in their account settings is used. If none has been set, the one
+     * fetched from Discord (downloaded during account creation via API) is returned (if such avatar exists).
+     * If none of the avatars mentioned above is present, the default (empty) one is returned.
+     * @param bool $appendRandom Should a random number in range 0–31 be appended to the file name, to prevent caching?
      * @return string Filename of the profile picture (a random number is appended to the end to prevent caching if
-     * the avatar isn't the default one)
+     * the avatar isn't the default one) and the argument $appendRandom is set to TRUE.
      */
     public function getAvatarLink(bool $appendRandom = true)
     {
@@ -352,7 +356,7 @@ class User implements JsonSerializable
         if (!$appendRandom && $this->avatarLink !== 'default.png') {
             return $this->avatarLink;
         }
-        if (file_exists(Account::DISCORD_AVATAR_DIRECTORY.$this->id.'.png') && $this->avatarLink === 'default.png') {
+        if (file_exists(Account::DISCORD_AVATAR_DIRECTORY.$this->id.'.png')) {
             return Account::DISCORD_AVATAR_DIRECTORY . $this->id . '.png';
         }
         return $this->avatarLink;
