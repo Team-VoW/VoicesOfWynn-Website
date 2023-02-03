@@ -18,7 +18,7 @@
                 <td class="width-150"><img class="avatar" src="dynamic/avatars/nobody.png" alt="Profile picture"/></td>
 				<td class="width-150 pl-l"><i>Nobody</i></td>
 			<?php else : ?>
-                <td class="width-150"><img class="avatar admin-pfp" src="dynamic/avatars/<?= $npc->getVoiceActor()->getAvatarLink() ?>" alt="Profile picture"/></td>
+                <td class="width-150"><img class="avatar admin-pfp" src="<?= $npc->getVoiceActor()->getAvatarLink() ?>" alt="Profile picture"/></td>
 				<td class="width-150 pl-l"><a href="cast/<?= $npc->getVoiceActor()->getId() ?>"><?= $npc->getVoiceActor()->getName() ?></a></td>
 			<?php endif ?>
 			<td><a id="managelink" href="administration/npcs/manage/<?= $npc->getId() ?>" class="width-150">Manage</a></td>

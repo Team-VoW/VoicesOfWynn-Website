@@ -40,7 +40,7 @@ class Comments extends WebpageController
         if (isset($_SESSION['user'])) {
 	        self::$data['comments_user_id'] = $_SESSION['user']->getId();
 	        self::$data['comments_user_name'] = $_SESSION['user']->getName();
-	        self::$data['comments_user_avatar'] = 'dynamic/avatars/'.$_SESSION['user']->getAvatarLink();
+	        self::$data['comments_user_avatar'] = $_SESSION['user']->getAvatarLink();
         }
 		
 		$recordingId = array_shift($args);

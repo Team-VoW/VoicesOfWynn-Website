@@ -29,7 +29,7 @@
     <div id="socials-container">
         <div class="socials-row txt-c" id="scoials-row-1">
             <div class="socials-card">
-                <img class="contributor-img lb-a" src="dynamic/avatars/<?= $voiceActor->getAvatarLink() ?>" alt="Voice actor's avatar">
+                <img class="contributor-img lb-a" src="<?= $voiceActor->getAvatarLink() ?>" alt="Voice actor's avatar">
 
                 <?php if (!empty($voiceActor->getEmail()) && $voiceActor->hasPublicEmail()) : ?>
 

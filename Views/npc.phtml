@@ -19,7 +19,7 @@
         <hr class="hr-f">
     <?php else : ?>
         <a class="valink" href="cast/<?= ${basename(__FILE__, '.phtml').'_voice_actor'}->getId() ?>">
-            <img id="voice-actor-avatar" class="avatarcontents" src="dynamic/avatars/<?= ${basename(__FILE__, '.phtml').'_voice_actor'}->getAvatarLink() ?>" alt="Profile picture" />
+            <img id="voice-actor-avatar" class="avatarcontents" src="<?= ${basename(__FILE__, '.phtml').'_voice_actor'}->getAvatarLink() ?>" alt="Profile picture" />
             <span id="voice-actor-name" class="lb-b"><?= ${basename(__FILE__, '.phtml').'_voice_actor'}->getName() ?></span>
         </a>
         <hr class="hr-f">
