@@ -31,7 +31,7 @@ $("#voice-actor-form").on('submit', function(event) {
         url: "administration/npcs/manage/" + npcId + "/recast/" + voiceActorId,
         type: 'PUT',
         success: function(result, message) {
-            $("#voice-actor-avatar").attr('src', 'dynamic/avatars/' + voiceActorAvatar);
+            $("#voice-actor-avatar").attr('src', voiceActorAvatar);
             $("#voice-actor-name").text(voiceActorName);
             $(".valink").attr("href", "cast/" + voiceActorId)
             toggleRecastingButton();

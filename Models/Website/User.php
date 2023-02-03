@@ -4,10 +4,13 @@
 namespace VoicesOfWynn\Models\Website;
 
 
+use InvalidArgumentException;
+use JsonSerializable;
 use PDOException;
+use VoicesOfWynn\Controllers\Website\Account\Account;
 use VoicesOfWynn\Models\Db;
 
-class User
+class User implements JsonSerializable
 {
     private const DEFAULT_PASSWORD_CHARACTERS = 'abcdefghijklmnopqrstuvwxyz0123456789';
     public const DEFAULT_PASSWORD_LENGTH = 12;
@@ -16,6 +19,7 @@ class User
     private bool $loaded = false;
 
     private int $id = 0;
+    private $discordId = '';
     private $email = '';
     private string $hash = '';
     private bool $systemAdmin = false;
@@ -31,6 +35,11 @@ class User
     
     private array $roles = array();
 
+    public function jsonSerialize()
+	{
+	    return (object) get_object_vars($this);
+	}
+
     /**
      * Function loading all user information from the database and saving them into attributes
      * @return void
@@ -44,6 +53,7 @@ class User
         $userInfo = (new Db('Website/DbInfo.ini'))->fetchQuery('SELECT * FROM user WHERE user_id = ?', array($this->id));
 
         $this->id = $userInfo['user_id'];
+        $this->discordId = $userInfo['discord_id'];
         $this->email = $userInfo['email'];
         $this->hash = $userInfo['password'];
         $this->systemAdmin = $userInfo['system_admin'];
@@ -90,7 +100,7 @@ class User
             $name,
             $this->hash,
 	        $discordName,
-            $cccName
+            $cccName,
         ), true);
         
         if ($result) {
@@ -104,7 +114,42 @@ class User
             throw new UserException('Couldn\'t execute the SQL query');
         }
     }
-    
+
+    /**
+     * Registers a new user account with a set Discord user ID, generates a password and returns it
+     * The user is not logged in
+     * @param string $name String that will be used as a display name for the new user account
+     * @param int $discordId Discord account ID for this account
+     * @throws UserException
+     */
+    public function registerFromBot(string $name, int $discordId)
+    {
+        $verifier = new AccountDataValidator();
+        if (!$verifier->validateName($name, 0)) {
+            throw new UserException($verifier->errors[0]);
+        }
+        
+        $password = $this->generateTempPassword();
+
+        $this->hash = password_hash($password, PASSWORD_DEFAULT);
+        $result = (new Db('Website/DbInfo.ini'))->executeQuery('INSERT INTO user (display_name,password,discord_id) VALUES (?,?,?)', array(
+            $name,
+            $this->hash,
+            $discordId
+        ), true);
+        
+        if ($result) {
+            if (self::LOG_PASSWORDS) {
+                file_put_contents('profiles.php', $name.':'.$password.PHP_EOL, FILE_APPEND|LOCK_EX);
+            }
+            $this->id = $result;
+            return $password;
+        }
+        else {
+            throw new UserException('Couldn\'t execute the SQL query');
+        }
+    }
+
     /**
      * Login the user and load it's data, then save it's instance to the session
      * @param string $name Logging name or e-mail
@@ -257,6 +302,15 @@ class User
     {
         return $this->id;
     }
+
+    /**
+     * Summary of getDiscordId
+     * @return int
+     */
+    public function getDiscordId():int
+    {
+        return $this->discordId;
+    }
     
     /**
      * E-mail getter
@@ -283,9 +337,13 @@ class User
     }
     
     /**
-     * Avatar link getter
-     * @return string Filename of the profile picture (a random number is appended to the end to prevent caching if
-     * the avatar isn't the default one)
+     * Method returning link of avatar image that should be displayed.
+     * By defualt, the avatar set manually by the user in their account settings is used. If none has been set, the one
+     * fetched from Discord (downloaded during account creation via API) is returned (if such avatar exists).
+     * If none of the avatars mentioned above is present, the default (empty) one is returned.
+     * @param bool $appendRandom Should a random number in range 0–31 be appended to the file name, to prevent caching?
+     * @return string Link of the profile picture (a random number is appended to the end to prevent caching if
+     * the avatar isn't the default one) and the argument $appendRandom is set to TRUE.
      */
     public function getAvatarLink(bool $appendRandom = true)
     {
@@ -293,9 +351,15 @@ class User
             $this->load();
         }
         if ($appendRandom && $this->avatarLink !== 'default.png') {
-            return $this->avatarLink.'?'.rand(0, 31);
+            return Account::PROFILE_AVATAR_DIRECTORY.$this->avatarLink.'?'.rand(0, 31);
         }
-        return $this->avatarLink;
+        if (!$appendRandom && $this->avatarLink !== 'default.png') {
+            return Account::PROFILE_AVATAR_DIRECTORY.$this->avatarLink;
+        }
+        if (file_exists(Account::DISCORD_AVATAR_DIRECTORY.$this->id.'.png')) {
+            return Account::DISCORD_AVATAR_DIRECTORY . $this->id . '.png';
+        }
+        return Account::PROFILE_AVATAR_DIRECTORY.$this->avatarLink;
     }
     
     /**
@@ -382,7 +446,7 @@ class User
      * Method returning an array containing objects of type DiscordRole, representing all the roles that this user has
      * The returned array is also saved as an attribute of the object
      * In case the $roles attribute is not empty, it's returned and a database query is not executed
-     * @return array List of all the roles, each element being an associative array with keys "name" (string) and
+     * @return DiscordRole[] List of all the roles, each element being an associative array with keys "name" (string) and
      *     "color" (string, hex code of the color)
      */
     public function getRoles(): array
@@ -442,6 +506,11 @@ class User
                 case 'voice_actor':
                 case 'voice_actor_id':
                     $this->id = $value;
+                    break;
+                case 'discordId':
+                case 'discord_id':
+                case 'dId':
+                    $this->discordId = $value;
                     break;
                 case 'email':
                     $this->email = $value;
@@ -513,31 +582,94 @@ class User
     /**
      * Adds a role to this user in the database
      * Doesn't affect this object's $roles attribute
-     * @param int $roleId
+     * Both arguments are optional, but at least one needs to be specified
+     * @param int|null $roleId Role ID to add, if specified, the second argument is ignored
+     * @param DiscordRole|null $role Role object to add, must have its name filled in, the other attributes aren't important
      * @return bool
-     * @throws \Exception
+     * @throws InvalidArgumentException If none of the arguments are specified
      */
-    public function addRole(int $roleId): bool
+    public function addRole(?int $roleId = null, DiscordRole $role = null): bool
     {
-        return (new Db('Website/DbInfo.ini'))->executeQuery('INSERT INTO user_discord_role (user_id,discord_role_id) VALUES (?,?)', array(
+        if (!is_null($roleId)) {
+            return (new Db('Website/DbInfo.ini'))->executeQuery('INSERT INTO user_discord_role (user_id,discord_role_id) VALUES (?,?)', array(
+                $this->id,
+                $roleId
+            ));
+        }
+
+        if (is_null($role)) {
+            throw new InvalidArgumentException("At least one argument needs to be specified for the User::addRole() method.");
+        }
+        return (new Db('Website/DbInfo.ini'))->executeQuery('INSERT INTO user_discord_role (user_id,discord_role_id) VALUES (?,(SELECT discord_role_id FROM discord_role WHERE name = ? LIMIT 1))', array(
             $this->id,
-            $roleId
+            $role->name
         ));
     }
-    
+
     /**
      * Removes a role from this user in the database
      * Doesn't affect this object's $roles attribute
-     * @param int $roleId
+     * Both arguments are optional, but at least one needs to be specified
+     * @param int|null $roleId Role ID to remove, if specified, the second argument is ignored
+     * @param DiscordRole|null $role Role object to remove, must have its name filled in, the other attributes aren't important
      * @return bool
-     * @throws \Exception
+     * @throws InvalidArgumentException If none of the arguments are specified
      */
-    public function removeRole(int $roleId): bool
+    public function removeRole(?int $roleId = null, DiscordRole $role = null): bool
     {
-        return (new Db('Website/DbInfo.ini'))->executeQuery('DELETE FROM user_discord_role WHERE user_id = ? AND discord_role_id = ?', array(
+        if (!is_null($roleId)) {
+            return (new Db('Website/DbInfo.ini'))->executeQuery('DELETE FROM user_discord_role WHERE user_id = ? AND discord_role_id = ?', array(
+                $this->id,
+                $roleId
+            ));
+        }
+
+        if (is_null($role)) {
+            throw new InvalidArgumentException("At least one argument needs to be specified for the User::removeRole() method.");
+        }
+        return (new Db('Website/DbInfo.ini'))->executeQuery('DELETE FROM user_discord_role WHERE user_id = ? AND discord_role_id = (SELECT discord_role_id FROM discord_role WHERE name = ? LIMIT 1)', array(
             $this->id,
-            $roleId
+            $role->name
         ));
+    }
+
+    /**
+     * Replaces all the current Discord roles of this user with the new ones.
+     * Roles that persist aren't removed from the databases, diff between the current and the new roles is computed
+     * so as few SQL queries need to be executed as possible.
+     * @param DiscordRole[] $newRoles List of all the Discord roles the user should have
+     * @return bool
+     */
+    public function updateRoles(array $newRoles): bool
+    {
+        $currentRoles = $this->getRoles();
+
+        //Compare the role arrays by role names
+        $compareFunction = function(DiscordRole $r1, DiscordRole $r2) {
+            if ($r1->name === $r2->name) {
+                return 0;
+            } else if ($r1->name < $r2->name) {
+                return -1;
+            } else {
+                return 1;
+            }
+        };
+
+        $changedRoles = array_udiff($newRoles, $currentRoles, $compareFunction);
+
+        foreach ($changedRoles as $role) {
+            $removingRole = array_uintersect(array($role), $currentRoles, $compareFunction);
+            if ($removingRole) {
+                //Removing a role
+                $this->removeRole(null, $role);
+            }
+            else {
+                //Granting a role
+                $this->addRole(null, $role);
+            }
+        }
+
+        return true;
     }
 
     /**

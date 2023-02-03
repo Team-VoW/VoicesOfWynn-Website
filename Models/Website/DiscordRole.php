@@ -19,10 +19,11 @@ class DiscordRole
 		$this->color = $color;
 		$this->weight = $weight;
 	}
-	
-	/**
-	 * Loads and returns the ID of this role based on the name
-	 */
+
+    /**
+     * Loads and returns the ID of this role based on the name
+     * @throws Exception If the name of this Discord role wasn't set
+     */
 	public function getId()
 	{
 		if (isset($this->roleId)) { return $this->roleId; }

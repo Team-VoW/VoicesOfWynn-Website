@@ -10,6 +10,9 @@ use VoicesOfWynn\Models\Website\User;
 class Account extends WebpageController
 {
 
+    public const PROFILE_AVATAR_DIRECTORY = 'dynamic/avatars/';
+    public const DISCORD_AVATAR_DIRECTORY = 'dynamic/discord-avatars/';
+
     /**
      * @var User The user object that we're editing
      */
@@ -167,10 +170,10 @@ class Account extends WebpageController
         if (empty($validator->errors)) {
             if ($_FILES['avatar']['error'] !== UPLOAD_ERR_NO_FILE) {
                 //Delete old avatars
-                array_map('unlink', glob('dynamic/avatars/'.$this->user->getId().'.*'));
+                array_map('unlink', glob(self::PROFILE_AVATAR_DIRECTORY.$this->user->getId().'.*'));
 
                 //Save changes
-                move_uploaded_file($_FILES['avatar']['tmp_name'], 'dynamic/avatars/'.$avatar);
+                move_uploaded_file($_FILES['avatar']['tmp_name'], self::PROFILE_AVATAR_DIRECTORY.$avatar);
             } else {
                 $avatar = $this->user->getAvatarLink(false);
             }
