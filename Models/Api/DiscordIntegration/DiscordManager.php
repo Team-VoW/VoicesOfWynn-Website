@@ -34,7 +34,7 @@ class DiscordManager
 
     /**
      * Method updating Discord-related information of a single user
-     * @param int $discordId Discord account ID of the user to update
+     * @param string $discordId Discord account ID of the user to update
      * @param string $discordName Discord account username of the user to update
      * @param string $avatarUrl URL of the Discord avatar of the user
      * @param DiscordRole[] $discordRoles List of Discord roles that the user should have
@@ -43,7 +43,7 @@ class DiscordManager
      * @throws UserException
      * @throws \Exception If the $discordRoles argument contains an unknown role
      */
-    public function syncUser(int $discordId, string $discordName, string $avatarUrl, array $discordRoles, string $displayName): int
+    public function syncUser(string $discordId, string $discordName, string $avatarUrl, array $discordRoles, string $displayName): int
     {
         $accountManager = new AccountManager();
 

@@ -19,7 +19,7 @@ class User implements JsonSerializable
     private bool $loaded = false;
 
     private int $id = 0;
-    private $discordId = '';
+    private string $discordId = '';
     private $email = '';
     private string $hash = '';
     private bool $systemAdmin = false;
@@ -119,10 +119,10 @@ class User implements JsonSerializable
      * Registers a new user account with a set Discord user ID, generates a password and returns it
      * The user is not logged in
      * @param string $name String that will be used as a display name for the new user account
-     * @param int $discordId Discord account ID for this account
+     * @param string $discordId Discord account ID for this account
      * @throws UserException
      */
-    public function registerFromBot(string $name, int $discordId)
+    public function registerFromBot(string $name, string $discordId)
     {
         $verifier = new AccountDataValidator();
         if (!$verifier->validateName($name, 0)) {
@@ -305,9 +305,9 @@ class User implements JsonSerializable
 
     /**
      * Summary of getDiscordId
-     * @return int
+     * @return string
      */
-    public function getDiscordId():int
+    public function getDiscordId():string
     {
         return $this->discordId;
     }

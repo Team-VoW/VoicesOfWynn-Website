@@ -73,10 +73,10 @@ class AccountManager
 
     /**
      * Method getting a user object from the database by Discord account ID
-     * @param int $discordId Discord ID of the user
+     * @param string $discordId Discord ID of the user
      * @return User|false User object with all the information from the database or FALSE, if no such user exists
      */
-    public function getUserByDiscordId(int $discordId)
+    public function getUserByDiscordId(string $discordId)
     {
         $userData = (new Db('Website/DbInfo.ini'))->fetchQuery(
             'SELECT * FROM user WHERE `discord_id` = ? LIMIT 1',
