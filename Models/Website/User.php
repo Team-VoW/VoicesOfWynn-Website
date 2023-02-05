@@ -19,7 +19,7 @@ class User implements JsonSerializable
     private bool $loaded = false;
 
     private int $id = 0;
-    private $discordId = '';
+    private $discordId = null;
     private $email = '';
     private string $hash = '';
     private bool $systemAdmin = false;
@@ -305,9 +305,9 @@ class User implements JsonSerializable
 
     /**
      * Summary of getDiscordId
-     * @return int
+     * @return ?int Discord ID of this user of NULL if it hasn't been specified yet
      */
-    public function getDiscordId():int
+    public function getDiscordId():?int
     {
         return $this->discordId;
     }
