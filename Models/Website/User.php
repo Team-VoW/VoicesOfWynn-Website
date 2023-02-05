@@ -337,6 +337,19 @@ class User implements JsonSerializable
     }
     
     /**
+     * Method returning filename of the avatar image without any additional path to it
+     * This should only ever be used by anti-XSS sanitizer to not duplicate the path part of the full filename
+     * @return string Filename of the avatar of this user
+     */
+    public function getAvatar(): string
+    {
+        if (!$this->loaded && empty($this->avatarLink)) {
+            $this->load();
+        }
+        return $this->avatarLink;
+    }
+	
+    /**
      * Method returning link of avatar image that should be displayed.
      * By defualt, the avatar set manually by the user in their account settings is used. If none has been set, the one
      * fetched from Discord (downloaded during account creation via API) is returned (if such avatar exists).
