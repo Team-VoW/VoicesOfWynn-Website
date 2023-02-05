@@ -83,7 +83,7 @@
                 <label for="avatar">Picture</label>
             </div>
             <div class="account-edit-field-right input-change" id='account-edit-field-img'>
-                <img id="avatar-preview" src="dynamic/avatars/<?= ${basename(__FILE__, '.phtml').'_picture'} ?>"
+                <img id="avatar-preview" src="<?= ${basename(__FILE__, '.phtml').'_picture'} ?>"
                     alt="Your Profile Picture" />
                 <input id="avatar-input" class="input-change" name="avatar" type="file" accept="image/png,image/jpeg" />
             </div>
