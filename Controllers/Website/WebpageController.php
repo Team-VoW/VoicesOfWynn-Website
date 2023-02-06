@@ -122,7 +122,7 @@ abstract class WebpageController extends Controller
                     $discordId = $this->sanitize($value->getDiscordId());
                     $email = $this->sanitize($value->getEmail());
                     $name = $this->sanitize($value->getName());
-                    $avatarLink = $this->sanitize($value->getAvatarLink(false));
+                    $avatarLink = $this->sanitize($value->getAvatar());
                     $bio = $value->getBio(); //Don't sanitize, dangerous tags are removed before saving to the database
                     $lore = $this->sanitize($value->getLore());
                     $roles = $this->sanitize($value->getRoles());
