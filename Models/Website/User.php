@@ -668,18 +668,15 @@ class User implements JsonSerializable
             }
         };
 
-        $changedRoles = array_udiff($newRoles, $currentRoles, $compareFunction);
+        $addedRoles = array_udiff($newRoles, $currentRoles, $compareFunction);
+        $removedRoles = array_udiff($currentRoles, $newRoles, $compareFunction);
 
-        foreach ($changedRoles as $role) {
-            $removingRole = array_uintersect(array($role), $currentRoles, $compareFunction);
-            if ($removingRole) {
-                //Removing a role
-                $this->removeRole(null, $role);
-            }
-            else {
-                //Granting a role
-                $this->addRole(null, $role);
-            }
+        foreach ($addedRoles as $role) {
+            $this->addRole(null, $role);
+        }
+
+        foreach ($removedRoles as $role) {
+            $this->removeRole(null, $role);
         }
 
         return true;

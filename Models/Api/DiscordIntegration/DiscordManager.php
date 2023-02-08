@@ -36,14 +36,14 @@ class DiscordManager
      * Method updating Discord-related information of a single user
      * @param int $discordId Discord account ID of the user to update
      * @param string $discordName Discord account username of the user to update
-     * @param string $avatarUrl URL of the Discord avatar of the user
-     * @param DiscordRole[] $discordRoles List of Discord roles that the user should have
-     * @param string $displayName Display name of the user for the website
+     * @param string|null $avatarUrl URL of the Discord avatar of the user, use NULL to keep the current one
+     * @param DiscordRole[]|null $discordRoles List of Discord roles that the user should have, use NULL to keep the current one
+     * @param string|null $displayName Display name of the user for the website, use NULL to keep the current one
      * @return int HTTP response code
      * @throws UserException
      * @throws \Exception If the $discordRoles argument contains an unknown role
      */
-    public function syncUser(int $discordId, string $discordName, string $avatarUrl, array $discordRoles, string $displayName): int
+    public function syncUser(int $discordId, string $discordName, ?string $avatarUrl = null, ?array $discordRoles = null, ?string $displayName = null): int
     {
         $accountManager = new AccountManager();
 
@@ -64,10 +64,20 @@ class DiscordManager
             }
         }
 
-        if ($user->updateRoles($discordRoles) &&
-            $this->updateDiscordAvatar($user->getId(), $avatarUrl)) {
+        $result = true;
+
+        if (!is_null($avatarUrl)) {
+            $result = $this->updateDiscordAvatar($user->getId(), $avatarUrl);
+        }
+
+        if (!is_null($discordRoles)) {
+            $result = $result && $user->updateRoles($discordRoles);
+        }
+
+        if ($result) {
             return (empty($this->lastUserPassword)) ? 200 : 201;
         }
+
         return 500;
     }
 

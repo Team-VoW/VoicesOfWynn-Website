@@ -53,19 +53,27 @@ class DiscordIntegration extends ApiController
         $manager = new DiscordManager();
         switch ($_POST['action']) {
             case 'syncUser':
+                $imgurl = (isset($_POST['imgurl'])) ? $_POST['imgurl'] : null;
+                $name = (isset($_POST['name'])) ? $_POST['name'] : null;
+                $rolesJson = (isset($_POST['roles'])) ? $_POST['roles'] : null;
+
                 //Parse the JSON array of role names into array of DiscordRole objects
-                $roles = array();
-                $jsonData = json_decode($_POST['roles']);
-                foreach ($jsonData as $roleName) {
-                    $roles[] = new DiscordRole($roleName);
+                if (!is_null($rolesJson)) {
+                    $roles = array();
+                    $jsonData = json_decode($rolesJson);
+                    foreach ($jsonData as $roleName) {
+                        $roles[] = new DiscordRole($roleName);
+                    }
+                } else {
+                    $roles = null;
                 }
-                
+
                 $responseCode = $manager->syncUser(
                     $_POST['discordId'],
                     $_POST['discordName'],
-                    $_POST['imgurl'],
+                    $imgurl,
                     $roles,
-                    $_POST['name']
+                    $name
                 );
                 
                 if ($responseCode === 201) {
