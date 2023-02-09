@@ -122,20 +122,24 @@ class User implements JsonSerializable
      * @param int $discordId Discord account ID for this account
      * @throws UserException
      */
-    public function registerFromBot(string $name, int $discordId)
+    public function registerFromBot(string $name, int $discordId, string $discordName)
     {
         $verifier = new AccountDataValidator();
         if (!$verifier->validateName($name, 0)) {
+            throw new UserException($verifier->errors[0]);
+        }
+        if (!$verifier->validateDiscord($discordName, 0)) {
             throw new UserException($verifier->errors[0]);
         }
         
         $password = $this->generateTempPassword();
 
         $this->hash = password_hash($password, PASSWORD_DEFAULT);
-        $result = (new Db('Website/DbInfo.ini'))->executeQuery('INSERT INTO user (display_name,password,discord_id) VALUES (?,?,?)', array(
+        $result = (new Db('Website/DbInfo.ini'))->executeQuery('INSERT INTO user (display_name,password,discord_id,discord) VALUES (?,?,?,?)', array(
             $name,
             $this->hash,
-            $discordId
+            $discordId,
+            $discordName
         ), true);
         
         if ($result) {
@@ -305,9 +309,9 @@ class User implements JsonSerializable
 
     /**
      * Summary of getDiscordId
-     * @return ?int Discord ID of this user of NULL if it hasn't been specified yet
+     * @return int|null Discord ID or NULL, if it has not been specified
      */
-    public function getDiscordId():?int
+    public function getDiscordId(): ?int
     {
         return $this->discordId;
     }
@@ -559,6 +563,8 @@ class User implements JsonSerializable
                     $this->lore = $value;
                     break;
                 case 'discord':
+                case 'discord_name':
+                case 'discordName':
                     $this->discord = $value;
                     break;
                 case 'youtube':
@@ -580,6 +586,19 @@ class User implements JsonSerializable
                     $this->publicEmail = $value;
                     break;
             }
+        }
+    }
+
+    public function saveDiscordInfo(): bool
+    {
+        if (!empty($this->id)) {
+            return (new Db('Website/DbInfo.ini'))->executeQuery('UPDATE user SET discord_id = ?, discord = ? WHERE user_id = ?', array(
+                $this->discordId,
+                $this->discord,
+                $this->id
+            ));
+        } else {
+            throw new UserException('Discord info of this user object cannot be saved, because its ID isn\'t known.');
         }
     }
     

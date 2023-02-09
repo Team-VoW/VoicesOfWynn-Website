@@ -27,6 +27,7 @@ class DiscordManager
         $accountManager = new AccountManager();
         $users = $accountManager->getUsers();
         foreach ($users as $user) {
+            $user->getRoles(); //Saves the roles in an attribute of the $user object too
             $user->load();
         }
         return json_encode($users);
@@ -56,12 +57,24 @@ class DiscordManager
                 //Register new user
                 $user = new User();
                 try {
-                    $this->lastUserPassword = $user->registerFromBot($displayName, $discordId);
+                    if (is_null($displayName)) {
+                        //Make the display name equal to the Discord handle without the tag (#xxxx) = without the last 5 characters
+                        $displayName = mb_substr($discordName, 0, mb_strlen($discordName) - 5);
+                    }
+                    $this->lastUserPassword = $user->registerFromBot($displayName, $discordId, $discordName);
                 } catch (UserException $e) {
                     echo json_encode(['error' => $e->getMessage()]);
                     return 500;
                 }
+            } else {
+                //Update discord ID based on the unchanged discord username
+                $user->setData(array('discord_id' => $discordId));
+                $user->saveDiscordInfo();
             }
+        } else {
+            //Update discord username based on the unchanged discord ID
+            $user->setData(array('discord_name' => $discordName));
+            $user->saveDiscordInfo();
         }
 
         $result = true;
