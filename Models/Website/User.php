@@ -37,7 +37,22 @@ class User implements JsonSerializable
 
     public function jsonSerialize()
 	{
-	    return (object) get_object_vars($this);
+	    return (object) [
+            'id' => $this->id,
+            'displayName' => $this->displayName,
+            'email' => $this->email,
+            'publicEmail' => $this->publicEmail,
+            'avatarLink' => $this->getAvatarLink(),
+            'bio' => $this->bio,
+            'lore' => $this->lore,
+            'systemAdmin' => $this->systemAdmin,
+            'discordId' => $this->discordId,
+            'discordName' => $this->discord,
+            'youtube' => $this->youtube,
+            'twitter' => $this->twitter,
+            'castingCallClub' => $this->castingcallclub,
+            'roles' => $this->getRoles()
+        ];
 	}
 
     /**
