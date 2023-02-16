@@ -175,7 +175,7 @@ class Account extends WebpageController
                 //Save changes
                 move_uploaded_file($_FILES['avatar']['tmp_name'], self::PROFILE_AVATAR_DIRECTORY.$avatar);
             } else {
-                $avatar = $this->user->getAvatarLink(false);
+                $avatar = $this->user->getAvatar();
             }
 
             $this->user->update($email, $password, $displayName, $avatar, $bio, $discord, $youtube, $twitter, $castingcallclub, $publicEmail);
