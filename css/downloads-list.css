@@ -1,0 +1,55 @@
+/* ------------------------------------------------------------------
+
+styling for downloads. extra file to make the structure less
+confusing
+
+--------------------------------------------------------------------- */
+
+
+
+
+/*                                                          */
+/* _________________________ MAIN _________________________ */
+/*                                                          */
+
+
+
+    /* wrapper */
+.download-wrapper {text-align: center;}
+
+.download-wrapper ul {
+    padding: 0;
+    display: inline;
+    list-style: none;
+    text-decoration: wavy;
+}
+
+.download-wrapper li {
+    padding: 1.25rem 1.25rem;
+    border: none;
+    font-size: 20px;
+}
+
+.dl-details-table {
+    position: relative;
+    left: 0%;  /* da bin ich mir nicht mehr sicher, auch nicht ganz so best-practice aber juckt grad nicht */
+}
+
+.dl-list-table {
+    border-spacing: 20px 10px;
+    display: inline;
+}
+
+@media (max-width: 62.5rem) {
+  .dl-details-table {
+    position: relative;
+    left: 5%;
+  }
+}
+
+@media (max-width:29.0rem) {
+  .dl-details-table {
+    position: relative;
+    left: -5%;
+  }
+}

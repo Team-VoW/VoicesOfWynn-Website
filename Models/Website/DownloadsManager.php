@@ -13,15 +13,25 @@ class DownloadsManager
     public const INSTALLER_FILE_NAME = 'VoicesOfWynn-Installer-v1.1.jar'; //Both on the server and when downloaded
     private const FILE_NAME_FORMATS = 'VoicesOfWynn-MC{mcVersion}-v{version}.jar';
 
+    public const FORGE_VERSIONS = ['1.12.2'];
+    public const FABRIC_VERSIONS = ['1.19.3', '1.18.2'];
+
+
     /**
      * Lists all downloads, newest to oldest
+     * @param array $versions Minecraft versions, out of which at least one needs to be supported by the downloads returned
      * @return ModDownload[] Array of ModDownloads objects
      * @throws \Exception
      */
-    public function listDownloads(): array
+    public function listDownloads(array $versions): array
     {
+        $inString = rtrim(str_repeat('?,', count($versions)),',');
         $db = new Db('Website/DbInfo.ini');
-        $result = $db->fetchQuery('SELECT * FROM download ORDER BY release_date DESC, version DESC, mc_version DESC', array(), true);
+        $result = $db->fetchQuery('
+            SELECT * FROM download 
+            WHERE mc_version IN ('.$inString.') 
+            ORDER BY release_date DESC, version DESC, mc_version DESC
+        ', $versions, true);
 
         if ($result === false) {
             return array();

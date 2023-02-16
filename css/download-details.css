@@ -17,8 +17,8 @@
     font-weight: bold;
 }
 
-#report-download-issue {
-    color: orangered; /* TODO: Force this to display */
+.report-download-issue a {
+    color: orangered;
 }
 
 #terms {

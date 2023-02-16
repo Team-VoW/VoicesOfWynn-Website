@@ -1,50 +1,45 @@
-/* ------------------------------------------------------------------
-
-styling for downloads. extra file to make the structure less
-confusing
-
---------------------------------------------------------------------- */
-
-
-
-
-/*                                                          */
-/* _________________________ MAIN _________________________ */
-/*                                                          */
-
-
-
-    /* wrapper */
-.download-wrapper {text-align: center;}
-
-.download-wrapper ul {
-    padding: 0;
-    display: inline;
-    list-style: none;
-    text-decoration: wavy;
+.downloads-wrapper {
+    display: flex;
+    justify-content: center;
 }
 
-.download-wrapper li {
-    padding: 1.25rem 1.25rem;
-    border: none;
-    font-size: 20px;
+.downloads-wrapper > a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    white-space: nowrap;
+    width: 250px;
+    height: 250px;
+    border-radius: 5px;
 }
 
-.dl-details-table {
+.downloads-wrapper > a > .downloads-option-bg-img {
+    opacity: 0.5;
     position: relative;
-    left: 0%;  /* da bin ich mir nicht mehr sicher, auch nicht ganz so best-practice aber juckt grad nicht */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: auto;
 }
 
-@media (max-width: 62.5rem) {
-  .dl-details-table {
-    position: relative;
-    left: 5%;
-  }
+.downloads-wrapper > a:hover > .downloads-option-bg-img {
+    opacity: 1;
 }
 
-@media (max-width:29.0rem) {
-  .dl-details-table {
-    position: relative;
-    left: -5%;
-  }
+.downloads-wrapper > a > span {
+    text-align: center;
+    color: darkmagenta;
+    position: absolute;
+    font-size: 1.2em;
+    font-weight: bold;
 }
+
+.downloads-wrapper > a > span > strong{
+    color: rebeccapurple;
+}
+
+.downloads-wrapper > a:hover > span {
+    background-color: #ffffff77;
+    border-radius: 20px;
+    padding: 5px;
+ }

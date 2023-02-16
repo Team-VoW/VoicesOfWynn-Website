@@ -1,62 +1,35 @@
 <h1>Download Voices of Wynn</h1>
+
+<h2 class="txt-c">Choose your platform</h2>
 <p class="txt-c mb-l">
-    <a href="/downloads/<?= ${basename(__FILE__, '.phtml').'_versions'}[0]->id; ?>"><button class="downloadbtn"><img src="images/download.png" alt="Download icon" width="20px" height="20px" /> Download Latest Version</button></a>
+    Voices of Wynn is supported for Forge client and Fabric client.
+</p>
+<p class="txt-c mb-l">
+    Forge version is meant for Minecraft version <code>1.12.2</code>.
 </p>
 
-<hr class="hr-f">
-<h2 class="txt-c">Older Versions of the Mod</h2>
-<p class="txt-c mb-l">Want an older version of the mod? They are linked below! The oldest are at the bottom and the newest are at the top.</p>
+<p class="txt-c mb-l">
+    Fabric version is usually meant for the latest Minecraft release version.
+    Check the exact version in the download details.
+</p>
 
-<div class="download-wrapper mt-l">
-<?php foreach (${basename(__FILE__, '.phtml').'_versions'} as $version) : ?>
-    <div class="txt-c">
-        <h3 style="color:<?php
-            switch ($version->releaseType)
-            {
-                case 'alpha':
-                    echo '#FF5000';
-                    break;
-                case 'beta':
-                    echo '#FC8F00';
-                    break;
-                case 'pre-release':
-                    echo '#FCB400';
-                    break;
-                case 'release':
-                    echo '#6ad10a';
-                    break;
-                case 'patch':
-                    echo '#356FF4';
-                    break;
-            }
-        ?>">
-            <?= ucfirst($version->releaseType).' '.$version->version; ?>
-        </h3>
-        <div class="dl-details-table">
-            <table class="m-a dl-table">
-                <tr>
-                    <th>Wynncraft version</th>
-                    <th>Minecraft version</th>
-                    <th>Size</th>
-                    <th>Release Date</th>
-                    <th>Times Downloaded</th>
-                </tr>
-                <tr>
-                    <td><?= $version->wynnVersion ?></td>
-                    <td><?= $version->mcVersion ?></td>
-                    <td><?= round($version->size / 1000000, 2) ?> MB</td>
-                    <td><?= $version->releaseDate->format('jS F Y') ?></td>
-                    <td><?= $version->downloadedTimes ?></td>
-                </tr>
-            </table>
-        </div>
-        <a href="/downloads/<?= $version->id ?>">
-            <button class="downloadbtn">
-                <img src="images/download.png" alt="Download icon" width="20px" height="20px"/> More information and download
-            </button>
-        </a>
-    </div>
-    <hr class="dlhr">
-<?php endforeach ?>
+<div class="mt-l downloads-wrapper">
+    <a class="forge-downloads-option" href="/downloads/forge">
+        <img class="downloads-option-bg-img" src="images/forge.svg" alt="">
+        <span>
+            Voices&nbsp;of&nbsp;Wynn<br>
+            for<br>
+            <strong>Forge</strong>
+        </span>
+    </a>
+
+    <a class="fabric-downloads-option" href="/downloads/fabric">
+        <img class="downloads-option-bg-img" src="images/fabric.png" alt="">
+        <span>
+            Voices&nbsp;of&nbsp;Wynn<br>
+            for<br>
+            <strong>Fabric</strong>
+        </span>
+    </a>
 </div>
 
