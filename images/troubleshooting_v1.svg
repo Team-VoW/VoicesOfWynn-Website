@@ -16,29 +16,59 @@
     <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,-548)" stroke-linecap="butt">
       <circle fill="none" r="31.875" clip-path="url(#clipPath2)" cx="678.7088" cy="595.0568"/>
       <text x="652.3621" xml:space="preserve" y="599.7706" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">Start here</text>
-      <path fill="none" d="M606.1085 768.2231 L678.7085 695.6224 L751.3086 768.2231 L678.7085 840.8237 Z" clip-path="url(#clipPath2)" fill-rule="evenodd"/>
+    </g>
+    <g fill="white" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,-548)" stroke="white">
+      <path d="M606.1085 768.2231 L678.7085 695.6224 L751.3086 768.2231 L678.7085 840.8237 Z" fill-rule="evenodd" clip-path="url(#clipPath2)" stroke="none"/>
+    </g>
+    <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,-548)" stroke-linecap="butt">
+      <path fill="none" d="M606.1085 768.2231 L678.7085 695.6224 L751.3086 768.2231 L678.7085 840.8237 Z" fill-rule="evenodd" clip-path="url(#clipPath2)"/>
       <text x="634.6873" xml:space="preserve" y="758.2344" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">Does your game</text>
       <text x="635.6863" xml:space="preserve" y="772.9356" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">crash on startup</text>
       <text x="625.3475" xml:space="preserve" y="787.6368" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">with exit code of -1?</text>
-      <path fill="none" d="M538.0889 1273.0603 L610.6889 1200.4603 L683.2889 1273.0603 L610.6889 1345.6604 Z" clip-path="url(#clipPath2)" fill-rule="evenodd"/>
+    </g>
+    <g fill="white" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,-548)" stroke="white">
+      <path d="M538.0889 1273.0603 L610.6889 1200.4603 L683.2889 1273.0603 L610.6889 1345.6604 Z" fill-rule="evenodd" clip-path="url(#clipPath2)" stroke="none"/>
+    </g>
+    <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,-548)" stroke-linecap="butt">
+      <path fill="none" d="M538.0889 1273.0603 L610.6889 1200.4603 L683.2889 1273.0603 L610.6889 1345.6604 Z" fill-rule="evenodd" clip-path="url(#clipPath2)"/>
       <text x="577.3404" xml:space="preserve" y="1255.7224" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">What kind of</text>
       <text x="567.3326" xml:space="preserve" y="1270.4236" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">problem are you</text>
       <text x="575.9957" xml:space="preserve" y="1285.1248" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">encountering</text>
       <text x="573.3355" xml:space="preserve" y="1299.8259" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">with the mod?</text>
-      <path fill="none" d="M538.089 1511.0809 L610.689 1438.481 L683.289 1511.0809 L610.689 1583.6809 Z" clip-path="url(#clipPath2)" fill-rule="evenodd"/>
+    </g>
+    <g fill="white" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,-548)" stroke="white">
+      <path d="M538.089 1511.0809 L610.689 1438.481 L683.289 1511.0809 L610.689 1583.6809 Z" fill-rule="evenodd" clip-path="url(#clipPath2)" stroke="none"/>
+    </g>
+    <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,-548)" stroke-linecap="butt">
+      <path fill="none" d="M538.089 1511.0809 L610.689 1438.481 L683.289 1511.0809 L610.689 1583.6809 Z" fill-rule="evenodd" clip-path="url(#clipPath2)"/>
       <text x="576.6724" xml:space="preserve" y="1486.3925" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">Are you sure</text>
       <text x="572.9986" xml:space="preserve" y="1501.0936" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">you have your</text>
       <text x="559.6656" xml:space="preserve" y="1515.7948" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">master volume and</text>
       <text x="575.6734" xml:space="preserve" y="1530.496" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">voice volume</text>
       <text x="581.9986" xml:space="preserve" y="1545.1971" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">turned on?</text>
+    </g>
+    <g fill="white" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,-548)" stroke="white">
+      <rect x="304.5453" width="145.2" height="44.125" y="1489.0185" clip-path="url(#clipPath2)" stroke="none"/>
+    </g>
+    <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,-548)" stroke-linecap="butt">
       <rect fill="none" x="304.5453" width="145.2" height="44.125" y="1489.0185" clip-path="url(#clipPath2)"/>
       <text x="311.1073" xml:space="preserve" y="1515.7948" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">Turn them both to 100 %</text>
-      <path fill="none" d="M678.1872 1809.9703 L750.7872 1737.3704 L823.3872 1809.9703 L750.7872 1882.5704 Z" clip-path="url(#clipPath2)" fill-rule="evenodd"/>
+    </g>
+    <g fill="white" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,-548)" stroke="white">
+      <path d="M678.1872 1809.9703 L750.7872 1737.3704 L823.3872 1809.9703 L750.7872 1882.5704 Z" fill-rule="evenodd" clip-path="url(#clipPath2)" stroke="none"/>
+    </g>
+    <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,-548)" stroke-linecap="butt">
+      <path fill="none" d="M678.1872 1809.9703 L750.7872 1737.3704 L823.3872 1809.9703 L750.7872 1882.5704 Z" fill-rule="evenodd" clip-path="url(#clipPath2)"/>
       <text x="708.0928" xml:space="preserve" y="1792.6324" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">Do you hear the</text>
       <text x="711.4297" xml:space="preserve" y="1807.3336" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">voice of Enzan</text>
       <text x="704.7589" xml:space="preserve" y="1822.0348" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">(he stands by the</text>
       <text x="716.4307" xml:space="preserve" y="1836.736" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">Ragni gate)?</text>
-      <path fill="none" d="M538.089 2043.6202 L610.689 1971.0201 L683.289 2043.6202 L610.689 2116.2202 Z" clip-path="url(#clipPath2)" fill-rule="evenodd"/>
+    </g>
+    <g fill="white" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,-548)" stroke="white">
+      <path d="M538.089 2043.6202 L610.689 1971.0201 L683.289 2043.6202 L610.689 2116.2202 Z" fill-rule="evenodd" clip-path="url(#clipPath2)" stroke="none"/>
+    </g>
+    <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,-548)" stroke-linecap="butt">
+      <path fill="none" d="M538.089 2043.6202 L610.689 1971.0201 L683.289 2043.6202 L610.689 2116.2202 Z" fill-rule="evenodd" clip-path="url(#clipPath2)"/>
       <text x="576.0045" xml:space="preserve" y="2026.2823" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">Did the issue</text>
       <text x="570.6636" xml:space="preserve" y="2040.9835" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">disappear after</text>
       <text x="558.6607" xml:space="preserve" y="2055.6846" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">reinstalling the mod</text>
@@ -50,16 +80,31 @@
     <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,-548)" stroke-linecap="butt">
       <rect fill="none" x="274.1407" width="255.0125" height="114" y="1826.9577" clip-path="url(#clipPath2)"/>
       <text x="353.2924" xml:space="preserve" y="1888.6715" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">Problem resolved.</text>
-      <path fill="none" d="M151.6347 972.5989 L224.2353 899.9989 L296.8354 972.5989 L224.2353 1045.1989 Z" clip-path="url(#clipPath2)" fill-rule="evenodd"/>
+    </g>
+    <g fill="white" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,-548)" stroke="white">
+      <path d="M151.6347 972.5989 L224.2353 899.9989 L296.8354 972.5989 L224.2353 1045.1989 Z" fill-rule="evenodd" clip-path="url(#clipPath2)" stroke="none"/>
+    </g>
+    <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,-548)" stroke-linecap="butt">
+      <path fill="none" d="M151.6347 972.5989 L224.2353 899.9989 L296.8354 972.5989 L224.2353 1045.1989 Z" fill-rule="evenodd" clip-path="url(#clipPath2)"/>
       <text x="179.8854" xml:space="preserve" y="962.6095" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">Which version of</text>
       <text x="182.5514" xml:space="preserve" y="977.3107" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">Voices of Wynn</text>
       <text x="184.8747" xml:space="preserve" y="992.0118" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">are you using?</text>
-      <path fill="none" d="M631.4771 972.5981 L704.0771 899.9984 L776.6771 972.5981 L704.0771 1045.198 Z" clip-path="url(#clipPath2)" fill-rule="evenodd"/>
+    </g>
+    <g fill="white" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,-548)" stroke="white">
+      <path d="M631.4771 972.5981 L704.0771 899.9984 L776.6771 972.5981 L704.0771 1045.198 Z" fill-rule="evenodd" clip-path="url(#clipPath2)" stroke="none"/>
+    </g>
+    <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,-548)" stroke-linecap="butt">
+      <path fill="none" d="M631.4771 972.5981 L704.0771 899.9984 L776.6771 972.5981 L704.0771 1045.198 Z" fill-rule="evenodd" clip-path="url(#clipPath2)"/>
       <text x="670.3889" xml:space="preserve" y="947.9083" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">Do you have</text>
       <text x="655.383" xml:space="preserve" y="962.6095" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">the Fabric Api and</text>
       <text x="659.7219" xml:space="preserve" y="977.3107" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">Cloth Config API</text>
       <text x="666.7121" xml:space="preserve" y="992.0118" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">dependencies</text>
       <text x="678.7267" xml:space="preserve" y="1006.713" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">installed?</text>
+    </g>
+    <g fill="white" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,-548)" stroke="white">
+      <rect x="841.6671" width="223.4197" height="95.7981" y="924.6978" clip-path="url(#clipPath2)" stroke="none"/>
+    </g>
+    <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,-548)" stroke-linecap="butt">
       <rect fill="none" x="841.6671" width="223.4197" height="95.7981" y="924.6978" clip-path="url(#clipPath2)"/>
       <text x="885.3525" xml:space="preserve" y="940.5577" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">Install them from the links</text>
       <text x="883.6562" xml:space="preserve" y="955.2589" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">found below the download</text>
@@ -79,12 +124,22 @@
       <text x="958.8619" xml:space="preserve" y="1822.0348" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">Make sure you have line reporting enabled</text>
       <text x="967.8707" xml:space="preserve" y="1836.736" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">and perhaps join our Discord to help us</text>
       <text x="1002.9069" xml:space="preserve" y="1851.4371" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">voice the voiceless NPCs.</text>
-      <path fill="none" d="M403.0191 972.5961 L475.6191 899.9961 L548.2192 972.5961 L475.6191 1045.196 Z" clip-path="url(#clipPath2)" fill-rule="evenodd"/>
+    </g>
+    <g fill="white" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,-548)" stroke="white">
+      <path d="M403.0191 972.5961 L475.6191 899.9961 L548.2192 972.5961 L475.6191 1045.196 Z" fill-rule="evenodd" clip-path="url(#clipPath2)" stroke="none"/>
+    </g>
+    <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,-548)" stroke-linecap="butt">
+      <path fill="none" d="M403.0191 972.5961 L475.6191 899.9961 L548.2192 972.5961 L475.6191 1045.196 Z" fill-rule="evenodd" clip-path="url(#clipPath2)"/>
       <text x="438.9309" xml:space="preserve" y="955.2589" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">Are you using</text>
       <text x="433.9358" xml:space="preserve" y="969.9601" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">Voices of Wynn</text>
       <text x="446.2697" xml:space="preserve" y="984.6613" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">version 1.4</text>
       <text x="448.9387" xml:space="preserve" y="999.3624" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">or newer?</text>
-      <path fill="none" d="M304.5453 1672.7988 L377.1454 1600.1987 L449.7453 1672.7988 L377.1454 1745.3988 Z" clip-path="url(#clipPath2)" fill-rule="evenodd"/>
+    </g>
+    <g fill="white" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,-548)" stroke="white">
+      <path d="M304.5453 1672.7988 L377.1454 1600.1987 L449.7453 1672.7988 L377.1454 1745.3988 Z" fill-rule="evenodd" clip-path="url(#clipPath2)" stroke="none"/>
+    </g>
+    <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,-548)" stroke-linecap="butt">
+      <path fill="none" d="M304.5453 1672.7988 L377.1454 1600.1987 L449.7453 1672.7988 L377.1454 1745.3988 Z" fill-rule="evenodd" clip-path="url(#clipPath2)"/>
       <text x="344.4588" xml:space="preserve" y="1662.8115" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">Do you hear</text>
       <text x="341.6581" xml:space="preserve" y="1677.5127" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">NPC's voices</text>
       <text x="362.8016" xml:space="preserve" y="1692.2139" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">now?</text>
@@ -97,24 +152,44 @@
       <text x="1079.1243" xml:space="preserve" y="2403.7915" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">Congratulations! You found a non-trivial issue.</text>
       <text x="1200.1965" xml:space="preserve" y="2418.4927" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none"> </text>
       <text x="1090.1428" xml:space="preserve" y="2433.1938" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">Please, join our Discord server and create</text>
-      <text x="1088.7424" xml:space="preserve" y="2447.895" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">a topic in the "&#128587;issues-and-support". We'll</text>
-      <text x="1101.1497" xml:space="preserve" y="2462.5962" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">try to resolve the issue with you there.</text>
-      <path fill="none" d="M795.9158 2195.5637 L868.5158 2122.9639 L941.1158 2195.5637 L868.5158 2268.1638 Z" clip-path="url(#clipPath2)" fill-rule="evenodd"/>
+      <text x="1080.5364" xml:space="preserve" y="2447.895" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">a topic in the "&#128587;issues-and-support" channel.</text>
+      <text x="1086.6711" xml:space="preserve" y="2462.5962" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">We'll try to resolve the issue with you there.</text>
+    </g>
+    <g fill="white" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,-548)" stroke="white">
+      <path d="M795.9158 2195.5637 L868.5158 2122.9639 L941.1158 2195.5637 L868.5158 2268.1638 Z" fill-rule="evenodd" clip-path="url(#clipPath2)" stroke="none"/>
+    </g>
+    <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,-548)" stroke-linecap="butt">
+      <path fill="none" d="M795.9158 2195.5637 L868.5158 2122.9639 L941.1158 2195.5637 L868.5158 2268.1638 Z" fill-rule="evenodd" clip-path="url(#clipPath2)"/>
       <text x="834.4992" xml:space="preserve" y="2170.8752" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">Are you sure</text>
       <text x="838.8264" xml:space="preserve" y="2185.5764" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">you put the</text>
       <text x="837.8332" xml:space="preserve" y="2200.2776" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">modfile into</text>
       <text x="840.1711" xml:space="preserve" y="2214.9788" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">the correct</text>
       <text x="850.1701" xml:space="preserve" y="2229.6799" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">folder?</text>
-      <path fill="none" d="M795.9158 2428.48 L868.5158 2355.8799 L941.1158 2428.48 L868.5158 2501.0798 Z" clip-path="url(#clipPath2)" fill-rule="evenodd"/>
+    </g>
+    <g fill="white" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,-548)" stroke="white">
+      <path d="M795.9158 2428.48 L868.5158 2355.8799 L941.1158 2428.48 L868.5158 2501.0798 Z" fill-rule="evenodd" clip-path="url(#clipPath2)" stroke="none"/>
+    </g>
+    <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,-548)" stroke-linecap="butt">
+      <path fill="none" d="M795.9158 2428.48 L868.5158 2355.8799 L941.1158 2428.48 L868.5158 2501.0798 Z" fill-rule="evenodd" clip-path="url(#clipPath2)"/>
       <text x="847.8381" xml:space="preserve" y="2403.7915" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">Are you</text>
       <text x="838.1672" xml:space="preserve" y="2418.4927" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">really using</text>
       <text x="819.1623" xml:space="preserve" y="2433.1938" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">the correct version</text>
       <text x="825.4933" xml:space="preserve" y="2447.895" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">of Minecraft and</text>
       <text x="834.5051" xml:space="preserve" y="2462.5962" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">Forge/Fabric</text>
-      <path fill="none" d="M1054.5735 1386.7019 L1127.1735 1314.1019 L1199.7734 1386.7019 L1127.1735 1459.3019 Z" clip-path="url(#clipPath2)" fill-rule="evenodd"/>
+    </g>
+    <g fill="white" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,-548)" stroke="white">
+      <path d="M1054.5735 1386.7019 L1127.1735 1314.1019 L1199.7734 1386.7019 L1127.1735 1459.3019 Z" fill-rule="evenodd" clip-path="url(#clipPath2)" stroke="none"/>
+    </g>
+    <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,-548)" stroke-linecap="butt">
+      <path fill="none" d="M1054.5735 1386.7019 L1127.1735 1314.1019 L1199.7734 1386.7019 L1127.1735 1459.3019 Z" fill-rule="evenodd" clip-path="url(#clipPath2)"/>
       <text x="1084.819" xml:space="preserve" y="1376.7146" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">Are you viewing</text>
       <text x="1092.1608" xml:space="preserve" y="1391.4158" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">this flowchart</text>
       <text x="1084.8131" xml:space="preserve" y="1406.1169" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">on our website?</text>
+    </g>
+    <g fill="white" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,-548)" stroke="white">
+      <rect x="815.876" width="238.6975" height="189.032" y="1438.481" clip-path="url(#clipPath2)" stroke="none"/>
+    </g>
+    <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,-548)" stroke-linecap="butt">
       <rect fill="none" x="815.876" width="238.6975" height="189.032" y="1438.481" clip-path="url(#clipPath2)"/>
       <text x="875.5323" xml:space="preserve" y="1471.5555" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">We sometimes update</text>
       <text x="865.1788" xml:space="preserve" y="1486.2567" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">the flowchart and add new</text>
