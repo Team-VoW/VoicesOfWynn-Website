@@ -283,7 +283,7 @@ class Recording
         $cnm = new ContentManager();
         $discordMessage = 'New comment has been posted on the following recording: `'.$cnm->getRecordingTitle($this).'`\n\n';
         $discordMessage .= '> '.$content;
-        $discordMessage .= '\n\nView the comment section at http://vow.local/contents/npc/'.$this->npcId.'/comments/'.$this->id;'.';
+        $discordMessage .= '\n\nView the comment section at http://vow.local/contents/npc/'.$this->npcId.'/comments/'.$this->id.'.';
 
         $webhookResult = $this->sendWebhookMessage($discordMessage, $comment->getName().' via voicesofwynn.com', $comment->getAvatar());
 
