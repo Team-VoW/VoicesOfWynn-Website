@@ -256,13 +256,6 @@ class Recording
 			throw new UserException('Comment is too long, 65,535 characters is the limit.');
 		}
 
-		$badwords = file('Models/BadWords.txt');
-		foreach ($badwords as $badword) {
-			if (mb_stripos($content, trim($badword)) !== false) {
-				throw new UserException('The comment contains a bad word: "'.trim($badword).'". If you believe that it\'s not used as a profanity, join our Discord (link in the footer) and ping Shady#2948.');
-			}
-		}
-
         //Save the comment
 		$result = (new Db('Website/DbInfo.ini'))->executeQuery('INSERT INTO comment (verified,user_id,ip,name,email,content,recording_id) VALUES (?,?,?,?,?,?,?);', array(
 			$verified,
