@@ -42,6 +42,7 @@ class Comment
                     break;
 				case 'ip':
 				case 'ip_address':
+				case 'ipAddress':
 				case 'ip_addr':
 					$this->ip = $value;
 				case 'name':
@@ -63,6 +64,7 @@ class Comment
 					$this->content = $value;
 					break;
 				case 'recording_id':
+				case 'recordingId':
 				case 'recording':
 				case 'object':
 					$this->recordingId = $value;
@@ -99,7 +101,7 @@ class Comment
 		if ($this->verified) {
 			$result = (new Db('Website/DbInfo.ini'))->fetchQuery("SELECT picture FROM user WHERE user_id = ?", array($this->userId));
 			if ($result === false) { $result['picture'] = "default.png"; }
-			return "dynamic/avatars/".$result['picture'];
+			return "http://".$_SERVER['SERVER_NAME']."/dynamic/avatars/".$result['picture']; //HTTP works most of the time
 		}
 		else {
 			return "https://www.gravatar.com/avatar/".md5($this->email)."?d=identicon";

@@ -14,6 +14,7 @@ class Recording
 		'purple' => '#CC33CC'
 	);
 	private const ANTISPAM_TOLLERANCE = 20; //In % out of 256
+    private const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1123272683380031539/[TOKEN-REDACTED]';
 
 	private int $id = 0;
 	private int $npcId = 0;
@@ -176,6 +177,7 @@ class Recording
 
 	/**
 	 * Adds a new comment to this recording
+     * Also sends the comment to the Discord webhook
      * @param $verified bool TRUE, if the user is posting as an contributor (verification if anyone is actually logged in will be performed), FALSE, if they're posting as a guest
 	 * @param $ip string|null
 	 * @param $author string|null
@@ -261,7 +263,8 @@ class Recording
 			}
 		}
 
-		return (new Db('Website/DbInfo.ini'))->executeQuery('INSERT INTO comment (verified,user_id,ip,name,email,content,recording_id) VALUES (?,?,?,?,?,?,?);', array(
+        //Save the comment
+		$result = (new Db('Website/DbInfo.ini'))->executeQuery('INSERT INTO comment (verified,user_id,ip,name,email,content,recording_id) VALUES (?,?,?,?,?,?,?);', array(
 			$verified,
             $userId,
 			inet_pton($ip),
@@ -270,7 +273,55 @@ class Recording
 			$content,
 			$this->id
 		), true);
+
+        //Construct the object to easily get name and avatar for the webhook message
+        $comment = new Comment(array(
+            'id' => $result,
+            'verified' => $verified,
+            'userId' => $userId,
+            'ip' => $ip,
+            'author' => $author,
+            'email' => $email,
+            'content' => $content,
+            'recordingId' => $this->id
+        ));
+
+        //Forward to the webhook
+        $cnm = new ContentManager();
+        $discordMessage = 'New comment has been posted on the following recording: `'.$cnm->getRecordingTitle($this).'`\n\n';
+        $discordMessage .= '> '.$content;
+        $discordMessage .= '\n\nView the comment section at http://vow.local/contents/npc/'.$this->npcId.'/comments/'.$this->id;'.';
+
+        $webhookResult = $this->sendWebhookMessage($discordMessage, $comment->getName().' via voicesofwynn.com', $comment->getAvatar());
+
+        return $result !== false && $webhookResult;
 	}
+
+    /**
+     * Method forwarding the message to our Discord server via webhook
+     * @param string $message Message that was posted
+     * @param string|null $username Username of the poster (either their account user name or whatever they filled into the relevant field)
+     * @param string|null $avatar Avatar of the poster (either their account avatar, or the Gravatar image generated from their e-mail, if they used one)
+     * @return bool TRUE on success, FALSE on failure
+     */
+    private function sendWebhookMessage(string $message, ?string $username = null, ?string $avatar = null) {
+        $curl = curl_init(self::DISCORD_WEBHOOK_URL);
+        curl_setopt($curl, CURLOPT_URL, self::DISCORD_WEBHOOK_URL);
+        curl_setopt($curl, CURLOPT_POST, true);
+
+        $headers = array(
+            "Content-Type: application/json",
+        );
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+
+        $data = '{"content":"'.$message.'","username":"'.$username.'","avatar_url":"'.$avatar.'"}';
+
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+
+        $result = curl_exec($curl);
+        curl_close($curl);
+        return $result;
+    }
 
     /**
      * Method archiving this recording by marking it as archived in the database and renaming the recording file
