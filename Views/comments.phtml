@@ -72,7 +72,7 @@
 
 <div id="comments" class="m-a">
 <?php foreach (${basename(__FILE__, '.phtml').'_comments'} as $comment) : ?>
-<div class="comment mt-m">
+<div class="comment mt-m" id="c<?= $comment->id ?>">
     <table>
 
         <tr>

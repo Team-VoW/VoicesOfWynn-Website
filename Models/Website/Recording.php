@@ -257,7 +257,7 @@ class Recording
 		}
 
         //Save the comment
-		$result = (new Db('Website/DbInfo.ini'))->executeQuery('INSERT INTO comment (verified,user_id,ip,name,email,content,recording_id) VALUES (?,?,?,?,?,?,?);', array(
+		$commentId = (new Db('Website/DbInfo.ini'))->executeQuery('INSERT INTO comment (verified,user_id,ip,name,email,content,recording_id) VALUES (?,?,?,?,?,?,?);', array(
 			$verified,
             $userId,
 			inet_pton($ip),
@@ -269,7 +269,7 @@ class Recording
 
         //Construct the object to easily get name and avatar for the webhook message
         $comment = new Comment(array(
-            'id' => $result,
+            'id' => $commentId,
             'verified' => $verified,
             'userId' => $userId,
             'ip' => $ip,
@@ -279,6 +279,11 @@ class Recording
             'recordingId' => $this->id
         ));
 
+        //Comment couldn't be saved
+        if ($commentId === false) {
+            return false;
+        }
+
         //Forward to the webhook
         $cnm = new ContentManager();
         $commentLines = preg_split("/\r\n|\n|\r/", $content); //Copied from https://stackoverflow.com/a/11165332/14011077
@@ -286,11 +291,11 @@ class Recording
         foreach ($commentLines as $commentLine) {
             $discordMessage .= '\n> '.htmlspecialchars(trim($commentLine));
         }
-        $discordMessage .= '\n\nView the comment section at http://vow.local/contents/npc/'.$this->npcId.'/comments/'.$this->id.'.';
+        $discordMessage .= '\n\nView the comment at http://'.$_SERVER['SERVER_NAME'].'/contents/npc/'.$this->npcId.'/comments/'.$this->id.'#c'.$commentId.'.';
 
         $webhookResult = $this->sendWebhookMessage($discordMessage, $comment->getName().' via voicesofwynn.com', $comment->getAvatar());
 
-        return ($result !== false && $webhookResult) ? $result : false;
+        return $webhookResult ? $commentId : false;
 	}
 
     /**
