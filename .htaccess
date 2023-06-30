@@ -9,21 +9,23 @@ RewriteEngine On
 # RewriteCond %{REQUEST_FILENAME} !-f
 # RewriteCond %{REQUEST_FILENAME} !-d
 
-# Allow dirrect access to browser configuration files
-RewriteCond %{REQUEST_URI} !^/browserconfig\.xml$
-RewriteCond %{REQUEST_URI} !^/site\.webmanifest$
+RewriteCond %{REQUESt_URI} files/updater-data/.* [OR]
+RewriteCond %{REQUEST_URI} files/core-dev-server/.*
+RewriteRule ^.*$ - [NC,L]
+
+RewriteCond %{REQUEST_URI} browserconfig\.xml$ [OR]
+RewriteCond %{REQUEST_URI} site\.webmanifest$
+RewriteRule ^.*$ - [NC,L]
 
 RewriteCond %{REQUEST_FILENAME} -s [OR]
 RewriteCond %{REQUEST_FILENAME} -l [OR]
 RewriteCond %{REQUEST_FILENAME} -d [OR]
 RewriteCond %{REQUEST_FILENAME} -f
-RewriteCond %{REQUEST_URI} !^/files/updater-data
 RewriteRule \.(css|js|txt|ico|ttf|xml|svg|gif|png|ogg|jpg)$ - [NC,L]
 
 RewriteCond %{REQUEST_URI}::$1 ^(/.+)(.+)::\2$
 RewriteRule ^(.*) - [E=BASE:%1]
 RewriteRule ^(.*)$ %{ENV:BASE}index.php [NC,L]
-
 
 # Use .phtml files as .php files
 AddType application/x-httpd-php .php .phtml
