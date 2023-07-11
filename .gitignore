@@ -5,6 +5,7 @@
 !/dynamic/avatars/nobody.png
 !/dynamic/discord-avatars/default.png
 /files/*
+!/files/core-dev-server/*
 /vendor/
 profiles.php
 composer.phar
