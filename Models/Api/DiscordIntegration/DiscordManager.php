@@ -46,6 +46,11 @@ class DiscordManager
      */
     public function syncUser(int $discordId, string $discordName, ?string $avatarUrl = null, ?array $discordRoles = null, ?string $displayName = null): int
     {
+        //Remove legacy discriminator for compatibility purposes (if it exists)
+        if (preg_match('/#0000$/', $discordName)) {
+            $discordName = substr($discordName, 0, strlen($discordName) - 5);
+        }
+
         $accountManager = new AccountManager();
 
         //Get user by Discord ID
@@ -58,8 +63,8 @@ class DiscordManager
                 $user = new User();
                 try {
                     if (is_null($displayName)) {
-                        //Make the display name equal to the Discord handle without the tag (#xxxx) = without the last 5 characters
-                        $displayName = mb_substr($discordName, 0, mb_strlen($discordName) - 5);
+                        //Make the display name equal to the Discord username
+                        $displayName = $discordName;
                     }
                     $this->lastUserPassword = $user->registerFromBot($displayName, $discordId, $discordName);
                 } catch (UserException $e) {
