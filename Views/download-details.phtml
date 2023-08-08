@@ -83,18 +83,31 @@ It doesn\'t contain much new content';
             <td>Can be updated using the installer later.</td>
             <td>Can be used to update any existing installation to any published or future version.</td>
         </tr>
+        <?php if ($downloadDetails->version >= "1.4" && $downloadDetails->mcVersion >= "1.19.4") : ?>
+            <tr><td colspan="2">
+                    <div style="border: 5px solid #f05; padding: 10px; border-radius: 10px;">
+                        <h3>Important Notice</h3>
+                        <p>This version of Voices of Wynn is <strong>dependant on Fabric API and Cloth Config API</strong>.</p>
+                        <p>If you encounter problems when launching Minecraft with Voices of Wynn installed, install these two mods from the following addresses please:</p>
+                        <ul style="text-align: left;">
+                            <li>Fabric API: <a href="https://modrinth.com/mod/fabric-api/versions" target="_blank">https://modrinth.com/mod/fabric-api/versions</a></li>
+                            <li>Cloth Config API: <a href="https://modrinth.com/mod/cloth-config/versions" target="_blank">https://modrinth.com/mod/cloth-config/versions</a></li>
+                        </ul>
+                    </div>
+                </td></tr>
+        <?php endif ?>
         <tr>
             <td>
                 <a href="/download/<?= $downloadDetails->id ?>/jar">
                     <button id="download-btn" class="downloadbtn">Download JAR</button>
                 </a>
                 <div class="txt-c" id="download-started">
-                    <p class="txt-c"><b>Your download has started.</b></span></p> 
+                    <p class="txt-c"><b>Your download has started.</b></span></p>
                     <p class="txt-c report-download-issue"><small>
-                        <a href="mailto:team@voicesofwynn.com?subject=Problems%20downloading%20mod%20version%20<?= urlencode($downloadDetails->version) ?>&body=Feel%20free%20to%20include%20any%20additional%20information%20here.%0AOur%20team%20will%20check%20the%20download%20as%20soon%20as%20they%20can.%0A%0AIn%20the%20meantime%2C%20you%20can%20try%20to%20download%20the%20installer%20or%20join%20our%20Discord%20and%20ask%20for%20an%20alternative%20download.">
-                            Report a problem with this download
-                        </a>
-                    </small></p>
+                            <a href="mailto:team@voicesofwynn.com?subject=Problems%20downloading%20mod%20version%20<?= urlencode($downloadDetails->version) ?>&body=Feel%20free%20to%20include%20any%20additional%20information%20here.%0AOur%20team%20will%20check%20the%20download%20as%20soon%20as%20they%20can.%0A%0AIn%20the%20meantime%2C%20you%20can%20try%20to%20download%20the%20installer%20or%20join%20our%20Discord%20and%20ask%20for%20an%20alternative%20download.">
+                                Report a problem with this download
+                            </a>
+                        </small></p>
                 </div>
             </td>
             <td>
@@ -102,12 +115,12 @@ It doesn\'t contain much new content';
                     <button id="install-btn" class="updatebtn">Download Installer</button>
                 </a>
                 <div class="txt-c" id="install-started">
-                    <p class="txt-c"><b>Your download has started.</b></p> 
+                    <p class="txt-c"><b>Your download has started.</b></p>
                     <p class="txt-c report-download-issue"><small>
-                        <a href="mailto:team@voicesofwynn.com?subject=Problems%20with%20downloading%20the%20installer&body=Feel%20free%20to%20include%20any%20additional%20information%20here.%0AOur%20team%20will%20check%20the%20download%20as%20soon%20as%20they%20can.%0A%0AIn%20the%20meantime%2C%20you%20can%20try%20the%20direct%20download%20or%20join%20our%20Discord%20and%20ask%20for%20an%20alternative%20download.">
-                            Report a problem with this download
-                        </a>
-                    </small></p>
+                            <a href="mailto:team@voicesofwynn.com?subject=Problems%20with%20downloading%20the%20installer&body=Feel%20free%20to%20include%20any%20additional%20information%20here.%0AOur%20team%20will%20check%20the%20download%20as%20soon%20as%20they%20can.%0A%0AIn%20the%20meantime%2C%20you%20can%20try%20the%20direct%20download%20or%20join%20our%20Discord%20and%20ask%20for%20an%20alternative%20download.">
+                                Report a problem with this download
+                            </a>
+                        </small></p>
                 </div>
             </td>
         </tr>

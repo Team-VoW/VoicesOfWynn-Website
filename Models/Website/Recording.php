@@ -236,7 +236,7 @@ class Recording
 	        }
 	        //Check e-mail format (might not allow some exotic but valid e-mail domains)
 	        if ($email !== "" && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-		        throw new UserException('E-mail address doesn\'t seem to be in the correct format. If you are sure that you entered your e-mail address properly, ping Shady#2948 on Discord.');
+		        throw new UserException('E-mail address doesn\'t seem to be in the correct format. If you are sure that you entered your e-mail address properly, ping shady_medic on Discord.');
 	        }
 
 	        $userId = null;

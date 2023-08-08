@@ -251,7 +251,7 @@ class User implements JsonSerializable
             unset($_SESSION['passchangename']);
             return $this->login($name, $newPassword);
         }
-        throw new UserException('An error occurred. Please, try again later and if the error persists, ping Shady#2948 on Discord.');
+        throw new UserException('An error occurred. Please, try again later and if the error persists, ping shady_medic on Discord.');
     }
     
     /**
@@ -726,7 +726,7 @@ class User implements JsonSerializable
     {
         if (!$allowForSysadmins) {
             if ($this->isSysAdmin()) {
-                throw new UserException("Password of a system administrator cannot be reset this way for security reasons. Contact Shady#2948 for assistance.");
+                throw new UserException("Password of a system administrator cannot be reset this way for security reasons. Contact shady_medic on Discord for assistance.");
             }
         }
 

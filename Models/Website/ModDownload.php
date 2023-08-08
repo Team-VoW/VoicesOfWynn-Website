@@ -183,7 +183,7 @@ class ModDownload
 
         //Validate size
         if (filesize(DownloadsManager::ROOT_DOWNLOADS_DIRECTORY.'/'.$this->fileName) > self::MODFILE_MAX_SIZE) {
-            throw new UserException('The mod file is too big, its size cannot be saved in the database. Contact Shady#2948 to make him increase the maximum value.');
+            throw new UserException('The mod file is too big, its size cannot be saved in the database. Contact shady_medic on Discord to make him increase the maximum value.');
         }
         $this->size = filesize(DownloadsManager::ROOT_DOWNLOADS_DIRECTORY.'/'.$this->fileName);
 

@@ -12,7 +12,7 @@ class AccountDataValidator
     public const PASSWORD_MIN_LENGTH = 6;
     private const NAME_MAX_LENGTH = 31;
     private const NAME_MIN_LENGTH = 3;
-	private const DISCORD_NAME_MAX_LENGTH = 37; //Including #xxxx
+	private const DISCORD_NAME_MAX_LENGTH = 32;
 	private const DISCORD_NAME_MIN_LENGTH = 2;
 	private const YOUTUBE_NAME_MAX_LENGTH = 56;
 	private const YOUTUBE_NAME_MIN_LENGTH = 14; //Length of youtube.com/c/
@@ -36,7 +36,7 @@ class AccountDataValidator
 
         //Check format (might not allow some exotic but valid e-mail domains)
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $this->errors[] = 'E-mail address doesn\'t seem to be in the correct format. If you are sure that you entered your e-mail address properly, ping Shady#2948 on Discord.';
+            $this->errors[] = 'E-mail address doesn\'t seem to be in the correct format. If you are sure that you entered your e-mail address properly, ping shady_medic on Discord.';
             return false;
         }
 
@@ -112,7 +112,7 @@ class AccountDataValidator
             return false;
         }
         if ($uploadInfo['error'] !== 0) {
-            $this->errors[] = 'An unknown error occurred during the file upload - try again or ping Shady#2948 on Discord.';
+            $this->errors[] = 'An unknown error occurred during the file upload – try again or ping shady_medic on Discord.';
             return false;
         }
 
@@ -152,10 +152,7 @@ class AccountDataValidator
 		}
 		
 		//Check format
-		if (
-			preg_match("/^[^#]*#\d{4}$/", $discordName) !== 1 ||
-			preg_match("/.*#0000$/", $discordName) === 1
-		) {
+		if (preg_match("/^[0-9a-z_.]*$/", $discordName) !== 1 || strpos($discordName, '..') !== false) {
 			$this->errors[] = 'This Discord username is in incorrect format.';
 			return false;
 		}
@@ -226,6 +223,7 @@ class AccountDataValidator
 		}
 		/*
 		//TODO - try to find a way to make this work, probably with official Twitter API
+		//Update: Nevermind, now when Twitter is Elon's paywalled sh*thole, I won't bother lol
 		//Check if the channel exists
 		$handle = curl_init('https://twitter.com/'.$twitterHandle);
 		curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
@@ -307,7 +305,7 @@ class AccountDataValidator
 		$result = $purifier->purify($bio);
 		
 		if (str_replace(' ', '', $result) !== str_replace(' ', '', $bio)) { //HTMLpurifier sometimes removes spaces in the "style" atribute
-			$this->warnings[] = 'It seems like your bio contains disallowed HTML code. If you used only the tools provided in the toolbar and see unwanted changes, ping Shady#2948 on Discord please.';
+			$this->warnings[] = 'It seems like your bio contains disallowed HTML code. If you used only the tools provided in the toolbar and see unwanted changes, ping shady_medic on Discord please.';
 		}
 		return $result;
   }
