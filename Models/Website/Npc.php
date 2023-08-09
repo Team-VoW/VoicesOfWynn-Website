@@ -9,6 +9,7 @@ class Npc implements JsonSerializable
 {
 	private int $id = 0;
 	private string $name = '';
+    private string $degeneratedName = '';
 	private $voiceActor;
     private bool $archived = false;
 
@@ -31,6 +32,10 @@ class Npc implements JsonSerializable
 				case 'npc_name':
 					$this->name = $value;
 					break;
+                case 'dname':
+                case 'degenerated_name':
+                    $this->degeneratedName = $value;
+                    break;
                 case 'archived':
                 case 'hidden':
                     $this->archived = $value;
@@ -168,6 +173,15 @@ class Npc implements JsonSerializable
 	{
 		return $this->name;
 	}
+
+    /**
+     * Degenerated name getter
+     * @return string|null Degenerated name of this NPC (without spaces and special chars) or NULL if it wasn't set
+     */
+    public function getDegeneratedName() : ?string
+    {
+        return $this->degeneratedName;
+    }
 
 	/**
 	 * VoiceActor getter
