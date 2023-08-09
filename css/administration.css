@@ -10,7 +10,7 @@ main {
     height: 5vh;
 }
 
-table {
+.spaced-table {
     border-spacing: 10px 40px!important;
 }
 
