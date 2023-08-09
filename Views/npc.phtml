@@ -84,38 +84,10 @@
     </table>
     <?php if (${basename(__FILE__, '.phtml').'_admin'}) : ?>
         <p class="txt-c mb-l"><button class="archive-all-recordings-btn" data-quest-id="<?= $quest->getId() ?>">Archive all recordings</button></p>
-	
-	<form method="post" enctype="multipart/form-data" class="new-recording-form">
-            <h4>Add new recordings</h4>
-            <input name="questId" type="hidden" value="<?= $quest->getId() ?>" />
-            <p>
-                All files <strong>must</strong> follow the following naming scheme: <code>questname-npcname-linenumber.ogg</code>!
-            </p>
-            <p>
-                Valid names:
-                <ul>
-                    <li><code>cowfusion-ibele-1.ogg</code></li>
-                    <li><code>cropfailure-anast-6.ogg</code></li>
-                    <li><code>agravemistake-hangingskeleton-1.ogg</code></li>
-                </ul>
-                Invalid names:
-                <ul>
-                    <li><code><b style="color: red">C</b>owfusion-<b style="color: red">I</b>bele-1.ogg</code></li>
-                    <li><code>crop<b style="color: red">-</b>failure-anast<b style="color: red">6</b>.ogg</code></li>
-                    <li><code>a<b style="color: red">_</b>grave<b style="color: red">_</b>mistak<b style="color: red">e h</b>anging<b style="color: red">S</b>keleton-<b style="color: red">I</b>.<b style="color: red">mp3</b></code></li>
-                </ul>
-            </p>
-            <input name="recordings[]" type="file" accept="audio/ogg" class="recording-input" multiple="multiple" required/>
-            <div class="upload-form-overwrite">
-                <label for="overwrite-checkbox">Should files with the same name be overwritten on the server?</label>
-                <span>Note: You don't want this to be checked, unless you <i>really</i> know what you want to achieve.</span>
-                <input name="overwrite" type="checkbox" id="overwrite-checkbox" />
-            </div>
-            <input type="submit" value="Upload"/>
-        </form>
-        <?php if (isset(${basename(__FILE__, '.phtml').'_uploadErrors'}[$quest->getId()])) : ?>
-            <?= ${basename(__FILE__, '.phtml').'_uploadErrors'}[$quest->getId()] ?>
-        <?php endif ?>
+
+        <p class="txt-c mb-l"><a href="/administration/upload?questId=<?= $quest->getId() ?>&npcId=<?= ${basename(__FILE__, '.phtml').'_npc'}->getId() ?>">
+                <button class="uploadbtn">Add new recordings</button>
+        </a></p>
     <?php endif ?>
 </section>
 </div>
