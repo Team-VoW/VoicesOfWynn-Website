@@ -73,13 +73,41 @@ td th {
     width: 26rem;
 }
 .error {
+    margin: 2rem;
     text-align: center;
     color: red;
 }
-#release-published {
+.success {
     margin: 2rem;
     text-align: center;
     color: green;
+}
+
+.box {
+    margin: 8px;
+    border: 1px solid black;
+    padding: 8px;
+}
+
+.spoiler-header {
+    text-align: center;
+    font-weight: bold;
+}
+
+.short-input {
+    width: 3.5rem;
+}
+
+.uploadlog {
+    border-spacing: unset;
+    font-family: monospace;
+    font-size: 0.8em;
+    margin: 0;
+}
+
+.uploadlog td {
+    padding: 0 5px;
+    white-space: nowrap;
 }
 
 .rearrange-up-btn, .rearrange-down-btn {
