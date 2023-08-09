@@ -1,0 +1,72 @@
+<h2 class="txt-c">Mass-upload recordings</h2>
+<?php if (
+        (!empty(${basename(__FILE__, '.phtml').'_uploadErrors'})) ||
+        (!empty(${basename(__FILE__, '.phtml').'_uploadSuccesses'}))
+) : ?>
+    <?php if (!empty(${basename(__FILE__, '.phtml').'_uploadErrors'})) : ?>
+        <h5 class="error">Upload Errors</h5>
+        <table class="error uploadlog" border="1"><tr><th>HTTP code</th><th>HTTP message</th><th>Description</th><th>File</th></tr>
+            <?php foreach (${basename(__FILE__, '.phtml').'_uploadErrors'} as $error) : ?>
+                <tr>
+                    <td><?= $error['code'] ?></td>
+                    <td><?= $error['msg'] ?></td>
+                    <td><?= $error['desc'] ?></td>
+                    <td><?= $error['file'] ?></td>
+                </tr>
+            <?php endforeach ?>
+        </table>
+    <?php endif ?>
+    <?php if (!empty(${basename(__FILE__, '.phtml').'_uploadSuccesses'})) : ?>
+        <h5 class="success">Upload Successes</h5>
+        <table class="success uploadlog" border="1"><tr><th>HTTP code</th><th>HTTP message</th><th>Description</th><th>File</th></tr>
+            <?php foreach (${basename(__FILE__, '.phtml').'_uploadSuccesses'} as $success) : ?>
+                <tr>
+                    <td><?= $success['code'] ?></td>
+                    <td><?= $success['msg'] ?></td>
+                    <td><?= $success['desc'] ?></td>
+                    <td><?= $success['file'] ?></td>
+                </tr>
+            <?php endforeach ?>
+        </table>
+    <?php endif ?>
+<?php else : ?>
+    <div class="txt-c display-block txt-l">
+        <details class="box">
+            <summary class="spoiler-header">Important rules for names of the files you're going to upload form this webpage</summary>
+            All files <strong>must</strong> follow the following naming scheme: <code>questname-npcname-linenumber.ogg</code>!
+            <table>
+                <tr class="txt-c"><th>Valid names</th><th>Invalid names</th></tr>
+                <tr>
+                    <td><code>cowfusion-ibele-1.ogg</code></td>
+                    <td><code><b style="color: red">C</b>owfusion-<b style="color: red">I</b>bele-1.ogg</code></td>
+                </tr>
+                <tr>
+                    <td><code>cropfailure-anast-6.ogg</code></td>
+                    <td><code>crop<b style="color: red">-</b>failure-anast<b style="color: red">6</b>.ogg</code></td>
+                </tr>
+                <tr>
+                    <td><code>agravemistake-hangingskeleton-1.ogg</code></td>
+                    <td><code><code>a<b style="color: red">_</b>grave<b style="color: red">_</b>mistak<b style="color: red">e h</b>anging<b style="color: red">S</b>keleton-<b style="color: red">I</b>.<b style="color: red">mp3</b></code></td>
+                </tr>
+            </table>
+        </details>
+
+        <form method="post" enctype="multipart/form-data">
+            <fieldset class="txt-c">
+                <p><input name="recordings[]" type="file" accept="audio/ogg" class="recording-input" multiple="multiple" required/></p>
+                <details>
+                    <summary><small>Manual quest and NPC settings</small></summary>
+                    Quest ID:
+                    <input name="questId" class="short-input" type="number" value="<?= $_GET['questId'] ?? '' ?>" placeholder="Auto" min="1" />
+
+                    NPC ID:
+                    <input name="npcId" class="short-input" type="number" value="<?= $_GET['npcId'] ?? '' ?>" placeholder="Auto" min="1" />
+                    <p>These will be applied to all recordings you upload this time and will override the names in their filenames!</p>
+                </details>
+                <p><input class="uploadbtn" type="submit" value="Upload"/></p>
+            </fieldset>
+        </form>
+    </div>
+<?php endif ?>
+
+<button class="backbtn" onclick="history.go(-1)">< Go Back</button>
