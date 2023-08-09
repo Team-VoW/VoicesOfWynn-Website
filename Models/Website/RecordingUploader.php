@@ -68,20 +68,6 @@ class RecordingUploader
 
             $line = explode('.', $filenameParts[2])[0];
 
-            if (empty($npcId)) {
-                $degeneratedNpcName = $filenameParts[1];
-                $result = $db->fetchQuery('SELECT npc_id FROM npc WHERE degenerated_name = ? LIMIT 1;', [$degeneratedNpcName]);
-                if ($result === false) {
-                    $this->errors[] = [
-                        'code' => 404,
-                        'msg' => 'Not Found',
-                        'desc' => 'NPC with a name corresponding to '.$degeneratedNpcName.' couldn\'t be found',
-                        'file' => $filename
-                    ];
-                    continue;
-                }
-                $npcId = $result['npc_id'];
-            }
             if (empty($questId)) {
                 $degeneratedQuestName = $filenameParts[0];
                 $result = $db->fetchQuery('SELECT quest_id FROM quest WHERE degenerated_name = ? LIMIT 1;', [$degeneratedQuestName]);
@@ -95,6 +81,26 @@ class RecordingUploader
                     continue;
                 }
                 $questId = $result['quest_id'];
+            }
+            if (empty($npcId)) {
+                $degeneratedNpcName = $filenameParts[1];
+
+                $result = $db->fetchQuery(
+                    'SELECT npc_id FROM npc WHERE degenerated_name = ? AND npc_id IN (
+                        SELECT npc_id FROM npc_quest WHERE quest_id = ?
+                    ) LIMIT 1;'
+                    , [$degeneratedNpcName, $questId]);
+
+                if ($result === false) {
+                    $this->errors[] = [
+                        'code' => 404,
+                        'msg' => 'Not Found',
+                        'desc' => 'NPC with a name corresponding to '.$degeneratedNpcName.' couldn\'t be found',
+                        'file' => $filename
+                    ];
+                    continue;
+                }
+                $npcId = $result['npc_id'];
             }
 
             //In case a file with this name already exists, append "_([number])" to it (before the extension)
