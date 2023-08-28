@@ -26,6 +26,10 @@ fieldset fieldset {
     width: 100%;
     margin: 0;
 }
+tbody {
+    display: block;
+    padding: 15px;
+}
 td { vertical-align: top; }
 
 
@@ -108,36 +112,34 @@ border-color: #a5a147;}
         /* main containers */
 #comments { border: none; }                     /* for all comments */
 
-.comment {                                      /* for singular comment */
-    max-height: fit-content;
-    min-height: fit-content;
+.comment-box {
     width: 100%;
-    border: 2px solid thistle;
+    border: 1px solid thistle;
     border-radius: 4px;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgb(1, 1, 1);
 }
 
-        /* in comment field */
-            /* general */
-.comment-main-column {
+.user-profile-picture {
+    vertical-align: top;
+}
+
+.user-username {
+    position: absolute;
+    left: 20%;
+    font-weight: bolder;
+}
+
+.comment-content-separator {
+    border-top: 1px solid rgb(52, 52, 52);
+    margin: 10px 0;
     width: 100%;
-    display: table-cell;
+    top: 7px;
+    position: relative;
 }
 
-                /* styling for avatar */
-.comment-picture { 
-    position: absolute;
-    z-index: 0;
-}
-    .comment-avatar {
-        height: 5rem;
-        width: 5rem;
-        border-radius: 5px;
-    }
-
-                /* name alignment */
-.go-to-the-fucking-image-pls {                  /* yes, thats for the name, i got frustrated stfu */
-    position: absolute;
-    left: 150px;
+.comment-main-content {
+    padding-top: 10px;
 }
 
                 /* deletion button */
@@ -226,5 +228,10 @@ border-color: #a5a147;}
         float: left;
         margin-left: 0px;
         position: relative;
+    }
+    .user-username {
+        position: absolute;
+        left: 40% !important;
+        font-weight: bolder;
     }
 }

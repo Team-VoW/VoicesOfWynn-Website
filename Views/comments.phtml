@@ -73,49 +73,52 @@
 <div id="comments" class="m-a">
 <?php foreach (${basename(__FILE__, '.phtml').'_comments'} as $comment) : ?>
 <div class="comment mt-m" id="c<?= $comment->id ?>">
-    <table>
+    <table class="comment-box">
 
-        <tr>
+        <tbody>
 
-            <td rowspan="0" class="comment-picture">
-                <img src="<?= $comment->getAvatar() ?>" alt="Avatar" class="comment-avatar"/>
-            </td>
+            <tr>
+                <td class="user-profile-picture">
+                    <img src="<?= $comment->getAvatar() ?>" alt="Avatar" class="comment-avatar"/>
+                </td>
 
-            <td class="comment-main-column pt-s go-to-the-fucking-image-pls">
-                <strong>
+                <td class="comment-main-column user-username pt-s">
+                    <strong>
+                        <?php if ($comment->verified) : ?>
+                            <a href="cast/<?= $comment->userId ?>"><?= $comment->getName() ?></a>
+                        <?php else : ?>
+                            <p class="pt-m"><?= $comment->getName() ?></p>
+                        <?php endif ?>
+                    </strong>
                     <?php if ($comment->verified) : ?>
-                        <a href="cast/<?= $comment->userId ?>"><?= $comment->getName() ?></a>
-                    <?php else : ?>
-                        <p class="pt-m"><?= $comment->getName() ?></p>
+                        <?php if ($comment->userId === ${basename(__FILE__, '.phtml').'_voice_actor_id'}) : ?>
+                            <div class="author-badge" title="This user is the author of this recording.">Author</div>
+                        <?php endif ?>
+                        <div class="contributor-badge" title="This user contributed to this project.">Contributor</div>
                     <?php endif ?>
-                </strong>
-                <?php if ($comment->verified) : ?>
-	                <?php if ($comment->userId === ${basename(__FILE__, '.phtml').'_voice_actor_id'}) : ?>
-                        <div class="author-badge" title="This user is the author of this recording.">Author</div>
-	                <?php endif ?>
-                    <div class="contributor-badge" title="This user contributed to this project.">Contributor</div>
-                <?php endif ?>
-            </td>
+                </td>
 
-            <td class="comment-deletion">
-            <?php if (${basename(__FILE__, '.phtml').'_admin'} || in_array($comment->id, ${basename(__FILE__, '.phtml').'_owned_comments'})) : ?>
-                <button data-comment-id="<?= $comment->id ?>" class="delete-comment-button">×</button>
-	        <?php endif ?>
-            </td>
+                <td class="comment-deletion">
+                    <?php if (${basename(__FILE__, '.phtml').'_admin'} || in_array($comment->id, ${basename(__FILE__, '.phtml').'_owned_comments'})) : ?>
+                        <button data-comment-id="<?= $comment->id ?>" class="delete-comment-button">×</button>
+                    <?php endif ?>
+                </td>
+            </tr>
 
-        </tr>
+            <tr>
+                <td colspan="2" class="comment-content-separator"></td>
+            <tr>
 
-        <tr>
+                <td class="no-m no-p comment-main-content" colspan="2">
 
-            <td class="no-m no-p comment-main-column">
+                    <div class="comment-content">
+                        <p class="no-m max-width"><?= $comment->content ?></p>
+                    </div>
 
-                <div class="comment-content">
-                    <hr class="mt-s mb-m hr-f">
-                    <p class="no-m max-width"><?= $comment->content ?></p>
-                </div>
+                </td>
+            </tr>
 
-            </td>
-        </tr>
+        </tbody>
 
     </table>
 </div>
