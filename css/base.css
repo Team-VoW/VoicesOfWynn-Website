@@ -34,7 +34,7 @@ body {
   background-repeat: repeat!important;
   margin: auto;                                                                   /* classless.css */
   max-width: 50rem;
-  padding: 2rem 0.5rem 0rem;
+  padding: 2rem 0.5rem 0;
   overflow-x: hidden;
 }
 body > div:not(.tox) {
@@ -70,13 +70,13 @@ main {
     background: whitesmoke;
     box-shadow: .2rem .2rem .7rem 0 #777;
 }
-footer { margin: 10rem 0rem 0rem; }                                                 /* classless.css */
+footer { margin: 10rem 0 0; }                                                 /* classless.css */
 
         /* default styling for a lot of stuffs :') */
 header, footer, figure ,table, video, blockquote,                                   /* classless.css */
 ul, ol, dl, fieldset, pre, pre > code {
 	display: block;
-	margin: 0.5rem 0rem 1rem;
+	margin: 0.5rem 0 1rem;
 	width: 100%;
 	overflow-x: auto;
 	overflow-y: hidden;
@@ -89,9 +89,9 @@ fieldset { border-radius: 5px; }
 
         /* headings */
 h1,h2,h3,h4,h5,h6 {
-    margin: 1.5rem 0rem 0rem;
+    margin: 1.5rem 0 0;
     padding: 0.3rem 0;
-    font-family: minecraft;
+    font-family: minecraft, serif;
     text-align: center;
     letter-spacing: .125rem;
     text-decoration: none;
@@ -101,12 +101,13 @@ h1,h2 { font-weight: bold; }
 h1 { font-size: 2.5em; font-weight: 300; }                                          /* classless.css */
 h2 { font-size: 2.0em; font-weight: 300; }                                          /* classless.css */
 h3 { font-size: 1.5em; font-weight: 400; }                                          /* classless.css */
-h4 { font-size: 1.1em; font-weight: 700; margin: .5em 0 0em; }                      /* classless.css */
+h4 { font-size: 1.1em; font-weight: 700; margin: .5em 0 0; }                      /* classless.css */
 h5 { font-size: 1.2em; font-weight: 400; margin-top: 0.5em; color: #777; }        /* classless.css */
 h6 { font-size: 1.0em; font-weight: 700; }                                          /* classless.css */
 
         /* paragraphs */
-p { font-family: default-font-face; word-break: break-word; }
+p {
+    font-family: default-font-face, serif; word-break: break-word; }
 p strong { color: #424456; font-weight: bold; font-size: 1.0rem; }
 
         /* smaller text types (small, sub, sup) */
@@ -226,7 +227,6 @@ br { margin-top: 2rem; }
 
         /* grid */
 .row {                                                                              /* classless.css */
-	margin: 0 auto;
 	display: flex;
 	margin: 0 -0.5rem;
 	align-items: stretch;
@@ -309,7 +309,6 @@ br { margin-top: 2rem; }
 .p-d, .pt-d { padding-top: 2.0rem; }
 .p-d, .pb-d { padding-bottom: 2.0rem; }
 
-.p-a        { padding: auto; }
 .no-p       { padding: 0; }
 
         /* horizontal lines */
@@ -421,6 +420,9 @@ br { margin-top: 2rem; }
                 /* ----- SPECIAL STYLES FOR INDEX.PHTML ----- */
         .downloadbtn { background: lightgreen; }
         .downloadbtn:hover { border-color: limegreen;  }
+
+        .uploadbtn { background: cornflowerblue; }
+        .uploadbtn:hover { border-color: lightskyblue;  }
 
         .discordbtn { background: #5662F6;}
         .discordbtn:hover { border-color: #656ffd; }
@@ -572,9 +574,9 @@ br { margin-top: 2rem; }
                 padding-right: .625rem;
         }
         a {
-                color: none;
+                color: unset;
                 background: none;
-                border-radius: none;
+                border-radius: unset;
         }
         a:hover {
                 pointer-events: visible;

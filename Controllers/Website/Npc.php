@@ -5,6 +5,7 @@ namespace VoicesOfWynn\Controllers\Website;
 use VoicesOfWynn\Models\Db;
 use VoicesOfWynn\Models\Website\AccountManager;
 use VoicesOfWynn\Models\Website\ContentManager;
+use VoicesOfWynn\Models\Website\RecordingUploader;
 use VoicesOfWynn\Models\Website\User;
 use VoicesOfWynn\Models\Website\Npc as NpcModel;
 
@@ -84,13 +85,12 @@ class Npc extends WebpageController
 		if (!$this->disallowAdministration) {
 			self::$jsFiles[] = 'npc'; //Administrative functions
 		}
-		
+
 		return true;
 	}
 	
   /**
-   * Processing method for POST requests to this controller (new recordings were uploaded or a voice actor was
-   * changed)
+   * Processing method for POST requests to this controller (new recordings were uploaded)
    * @param array $args
    * @return int|bool
    */
@@ -100,61 +100,15 @@ class Npc extends WebpageController
           return 403;
       }
 
+      $uploader = new RecordingUploader();
       $questId = $_POST['questId'];
+      $npcId = $_POST['npcId'];
       $overwriteFiles = isset($_POST['overwrite']) && $_POST['overwrite'] === 'on';
-      self::$data['npc_uploadErrors'] = array();
-      $recordingsCount = count($_FILES['recordings']['name']);
-      for ($i = 0; $i < $recordingsCount; $i++) {
-          $filename = $_FILES['recordings']['name'][$i];
-          $tempName = $_FILES['recordings']['tmp_name'][$i];
-          $type = $_FILES['recordings']['type'][$i];
-          $error = $_FILES['recordings']['error'][$i];
 
-          if ($error !== UPLOAD_ERR_OK) {
-              header("HTTP/1.1 422 Unprocessable Entity");
-              self::$data['npc_uploadErrors'][$questId] = 'An error occurred during the file uploading: error code '.
-                  $error;
-              return $this->get($args);
-          }
+      $uploader->upload($_FILES['recordings'], $overwriteFiles, $questId, $npcId);
+      self::$data['npc_uploadErrors'][$questId] = $uploader->getErrors();
+      self::$data['npc_uploadSuccesses'][$questId] = $uploader->getSuccesses();
 
-          if ($type !== 'audio/ogg') {
-              header("HTTP/1.1 415 Unsupported Media Type");
-              self::$data['npc_uploadErrors'][$questId] = 'One or more of the uploaded files is not in the correct format, only OGG files are allowed.';
-              return $this->get($args);
-          }
-
-          $line = explode('.', explode('-', $filename)[2])[0];
-
-          //In case a file with this name already exists, append "_([number])" to it (before the extension)
-          //Increase the number for as long as files with the name exist (a bit like in Windows)
-          $fileReplaced = false;
-          if (file_exists('dynamic/recordings/'.$filename)) {
-              if ($overwriteFiles) {
-                  unlink('dynamic/recordings/'.$filename);
-                  $fileReplaced = true;
-              }
-              else {
-                  $filename = str_replace('.ogg', '_(1).ogg', $filename);
-                  for ($j = 2; file_exists('dynamic/recordings/'.$filename); $j++) {
-                      $filename = preg_replace('/_\(\d*\)\.ogg$/', '_('.$j.').ogg', $filename);
-                  }
-              }
-          }
-
-          move_uploaded_file($tempName, 'dynamic/recordings/'.$filename);
-
-          if (!$fileReplaced)
-          {
-              //Insert a new database record only if a new recording file was created on the server
-              (new Db('Website/DbInfo.ini'))->executeQuery('INSERT INTO recording (npc_id,quest_id,line,file) VALUES (?,?,?,?)', array(
-                  $this->npc->getId(),
-                  $questId,
-                  $line,
-                  $filename
-              ));
-          }
-      }
-      header('Location: '.$_SERVER['REQUEST_URI']);
       return $this->get($args);
   }
 	

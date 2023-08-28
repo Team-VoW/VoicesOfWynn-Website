@@ -8,6 +8,7 @@ class Quest implements JsonSerializable
 {
 	private int $id;
 	private string $name;
+    private string $degeneratedName;
 	private array $npcs = array();
 	
 	/**
@@ -27,6 +28,10 @@ class Quest implements JsonSerializable
 				case 'quest_name':
 					$this->name = $value;
 					break;
+                case 'dname':
+                case 'degenerated_name':
+                    $this->degeneratedName = $value;
+                    break;
 			}
 		}
 	}
@@ -49,7 +54,7 @@ class Quest implements JsonSerializable
 	 * ID getter
 	 * @return int|null ID of this quest or NULL if it wasn't set
 	 */
-	public function getId()
+	public function getId() : ?int
 	{
 		return $this->id;
 	}
@@ -58,10 +63,19 @@ class Quest implements JsonSerializable
 	 * Name getter
 	 * @return string|null Name of this quest or NULL if it wasn't set
 	 */
-	public function getName()
+	public function getName() : ?string
 	{
 		return $this->name;
 	}
+
+    /**
+     * Degenerated name getter
+     * @return string|null Degenerated name of this quest (without spaces and special chars) or NULL, if it wasn't set
+     */
+    public function getDegeneratedName() : ?string
+    {
+        return $this->degeneratedName;
+    }
 	
 	/**
 	 * Npcs getter

@@ -42,6 +42,9 @@ class Administration extends WebpageController
 	        case 'npc':
 	        	$nextController = new Npc();
 	        	break;
+            case 'mass-upload':
+                $nextController = new Upload();
+                break;
             case 'new-release':
                 $nextController = new NewRelease();
                 break;
