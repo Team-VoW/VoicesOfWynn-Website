@@ -14,7 +14,7 @@ class LineReporter extends ApiController
     {
         parse_str(file_get_contents("php://input"),$_PUT);
 
-        if (!isset($_REQUEST['apiKey']) && !isset($_PUT['apiKey'])) {
+        if (!isset($_REQUEST['apiKey']) && !isset($_PUT['apiKey']) && $args[0] !== 'newUnvoicedLineReport') {
             return 401;
         }
 
@@ -44,9 +44,6 @@ class LineReporter extends ApiController
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return 405;
-        }
-        if ($_REQUEST['apiKey'] !== self::REPORTING_API_KEY) {
-            return 401;
         }
         $reportAdder = new ReportAdder();
         return $reportAdder->createReport($_POST['full'], $_POST['npc'], $_POST['player'], $_POST['x'], $_POST['y'], $_POST['z']);
