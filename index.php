@@ -57,6 +57,9 @@ else if ($result === 204) {
     //This is mostly used for AJAX calls
 }
 else if ($result < 300) {
+    if ($result >= 100) {
+        http_response_code($result);
+    }
     $website = $router->getResult();
 }
 
