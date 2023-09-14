@@ -11,13 +11,13 @@ class Authenticator extends ApiController
 
     public function process(array $args): int
     {
-        $apiKey = $_REQUEST['apiKey'] ?? null;
-        if ($apiKey !== self::PREMIUM_AUTHENTICATOR_API_KEY) {
-            return 401;
-        }
-
         switch ($args[0]) {
             case 'get-code':
+                $apiKey = $_REQUEST['apiKey'] ?? null;
+                if ($apiKey !== self::PREMIUM_AUTHENTICATOR_API_KEY) {
+                    return 401;
+                }
+
                 $discordUserId = $_REQUEST['discord'] ?? null;
                 if (is_null($discordUserId)) {
                     return 400;
@@ -62,7 +62,7 @@ class Authenticator extends ApiController
     private function checkCode() : int
     {
         $code = $_REQUEST['code'] ?? null;
-        if (is_null($code)) {
+        if (is_null($code) || strlen($code) !== 16 || strtoupper($code) !== $code) {
             return 400;
         }
 
