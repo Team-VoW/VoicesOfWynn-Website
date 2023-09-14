@@ -62,7 +62,7 @@ class Authenticator extends ApiController
     private function checkCode() : int
     {
         $code = $_REQUEST['code'] ?? null;
-        if (is_null($code) || strlen($code) !== 16 || strtoupper($code) !== $code) {
+        if (is_null($code) || strlen($code) !== 16) {
             return 400;
         }
 

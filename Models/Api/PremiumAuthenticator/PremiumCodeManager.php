@@ -57,6 +57,7 @@ class PremiumCodeManager
      */
     public function verify(string $code): bool
     {
+        $code = strtoupper($code);
         $db = new Db('Api/PremiumAuthenticator/DbInfo.ini');
         $result = $db->fetchQuery('SELECT COUNT(*) AS "cnt" FROM access_codes WHERE code = ? LIMIT 1;', [$code]);
         return (bool)$result["cnt"];
