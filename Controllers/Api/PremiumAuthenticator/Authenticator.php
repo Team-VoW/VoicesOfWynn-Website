@@ -7,6 +7,8 @@ use VoicesOfWynn\Models\Api\PremiumAuthenticator\PremiumCodeManager;
 
 class Authenticator extends ApiController
 {
+    const STREAM_SERVER_IP = '127.0.0.1';
+
     public function process(array $args): int
     {
         $apiKey = $_REQUEST['apiKey'] ?? null;
@@ -34,7 +36,11 @@ class Authenticator extends ApiController
                 if ($valid > 1) { //Higher numbers are HTTP error codes
                     return $valid;
                 }
-                echo json_encode(['valid' => ($valid) ? 'true' : 'false']);
+                $result = ['valid' => ($valid) ? 'true' : 'false'];
+                if ($valid) {
+                    $result['ip'] = self::STREAM_SERVER_IP;
+                }
+                echo json_encode($result);
                 return 200;
             default:
                 return 400;
