@@ -49,6 +49,8 @@ if ($result >= 400) {
 
     if ($router->isWebpageRequest) {
         $website = $errorController->getResult();
+    } else {
+        $website = $router->getResult();
     }
 }
 else if ($result === 204) {
