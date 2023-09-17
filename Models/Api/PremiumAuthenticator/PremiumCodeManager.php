@@ -38,29 +38,57 @@ class PremiumCodeManager
      * Method loading an premium access code for the given Discord user
      * @param string $discordUserId Discord user ID of the user whose code should be loaded (numerical string or BIGINT
      * in MySQL)
-     * @return string|null The code (16 characters) or NULL, if no code for the user exists
+     * @return array|null Associative array with elements "code" (the 16-character code) and "active" (boolean) or NULL,
+     * if no code for the user exists
      */
-    public function getCode(string $discordUserId): ?string
+    public function getCode(string $discordUserId): ?array
     {
         $db = new Db('Api/PremiumAuthenticator/DbInfo.ini');
-        $result = $db->fetchQuery('SELECT code FROM access_codes WHERE discord_id = ? LIMIT 1;', [$discordUserId]);
+        $result = $db->fetchQuery('SELECT code,active FROM access_codes WHERE discord_id = ? LIMIT 1;', [$discordUserId]);
         if ($result === false) {
             return null;
         }
-        return $result['code'];
+        return $result;
     }
 
     /**
-     * Method checking whether an premium access code is valid
+     * Method checking whether a premium access code is valid
      * @param string $code Access code to check
-     * @return bool TRUE if the code is valid, FALSE if not
+     * @return int An HTTP-like code indicator:
+     * 200 if the code is valid, 402 if the code is disabled, 404 if code does not exist
      */
-    public function verify(string $code): bool
+    public function verify(string $code): int
     {
         $code = strtoupper($code);
         $db = new Db('Api/PremiumAuthenticator/DbInfo.ini');
-        $result = $db->fetchQuery('SELECT COUNT(*) AS "cnt" FROM access_codes WHERE code = ? LIMIT 1;', [$code]);
-        return (bool)$result["cnt"];
+        $result = $db->fetchQuery('SELECT active FROM access_codes WHERE code = ? LIMIT 1;', [$code]);
+        if ($result === false) {
+            return 404;
+        } else {
+            return ($result['active']) ? 200 : 402;
+        }
+    }
+
+    /**
+     * Method marking a certain user's access code as disabled
+     * @param string $discordUserId Discord ID of the user whose access code should be deactivated
+     * @return bool TRUE on success, FALSE on failure
+     */
+    public function deactivate(string $discordUserId)
+    {
+        $db = new Db('Api/PremiumAuthenticator/DbInfo.ini');
+        return $db->executeQuery('UPDATE access_codes SET active = 0 WHERE discord_id = ?;', [$discordUserId]);
+    }
+
+    /**
+     * Method marking a certain user's access code as enabled
+     * @param string $discordUserId Discord ID of the user whose access code should be activated
+     * @return bool TRUE on success, FALSE on failure
+     */
+    public function activate(string $discordUserId)
+    {
+        $db = new Db('Api/PremiumAuthenticator/DbInfo.ini');
+        return $db->executeQuery('UPDATE access_codes SET active = 1 WHERE discord_id = ?;', [$discordUserId]);
     }
 }
 
