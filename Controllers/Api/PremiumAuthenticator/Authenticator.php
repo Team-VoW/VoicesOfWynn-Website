@@ -58,13 +58,13 @@ class Authenticator extends ApiController
                 return $status;
             case 'deactivate-user':
                 if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
-                    //return 405;
+                    return 405;
                 }
 
                 return ($this->deactivateCodeForUser($discordUserId)) ? 204 : 500;
             case 'reactivate-user':
                 if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
-                    //return 405;
+                    return 405;
                 }
 
                 return ($this->activateCodeForUser($discordUserId)) ? 204 : 500;
