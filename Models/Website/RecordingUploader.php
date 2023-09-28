@@ -19,14 +19,17 @@ class RecordingUploader
      * Use the provided getters for these properties after calling this method to retrieve the status of the operation.
      * @param array $uploadedFiles Array from $_FILES['recording'] with unchanged structure, which contains the files to process
      * @param bool $overwrite TRUE, if files with the same name should be overwritten, FALSE, if they should be renamed instead, default FALSE
-     * @param int|null $questId ID of the quest to assign new recordings to, if left as null, the program will try to decide the ID based on the filename of every single recording
-     * @param int|null $npcId ID of the NPC to assign new recordings to, if left as null, the program will try to decide the ID based on the filename of every single recording
+     * @param int|null $overrideQuestId ID of the quest to assign new recordings to, if left as null, the program will try to decide the ID based on the filename of every single recording
+     * @param int|null $overrideNpcId ID of the NPC to assign new recordings to, if left as null, the program will try to decide the ID based on the filename of every single recording
      * @return int Number of successfully uploaded recordings
      */
-    public function upload(array $uploadedFiles, bool $overwrite = false, ?int $questId = null, ?int $npcId = null) : int
+    public function upload(array $uploadedFiles, bool $overwrite = false, ?int $overrideQuestId = null, ?int $overrideNpcId = null): int
     {
         $recordingsCount = count($uploadedFiles['name']);
         for ($i = 0; $i < $recordingsCount; $i++) {
+            $questId = $overrideQuestId;
+            $npcId = $overrideNpcId;
+
             $filename = $uploadedFiles['name'][$i];
             $tempName = $uploadedFiles['tmp_name'][$i];
             $type = $uploadedFiles['type'][$i];
