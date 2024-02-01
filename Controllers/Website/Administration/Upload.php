@@ -52,8 +52,8 @@ class Upload extends WebpageController
     private function post(array $args): int
     {
         $uploader = new RecordingUploader();
-        $questId = $_POST['questId'];
-        $npcId = $_POST['npcId'];
+        $questId = (empty($_POST['questId']) ? null : $_POST['questId']);
+        $npcId = (empty($_POST['npcId']) ? null : $_POST['npcId']);
         $overwriteFiles = isset($_POST['overwrite']) && $_POST['overwrite'] === 'on';
         $uploader->upload($_FILES['recordings'], $overwriteFiles, $questId, $npcId);
         self::$data['upload_uploadErrors'] = $uploader->getErrors();
