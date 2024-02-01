@@ -12,13 +12,14 @@ abstract class ApiController extends Controller
 
     /* All API keys go here */
     //Line reporting keys
-    const REPORTING_API_KEY = 'testing';
     const COLLECTING_API_KEY = 'testing';
     const UPDATING_API_KEY = 'testing';
     //Usage analysis api keys
     const AGGREGATE_API_KEY = 'testing';
-    //Discord Integration Key
+    //Discord integration key
     const DISCORD_INTEGRATION_API_KEY = 'testing';
+    //Premium authenticator key
+    const PREMIUM_AUTHENTICATOR_API_KEY = 'testing';
 
     /**
      * Controller constructor enabling output buffering and setting the Content-Type header
