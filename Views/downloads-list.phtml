@@ -1,15 +1,25 @@
 <h1>Download Voices of Wynn</h1>
 <h4>For <?= ${str_replace('-', '', basename(__FILE__, '.phtml')).'_platform'} ?></h4>
 <p class="txt-c mb-l">
-    <a href="/downloads/<?= ${str_replace('-', '', basename(__FILE__, '.phtml')).'_versions'}[0]->id; ?>"><button class="downloadbtn"><img src="images/download.png" alt="Download icon" width="20px" height="20px" /> Download Latest Version</button></a>
+    <a href="/downloads/<?= ${str_replace('-', '', basename(__FILE__, '.phtml')).'_versions'}[0]->id; ?>"><button class="downloadbtn"><img src="images/download.png" alt="Download icon" width="20px" height="20px" /> Download Latest Version (<?= ${str_replace('-', '', basename(__FILE__, '.phtml')).'_versions'}[0]->version; ?>)</button></a>
 </p>
+
+<?php if (${str_replace('-', '', basename(__FILE__, '.phtml')).'_platform'} !== 'Forge') : ?>
+    <p class="txt-c">Looking for versions for <b>Forge 1.12.2</b>? Click <a href="/downloads/forge">here</a>.</p>
+<?php else : ?>
+    <div style="border: 5px solid #f05; padding: 10px; border-radius: 10px;">
+        <p><strong>Support for Voices of Wynn Forge has officially been dropped and version 1.5 was the last.</strong></p>
+        <p>We recommend <a href="/downloads">switching to Fabric</a>, as most popular Wynncraft mods are already using newer versions of Minecraft and connecting to Wynncraft on 1.12.2 is deprecated.</p>
+    </div>
+<?php endif ?>
 
 <hr class="hr-f">
 <h2 class="txt-c">Older Versions of the Mod</h2>
 <p class="txt-c mb-l">Want an older version of the mod? They are linked below! The oldest are at the bottom and the newest are at the top.</p>
 
 <div class="download-wrapper mt-l">
-<?php foreach (${str_replace('-', '', basename(__FILE__, '.phtml')).'_versions'} as $version) : ?>
+<?php for ($i = 1; $i < count(${str_replace('-', '', basename(__FILE__, '.phtml')).'_versions'}); $i++) : ?>
+    <?php $version = ${str_replace('-', '', basename(__FILE__, '.phtml')).'_versions'}[$i]; ?>
     <div class="txt-c">
         <h3 style="color:<?php
             switch ($version->releaseType)
@@ -58,6 +68,6 @@
         </a>
     </div>
     <hr class="dlhr">
-<?php endforeach ?>
+<?php endfor ?>
 </div>
 

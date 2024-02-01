@@ -63,6 +63,16 @@
                     <input name="npcId" class="short-input" type="number" value="<?= $_GET['npcId'] ?? '' ?>" placeholder="Auto" min="1" />
                     <p>These will be applied to all recordings you upload this time and will override the names in their filenames!</p>
                 </details>
+                Allow overwriting:
+                <input type="checkbox" name="overwrite" style="height: unset;">
+                <p style="color: red; font-size: 0.8em;">
+                    Overwriting files allows you to seamlessly replace old recording files with new versions of them.
+                    However, you need to be absolutely sure that the file names are exatly the same!
+                    The system sometimes renames the audio files (uploding with overwriting disabled or archiving),
+                    so make sure you check the current name of the files on the server. To do this, see the <code>src</code>
+                    attribute of the <code>&lt;source&gt;</code> elements within the <code>&lt;audio&gt;</code>
+                    elements on the NPCs' webpages.
+                </p>
                 <p><input class="uploadbtn" type="submit" value="Upload"/></p>
             </fieldset>
         </form>
