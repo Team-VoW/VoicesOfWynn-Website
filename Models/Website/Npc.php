@@ -15,6 +15,8 @@ class Npc implements JsonSerializable
 
 	private array $recordings = array();
 
+    private int $recordingsCount;
+
 	/**
 	 * @param array $data Data returned from database, invalid items are skipped, multiple key names are supported for
 	 * each attribute
@@ -39,6 +41,9 @@ class Npc implements JsonSerializable
                 case 'archived':
                 case 'hidden':
                     $this->archived = $value;
+                    break;
+                case 'recordings_count':
+                    $this->recordingsCount = $value;
                     break;
 			}
 		}
@@ -214,5 +219,14 @@ class Npc implements JsonSerializable
 	{
 		return $this->recordings;
 	}
+
+    /**
+     * Recordings count getter
+     * @return int
+     */
+    public function getRecordingsCount(): int
+    {
+        return $this->recordingsCount;
+    }
 }
 

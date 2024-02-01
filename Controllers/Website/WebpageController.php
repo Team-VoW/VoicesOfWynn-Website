@@ -154,6 +154,7 @@ abstract class WebpageController extends Controller
                     $attr['id'] = $this->sanitize($value->getId());
                     $attr['name'] = $this->sanitize($value->getName());
                     $attr['archived'] = $this->sanitize($value->isArchived());
+                    $attr['recordings_count'] = $this->sanitize($value->getRecordingsCount());
                     $voiceActor = $this->sanitize($value->getVoiceActor());
                     $npc = new Npc($attr);
                     if ($voiceActor !== null) {

@@ -1,9 +1,9 @@
 <?php foreach (${basename(__FILE__, '.phtml').'_quests'} as $quest) : ?>
-<section data-quest-id="<?= $quest->getId() ?>">
+<section data-quest-id="<?= $quest->getId() ?>" class="txt-c">
 	<h3 class="txt-c"><?= $quest->getName() ?></h3>
 	<table class="table-npc-management">
 		<tr>
-			<th>Rearrange</th><th colspan="2">NPC</th><th colspan="2">Voice actor</th><th></th>
+			<th>Rearrange</th><th>NPC</th><th>Voice actor</th><th>Recordings</th><th>Action</th>
 		</tr>
 	<?php foreach ($quest->getNpcs() as $npc) : ?>
 		<tr data-npc-id="<?= $npc->getId() ?>">
@@ -12,16 +12,14 @@
                 <br>
                 <button class="rearrange-down-btn">🔽</button>
             </td>
-			<td class="width-150"><img src="dynamic/npcs/<?= $npc->getId() ?>.png" alt="NPC picture" class="avatar" /></td>
-			<td class="width-150 pl-l"><a href="contents/npc/<?= $npc->getId() ?>"><?= $npc->getName() ?></a></td>
+			<td class="width-150"><a href="contents/npc/<?= $npc->getId() ?>" class="npc-name"><?= $npc->getName() ?></a></td>
 			<?php if ($npc->getVoiceActor() === null) : ?>
-                <td class="width-150"><img class="avatar" src="dynamic/avatars/nobody.png" alt="Profile picture"/></td>
-				<td class="width-150 pl-l"><i>Nobody</i></td>
+				<td class="width-150"><i>Nobody</i></td>
 			<?php else : ?>
-                <td class="width-150"><img class="avatar admin-pfp" src="<?= $npc->getVoiceActor()->getAvatarLink() ?>" alt="Profile picture"/></td>
-				<td class="width-150 pl-l"><a href="cast/<?= $npc->getVoiceActor()->getId() ?>"><?= $npc->getVoiceActor()->getName() ?></a></td>
+                <td class="width-150"><a href="cast/<?= $npc->getVoiceActor()->getId() ?>" class="va-name"><?= $npc->getVoiceActor()->getName() ?></a></td>
 			<?php endif ?>
-			<td><a id="managelink" href="administration/npcs/manage/<?= $npc->getId() ?>" class="width-150">Manage</a></td>
+            <td><?= $npc->getRecordingsCount() ?></td>
+			<td><b><a id="managelink" href="administration/npcs/manage/<?= $npc->getId() ?>" class="width-150">Manage</a></b></td>
 		</tr>
 	<?php endforeach ?>
 	</table><hr class="hr-f">

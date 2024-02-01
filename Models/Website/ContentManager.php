@@ -9,13 +9,15 @@ class ContentManager
 	public function getQuests(?int $questId = null): array
 	{
 		$query = '
-		SELECT quest.quest_id, quest.name AS "qname", npc.npc_id, npc.name AS "nname", npc.voice_actor_id, npc.archived, user.user_id, user.display_name, user.picture
-		FROM quest
-		JOIN npc_quest ON npc_quest.quest_id = quest.quest_id
-		JOIN npc ON npc.npc_id = npc_quest.npc_id
-		LEFT JOIN user ON npc.voice_actor_id = user.user_id
-		'.(is_null($questId) ? '' : 'WHERE quest.quest_id = ?').'
-		ORDER BY quest.quest_id, npc_quest.sorting_order;
+		SELECT quest.quest_id, quest.name AS "qname", npc.npc_id, npc.name AS "nname", npc.voice_actor_id, npc.archived, user.user_id, user.display_name, COUNT(DISTINCT recording.recording_id) AS "recordings_count"
+        FROM quest
+        JOIN npc_quest ON npc_quest.quest_id = quest.quest_id
+        JOIN npc ON npc.npc_id = npc_quest.npc_id
+        JOIN recording ON recording.npc_id = npc.npc_id AND recording.quest_id = quest.quest_id
+        LEFT JOIN user ON npc.voice_actor_id = user.user_id
+        '.(is_null($questId) ? '' : 'WHERE quest.quest_id = ?').'
+        GROUP BY quest.quest_id, npc.npc_id, npc_quest.sorting_order
+        ORDER BY quest.quest_id, npc_quest.sorting_order;
 		';
 		$result = (new Db('Website/DbInfo.ini'))->fetchQuery($query, (is_null($questId) ? array() : array($questId)), true);
 		
@@ -29,9 +31,8 @@ class ContentManager
 				}
 				$currentQuest = new Quest($npc);
 			}
-			
 			$npcObj = new Npc($npc);
-			if ($npc['user_id'] !== null) {
+            if ($npc['user_id'] !== null) {
 				$voiceActor = new User();
 				$voiceActor->setData($npc);
 				$npcObj->setVoiceActor($voiceActor);
