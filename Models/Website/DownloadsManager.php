@@ -14,7 +14,7 @@ class DownloadsManager
     private const FILE_NAME_FORMATS = 'VoicesOfWynn-MC{mcVersion}-v{version}.jar';
 
     public const FORGE_VERSIONS = ['1.12.2'];
-    public const FABRIC_VERSIONS = ['1.19.4', '1.19.3', '1.18.2'];
+    public const FABRIC_VERSIONS = ['1.20.2', '1.19.4', '1.19.3', '1.18.2'];
 
 
     /**
