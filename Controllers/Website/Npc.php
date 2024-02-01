@@ -89,29 +89,6 @@ class Npc extends WebpageController
 		return true;
 	}
 	
-  /**
-   * Processing method for POST requests to this controller (new recordings were uploaded)
-   * @param array $args
-   * @return int|bool
-   */
-  private function post(array $args): int
-  {
-      if ($this->disallowAdministration) {
-          return 403;
-      }
-
-      $uploader = new RecordingUploader();
-      $questId = $_POST['questId'];
-      $npcId = $_POST['npcId'];
-      $overwriteFiles = isset($_POST['overwrite']) && $_POST['overwrite'] === 'on';
-
-      $uploader->upload($_FILES['recordings'], $overwriteFiles, $questId, $npcId);
-      self::$data['npc_uploadErrors'][$questId] = $uploader->getErrors();
-      self::$data['npc_uploadSuccesses'][$questId] = $uploader->getSuccesses();
-
-      return $this->get($args);
-  }
-	
 	/**
 	 * Processing method for PUT requests to this controller (recast, archivation of NPC or archivation of recordings)
 	 * @param array $args Voice actor id as the first element
