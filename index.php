@@ -49,6 +49,8 @@ if ($result >= 400) {
 
     if ($router->isWebpageRequest) {
         $website = $errorController->getResult();
+    } else {
+        $website = $router->getResult();
     }
 }
 else if ($result === 204) {
@@ -57,6 +59,9 @@ else if ($result === 204) {
     //This is mostly used for AJAX calls
 }
 else if ($result < 300) {
+    if ($result >= 100) {
+        http_response_code($result);
+    }
     $website = $router->getResult();
 }
 

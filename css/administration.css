@@ -69,6 +69,23 @@ td th {
 .deletebtn { background: rgb(255, 0, 0);}
 .deletebtn:hover { border-color: rgb(221, 55, 55);}
 
+.table-npc-management {
+    width: fit-content;
+    margin: auto;
+}
+
+.table-npc-management td {
+    text-align: center;
+}
+
+.va-name {
+    color: #117743;
+}
+
+.npc-name {
+    color: purple;
+}
+
 #filename {
     width: 26rem;
 }

@@ -15,6 +15,8 @@ class Npc implements JsonSerializable
 
 	private array $recordings = array();
 
+    private int $recordingsCount = 0;
+
 	/**
 	 * @param array $data Data returned from database, invalid items are skipped, multiple key names are supported for
 	 * each attribute
@@ -39,6 +41,9 @@ class Npc implements JsonSerializable
                 case 'archived':
                 case 'hidden':
                     $this->archived = $value;
+                    break;
+                case 'recordings_count':
+                    $this->recordingsCount = $value;
                     break;
 			}
 		}
@@ -90,7 +95,7 @@ class Npc implements JsonSerializable
 
         //Create new NPC
         $this->loadName(); //Needed to be copied
-        $replacementId = $db->executeQuery('INSERT INTO npc(name) VALUES (?);', array($this->name), true);
+        $replacementId = $db->executeQuery('INSERT INTO npc(name, degenerated_name) VALUES (?,?);', array($this->name, $this->degeneratedName), true);
         $replacementNpc = new Npc(array('id' => $replacementId, 'name' => $this->name));
         unset($replacementId);
 
@@ -145,7 +150,7 @@ class Npc implements JsonSerializable
 	}
 
     /**
-     * Method loading the name of this NPC from the database.
+     * Method loading the name and degenerated name of this NPC from the database.
      * The ID property must be filled for this method to work
      * @return bool TRUE on success, FALSE on failure (ID is not known or no database results)
      */
@@ -156,10 +161,11 @@ class Npc implements JsonSerializable
         }
 
         $db = new Db('Website/DbInfo.ini');
-        $result = $db->fetchQuery('SELECT name FROM npc WHERE npc_id = ?;', array($this->id));
+        $result = $db->fetchQuery('SELECT name, degenerated_name FROM npc WHERE npc_id = ?;', array($this->id));
 
         if (!empty($result)) {
             $this->name = $result['name'];
+            $this->degeneratedName = $result['degenerated_name'];
             return true;
         }
         return false;
@@ -214,5 +220,14 @@ class Npc implements JsonSerializable
 	{
 		return $this->recordings;
 	}
+
+    /**
+     * Recordings count getter
+     * @return int
+     */
+    public function getRecordingsCount(): int
+    {
+        return $this->recordingsCount;
+    }
 }
 

@@ -13,10 +13,6 @@ class Downloads extends WebpageController
     public function process(array $args): int
     {
         switch (array_shift($args)) {
-            case 'junction':
-                self::$views[] = 'downloads';
-                self::$cssFiles[] = 'downloads';
-                break;
             case 'forge':
                 $downloadsManager = new DownloadsManager();
                 self::$data['downloadslist_versions'] = $downloadsManager->listDownloads(DownloadsManager::FORGE_VERSIONS);

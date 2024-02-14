@@ -15,7 +15,7 @@ abstract class Controller
     /**
      * Public method processing passed data, specific for each controller
      * @param array $args Arguments to process
-     * @return int 1 (or TRUE), if everything worked as expected, HTTP error code otherwise
+     * @return int 1 (or TRUE) or HTTP success status code (2xx) if everything worked as expected, HTTP error code otherwise
      */
     public abstract function process(array $args): int;
 }
