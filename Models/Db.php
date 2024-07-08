@@ -45,7 +45,6 @@ class Db
         if (isset(self::$connections[$this->database.'_'.$this->username])) {
             //Connection to this database with this account already exists, we'll just copy a reference to it
             $this->connection = self::$connections[$this->database.'_'.$this->username];
-            print_r("Connection already exists");
             return true;
         }
 
@@ -53,12 +52,9 @@ class Db
             $this->connection = new PDO('mysql:host='.$this->host.';dbname='.$this->database, $this->username, $this->password, $this->settings);
             self::$connections[$this->database.'_'.$this->username] = $this->connection; //Save the connection for later use
         } catch (PDOException $e) {
-            print_r("Error connecting to database");
-            print_r($e->getMessage());
             return false;
         }
 
-        print_r("Connected to database");
         return true;
     }
 
@@ -110,22 +106,7 @@ class Db
      */
     public function fetchQuery(string $query, array $parameters = array(), bool $all = false, int $fetchMethod = PDO::FETCH_ASSOC)
     {
-
-        //Print out what databse is being used
-        print_r($this->host);
-        print_r("<br>");
-        print_r($this->database);
-        print_r("<br>");
-        print_r($this->username);
-        print_r("<br>");
-        print_r($this->password);
-        print_r("<br>");
-
-
-
         if (!isset($this->connection)) {
-            print_r("Connecting to database");
-            print_r("<br>");
             $this->connect();
         }
 
