@@ -8,78 +8,49 @@ services:
     volumes:
       - .:/var/www/html
     depends_on:
-      - voicesofwynn
-      - unvoicedlines
-      - usageanalysis
-      - premiumauthenticator
+      - website
+      - api
       - phpmyadmin
 
-  voicesofwynn:
+  website:
     image: mysql:5.7
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: voicesofwynn
+      MYSQL_DATABASE: website
       MYSQL_USER: vowuser
       MYSQL_PASSWORD: password
     ports:
       - "3306:3306"
     volumes:
-      - voicesofwynn_data:/var/lib/mysql
+      - website_data:/var/lib/mysql
 
-  unvoicedlines:
+  api:
     image: mysql:5.7
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: unvoicedlines
+      MYSQL_DATABASE: api
       MYSQL_USER: vowuser
       MYSQL_PASSWORD: password
     ports:
       - "3307:3306"
     volumes:
-      - unvoicedlines_data:/var/lib/mysql
-
-  usageanalysis:
-    image: mysql:5.7
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: usageanalysis
-      MYSQL_USER: vowuser
-      MYSQL_PASSWORD: password
-    ports:
-      - "3308:3306"
-    volumes:
-      - usageanalysis_data:/var/lib/mysql
-
-  premiumauthenticator:
-    image: mysql:5.7
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: premiumauthenticator
-      MYSQL_USER: vowuser
-      MYSQL_PASSWORD: password
-    ports:
-      - "3309:3306"
-    volumes:
-      - premiumauthenticator_data:/var/lib/mysql
+      - api_data:/var/lib/mysql
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     environment:
       PMA_ARBITRARY: 1
-      PMA_HOST: voicesofwynn
+      PMA_HOST: website
       PMA_PORT: 3306
       PMA_USER: vowuser
       PMA_PASSWORD: password
     ports:
       - "8080:80"
     depends_on:
-      - voicesofwynn
-      - unvoicedlines
-      - usageanalysis
-      - premiumauthenticator
+      - website
+      - api
 
 volumes:
-  voicesofwynn_data:
-  unvoicedlines_data:
-  usageanalysis_data:
-  premiumauthenticator_data:
+  website_data:
+  api_data:
+
