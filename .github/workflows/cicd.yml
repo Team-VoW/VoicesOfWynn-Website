@@ -1,0 +1,38 @@
+name: Deploy to Oracle Cloud
+
+on:
+  push:
+    branches:
+      - docker
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+    - name: Build and push Docker image
+      run: |
+        docker buildx build --platform linux/amd64 --push -t ${{ secrets.DOCKER_HUB_USERNAME }}/vow-website:latest .
+
+    - name: Deploy to Oracle Cloud
+      env:
+        OCI_CLI_AUTH: instance_principal
+      run: |
+        ssh -i ${{ secrets.ORACLE_CLOUD_SSH_PRIVATE_KEY }} ${{ secrets.ORACLE_CLOUD_SSH_USER }}@${{ secrets.ORACLE_CLOUD_IP }} << EOF
+          git pull origin master
+          docker compose down
+          docker compose pull
+          docker compose up -d
+        EOF
