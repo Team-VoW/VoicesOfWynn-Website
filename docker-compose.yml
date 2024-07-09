@@ -10,10 +10,10 @@ services:
     depends_on:
       - website
       - api
-      - phpmyadmin
+      - adminer
 
   website:
-    image: mysql:5.7
+    image: mariadb:10.5.24
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: website
@@ -25,7 +25,7 @@ services:
       - website_data:/var/lib/mysql
 
   api:
-    image: mysql:5.7
+    image: mariadb:10.5.24
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: api
@@ -36,16 +36,10 @@ services:
     volumes:
       - api_data:/var/lib/mysql
 
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    environment:
-      PMA_ARBITRARY: 1
-      PMA_HOST: website
-      PMA_PORT: 3306
-      PMA_USER: vowuser
-      PMA_PASSWORD: password
+  adminer:
+    image: adminer
     ports:
-      - "8080:80"
+      - "8080:8080"
     depends_on:
       - website
       - api
@@ -53,4 +47,3 @@ services:
 volumes:
   website_data:
   api_data:
-
