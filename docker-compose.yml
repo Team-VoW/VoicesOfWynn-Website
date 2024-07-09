@@ -5,6 +5,15 @@ services:
     build: .
     ports:
       - "80:80"
+    environment:
+      - WEBSITE_DB_HOST=website
+      - WEBSITE_DB_NAME=website
+      - WEBSITE_DB_USER=vowuser
+      - WEBSITE_DB_PASSWORD=password
+      - API_DB_HOST=api
+      - API_DB_NAME=api
+      - API_DB_USER=vowuser
+      - API_DB_PASSWORD=password
     volumes:
       - .:/var/www/html
     depends_on:
