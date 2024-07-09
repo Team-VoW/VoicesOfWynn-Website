@@ -39,11 +39,8 @@ RUN chown -R www-data:www-data /var/www/html && \
 # Enable Apache mod_rewrite (if needed for .htaccess)
 RUN a2enmod rewrite
 
-# Copy custom php.ini and create sessions directory
+# Copy custom php.ini 
 COPY php.ini /usr/local/etc/php/conf.d/
-RUN mkdir -p /var/www/html/sessions && \
-    chown -R www-data:www-data /var/www/html/sessions && \
-    chmod -R 777 /var/www/html/sessions
 
 # Copy Liquibase changelog files
 COPY ./liquibase /var/www/html/liquibase
