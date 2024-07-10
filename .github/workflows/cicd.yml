@@ -35,13 +35,13 @@ jobs:
         DB_USER: ${{ secrets.DB_USER }}
         DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
       run: |
-        ssh -i ${{ secrets.ORACLE_CLOUD_SSH_PRIVATE_KEY }} ${{ secrets.ORACLE_CLOUD_SSH_USER }}@${{ secrets.ORACLE_CLOUD_IP }} << EOF
-          cd /path/to/your/project
+        ssh -i ${{ secrets.ORACLE_CLOUD_SSH_PRIVATE_KEY }} -o StrictHostKeyChecking=no ${{ secrets.ORACLE_CLOUD_SSH_USER }}@${{ secrets.ORACLE_CLOUD_IP }} << 'EOF'
+          cd website
           git pull origin master
-          docker compose down
           export DB_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
           export DB_USER=${DB_USER}
           export DB_PASSWORD=${DB_PASSWORD}
+          docker compose down
           docker compose pull
           docker compose up -d
         EOF
