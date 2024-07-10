@@ -26,20 +26,20 @@ jobs:
       - name: Create temporary directory and copy files
         run: |
           temp_dir=$(mktemp -d)
-          cp -r . "$temp_dir"
-          cd "$temp_dir"
-          ls -la
+          cp -r * "$temp_dir"
+          echo "Temporary directory: $temp_dir"
+          ls -la "$temp_dir"
 
       - name: Build and push Docker image
         id: build
         uses: docker/build-push-action@v4
         with:
-          context: ${{ steps.build.outputs.temp_dir }}
-          file: ${{ steps.build.outputs.temp_dir }}/Dockerfile
+          context: ${{ steps.build-and-deploy.outputs.temp_dir }}
+          file: ${{ steps.build-and-deploy.outputs.temp_dir }}/Dockerfile
           platforms: linux/arm64
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/vow-website:latest
-
+          
       - name: Copy application files to Oracle Cloud
         run: |
           # Save SSH private key to a file
