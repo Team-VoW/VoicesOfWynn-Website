@@ -10,38 +10,40 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
-    - name: Login to Docker Hub
-      uses: docker/login-action@v2
-      with:
-        username: ${{ secrets.DOCKER_HUB_USERNAME }}
-        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-    - name: Build Docker image
-      id: build
-      run: |
-        docker buildx build --platform linux/amd64 --push -t ${{ secrets.DOCKER_HUB_USERNAME }}/vow-website:latest .
+      - name: Build Docker image
+        id: build
+        run: |
+          docker buildx build --platform linux/amd64 --push -t ${{ secrets.DOCKER_HUB_USERNAME }}/vow-website:latest .
 
-    - name: Deploy to Oracle Cloud
-      if: success()
-      env:
-        OCI_CLI_AUTH: instance_principal
-        DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
-        DB_USER: ${{ secrets.DB_USER }}
-        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      run: |
-        ssh -i ${{ secrets.ORACLE_CLOUD_SSH_PRIVATE_KEY }} -o StrictHostKeyChecking=no ${{ secrets.ORACLE_CLOUD_SSH_USER }}@${{ secrets.ORACLE_CLOUD_IP }} << 'EOF'
-          cd website
-          git pull origin master
-          export DB_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
-          export DB_USER=${DB_USER}
-          export DB_PASSWORD=${DB_PASSWORD}
-          docker compose down
-          docker compose pull
-          docker compose up -d
-        EOF
+      - name: Deploy to Oracle Cloud
+        if: success()
+        env:
+          OCI_CLI_AUTH: instance_principal
+          DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        run: |
+          echo "${{ secrets.ORACLE_CLOUD_SSH_PRIVATE_KEY }}" > /tmp/private_key
+          chmod 600 /tmp/private_key
+          ssh -i /tmp/private_key -o StrictHostKeyChecking=no ${{ secrets.ORACLE_CLOUD_SSH_USER }}@${{ secrets.ORACLE_CLOUD_IP }} << 'EOF'
+            cd website
+            git pull origin master
+            export DB_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+            export DB_USER=${DB_USER}
+            export DB_PASSWORD=${DB_PASSWORD}
+            docker compose down
+            docker compose pull
+            docker compose up -d
+          EOF
