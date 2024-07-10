@@ -1,0 +1,23 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <base href="/" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width" />
+    <title><?= ${basename(__FILE__, '.phtml').'_title'} ?></title>
+    <meta name="description" content="<?= ${basename(__FILE__, '.phtml').'_description'} ?>" />
+    <!-- Icons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="mask-icon" href="images/safari-pinned-tab.png" color="#a340c4">
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <meta name="msapplication-TileColor" content="#7b1a9b">
+    <meta name="msapplication-config" content="browserconfig.xml">
+    <meta name="theme-color" content="#7b1a9b">
+</head>
+<body style="text-align: center;">
+<p>Please, do not save this image to your device. The flowchart is often updated and we want to prevent people from using outdated versions and then reporting problems, that are covered in the newer versions.</p>
+<img src="images/troubleshooting_v<?= ${basename(__FILE__, '.phtml').'_flowchartVersion'} ?>.svg" alt="Your browser doesn't support rendering of SVG images. Try to use a different browser please.">
+</body>

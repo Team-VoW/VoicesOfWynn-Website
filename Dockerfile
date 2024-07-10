@@ -27,7 +27,7 @@ RUN wget -O /liquibase/lib/mysql-connector-java.jar https://repo1.maven.org/mave
 WORKDIR /var/www/html
 
 # Copy the application code to the container
-COPY . /var/www/html/
+COPY . .
 
 # Install PHP dependencies
 RUN composer install
@@ -46,8 +46,8 @@ COPY php.ini /usr/local/etc/php/conf.d/
 COPY ./liquibase /var/www/html/liquibase
 
 # Create a script to run Liquibase and start Apache
-COPY start.sh /var/www/html/start.sh
-RUN chmod +x /var/www/html/start.sh
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
 
 # Use the start script as the entry point
 CMD ["/start.sh"]
