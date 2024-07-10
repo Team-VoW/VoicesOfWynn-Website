@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - docker
+      - master
 
 jobs:
   build-and-deploy:
@@ -28,33 +29,18 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: ./Dockerfile
+          file: Dockerfile
           platforms: linux/arm64
           load: true
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/vow-website:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-      - name: Copy application files to Oracle Cloud
+      - name: Summarize the Docker digest
         run: |
-          # Save SSH private key to a file
-          echo "${{ secrets.ORACLE_CLOUD_SSH_PRIVATE_KEY }}" > oracle_cloud_key
-          chmod 600 oracle_cloud_key
-          
-          # Create a temporary directory and copy files to it
-          temp_dir=$(mktemp -d)
-          cp -r * "$temp_dir"
-          
-          # Debugging: List contents of the temporary directory
-          echo "Listing temporary directory contents:"
-          ls -la "$temp_dir"
-          
-          # Copy files from the temporary directory to Oracle Cloud
-          echo "Copying files to Oracle Cloud..."
-          scp -r -i oracle_cloud_key -o StrictHostKeyChecking=no "$temp_dir/"* ${{ secrets.ORACLE_CLOUD_SSH_USER }}@${{ secrets.ORACLE_CLOUD_IP }}:website/
-          
-          # Clean up the SSH key file and temporary directory
-          rm oracle_cloud_key
-          rm -rf "$temp_dir"
+          echo 'Digest: ${{ steps.build-docker.outputs.digest }}'
+
 
       - name: Deploy to Oracle Cloud
         env:
