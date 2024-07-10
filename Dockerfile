@@ -29,7 +29,8 @@ WORKDIR /var/www/html
 # List files in the current directory (for debug purposes)
 RUN echo "Files in the current directory before copying:" && ls -la
 
-
+# Copy the application code to the container
+COPY . .
 
 # Install PHP dependencies
 RUN composer install

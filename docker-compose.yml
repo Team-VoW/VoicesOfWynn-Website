@@ -14,8 +14,6 @@ services:
       - API_DB_NAME=api
       - API_DB_USER=${DB_USER}
       - API_DB_PASSWORD=${DB_PASSWORD}
-    volumes:
-      - .:/var/www/html
     depends_on:
       - website
       - api
