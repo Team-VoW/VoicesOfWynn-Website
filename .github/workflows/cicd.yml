@@ -28,7 +28,7 @@ jobs:
 
       - name: Copy docker-compose.yml to Oracle Cloud
         run: |
-          scp -i ${{ secrets.ORACLE_CLOUD_SSH_PRIVATE_KEY }} docker-compose.yml ${{ secrets.ORACLE_CLOUD_SSH_USER }}@${{ secrets.ORACLE_CLOUD_IP }}:website/
+          scp -i ${{ secrets.ORACLE_CLOUD_SSH_PRIVATE_KEY }} docker-compose.yml ${{ secrets.ORACLE_CLOUD_SSH_USER }}@${{ secrets.ORACLE_CLOUD_IP }}:/home/opc/website
 
       - name: Deploy to Oracle Cloud
         env:
