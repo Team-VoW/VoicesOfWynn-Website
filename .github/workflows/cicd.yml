@@ -44,6 +44,8 @@ jobs:
           DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
           DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
         run: |
+          echo "${{ secrets.ORACLE_CLOUD_SSH_PRIVATE_KEY }}" > oracle_cloud_key
+          chmod 600 oracle_cloud_key
           ssh -i ${{ secrets.ORACLE_CLOUD_SSH_PRIVATE_KEY }} ${{ secrets.ORACLE_CLOUD_SSH_USER }}@${{ secrets.ORACLE_CLOUD_IP }} << EOF
             cd website
             docker compose down
@@ -57,3 +59,4 @@ jobs:
             docker compose up -d
             docker logout
           EOF
+          rm oracle_cloud_key
