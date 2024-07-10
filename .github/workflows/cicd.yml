@@ -24,11 +24,6 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      - name: Print current branch
-        run: |
-          echo "Current branch: ${GITHUB_REF#refs/heads/}"
-
-
       - name: Build and push Docker image
         id: build
         uses: docker/build-push-action@v4
