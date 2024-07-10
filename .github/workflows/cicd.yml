@@ -35,8 +35,10 @@ jobs:
           ls -la "$temp_dir"
           
           # Build and push Docker image using the temporary directory as context
-          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/vow-website:latest -f ./Dockerfile "$temp_dir"
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/vow-website:latest
+          docker buildx create --use
+          docker buildx build --platform linux/arm64 \
+            -t ${{ secrets.DOCKER_HUB_USERNAME }}/vow-website:latest \
+            -f ./Dockerfile "$temp_dir" --push
           
           # Clean up the temporary directory
           rm -rf "$temp_dir"
