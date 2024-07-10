@@ -35,10 +35,25 @@ jobs:
 
       - name: Copy application files to Oracle Cloud
         run: |
+          # Save SSH private key to a file
           echo "${{ secrets.ORACLE_CLOUD_SSH_PRIVATE_KEY }}" > oracle_cloud_key
           chmod 600 oracle_cloud_key
-          scp -r -i oracle_cloud_key -o StrictHostKeyChecking=no ./ ${{ secrets.ORACLE_CLOUD_SSH_USER }}@${{ secrets.ORACLE_CLOUD_IP }}:website/
+          
+          # Create a temporary directory and copy files to it
+          temp_dir=$(mktemp -d)
+          cp -r * "$temp_dir"
+          
+          # Debugging: List contents of the temporary directory
+          echo "Listing temporary directory contents:"
+          ls -la "$temp_dir"
+          
+          # Copy files from the temporary directory to Oracle Cloud
+          echo "Copying files to Oracle Cloud..."
+          scp -r -i oracle_cloud_key -o StrictHostKeyChecking=no "$temp_dir/"* ${{ secrets.ORACLE_CLOUD_SSH_USER }}@${{ secrets.ORACLE_CLOUD_IP }}:website/
+          
+          # Clean up the SSH key file and temporary directory
           rm oracle_cloud_key
+          rm -rf "$temp_dir"
 
       - name: Deploy to Oracle Cloud
         env:
