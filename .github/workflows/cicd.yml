@@ -6,7 +6,7 @@ on:
       - docker
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -22,17 +22,26 @@ jobs:
         username: ${{ secrets.DOCKER_HUB_USERNAME }}
         password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-    - name: Build and push Docker image
+    - name: Build Docker image
+      id: build
       run: |
         docker buildx build --platform linux/amd64 --push -t ${{ secrets.DOCKER_HUB_USERNAME }}/vow-website:latest .
 
     - name: Deploy to Oracle Cloud
+      if: success()
       env:
         OCI_CLI_AUTH: instance_principal
+        DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
+        DB_USER: ${{ secrets.DB_USER }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
       run: |
         ssh -i ${{ secrets.ORACLE_CLOUD_SSH_PRIVATE_KEY }} ${{ secrets.ORACLE_CLOUD_SSH_USER }}@${{ secrets.ORACLE_CLOUD_IP }} << EOF
+          cd /path/to/your/project
           git pull origin master
           docker compose down
+          export DB_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+          export DB_USER=${DB_USER}
+          export DB_PASSWORD=${DB_PASSWORD}
           docker compose pull
           docker compose up -d
         EOF
