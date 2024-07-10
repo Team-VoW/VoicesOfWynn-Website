@@ -37,7 +37,7 @@ jobs:
         run: |
           echo "${{ secrets.ORACLE_CLOUD_SSH_PRIVATE_KEY }}" > oracle_cloud_key
           chmod 600 oracle_cloud_key
-          scp -r -i oracle_cloud_key -o StrictHostKeyChecking=no . ${{ secrets.ORACLE_CLOUD_SSH_USER }}@${{ secrets.ORACLE_CLOUD_IP }}:website/
+          scp -r -i oracle_cloud_key -o StrictHostKeyChecking=no ./ ${{ secrets.ORACLE_CLOUD_SSH_USER }}@${{ secrets.ORACLE_CLOUD_IP }}:website/
           rm oracle_cloud_key
 
       - name: Deploy to Oracle Cloud
