@@ -2,7 +2,10 @@ version: '3.8'
 
 services:
   web:
-    build: .
+    image: ${DOCKER_IMAGE:-vow-website:latest}
+    build: 
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "80:80"
     environment:
