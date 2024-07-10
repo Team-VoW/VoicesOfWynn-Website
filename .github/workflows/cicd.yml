@@ -29,11 +29,11 @@ jobs:
           docker buildx build --platform linux/amd64 --push -t ${{ secrets.DOCKER_HUB_USERNAME }}/vow-website:latest .
 
       - name: Copy docker-compose.yml to Oracle Cloud
-            run: |
-              echo "${{ secrets.ORACLE_CLOUD_SSH_PRIVATE_KEY }}" > oracle_cloud_key
-              chmod 600 oracle_cloud_key
-              scp -i oracle_cloud_key -o StrictHostKeyChecking=no docker-compose.yml ${{ secrets.ORACLE_CLOUD_SSH_USER }}@${{ secrets.ORACLE_CLOUD_IP }}:website/
-              rm oracle_cloud_key
+        run: |
+          echo "${{ secrets.ORACLE_CLOUD_SSH_PRIVATE_KEY }}" > oracle_cloud_key
+          chmod 600 oracle_cloud_key
+          scp -i oracle_cloud_key -o StrictHostKeyChecking=no docker-compose.yml ${{ secrets.ORACLE_CLOUD_SSH_USER }}@${{ secrets.ORACLE_CLOUD_IP }}:website/
+          rm oracle_cloud_key
 
       - name: Deploy to Oracle Cloud
         env:
