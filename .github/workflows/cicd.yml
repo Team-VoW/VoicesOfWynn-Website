@@ -61,7 +61,6 @@ jobs:
             export DB_USER=${DB_USER}
             export DB_PASSWORD=${DB_PASSWORD}
             export DOCKER_IMAGE=${DOCKER_HUB_USERNAME}/vow-website:latest
-            export COMPOSE_FILE_DIR=/home/opc/website
             docker compose pull
             docker compose up -d
             docker logout
