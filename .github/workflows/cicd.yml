@@ -23,6 +23,14 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
+      - name: Debug - List files in context
+        run: |
+          ls -la
+      - name: Debug - List files in temporary directory
+        run: |
+          ls -la "$temp_dir"
+
+
       - name: Build and push Docker image
         id: build
         uses: docker/build-push-action@v4
@@ -30,8 +38,8 @@ jobs:
           context: .
           file: ./Dockerfile
           platforms: linux/arm64
-          load: true
           push: true
+          load: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/vow-website:latest
 
       - name: Copy docker-compose.yml to Oracle Cloud
