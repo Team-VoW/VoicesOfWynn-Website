@@ -25,8 +25,13 @@ jobs:
 
       - name: Build and push Docker image
         id: build
-        run: |
-          docker buildx build --platform linux/amd64 --push -t ${{ secrets.DOCKER_HUB_USERNAME }}/vow-website:latest .
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/arm64
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/vow-website:latest
 
       - name: Copy docker-compose.yml to Oracle Cloud
         run: |
@@ -46,7 +51,7 @@ jobs:
         run: |
           echo "${{ secrets.ORACLE_CLOUD_SSH_PRIVATE_KEY }}" > oracle_cloud_key
           chmod 600 oracle_cloud_key
-           ssh -i oracle_cloud_key -o StrictHostKeyChecking=no ${{ secrets.ORACLE_CLOUD_SSH_USER }}@${{ secrets.ORACLE_CLOUD_IP }} << EOF
+          ssh -i oracle_cloud_key -o StrictHostKeyChecking=no ${{ secrets.ORACLE_CLOUD_SSH_USER }}@${{ secrets.ORACLE_CLOUD_IP }} << EOF
             cd website
             docker compose down
             echo "$DOCKER_HUB_ACCESS_TOKEN" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
