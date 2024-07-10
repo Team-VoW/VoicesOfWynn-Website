@@ -25,26 +25,22 @@ jobs:
 
       - name: Build and push Docker image
         id: build
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/arm64
+          load: true
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/vow-website:latest
+
+      - name: Copy docker-compose.yml to Oracle Cloud
         run: |
-          # Create a temporary directory and copy files to it
-          temp_dir=$(mktemp -d)
-          cp -r * "$temp_dir"
-
-          # Debugging: List contents of the temporary directory
-          echo "Listing temporary directory contents:"
-          ls -la "$temp_dir"
-
-          # Build and push Docker image using the temporary directory as context
-          docker buildx create --use
-          docker buildx build --platform linux/arm64 \
-            -t ${{ secrets.DOCKER_HUB_USERNAME }}/vow-website:latest \
-            -f ./Dockerfile "$temp_dir" --push
-
-          # Clean up the temporary directory
-          rm -rf "$temp_dir"
-
-
-
+          echo "${{ secrets.ORACLE_CLOUD_SSH_PRIVATE_KEY }}" > oracle_cloud_key
+          chmod 600 oracle_cloud_key
+          scp -i oracle_cloud_key -o StrictHostKeyChecking=no docker-compose.yml ${{ secrets.ORACLE_CLOUD_SSH_USER }}@${{ secrets.ORACLE_CLOUD_IP }}:website/
+          rm oracle_cloud_key
+          
       - name: Deploy to Oracle Cloud
         env:
           OCI_CLI_AUTH: instance_principal
