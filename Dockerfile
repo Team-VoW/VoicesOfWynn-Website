@@ -47,7 +47,7 @@ COPY ./liquibase /var/www/html/liquibase
 
 # Create a script to run Liquibase and start Apache
 COPY start.sh /var/www/html/start.sh
-RUN chmod +x /var/www/html/start.sh
+RUN chmod +x /start.sh
 
 # Use the start script as the entry point
-CMD ["/var/www/html/start.sh"]
+CMD ["/start.sh"]
