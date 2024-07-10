@@ -25,17 +25,17 @@ jobs:
 
       - name: Create temporary directory and copy files
         run: |
-          mkdir temp-dir
-          cp -r . temp-dir/
-          cd temp-dir
+          temp_dir=$(mktemp -d)
+          cp -r . "$temp_dir"
+          cd "$temp_dir"
           ls -la
-  
+
       - name: Build and push Docker image
         id: build
         uses: docker/build-push-action@v4
         with:
-          context: temp-dir
-          file: temp-dir/Dockerfile
+          context: ${{ steps.build.outputs.temp_dir }}
+          file: ${{ steps.build.outputs.temp_dir }}/Dockerfile
           platforms: linux/arm64
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/vow-website:latest
