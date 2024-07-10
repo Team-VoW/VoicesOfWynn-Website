@@ -41,5 +41,9 @@ liquibase \
 # Change back to the original directory
 cd /var/www/html
 
+# Print out the current directory with a message berfore that sayign "This si the current directory"
+echo "This is the current directory"
+pwd
+
 # Start Apache in foreground
 apache2-foreground
