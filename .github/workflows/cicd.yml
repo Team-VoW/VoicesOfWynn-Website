@@ -36,20 +36,7 @@ jobs:
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/vow-website:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          
-      - name: Build and push Docker image for AMD64
-        id: build_amd64
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: Dockerfile
-          platforms: linux/amd64
-          load: true
-          push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/vow-website:latest-amd64
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-       
+               
       - name: Summarize the Docker digest
         run: |
           echo 'Digest: ${{ steps.build-docker.outputs.digest }}'

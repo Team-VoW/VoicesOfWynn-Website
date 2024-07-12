@@ -32,6 +32,11 @@ class Db
     public function __construct($credentialsFilePath) {
         //Print The credentialsFilePath
         print_r($credentialsFilePath);
+
+        //Print out the entire file path from root of computer
+        print_r(realpath($credentialsFilePath));
+
+
         $credentials = parse_ini_file($credentialsFilePath);
         $this->host = $credentials['host'];
         $this->database = $credentials['database'];
