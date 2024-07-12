@@ -30,6 +30,8 @@ class Db
     private PDO $connection;
 
     public function __construct($credentialsFilePath) {
+        //Print The credentialsFilePath
+        print_r($credentialsFilePath);
         $credentials = parse_ini_file($credentialsFilePath);
         $this->host = $credentials['host'];
         $this->database = $credentials['database'];
