@@ -34,7 +34,7 @@ class Db
         print_r($credentialsFilePath);
 
         //Print out the entire file path from root of computer
-        print_r(realpath($credentialsFilePath));
+        print_r("The real path is: " + realpath($credentialsFilePath));
 
 
         $credentials = parse_ini_file($credentialsFilePath);
