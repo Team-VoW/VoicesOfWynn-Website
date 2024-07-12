@@ -25,6 +25,11 @@
           "name": "Just5MoreMinutes",
           "email": "just5moreminutez@gmail.com",
           "role" : "Front-end developer"
+        },
+        {
+          "name": "kmaxi",
+          "email": "kmaxiyt@gmail.com",
+          "role" : "DevOps"
         }
     ]
 }
