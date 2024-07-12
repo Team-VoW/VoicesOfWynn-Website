@@ -30,12 +30,20 @@ class Db
     private PDO $connection;
 
     public function __construct($credentialsFilePath) {
-        //Print The credentialsFilePath
-        print_r($credentialsFilePath);
+// Print the credentialsFilePath
+print_r($credentialsFilePath);
+    
+// Determine the full expected path
+$fullExpectedPath = __DIR__ . DIRECTORY_SEPARATOR . $credentialsFilePath;
+print_r("Expected full path is: " . $fullExpectedPath);
 
-        //Print out the entire file path from root of computer
-        print_r("The real path is: " + realpath($credentialsFilePath));
-
+// Print out the entire file path from root of the computer
+$realPath = realpath($credentialsFilePath);
+if ($realPath !== false) {
+    print_r("The real path is: " . $realPath);
+} else {
+    print_r("The real path could not be determined. The file may not exist.");
+}
 
         $credentials = parse_ini_file($credentialsFilePath);
         $this->host = $credentials['host'];
