@@ -2,10 +2,10 @@
 
 
 # Update website DBInfo.ini
-sed -i "s/host=.*/host=$WEBSITE_DB_HOST/" /var/www/html/Models/website/DbInfo.ini
-sed -i "s/database=.*/database=$WEBSITE_DB_NAME/" /var/www/html/Models/website/DbInfo.ini
-sed -i "s/username=.*/username=$WEBSITE_DB_USER/" /var/www/html/Models/website/DbInfo.ini
-sed -i "s/password=.*/password=$WEBSITE_DB_PASSWORD/" /var/www/html/Models/website/DbInfo.ini
+sed -i "s/host=.*/host=$WEBSITE_DB_HOST/" /var/www/html/Models/Website/DbInfo.ini
+sed -i "s/database=.*/database=$WEBSITE_DB_NAME/" /var/www/html/Models/Website/DbInfo.ini
+sed -i "s/username=.*/username=$WEBSITE_DB_USER/" /var/www/html/Models/Website/DbInfo.ini
+sed -i "s/password=.*/password=$WEBSITE_DB_PASSWORD/" /var/www/html/Models/Website/DbInfo.ini
 
 # Update API DBInfo.ini files
 for file in /var/www/html/Models/Api/*/DbInfo.ini; do
