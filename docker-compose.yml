@@ -18,6 +18,8 @@ services:
       - website
       - api
       - adminer
+    volumes:
+      - dynamic_data:/var/www/html/dynamic
 
   website:
     image: mariadb:10.5.24
@@ -54,3 +56,9 @@ services:
 volumes:
   website_data:
   api_data:
+  dynamic_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/opc/website/dynamic
