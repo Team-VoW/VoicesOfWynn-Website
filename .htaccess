@@ -9,8 +9,7 @@ RewriteEngine On
 # RewriteCond %{REQUEST_FILENAME} !-f
 # RewriteCond %{REQUEST_FILENAME} !-d
 
-RewriteCond %{REQUESt_URI} files/updater-data/.* [OR]
-RewriteCond %{REQUEST_URI} files/core-dev-server/.*
+RewriteCond %{REQUESt_URI} files/updater-data/.*
 RewriteRule ^.*$ - [NC,L]
 
 RewriteCond %{REQUEST_URI} browserconfig\.xml$ [OR]
