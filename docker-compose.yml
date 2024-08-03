@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  web:
+    image: ${DOCKER_IMAGE:-vow-website:latest}
+    ports:
+      - "80:80"
+    environment:
+      - WEBSITE_DB_HOST=website
+      - WEBSITE_DB_NAME=website
+      - WEBSITE_DB_USER=${DB_USER}
+      - WEBSITE_DB_PASSWORD=${DB_PASSWORD}
+      - API_DB_HOST=api
+      - API_DB_NAME=api
+      - API_DB_USER=${DB_USER}
+      - API_DB_PASSWORD=${DB_PASSWORD}
+    depends_on:
+      - website
+      - api
+      - adminer
+    volumes:
+      - dynamic_data:/var/www/html/dynamic
+
+  website:
+    image: mariadb:10.5.24
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: website
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - website_data:/var/lib/mysql
+
+  api:
+    image: mariadb:10.5.24
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: api
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "3307:3306"
+    volumes:
+      - api_data:/var/lib/mysql
+
+  adminer:
+    image: adminer
+    ports:
+      - "8080:8080"
+    depends_on:
+      - website
+      - api
+
+volumes:
+  website_data:
+  api_data:
+  dynamic_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/opc/website/dynamic

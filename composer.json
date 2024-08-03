@@ -13,7 +13,7 @@
     "authors": [
         {
             "name": "Jan Štěch",
-            "email": "honza.stech@gmail.com",
+            "email": "jan.stech@posteo.net",
             "role" : "Author, Back-end developer"
         },
         {
@@ -25,6 +25,11 @@
           "name": "Just5MoreMinutes",
           "email": "just5moreminutez@gmail.com",
           "role" : "Front-end developer"
+        },
+        {
+          "name": "kmaxi",
+          "email": "kmaxiyt@gmail.com",
+          "role" : "DevOps"
         }
     ]
 }

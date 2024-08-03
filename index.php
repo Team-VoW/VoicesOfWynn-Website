@@ -22,6 +22,13 @@ function autoloader(string $name): void
 
 spl_autoload_register('VoicesOfWynn\autoloader');
 
+
+// Create "sessions" folder if it does not exist
+$sessionsPath = __DIR__.'/sessions';
+if (!is_dir($sessionsPath)) {
+    mkdir($sessionsPath, 0777, true);
+}
+
 //Resume session and set character encoding
 session_start();
 mb_internal_encoding('UTF-8');

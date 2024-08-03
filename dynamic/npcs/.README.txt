@@ -1,3 +1,0 @@
-All the pictures must be in the PNG format.
-Names of the files must be the same as the names of the NPCs, such as "Melroni.png", "Ragni King.png" or "Ba'kal.png"
-All pictures must be in this folder, don't create subdirectories please.
