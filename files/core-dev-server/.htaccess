@@ -1,8 +1,0 @@
-Options -Indexes
-
-RewriteEngine On
-
-# Allow direct access to all files, redirect requests to subdirectories to index.php
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-di
-RewriteRule ^(.*)$ %{ENV:BASE}index.php [NC,L]

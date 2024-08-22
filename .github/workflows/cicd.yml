@@ -4,44 +4,72 @@ on:
   push:
     branches:
       - docker
+      - master
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
-    - name: Login to Docker Hub
-      uses: docker/login-action@v2
-      with:
-        username: ${{ secrets.DOCKER_HUB_USERNAME }}
-        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-    - name: Build Docker image
-      id: build
-      run: |
-        docker buildx build --platform linux/amd64 --push -t ${{ secrets.DOCKER_HUB_USERNAME }}/vow-website:latest .
+      - name: Build and push Docker image
+        id: build
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: Dockerfile
+          platforms: linux/arm64
+          load: true
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/vow-website:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+               
+      - name: Summarize the Docker digest
+        run: |
+          echo 'Digest: ${{ steps.build-docker.outputs.digest }}'
 
-    - name: Deploy to Oracle Cloud
-      if: success()
-      env:
-        OCI_CLI_AUTH: instance_principal
-        DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
-        DB_USER: ${{ secrets.DB_USER }}
-        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      run: |
-        ssh -i ${{ secrets.ORACLE_CLOUD_SSH_PRIVATE_KEY }} ${{ secrets.ORACLE_CLOUD_SSH_USER }}@${{ secrets.ORACLE_CLOUD_IP }} << EOF
-          cd /path/to/your/project
-          git pull origin master
-          docker compose down
-          export DB_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
-          export DB_USER=${DB_USER}
-          export DB_PASSWORD=${DB_PASSWORD}
-          docker compose pull
-          docker compose up -d
-        EOF
+      - name: Copy docker-compose.yml to Oracle Cloud
+        run: |
+          echo "${{ secrets.ORACLE_CLOUD_SSH_PRIVATE_KEY }}" > oracle_cloud_key
+          chmod 600 oracle_cloud_key
+          scp -i oracle_cloud_key -o StrictHostKeyChecking=no docker-compose.yml ${{ secrets.ORACLE_CLOUD_SSH_USER }}@${{ secrets.ORACLE_CLOUD_IP }}:website/
+          rm oracle_cloud_key
+
+      - name: Deploy to Oracle Cloud
+        env:
+          OCI_CLI_AUTH: instance_principal
+          DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+          DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+        run: |
+          echo "${{ secrets.ORACLE_CLOUD_SSH_PRIVATE_KEY }}" > oracle_cloud_key
+          chmod 600 oracle_cloud_key
+          ssh -i oracle_cloud_key -o StrictHostKeyChecking=no ${{ secrets.ORACLE_CLOUD_SSH_USER }}@${{ secrets.ORACLE_CLOUD_IP }} << EOF
+            cd website
+            docker compose down
+            echo "$DOCKER_HUB_ACCESS_TOKEN" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
+            export DB_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+            export DB_USER=${DB_USER}
+            export DB_PASSWORD=${DB_PASSWORD}
+            export DOCKER_IMAGE=${DOCKER_HUB_USERNAME}/vow-website:latest
+            export COMPOSE_FILE_DIR=/home/opc/website
+            docker compose pull
+            docker compose up -d
+            docker logout
+          EOF
+          rm oracle_cloud_key
