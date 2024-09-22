@@ -33,6 +33,7 @@ class NewRelease extends WebpageController
         self::$data['newrelease_wynn_version'] = '';
         self::$data['newrelease_mc_version'] = '';
         self::$data['newrelease_filename'] = '';
+        self::$data['newrelease_download_link'] = '';
         self::$data['newrelease_changelog'] = '';
         self::$data['newrelease_error'] = '';
         self::$data['newrelease_releaseId'] = '';
@@ -54,6 +55,7 @@ class NewRelease extends WebpageController
                 $_POST['wynnVersion'],
                 $_POST['version'],
                 $_POST['changelog'],
+                $_POST['downloadLink'],
                 $_POST['filename']
             );
             self::$data['newrelease_releaseId'] = $releaseId;
@@ -64,6 +66,7 @@ class NewRelease extends WebpageController
             self::$data['newrelease_wynn_version'] = $_POST['wynnVersion'];
             self::$data['newrelease_mc_version'] = $_POST['mcVersion'];
             self::$data['newrelease_filename'] = $_POST['filename'];
+            self::$data['newrelease_download_link'] = $_POST['downloadLink'];
             self::$data['newrelease_changelog'] = $_POST['changelog'];
             self::$data['newrelease_error'] = $e->getMessage();
         }

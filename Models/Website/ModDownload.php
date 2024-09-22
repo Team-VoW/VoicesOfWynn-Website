@@ -27,7 +27,8 @@ class ModDownload
     public string $version;
     public string $changelog;
     public DateTime $releaseDate;
-    public string $fileName;
+    public ?string $downloadLink;
+    public ?string $fileName;
     public int $size;
     public int $downloadedTimes;
 
@@ -78,6 +79,10 @@ class ModDownload
                         $this->releaseDate = new DateTime($value);
                     }
                     break;
+                case 'download_link':
+                case 'dl_link':
+                case 'link':
+                    $this->downloadLink = $value;
                 case 'file':
                 case 'filename':
                 case 'fileName':
@@ -123,7 +128,7 @@ class ModDownload
             empty($this->wynnVersion) ||
             empty($this->version) ||
             empty($this->changelog) ||
-            empty($this->fileName)
+            (empty($this->fileName) && empty($this->downloadLink))
         ) {
             throw new UserException('All fields must be filled to create a new release');
         }
@@ -161,32 +166,59 @@ class ModDownload
         $adv = new AccountDataValidator();
         $this->changelog = $adv->sanitizeBio($this->changelog); //Purify the HTML for consistent database
 
-        //Validate file name
-        if (!file_exists(DownloadsManager::ROOT_DOWNLOADS_DIRECTORY.'/'.$this->fileName)) {
-            throw new UserException('Mod file of this name wasn\'t found on the server. Make sure to first log in into website administration and upload the .jar file to /files/mod');
-        }
-        //Rename the file in case it doesn't follow the naming convention
-        $idealFileName = str_replace('.', '_', $this->mcVersion).
-            '-'.
-            str_replace('.', '_', $this->version).
-            '.jar';
-        if ($this->fileName !== $idealFileName) {
-            if (file_exists(DownloadsManager::ROOT_DOWNLOADS_DIRECTORY.'/'.$idealFileName)) {
-                throw new UserException('It looks like the .jar file for this version of the mod is already uploaded. Try changing either the Minecraft version or the Mod version field.');
+        if (empty($this->downloadLink)) {
+            //Validate file name or the download link
+            if (!file_exists(DownloadsManager::ROOT_DOWNLOADS_DIRECTORY . '/' . $this->fileName)) {
+                throw new UserException('Mod file of this name wasn\'t found on the server. Make sure to first log in into website administration and upload the .jar file to /files/mod');
             }
-            rename(
-                DownloadsManager::ROOT_DOWNLOADS_DIRECTORY.'/'.$this->fileName,
-                DownloadsManager::ROOT_DOWNLOADS_DIRECTORY.'/'.$idealFileName
-            );
-            $this->fileName = $idealFileName;
-        }
 
-        //Validate size
-        if (filesize(DownloadsManager::ROOT_DOWNLOADS_DIRECTORY.'/'.$this->fileName) > self::MODFILE_MAX_SIZE) {
-            throw new UserException('The mod file is too big, its size cannot be saved in the database. Contact shady_medic on Discord to make him increase the maximum value.');
-        }
-        $this->size = filesize(DownloadsManager::ROOT_DOWNLOADS_DIRECTORY.'/'.$this->fileName);
+            //Rename the file in case it doesn't follow the naming convention
+            $idealFileName = str_replace('.', '_', $this->mcVersion) .
+                '-' .
+                str_replace('.', '_', $this->version) .
+                '.jar';
+            if ($this->fileName !== $idealFileName) {
+                if (file_exists(DownloadsManager::ROOT_DOWNLOADS_DIRECTORY . '/' . $idealFileName)) {
+                    throw new UserException('It looks like the .jar file for this version of the mod is already uploaded. Try changing either the Minecraft version or the Mod version field.');
+                }
+                rename(
+                    DownloadsManager::ROOT_DOWNLOADS_DIRECTORY . '/' . $this->fileName,
+                    DownloadsManager::ROOT_DOWNLOADS_DIRECTORY . '/' . $idealFileName
+                );
+                $this->fileName = $idealFileName;
+            }
 
+            //Validate size
+            if (filesize(DownloadsManager::ROOT_DOWNLOADS_DIRECTORY . '/' . $this->fileName) > self::MODFILE_MAX_SIZE) {
+                throw new UserException('The mod file is too big, its size cannot be saved in the database. Contact shady_medic on Discord to make him increase the maximum value.');
+            }
+            $this->size = filesize(DownloadsManager::ROOT_DOWNLOADS_DIRECTORY . '/' . $this->fileName);
+            $this->downloadLink = null;
+        } else {
+            $ch = curl_init($this->downloadLink);
+            curl_setopt($ch, CURLOPT_NOBODY, true);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($ch, CURLOPT_HEADER, true);
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+            $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+            $contentSize = curl_getinfo($ch, CURLINFO_CONTENT_LENGTH_DOWNLOAD);
+            $header = substr($response, 0, $headerSize);
+            $headers = explode("\r\n", $header);
+            $contentDisposition = @array_filter($headers, function($element)
+            {return (stripos($element, 'Content-Disposition:') === 0); })[0];
+            curl_close($ch);
+            if ($httpCode >= 300 || (
+                    strpos($contentType, 'application/java-archive') === false &&
+                    strpos($contentDisposition, 'attachment') === false)
+            ) {
+                throw new UserException("The provided link does not seem to lead to a direct download of a JAR file.".$contentType."   ".$contentDisposition);
+            }
+            $this->size = $contentSize;
+            $this->fileName = null;
+        }
         return true;
     }
 

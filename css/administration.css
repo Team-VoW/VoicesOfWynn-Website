@@ -89,6 +89,10 @@ td th {
 #filename {
     width: 26rem;
 }
+#download-link {
+    width: 100%;
+}
+
 .error {
     margin: 2rem;
     text-align: center;
