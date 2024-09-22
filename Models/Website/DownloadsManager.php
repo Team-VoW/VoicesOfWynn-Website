@@ -77,21 +77,24 @@ class DownloadsManager
             throw new InvalidArgumentException('Invalid download type.');
         }
 
-        $obContent = ob_get_contents(); //Pause the output bufferer to prevent memory overflow caused by "readfile()"
-        ob_end_clean();
+        if (!empty($result['download_link'])) {
+            header('Location: '.$result['download_link']); //Remote download
+        } else {
+            $obContent = ob_get_contents(); //Pause the output bufferer to prevent memory overflow caused by "readfile()"
+            ob_end_clean();
 
-        header('Content-Description: File Transfer');
-        header('Content-Type: application/java-archive');
-        header('Content-Disposition: attachment; filename="'.$fileName.'"');
-        header('Expires: 0');
-        header('Cache-Control: must-revalidate');
-        header('Pragma: public');
-        header('Content-Length: '.$fileSize);
-        readfile($filePath);
+            header('Content-Description: File Transfer');
+            header('Content-Type: application/java-archive');
+            header('Content-Disposition: attachment; filename="'.$fileName.'"');
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate');
+            header('Pragma: public');
+            header('Content-Length: '.$fileSize);
+            readfile($filePath);
 
-        ob_start(); //Resume the output bufferer
-        echo $obContent;
-
+            ob_start(); //Resume the output bufferer
+            echo $obContent;
+        }
         return $db->executeQuery('UPDATE download SET downloaded_times = downloaded_times + 1 WHERE download_id = ?', array($downloadId));
     }
 
