@@ -13,7 +13,7 @@ class ContentManager
         FROM quest
         JOIN npc_quest ON npc_quest.quest_id = quest.quest_id
         JOIN npc ON npc.npc_id = npc_quest.npc_id
-        JOIN recording ON recording.npc_id = npc.npc_id AND recording.quest_id = quest.quest_id
+        LEFT JOIN recording ON recording.npc_id = npc.npc_id AND recording.quest_id = quest.quest_id
         LEFT JOIN user ON npc.voice_actor_id = user.user_id
         '.(is_null($questId) ? '' : 'WHERE quest.quest_id = ?').'
         GROUP BY quest.quest_id, npc.npc_id, npc_quest.sorting_order

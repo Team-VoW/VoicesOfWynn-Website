@@ -6,9 +6,14 @@
 <?php else : ?>
 <h2 style="text-align: center;">Create a new release</h2>
 <p>
-    To create a new release, you must first log in to FTP (login details will be provided by Shady#2948 upon request)
+    To create a new release from a local JAR file, you must first log in to FTP (login details will be provided by @shady_medic upon request)
     and upload the .jar file into the 📁<code>files/mod</code> folder. Note the name of the file and fill it in the form
     below, along with other details about the release.
+</p>
+<p>
+    To create a release from a file uploaded to a cloud storage service (GitHub, CurseForge, Modrinth), obtain a direct
+    download link first (entering it into the URL bar in an anonymous window will immediately trigger download) and
+    paste it into the field below.
 </p>
 <div style="text-align: center;
 display: block;">
@@ -40,8 +45,13 @@ display: block;">
             </div>
         </div>
 
-        <label for="filename">File name on the server</label><br>
-        <input type="text" name="filename" id="filename" placeholder="VoicesOfWynn-MC1.12.2-v1.0.0.jar" value="<?= @${str_replace('-', '', basename(__FILE__, '.phtml')).'_filename'};?>" required/><br><br>
+        <fieldset>
+            <label for="filename">File name on the server</label><br>
+            <input type="text" name="filename" id="filename" placeholder="VoicesOfWynn-MC1.12.2-v1.0.0.jar" value="<?= @${str_replace('-', '', basename(__FILE__, '.phtml')).'_filename'};?>"/>
+            <br><b>Or</b><br>
+            <label for="download-link">Direct download link from 3rd-party service</label><br>
+            <input type="link" name="downloadLink" id="download-link" placeholder="https://mediafilez.forgecdn.net/files/5733/592/Voices-of-Wynn-fabric-1.9.2-fabric%2BMC-1.21.jar" value="<?= @${str_replace('-', '', basename(__FILE__, '.phtml')).'_download_link'};?>"/><br><br>
+        </fieldset>
 
         <label for="changelog">Changelog</label><br>
         <textarea name="changelog" id="changelog">
