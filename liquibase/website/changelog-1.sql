@@ -42,7 +42,8 @@ CREATE TABLE IF NOT EXISTS download (
   version varchar(8) NOT NULL,
   changelog text NOT NULL,
   release_date date NOT NULL DEFAULT current_timestamp(),
-  filename varchar(31) NOT NULL COMMENT 'This is just the file name, under which the file is saved on the server. Not the name that the file will have after the download.',
+  download_link varchar(255) DEFAULT NULL,
+  filename varchar(31) DEFAULT NULL COMMENT 'This is just the file name, under which the file is saved on the server. Not the name that the file will have after the download.',
   size int(11) unsigned NOT NULL COMMENT 'In bytes',
   downloaded_times int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (download_id)
