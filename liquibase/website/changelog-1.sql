@@ -134,3 +134,8 @@ CREATE TABLE IF NOT EXISTS vote (
   KEY recording_id (recording_id),
   CONSTRAINT vote_ibfk_1 FOREIGN KEY (recording_id) REFERENCES recording (recording_id) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=3595 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+
+-- changeset kmaxi:2
+ALTER TABLE download 
+ADD COLUMN download_link varchar(255) DEFAULT NULL, 
+MODIFY COLUMN filename varchar(31) DEFAULT NULL COMMENT 'This is just the file name, under which the file is saved on the server. Not the name that the file will have after the download.';
