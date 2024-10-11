@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   web:
-    image: ${DOCKER_IMAGE:-vow-website:latest}
+    image: ${DOCKER_IMAGE:-kmaxi/vow-website:latest}
     ports:
       - "80:80"
     environment:
@@ -20,6 +20,8 @@ services:
       - adminer
     volumes:
       - dynamic_data:/var/www/html/dynamic
+    env_file:
+      - .env
 
   website:
     image: mariadb:10.5.24
@@ -32,6 +34,8 @@ services:
       - "3306:3306"
     volumes:
       - website_data:/var/lib/mysql
+    env_file:
+      - .env
 
   api:
     image: mariadb:10.5.24
@@ -44,6 +48,8 @@ services:
       - "3307:3306"
     volumes:
       - api_data:/var/lib/mysql
+    env_file:
+      - .env
 
   adminer:
     image: adminer

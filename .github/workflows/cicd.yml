@@ -49,28 +49,16 @@ jobs:
           rm oracle_cloud_key
 
       - name: Deploy to Oracle Cloud
-        env:
-          OCI_CLI_AUTH: instance_principal
-          DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-          DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
         run: |
           echo "${{ secrets.ORACLE_CLOUD_SSH_PRIVATE_KEY }}" > oracle_cloud_key
           chmod 600 oracle_cloud_key
           ssh -i oracle_cloud_key -o StrictHostKeyChecking=no ${{ secrets.ORACLE_CLOUD_SSH_USER }}@${{ secrets.ORACLE_CLOUD_IP }} << EOF
             cd website
             docker compose down
-            echo "$DOCKER_HUB_ACCESS_TOKEN" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
-            export DB_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
-            export DB_USER=${DB_USER}
-            export DB_PASSWORD=${DB_PASSWORD}
-            export DOCKER_IMAGE=${DOCKER_HUB_USERNAME}/vow-website:latest
+            export DOCKER_IMAGE=${{ secrets.DOCKER_HUB_USERNAME }}/vow-website:latest
             export COMPOSE_FILE_DIR=/home/opc/website
             docker compose pull
             docker compose up -d
             docker image prune -f
-            docker logout
           EOF
           rm oracle_cloud_key
