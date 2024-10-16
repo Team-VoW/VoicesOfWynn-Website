@@ -5,6 +5,7 @@ services:
     image: ${DOCKER_IMAGE:-kmaxi/vow-website:latest}
     ports:
       - "80:80"
+      - "443:443"
     environment:
       - WEBSITE_DB_HOST=website
       - WEBSITE_DB_NAME=website
@@ -20,6 +21,8 @@ services:
       - adminer
     volumes:
       - dynamic_data:/var/www/html/dynamic
+      - /etc/letsencrypt/live/voicesofwynn.com:/etc/letsencrypt/live/voicesofwynn.com:ro
+      - /etc/letsencrypt/archive/voicesofwynn.com:/etc/letsencrypt/archive/voicesofwynn.com:ro
     env_file:
       - .env
 

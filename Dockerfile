@@ -52,5 +52,9 @@ COPY ./liquibase /var/www/html/liquibase
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
+COPY ssl.conf /etc/apache2/sites-available/ssl.conf
+RUN a2ensite ssl.conf
+
+
 # Use the start script as the entry point
 CMD ["/start.sh"]
