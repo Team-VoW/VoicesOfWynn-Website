@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y \
     unzip \
     default-jre \
     wget \
+    libapache2-mod-ssl \
     && docker-php-ext-install mysqli pdo pdo_mysql zip \
     && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
@@ -15,7 +16,7 @@ RUN mkdir /liquibase && \
     wget -O /liquibase/liquibase.tar.gz https://github.com/liquibase/liquibase/releases/download/v4.28.0/liquibase-4.28.0.tar.gz && \
     tar -xzf /liquibase/liquibase.tar.gz -C /liquibase && \
     rm /liquibase/liquibase.tar.gz && \
-    chmod +x /liquibase/liquibase
+    chmod +x /liquibase/liquibase   
 
 # Add Liquibase to PATH
 ENV PATH="/liquibase:${PATH}"
@@ -39,8 +40,9 @@ RUN composer install
 RUN chown -R www-data:www-data /var/www/html && \
     chmod -R 755 /var/www/html
 
-# Enable Apache mod_rewrite (if needed for .htaccess)
+# Enable Apache mod_rewrite and SSL
 RUN a2enmod rewrite
+RUN a2enmod ssl
 
 # Copy custom php.ini 
 COPY php.ini /usr/local/etc/php/conf.d/
@@ -48,13 +50,15 @@ COPY php.ini /usr/local/etc/php/conf.d/
 # Copy Liquibase changelog files
 COPY ./liquibase /var/www/html/liquibase
 
+# Copy SSL configuration file
+COPY ssl.conf /etc/apache2/sites-available/ssl.conf
+
+# Enable the SSL virtual host
+RUN a2ensite ssl.conf
+
 # Create a script to run Liquibase and start Apache
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
-
-COPY ssl.conf /etc/apache2/sites-available/ssl.conf
-RUN a2ensite ssl.conf
-
 
 # Use the start script as the entry point
 CMD ["/start.sh"]
