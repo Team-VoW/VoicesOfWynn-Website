@@ -3,6 +3,7 @@
 namespace VoicesOfWynn\Controllers\Api\DiscordIntegration;
 
 use VoicesOfWynn\Controllers\Api\ApiController;
+use VoicesOfWynn\Models\Api\ApiKey\ApiKey;
 use VoicesOfWynn\Models\Api\DiscordIntegration\DiscordManager;
 use VoicesOfWynn\Models\Website\DiscordRole;
 use VoicesOfWynn\Models\Website\UserException;
@@ -26,7 +27,7 @@ class DiscordIntegration extends ApiController
      */
     private function get(): int
     {
-        if ($_GET['apiKey'] !== self::DISCORD_INTEGRATION_API_KEY) {
+        if (!$this->checkApiKey(ApiKey::DISCORD_INTEGRATION, $_GET['apiKey'])) {
             return 401;
         }
 
@@ -46,7 +47,7 @@ class DiscordIntegration extends ApiController
      */
     private function post(): int
     {
-        if ($_POST['apiKey'] !== self::DISCORD_INTEGRATION_API_KEY) {
+        if (!$this->checkApiKey(ApiKey::DISCORD_INTEGRATION, $_POST['apiKey'])) {
             return 401;
         }
 

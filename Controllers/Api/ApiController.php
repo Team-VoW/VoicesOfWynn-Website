@@ -3,23 +3,13 @@
 namespace VoicesOfWynn\Controllers\Api;
 
 use VoicesOfWynn\Controllers\Controller;
+use VoicesOfWynn\Models\Api\ApiKey\ApiKey;
 
 /**
  * Base class for all API controllers
  */
 abstract class ApiController extends Controller
 {
-
-    /* All API keys go here */
-    //Line reporting keys
-    const COLLECTING_API_KEY = 'testing';
-    const UPDATING_API_KEY = 'testing';
-    //Usage analysis api keys
-    const AGGREGATE_API_KEY = 'testing';
-    //Discord integration key
-    const DISCORD_INTEGRATION_API_KEY = 'testing';
-    //Premium authenticator key
-    const PREMIUM_AUTHENTICATOR_API_KEY = 'testing';
 
     /**
      * Controller constructor enabling output buffering and setting the Content-Type header
@@ -50,4 +40,21 @@ abstract class ApiController extends Controller
         ob_end_clean();
         return $result;
     }
+
+    /**
+     * Method checking the validity of an API key defined in ApiKeys.ini
+     * @param ApiKey $keyType Type of the API key being validated
+     * @param string $key Key provided by the client
+     * @return bool TRUE if the key is valid, FALSE if it's invalid or the key type doesn't exist
+     */
+    protected function checkApiKey(ApiKey $keyType, string $key): bool
+    {
+        $keys = parse_ini_file('ApiKeys.ini');
+        return (
+            in_array(strtolower($keyType->name), array_keys($keys))
+            &&
+            $keys[strtolower(($keyType->name))] === $key
+        );
+    }
 }
+

@@ -3,6 +3,7 @@
 namespace VoicesOfWynn\Controllers\Api\PremiumAuthenticator;
 
 use VoicesOfWynn\Controllers\Api\ApiController;
+use VoicesOfWynn\Models\Api\ApiKey\ApiKey;
 use VoicesOfWynn\Models\Api\PremiumAuthenticator\PremiumCodeManager;
 
 class Authenticator extends ApiController
@@ -18,7 +19,7 @@ class Authenticator extends ApiController
         $discordUserId = $_INPUT['discord'] ?? null;
 
         if (!in_array($args[0], ['check-code'])) {
-            if ($apiKey !== self::PREMIUM_AUTHENTICATOR_API_KEY) {
+            if (!$this->checkApiKey(ApiKey::PREMIUM_AUTHENTICATION, $apiKey)) {
                 return 401;
             }
 

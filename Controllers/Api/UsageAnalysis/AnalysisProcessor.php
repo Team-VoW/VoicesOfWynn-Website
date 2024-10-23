@@ -4,6 +4,7 @@ namespace VoicesOfWynn\Controllers\Api\UsageAnalysis;
 
 use DateTime;
 use VoicesOfWynn\Controllers\Api\ApiController;
+use VoicesOfWynn\Models\Api\ApiKey\ApiKey;
 use VoicesOfWynn\Models\Api\UsageAnalysis\BootupLogger;
 use VoicesOfWynn\Models\Api\UsageAnalysis\PingAggregator;
 
@@ -32,7 +33,7 @@ class AnalysisProcessor extends ApiController
             return 405;
         }
         parse_str(file_get_contents("php://input"),$_PUT);
-        if ($_PUT['apiKey'] !== self::AGGREGATE_API_KEY) {
+        if (!$this->checkApiKey(ApiKey::STATISTICS_AGGREGATE, $_PUT['apiKey'])) {
             return 401;
         }
         $minDelay = max(BootupLogger::MINIMUM_DELAY_BETWEEN_PINGS_BY_IP, BootupLogger::MINIMUM_DELAY_BETWEEN_PINGS_BY_UUID);
