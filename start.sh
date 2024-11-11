@@ -48,5 +48,14 @@ liquibase \
 # Change back to the original directory
 cd /var/www/html
 
+
+# Conditionally enable SSL if not in development mode
+if [ "$DEV_MODE" != "true" ]; then
+    a2ensite ssl.conf
+    a2enmod ssl
+else
+    echo "DEV_MODE is enabled; skipping SSL configuration."
+fi
+
 # Start Apache in foreground
 apache2-foreground

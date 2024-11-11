@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - WEBSITE_DB_HOST=website
+      - WEBSITE_DB_NAME=website
+      - WEBSITE_DB_USER=${DB_USER}
+      - WEBSITE_DB_PASSWORD=${DB_PASSWORD}
+      - API_DB_HOST=api
+      - API_DB_NAME=api
+      - API_DB_USER=${DB_USER}
+      - API_DB_PASSWORD=${DB_PASSWORD}
+      - LINE_REPORT_COLLECT=${LINE_REPORT_COLLECT}
+      - LINE_REPORT_MODIFY=${LINE_REPORT_MODIFY}
+      - STATISTICS_AGGREGATE=${STATISTICS_AGGREGATE}
+      - DISCORD_INTEGRATION=${DISCORD_INTEGRATION}
+      - PREMIUM_AUTHENTICATION=${PREMIUM_AUTHENTICATION}
+      - DEV_MODE=true
+    depends_on:
+      - website
+      - api
+      - adminer
+
+    env_file:
+      - .env
+
+  website:
+    image: mariadb:10.5.24
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: website
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - website_data:/var/lib/mysql
+    env_file:
+      - .env
+
+  api:
+    image: mariadb:10.5.24
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: api
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "3307:3306"
+    volumes:
+      - api_data:/var/lib/mysql
+    env_file:
+      - .env
+
+  adminer:
+    image: adminer
+    ports:
+      - "8080:8080"
+    depends_on:
+      - website
+      - api
+
+volumes:
+  website_data:
+  api_data:
+  # Removed dynamic_data volume since we're using a local directory
