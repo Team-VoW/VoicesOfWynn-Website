@@ -3,7 +3,7 @@
 namespace VoicesOfWynn\Controllers\Api;
 
 use VoicesOfWynn\Controllers\Controller;
-use VoicesOfWynn\Models\Api\ApiKey\ApiKey;
+use VoicesOfWynn\Controllers\Api\ApiKey;
 
 /**
  * Base class for all API controllers

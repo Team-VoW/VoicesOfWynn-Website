@@ -4,7 +4,7 @@ namespace VoicesOfWynn\Controllers\Api\UsageAnalysis;
 
 use DateTime;
 use VoicesOfWynn\Controllers\Api\ApiController;
-use VoicesOfWynn\Models\Api\ApiKey\ApiKey;
+use VoicesOfWynn\Controllers\Api\ApiKey;
 use VoicesOfWynn\Models\Api\UsageAnalysis\BootupLogger;
 use VoicesOfWynn\Models\Api\UsageAnalysis\PingAggregator;
 

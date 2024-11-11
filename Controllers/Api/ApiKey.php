@@ -1,6 +1,6 @@
 <?php
 
-namespace VoicesOfWynn\Models\Api\ApiKey;
+namespace VoicesOfWynn\Controllers\Api;
 
 enum ApiKey
 {

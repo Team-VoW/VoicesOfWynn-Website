@@ -3,7 +3,7 @@
 namespace VoicesOfWynn\Controllers\Api\PremiumAuthenticator;
 
 use VoicesOfWynn\Controllers\Api\ApiController;
-use VoicesOfWynn\Models\Api\ApiKey\ApiKey;
+use VoicesOfWynn\Controllers\Api\ApiKey;
 use VoicesOfWynn\Models\Api\PremiumAuthenticator\PremiumCodeManager;
 
 class Authenticator extends ApiController

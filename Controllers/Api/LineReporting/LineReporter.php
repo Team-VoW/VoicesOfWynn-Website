@@ -3,7 +3,7 @@
 namespace VoicesOfWynn\Controllers\Api\LineReporting;
 
 use VoicesOfWynn\Controllers\Api\ApiController;
-use VoicesOfWynn\Models\Api\ApiKey\ApiKey;
+use VoicesOfWynn\Controllers\Api\ApiKey;
 use VoicesOfWynn\Models\Api\LineReporting\ReportAdder;
 use VoicesOfWynn\Models\Api\LineReporting\ReportManager;
 use VoicesOfWynn\Models\Api\LineReporting\ReportReader;

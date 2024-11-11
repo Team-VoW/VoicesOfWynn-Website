@@ -3,7 +3,7 @@
 namespace VoicesOfWynn\Controllers\Api\DiscordIntegration;
 
 use VoicesOfWynn\Controllers\Api\ApiController;
-use VoicesOfWynn\Models\Api\ApiKey\ApiKey;
+use VoicesOfWynn\Controllers\Api\ApiKey;
 use VoicesOfWynn\Models\Api\DiscordIntegration\DiscordManager;
 use VoicesOfWynn\Models\Website\DiscordRole;
 use VoicesOfWynn\Models\Website\UserException;
