@@ -6,7 +6,7 @@ This repository stores code for the public website presenting the community proj
 ### Running the website locally
 To run the website locally you need to make sure you have your Docker engine with docker-compose running. An easy way of doing this is downloading [Rancher Desktop](https://rancherdesktop.io/) and simply running the application. Once you have that simply run: 
 ```bash
-docker-compose  -f .\docker-compose.dev.yml up --build -d
+docker-compose  -f .\docker-compose.dev.yml up --build
 ```
 this will create all the containers (databases and everything) for you.
 
