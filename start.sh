@@ -15,6 +15,13 @@ for file in /var/www/html/Models/Api/*/DbInfo.ini; do
     sed -i "s/password=.*/password=$API_DB_PASSWORD/" "$file"
 done
 
+# Update the ApiKeys.ini file
+sed -i "s/line_report_collect=.*/line_report_collect=$LINE_REPORT_COLLECT/" /var/www/html/Controllers/Api/ApiKeys.ini
+sed -i "s/line_report_modify=.*/line_report_modify=$LINE_REPORT_MODIFY/" /var/www/html/Controllers/Api/ApiKeys.ini
+sed -i "s/statistics_aggregate=.*/statistics_aggregate=$STATISTICS_AGGREGATE/" /var/www/html/Controllers/Api/ApiKeys.ini
+sed -i "s/discord_integration=.*/discord_integration=$DISCORD_INTEGRATION/" /var/www/html/Controllers/Api/ApiKeys.ini
+sed -i "s/premium_authentication=.*/premium_authentication=$PREMIUM_AUTHENTICATION/" /var/www/html/Controllers/Api/ApiKeys.ini
+
 sleep 10
 
 # Change to the liquibase directory
@@ -40,6 +47,15 @@ liquibase \
 
 # Change back to the original directory
 cd /var/www/html
+
+
+# Conditionally enable SSL if not in development mode
+if [ "$DEV_MODE" != "true" ]; then
+    a2ensite ssl.conf
+    a2enmod ssl
+else
+    echo "DEV_MODE is enabled; skipping SSL configuration."
+fi
 
 # Start Apache in foreground
 apache2-foreground

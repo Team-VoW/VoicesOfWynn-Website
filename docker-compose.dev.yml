@@ -2,7 +2,9 @@ version: '3.8'
 
 services:
   web:
-    image: ${DOCKER_IMAGE:-kmaxi/vow-website:latest}
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "80:80"
       - "443:443"
@@ -20,14 +22,12 @@ services:
       - STATISTICS_AGGREGATE=${STATISTICS_AGGREGATE}
       - DISCORD_INTEGRATION=${DISCORD_INTEGRATION}
       - PREMIUM_AUTHENTICATION=${PREMIUM_AUTHENTICATION}
+      - DEV_MODE=true
     depends_on:
       - website
       - api
       - adminer
-    volumes:
-      - dynamic_data:/var/www/html/dynamic
-      - /etc/letsencrypt/live/voicesofwynn.com:/etc/letsencrypt/live/voicesofwynn.com:ro
-      - /etc/letsencrypt/archive/voicesofwynn.com:/etc/letsencrypt/archive/voicesofwynn.com:ro
+
     env_file:
       - .env
 
@@ -70,9 +70,4 @@ services:
 volumes:
   website_data:
   api_data:
-  dynamic_data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /home/opc/website/dynamic
+  # Removed dynamic_data volume since we're using a local directory

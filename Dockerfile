@@ -1,5 +1,5 @@
 # Use an official PHP image with Apache
-FROM php:7.4-apache
+FROM php:8.1-apache
 
 # Install necessary PHP extensions, Composer, and Java (required for Liquibase)
 RUN apt-get update && apt-get install -y \
@@ -53,7 +53,7 @@ COPY ./liquibase /var/www/html/liquibase
 COPY ssl.conf /etc/apache2/sites-available/ssl.conf
 
 # Enable the SSL virtual host
-RUN a2ensite ssl.conf
+#RUN a2ensite ssl.conf
 
 # Create a script to run Liquibase and start Apache
 COPY start.sh /start.sh

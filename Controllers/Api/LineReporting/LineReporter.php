@@ -3,6 +3,7 @@
 namespace VoicesOfWynn\Controllers\Api\LineReporting;
 
 use VoicesOfWynn\Controllers\Api\ApiController;
+use VoicesOfWynn\Controllers\Api\ApiKey;
 use VoicesOfWynn\Models\Api\LineReporting\ReportAdder;
 use VoicesOfWynn\Models\Api\LineReporting\ReportManager;
 use VoicesOfWynn\Models\Api\LineReporting\ReportReader;
@@ -54,7 +55,7 @@ class LineReporter extends ApiController
         if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
             return 405;
         }
-        if ($_REQUEST['apiKey'] !== self::COLLECTING_API_KEY) {
+        if (!$this->checkApiKey(ApiKey::LINE_REPORT_COLLECT, $_REQUEST['apiKey'])) {
             return 401;
         }
         $reportReader = new ReportReader();
@@ -77,7 +78,7 @@ class LineReporter extends ApiController
         if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
             return 405;
         }
-        if ($_REQUEST['apiKey'] !== self::COLLECTING_API_KEY) {
+        if (!$this->checkApiKey(ApiKey::LINE_REPORT_COLLECT, $_REQUEST['apiKey'])) {
             return 401;
         }
         $reportReader = new ReportReader();
@@ -102,7 +103,7 @@ class LineReporter extends ApiController
         if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
             return 405;
         }
-        if ($_PUT['apiKey'] !== self::UPDATING_API_KEY) {
+        if (!$this->checkApiKey(ApiKey::LINE_REPORT_MODIFY, $_PUT['apiKey'])) {
             return 401;
         }
         $reportManager = new ReportManager();
@@ -120,7 +121,7 @@ class LineReporter extends ApiController
         if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
             return 405;
         }
-        if ($_PUT['apiKey'] !== self::UPDATING_API_KEY) {
+        if (!$this->checkApiKey(ApiKey::LINE_REPORT_MODIFY, $_PUT['apiKey'])) {
             return 401;
         }
         $reportManager = new ReportManager();
@@ -136,7 +137,7 @@ class LineReporter extends ApiController
         if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
             return 405;
         }
-        if ($_REQUEST['apiKey'] !== self::COLLECTING_API_KEY) {
+        if (!$this->checkApiKey(ApiKey::LINE_REPORT_COLLECT, $_REQUEST['apiKey'])) {
             return 401;
         }
         $reportReader = new ReportReader();
@@ -159,7 +160,7 @@ class LineReporter extends ApiController
         if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
             return 405;
         }
-        if ($_REQUEST['apiKey'] !== self::COLLECTING_API_KEY) {
+        if (!$this->checkApiKey(ApiKey::LINE_REPORT_COLLECT, $_REQUEST['apiKey'])) {
             return 401;
         }
         $reportReader = new ReportReader();
@@ -182,7 +183,7 @@ class LineReporter extends ApiController
         if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
             return 405;
         }
-        if ($_REQUEST['apiKey'] !== self::COLLECTING_API_KEY) {
+        if (!$this->checkApiKey(ApiKey::LINE_REPORT_COLLECT, $_REQUEST['apiKey'])) {
             return 401;
         }
         $reportReader = new ReportReader();
