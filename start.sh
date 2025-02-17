@@ -1,6 +1,8 @@
 #!/bin/bash
 
 
+composer install --no-interaction --no-scripts
+
 # Update website DBInfo.ini
 sed -i "s/host=.*/host=$WEBSITE_DB_HOST/" /var/www/html/Models/Website/DbInfo.ini
 sed -i "s/database=.*/database=$WEBSITE_DB_NAME/" /var/www/html/Models/Website/DbInfo.ini
