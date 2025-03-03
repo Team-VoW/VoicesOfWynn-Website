@@ -28,6 +28,8 @@ services:
       - dynamic_data:/var/www/html/dynamic
       - /etc/letsencrypt/live/voicesofwynn.com:/etc/letsencrypt/live/voicesofwynn.com:ro
       - /etc/letsencrypt/archive/voicesofwynn.com:/etc/letsencrypt/archive/voicesofwynn.com:ro
+      - /home/opc/website/logs:/var/log
+
     env_file:
       - .env
 
