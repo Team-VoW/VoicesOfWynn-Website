@@ -49,7 +49,7 @@ class Npc implements JsonSerializable
 		}
 	}
 
-	public function jsonSerialize() : object
+	public function jsonSerialize() : mixed
 	{
 	    return (object) get_object_vars($this);
 	}
