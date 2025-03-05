@@ -4,6 +4,9 @@ namespace VoicesOfWynn\Controllers\Website;
 
 use VoicesOfWynn\Models\Website\DownloadsManager;
 
+header('Location: https://modrinth.com/mod/vow');
+exit();
+
 class Downloads extends WebpageController
 {
     

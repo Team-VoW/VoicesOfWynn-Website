@@ -58,7 +58,7 @@ class Report implements JsonSerializable
         }
     }
 
-    public function jsonSerialize(): array
+    public function jsonSerialize() : mixed
     {
         $properties = array();
 
