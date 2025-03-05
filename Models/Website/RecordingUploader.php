@@ -45,11 +45,11 @@ class RecordingUploader
                 continue;
             }
 
-            if ($type !== 'audio/ogg') {
+            if ($type !== 'audio/ogg' && $type !== 'video/ogg') { //Our server is treating audio/ogg as video/ogg for some reason
                 $this->errors[] = [
                     'code' => 415,
                     'msg' => 'Unsupported Media Type',
-                    'desc' => 'The uploaded file is not in the correct format, only OGG files are allowed',
+                    'desc' => 'The uploaded file is not in the correct format, only OGG files are allowed, MIME-type '.$type.' provided',
                     'file' => $filename
                 ];
                 continue;
