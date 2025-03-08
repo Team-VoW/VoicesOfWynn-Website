@@ -56,35 +56,7 @@ It doesn\'t contain much new content';
 
 <div class="txt-c">
     <h3>Download this file</h3>
-    <table class="txt-c">
-        <tr>
-            <td>
-                <h4>Direct Download</h4>
-            </td>
-            <td>
-                <h4>Installer and Updater</h4>
-            </td>
-        </tr><tr>
-            <td><strong>Recommended for initial installation.</strong></td>
-            <td><strong>Recommended for updating and people with unstable internet connection.</strong></td>
-        </tr><tr>
-            <td><?= round($downloadDetails->size / 1000000, 2) ?> MB <code>.jar</code> file</td>
-            <td><?= round(${str_replace('-', '', basename(__FILE__, '.phtml')).'_installerSize'} / 1000, 2) ?> kB executable <code>.jar</code> file</td>
-        </tr><tr>
-            <td>Download must be restarted from the beginning in case of a failure.</td>
-            <td>In case of a failure, the installation can be resumed.</td>
-        </tr><tr>
-            <td>Keeps antivirus calm.</td>
-            <td id="false-positive-info">
-                Might be flagged by your antivirus as malicious.<br>
-                <small style="font-size: 0.8rem;"><em>This is a false positive. The installer is open-source and you can check what exactly it does <a href="https://github.com/Team-VoW/500mb_jar_installer" target="_blank">on GitHub</a>.</em></small>
-            </td>
-        </tr><tr>
-            <td>Can be updated using the installer later.</td>
-            <td>Can be used to update any existing installation to any published or future version.</td>
-        </tr>
         <?php if ($downloadDetails->version >= "1.4" && $downloadDetails->mcVersion >= "1.19.4") : ?>
-            <tr><td colspan="2">
                     <div style="border: 5px solid #f05; padding: 10px; border-radius: 10px;">
                         <h3>Important Notice</h3>
                         <p>This version of Voices of Wynn is <strong>dependant on Fabric API and Cloth Config API</strong>.</p>
@@ -94,10 +66,7 @@ It doesn\'t contain much new content';
                             <li>Cloth Config API: <a href="https://modrinth.com/mod/cloth-config/versions" target="_blank">https://modrinth.com/mod/cloth-config/versions</a></li>
                         </ul>
                     </div>
-                </td></tr>
         <?php endif ?>
-        <tr>
-            <td>
                 <a href="/download/<?= $downloadDetails->id ?>/jar">
                     <button id="download-btn" class="downloadbtn">Download JAR</button>
                 </a>
@@ -109,22 +78,6 @@ It doesn\'t contain much new content';
                             </a>
                         </small></p>
                 </div>
-            </td>
-            <td>
-                <a href="/download/<?= $downloadDetails->id ?>/exe">
-                    <button id="install-btn" class="updatebtn">Download Installer</button>
-                </a>
-                <div class="txt-c" id="install-started">
-                    <p class="txt-c"><b>Your download has started.</b></p>
-                    <p class="txt-c report-download-issue"><small>
-                            <a href="mailto:team@voicesofwynn.com?subject=Problems%20with%20downloading%20the%20installer&body=Feel%20free%20to%20include%20any%20additional%20information%20here.%0AOur%20team%20will%20check%20the%20download%20as%20soon%20as%20they%20can.%0A%0AIn%20the%20meantime%2C%20you%20can%20try%20the%20direct%20download%20or%20join%20our%20Discord%20and%20ask%20for%20an%20alternative%20download.">
-                                Report a problem with this download
-                            </a>
-                        </small></p>
-                </div>
-            </td>
-        </tr>
-    </table>
     <div id="terms" class="txt-c">
         This mod uses a unique identificator to measure the global usage of the mod.<br>
         Any information sent to our servers is anonymous and cannot be traced to any specific user.<br>
