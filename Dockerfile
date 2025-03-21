@@ -39,9 +39,12 @@ RUN composer install
 RUN chown -R www-data:www-data /var/www/html && \
     chmod -R 755 /var/www/html
 
-# Enable Apache mod_rewrite and SSL
+# Enable Apache mod_rewrite, SSL, and proxy modules
 RUN a2enmod rewrite
 RUN a2enmod ssl
+RUN a2enmod proxy
+RUN a2enmod proxy_http
+RUN a2enmod headers
 
 # Copy custom php.ini 
 COPY php.ini /usr/local/etc/php/conf.d/
@@ -53,7 +56,7 @@ COPY ./liquibase /var/www/html/liquibase
 COPY ssl.conf /etc/apache2/sites-available/ssl.conf
 
 # Enable the SSL virtual host
-#RUN a2ensite ssl.conf
+RUN a2ensite ssl.conf
 
 # Create a script to run Liquibase and start Apache
 COPY start.sh /start.sh

@@ -20,6 +20,8 @@ services:
       - STATISTICS_AGGREGATE=${STATISTICS_AGGREGATE}
       - DISCORD_INTEGRATION=${DISCORD_INTEGRATION}
       - PREMIUM_AUTHENTICATION=${PREMIUM_AUTHENTICATION}
+      - ADMINER_HOST=adminer
+      - ADMINER_PORT=8080
     depends_on:
       - website
       - api
@@ -29,9 +31,10 @@ services:
       - /etc/letsencrypt/live/voicesofwynn.com:/etc/letsencrypt/live/voicesofwynn.com:ro
       - /etc/letsencrypt/archive/voicesofwynn.com:/etc/letsencrypt/archive/voicesofwynn.com:ro
       - /home/opc/website/logs:/var/log
-
     env_file:
       - .env
+    networks:
+      - app_network
 
   website:
     image: mariadb:10.5.24
@@ -46,6 +49,8 @@ services:
       - website_data:/var/lib/mysql
     env_file:
       - .env
+    networks:
+      - app_network
 
   api:
     image: mariadb:10.5.24
@@ -60,14 +65,21 @@ services:
       - api_data:/var/lib/mysql
     env_file:
       - .env
+    networks:
+      - app_network
 
   adminer:
     image: adminer
-    ports:
-      - "8080:8080"
+    # Remove the public port binding as we'll access it through the web service
+    # ports:
+    #   - "8080:8080"
+    expose:
+      - "8080"
     depends_on:
       - website
       - api
+    networks:
+      - app_network
 
 volumes:
   website_data:
@@ -78,3 +90,8 @@ volumes:
       type: none
       o: bind
       device: /home/opc/website/dynamic
+
+# Add this networks section to define the network
+networks:
+  app_network:
+    driver: bridge
