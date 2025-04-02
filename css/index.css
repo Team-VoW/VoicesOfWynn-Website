@@ -1,0 +1,49 @@
+/* Styling for the video section on the homepage */
+.video-wrapper {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    /* Allows wrapping on smaller screens */
+    gap: 20px;
+    /* Adds space between videos */
+}
+
+.video-container {
+    position: relative;
+    width: 350px;
+    /* Fixed width */
+    aspect-ratio: 16 / 9;
+    /* Maintains correct video proportions */
+    cursor: pointer;
+    flex-shrink: 0;
+    /* Prevents shrinking */
+}
+
+.video-container img,
+.video-container iframe {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    /* This removes black bars */
+}
+
+.play-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.play-button::before {
+    content: "▶";
+    font-size: 40px;
+    color: white;
+}
