@@ -30,24 +30,12 @@ _______________ CONTENTS _______________
 
 
 body {
-  position: relative;
-  margin: auto;
+  background: url(../images/Website_background.webp);
+  background-repeat: repeat!important;
+  margin: auto;                                                                   /* classless.css */
   max-width: 50rem;
   padding: 2rem 0.5rem 0;
   overflow-x: hidden;
-}
-
-body::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: url(../images/back_smaller2.jpg) no-repeat center center;
-  background-size: cover; /* Ensures the image fills the screen */
-  filter: blur(2px); /* Applies the blur effect */
-  z-index: -1; /* Places the background behind the content */
 }
 
 body > div:not(.tox) {
