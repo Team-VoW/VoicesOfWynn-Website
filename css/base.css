@@ -30,13 +30,14 @@ _______________ CONTENTS _______________
 
 
 body {
-  background: url(../images/Website_background.jpg);
+  background: url(../images/Website_background.webp);
   background-repeat: repeat!important;
   margin: auto;                                                                   /* classless.css */
   max-width: 50rem;
   padding: 2rem 0.5rem 0;
   overflow-x: hidden;
 }
+
 body > div:not(.tox) {
     position: fixed!important;
     width: 100%!important;
