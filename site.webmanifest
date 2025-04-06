@@ -8,7 +8,7 @@
             "type": "image/png"
         },
         {
-            "src": "/images/wynnvplogo.svg.png",
+            "src": "/images/wynnvplogo.svg",
             "sizes": "512x512",
             "type": "image/png"
         }
