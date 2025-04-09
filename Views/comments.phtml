@@ -11,7 +11,7 @@
 <h3 class="txt-c"><?= ${basename(__FILE__, '.phtml').'_recording_title'} ?></h3>
 
 <p class="txt-c mb-m">
-    <audio controls>
+    <audio controls preload="none">
         <source src="dynamic/recordings/<?= ${basename(__FILE__, '.phtml').'_recording'}->file ?>" type="audio/ogg">
         Oops! Your browser doesnt support the OGG format :(
     </audio>

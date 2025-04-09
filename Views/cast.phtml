@@ -84,7 +84,7 @@
                     <tr class="voting-audio-box">
                       <td class="ws-nw line-count" rowspan="1"># <?= $recording->line ?></td>
                       <td class="the-recording lb-a">
-                          <audio controls>
+                          <audio controls preload="none">
                               <source src="dynamic/recordings/<?= $recording->file ?>" type="audio/ogg">
                               Oops! Your browser doesnt support the OGG format :(
                           </audio>
