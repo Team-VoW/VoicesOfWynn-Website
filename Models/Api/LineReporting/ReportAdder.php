@@ -60,11 +60,13 @@ class ReportAdder
                 //Updating existing report
                 $existingReportId = $result['report_id'];
                 $result = $db->executeQuery('UPDATE report SET 
+                  time_submitted = ?
                   pos_x = (pos_x * reported_times + ?) / (reported_times + 1), 
                   pos_y = (pos_y * reported_times + ?) / (reported_times + 1), 
                   pos_z = (pos_z * reported_times + ?) / (reported_times + 1), 
                   reported_times = reported_times + 1 WHERE report_id = ?;',
                     array(
+                        date('Y-m-d H:i:s'),
                         $_POST['x'],
                         $_POST['y'],
                         $_POST['z'],
