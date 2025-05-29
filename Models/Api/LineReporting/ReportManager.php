@@ -9,32 +9,56 @@ class ReportManager
 
     /**
      * Processing method for the request used to update the status of a single report or to delete it
-     * @param string $chatMessage Chate message whose reports should be affected
+     * @param array $chatMessages Array of chat messages whose reports should be affected
      * @param string $action "y" for accepting, "n" for rejecting, "v" for marking as voiced and "r" for deleting
      * @return int HTTP response code
      */
-    public function updateReport(string $chatMessage, string $action): int
+    public function updateReport(array $chatMessages, string $action): int
     {
         $db = new Db('Api/LineReporting/DbInfo.ini');
 
-        $reportInfo = $db->fetchQuery('SELECT * FROM report WHERE chat_message = ? LIMIT 1', array($chatMessage));
-        if (empty($reportInfo)) {
-            return 404;
-        }
-        $report = new Report();
-        $report->load($reportInfo);
-
-        switch ($action) {
-            case 'r':
-                return $report->delete();
-            case 'y':
-                return $report->accept();
-            case 'n':
-                return $report->reject();
-            case 'v':
-                return $report->finish();
-            default:
-                return 400;
+        if (count($chatMessages) === 1) {
+            $reportInfo = $db->fetchQuery('SELECT * FROM report WHERE chat_message = ? LIMIT 1', array($chatMessages));
+        
+            if (empty($reportInfo)) {
+                return 404;
+            }
+            $report = new Report();
+            $report->load($reportInfo);
+    
+            switch ($action) {
+                case 'r':
+                    return $report->delete();
+                case 'y':
+                    return $report->accept();
+                case 'n':
+                    return $report->reject();
+                case 'v':
+                    return $report->finish();
+                default:
+                    return 400;
+            }
+        } else {
+            $db = new Db('Api/LineReporting/DbInfo.ini');
+            $inString = implode(',', array_fill(0, count($chatMessages), '?'));
+            switch ($action) {
+                case 'r':
+                    $query = 'DELETE FROM report WHERE chat_message IN ('.$inString.')';
+                    $parameters = $chatMessages;
+                case 'y':
+                    $query = 'UPDATE report SET status = ? WHERE chat_message IN ('.$inString.');'
+                    $parameters = array(array_unshift($chatMessages, 'accepted'));
+                case 'n':
+                    $query = 'UPDATE report SET status = ? WHERE chat_message IN ('.$inString.');'
+                    $parameters = array(array_unshift($chatMessages, 'rejected'));
+                case 'v':
+                    $query = 'UPDATE report SET status = ? WHERE chat_message IN ('.$inString.');'
+                    $parameters = array(array_unshift($chatMessages, 'fixed'));
+                default:
+                    return 400;
+            }
+            $result = $db->executeQuery($query, $parameters);
+            return ($result) ? 204 : 500;
         }
     }
 

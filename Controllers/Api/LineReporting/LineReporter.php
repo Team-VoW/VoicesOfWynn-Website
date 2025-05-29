@@ -107,11 +107,14 @@ class LineReporter extends ApiController
             return 401;
         }
         $reportManager = new ReportManager();
-        $line = null;
-        if (isset($_PUT['line'])) {
-            $line = $_PUT['line'];
+        $lines = null;
+        if (isset($_PUT['lines'])) {
+            $lines = $_PUT['lines'];
         }
-        return $reportManager->updateReport($line, $_PUT['answer']);
+        if (is_null($lines) || count($lines) === 0) {
+            return 400; //No lines provided
+        }
+        return $reportManager->updateReport($lines, $_PUT['answer']);
     }
 
     private function resetForwardedLines(): int
