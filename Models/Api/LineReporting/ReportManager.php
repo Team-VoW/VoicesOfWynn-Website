@@ -18,7 +18,7 @@ class ReportManager
         $db = new Db('Api/LineReporting/DbInfo.ini');
 
         if (count($chatMessages) === 1) {
-            $reportInfo = $db->fetchQuery('SELECT * FROM report WHERE chat_message = ? LIMIT 1', array($chatMessages));
+            $reportInfo = $db->fetchQuery('SELECT * FROM report WHERE chat_message = ? LIMIT 1', array($chatMessages[0]));
         
             if (empty($reportInfo)) {
                 return 404;
@@ -45,15 +45,19 @@ class ReportManager
                 case 'r':
                     $query = 'DELETE FROM report WHERE chat_message IN ('.$inString.')';
                     $parameters = $chatMessages;
+                    break;
                 case 'y':
                     $query = 'UPDATE report SET status = ? WHERE chat_message IN ('.$inString.');'
-                    $parameters = array(array_unshift($chatMessages, 'accepted'));
+                    $parameters = array_merge(['accepted'], $chatMessages);
+                    break;
                 case 'n':
                     $query = 'UPDATE report SET status = ? WHERE chat_message IN ('.$inString.');'
-                    $parameters = array(array_unshift($chatMessages, 'rejected'));
+                    $parameters = array_merge(['rejected'], $chatMessages);
+                    break;
                 case 'v':
                     $query = 'UPDATE report SET status = ? WHERE chat_message IN ('.$inString.');'
-                    $parameters = array(array_unshift($chatMessages, 'fixed'));
+                    $parameters = array_merge(['fixed'], $chatMessages);
+                    break;
                 default:
                     return 400;
             }
