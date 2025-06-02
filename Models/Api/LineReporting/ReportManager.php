@@ -39,7 +39,6 @@ class ReportManager
                     return 400;
             }
         } else {
-            $db = new Db('Api/LineReporting/DbInfo.ini');
             $inString = implode(',', array_fill(0, count($chatMessages), '?'));
             switch ($action) {
                 case 'r':
