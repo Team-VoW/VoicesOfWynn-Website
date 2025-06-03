@@ -46,15 +46,15 @@ class ReportManager
                     $parameters = $chatMessages;
                     break;
                 case 'y':
-                    $query = 'UPDATE report SET status = ? WHERE chat_message IN ('.$inString.');';
+                    $query = 'UPDATE report SET status = ? WHERE chat_message IN ('.$inString.')';
                     $parameters = array_merge(['accepted'], $chatMessages);
                     break;
                 case 'n':
-                    $query = 'UPDATE report SET status = ? WHERE chat_message IN ('.$inString.');';
+                    $query = 'UPDATE report SET status = ? WHERE chat_message IN ('.$inString.')';
                     $parameters = array_merge(['rejected'], $chatMessages);
                     break;
                 case 'v':
-                    $query = 'UPDATE report SET status = ? WHERE chat_message IN ('.$inString.');';
+                    $query = 'UPDATE report SET status = ? WHERE chat_message IN ('.$inString.')';
                     $parameters = array_merge(['fixed'], $chatMessages);
                     break;
                 default:
