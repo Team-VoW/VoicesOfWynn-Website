@@ -22,6 +22,8 @@ class LineReporter extends ApiController
         switch ($args[0]) {
             case 'newUnvoicedLineReport':
                 return $this->newReport();
+            case 'importLines':
+                return $this->importLines();
             case 'listUnvoicedLineReport':
                 return $this->getUnvoicedLines();
             case 'getRaw':
@@ -48,6 +50,25 @@ class LineReporter extends ApiController
         }
         $reportAdder = new ReportAdder();
         return $reportAdder->createReport($_POST['full'], $_POST['npc'], $_POST['player'], $_POST['x'], $_POST['y'], $_POST['z']);
+    }
+
+    private function importLines(): int
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return 405;
+        }
+        $status = @[
+            'd' => 'unprocessed',   # Display in log
+            'm' => 'forwarded',     # Mute (don't display)
+            'y' => 'accepted',      # Yes (will be worked on)
+            'n' => 'rejected',      # No (will not be worked on)
+            'v' => 'fixed'          # Voiced already
+        ][$_POST['status']];
+        if (empty($status)) {
+            return 400;
+        }
+        $reportAdder = new ReportAdder();
+        return $reportAdder->importLines($_POST['lines'], $status);
     }
 
     private function getUnvoicedLines(): int
