@@ -61,15 +61,22 @@ class ReportAdder
                 $existingReportId = $result['report_id'];
                 $result = $db->executeQuery('UPDATE report SET 
                   time_submitted = ?,
-                  pos_x = (pos_x * reported_times + ?) / (reported_times + 1), 
-                  pos_y = (pos_y * reported_times + ?) / (reported_times + 1), 
-                  pos_z = (pos_z * reported_times + ?) / (reported_times + 1), 
+                  npc_name = CASE WHEN npc_name IS NULL THEN ? ELSE npc_name END,
+                  player = CASE WHEN player = "<IMPORT>" THEN ? ELSE player END,
+                  pos_x = CASE WHEN pos_x IS NULL THEN ? ELSE (pos_x * reported_times + ?) / (reported_times + 1) END,
+                  pos_y = CASE WHEN pos_y IS NULL THEN ? ELSE (pos_y * reported_times + ?) / (reported_times + 1) END,
+                  pos_z = CASE WHEN pos_z IS NULL THEN ? ELSE (pos_z * reported_times + ?) / (reported_times + 1) END, 
                   reported_times = reported_times + 1 WHERE report_id = ?;',
                     array(
                         date('Y-m-d H:i:s'),
-                        $_POST['x'],
-                        $_POST['y'],
-                        $_POST['z'],
+                        $npcName,
+                        $playerName,
+                        $posX,
+                        $posX,
+                        $posY,
+                        $posY,
+                        $posZ,
+                        $posZ,
                         $existingReportId,
                     ));
 
@@ -78,6 +85,22 @@ class ReportAdder
         } catch (PDOException $e) {
             return 500;
         }
+    }
+
+    public function importLines(array $chatMessages, string $status)
+    {
+        // Update status of lines that already exist
+        (new ReportManager())->updateReport($chatMessages, $status);
+
+        // Import the rest
+        $db = new Db('Api/LineReporting/DbInfo.ini');
+
+        $valuesString = implode(',', array_fill(0, count($chatMessages), '(?, NULL, "<IMPORT>", NULL, NULL, NULL, 0, ?)'));
+        $query = 'INSERT IGNORE INTO report (chat_message, npc_name, player, pos_x, pos_y, pos_z, reported_times, status) VALUES '.$valuesString;
+        $parameters = array_merge(array_map(function($item) use ($status) { return [$item, $status]; }, $chatMessages));
+
+        $result = $db->executeQuery($query, $parameters);
+        return ($result) ? 204 : 500;
     }
 
     /**
