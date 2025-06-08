@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   web:
@@ -30,7 +30,7 @@ services:
       - dynamic_data:/var/www/html/dynamic
       - /etc/letsencrypt/live/voicesofwynn.com:/etc/letsencrypt/live/voicesofwynn.com:ro
       - /etc/letsencrypt/archive/voicesofwynn.com:/etc/letsencrypt/archive/voicesofwynn.com:ro
-      - /home/opc/website/logs:/var/log
+      - ${PWD}/logs:/var/log
     env_file:
       - .env
     networks:
@@ -89,7 +89,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: /home/opc/website/dynamic
+      device: ${PWD}/dynamic
 
 # Add this networks section to define the network
 networks:
