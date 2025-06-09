@@ -97,7 +97,7 @@ class ReportAdder
 
         $valuesString = implode(',', array_fill(0, count($chatMessages), '(?, NULL, "<IMPORT>", NULL, NULL, NULL, 0, ?)'));
         $query = 'INSERT IGNORE INTO report (chat_message, npc_name, player, pos_x, pos_y, pos_z, reported_times, status) VALUES '.$valuesString;
-        $parameters = array_merge(array_map(function($item) use ($status) { return [$item, $status]; }, $chatMessages));
+        $parameters = call_user_func_array('array_merge', array_map(function($item) use ($status) { return [$item, $status]; }, $chatMessages));
 
         $result = $db->executeQuery($query, $parameters);
         return ($result) ? 204 : 500;
