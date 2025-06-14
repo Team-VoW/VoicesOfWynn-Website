@@ -11,3 +11,5 @@ ALTER TABLE report
   CHANGE `pos_x` `pos_x` MEDIUMINT NULL,
   CHANGE `pos_y` `pos_y` MEDIUMINT NULL,
   CHANGE `pos_z` `pos_z` MEDIUMINT NULL;
+
+ALTER TABLE `report` ADD UNIQUE(`chat_message`);
