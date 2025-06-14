@@ -128,6 +128,10 @@ a, button, [type="submit"] {
 /* ---- 1.3) button default styles ---- */
 
 
+footer {
+    display: flex;
+    justify-content: space-between;
+}
         /* default button style (idle & hover) */
 button {
     font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
