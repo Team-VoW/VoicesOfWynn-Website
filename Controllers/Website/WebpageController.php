@@ -51,7 +51,6 @@ abstract class WebpageController extends Controller
     public function __construct()
     {
         header('Content-Type: text/html; charset=UTF-8');
-        self::$data['base_currentYear'] = date('Y');
     }
 
     /**
