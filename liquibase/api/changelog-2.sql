@@ -1,4 +1,4 @@
---liquidbase formatted sql
+--liquibase formatted sql
 
 -- changeset shady:1
 
