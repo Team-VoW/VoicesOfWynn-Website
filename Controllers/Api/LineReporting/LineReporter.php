@@ -135,7 +135,7 @@ class LineReporter extends ApiController
         if (is_null($lines) || count($lines) === 0) {
             return 400; //No lines provided
         }
-        return $reportManager->updateReport($lines, $_PUT['answer']);
+        return $reportManager->updateReport($lines, $_PUT['status']);
     }
 
     private function resetForwardedLines(): int
