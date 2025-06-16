@@ -12,11 +12,11 @@ class Report implements JsonSerializable
     private int $id;
     private DateTime $submitted;
     private string $chatMessage;
-    private string $npcName;
+    private ?string $npcName;
     private string $player;
-    private string $posX;
-    private string $posY;
-    private string $posZ;
+    private ?string $posX;
+    private ?string $posY;
+    private ?string $posZ;
     private string $reportedTimes;
     private string $status;
 
