@@ -10,3 +10,5 @@
 profiles.php
 composer.phar
 .devcontainer
+/sessions/*
+!/sessions/.gitkeep
