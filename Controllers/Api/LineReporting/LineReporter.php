@@ -160,10 +160,18 @@ class LineReporter extends ApiController
         }
         $reportReader = new ReportReader();
         $npcName = null;
+        $minReports = 1;
+        $youngerThan = null;
         if (isset($_GET['npc'])) {
             $npcName = $_GET['npc'];
         }
-        $responseCode = $reportReader->getReportsByNpc($npcName, array('accepted'));
+        if (isset($_GET['minreports'])) {
+            $minReports = $_GET['minreports'];
+        }
+        if (isset($_GET['youngerthan'])) {
+            $youngerThan = DateTime::createFromFormat("Y-m-d", ($_GET['youngerthan']));
+        }
+        $responseCode = $reportReader->getReportsByNpc($npcName, array('accepted'), $minReports, $youngerThan);
         if ($responseCode >= 400) {
             //An error occurred
             return $responseCode;
@@ -183,10 +191,18 @@ class LineReporter extends ApiController
         }
         $reportReader = new ReportReader();
         $npcName = null;
+        $minReports = 1;
+        $youngerThan = null;
         if (isset($_GET['npc'])) {
             $npcName = $_GET['npc'];
         }
-        $responseCode = $reportReader->getReportsByNpc($npcName, array('accepted', 'forwarded', 'unprocessed'));
+        if (isset($_GET['minreports'])) {
+            $minReports = $_GET['minreports'];
+        }
+        if (isset($_GET['youngerthan'])) {
+            $youngerThan = DateTime::createFromFormat("Y-m-d", ($_GET['youngerThan']));
+        }
+        $responseCode = $reportReader->getReportsByNpc($npcName, array('accepted', 'forwarded', 'unprocessed'), $minReports, $youngerThan);
         if ($responseCode >= 400) {
             //An error occurred
             return $responseCode;
@@ -206,10 +222,18 @@ class LineReporter extends ApiController
         }
         $reportReader = new ReportReader();
         $npcName = null;
+        $minReports = 1;
+        $youngerThan = null;
         if (isset($_GET['npc'])) {
             $npcName = $_GET['npc'];
         }
-        $responseCode = $reportReader->getReportsByNpc($npcName, array('fixed', 'accepted', 'forwarded', 'unprocessed'));
+        if (isset($_GET['minreports'])) {
+            $minReports = $_GET['minreports'];
+        }
+        if (isset($_GET['youngerthan'])) {
+            $youngerThan = DateTime::createFromFormat("Y-m-d", ($_GET['youngerthan']));
+        }
+        $responseCode = $reportReader->getReportsByNpc($npcName, array('fixed', 'accepted', 'forwarded', 'unprocessed'), $minReports, $youngerThan);
         if ($responseCode >= 400) {
             //An error occurred
             return $responseCode;
