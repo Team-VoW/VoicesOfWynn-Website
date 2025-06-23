@@ -29,6 +29,10 @@ class ReportManager
             switch ($action) {
                 case 'r':
                     return $report->delete();
+                case 'd':
+                    return $report->reset();
+                case 'm':
+                    return $report->undecide();
                 case 'y':
                     return $report->accept();
                 case 'n':
