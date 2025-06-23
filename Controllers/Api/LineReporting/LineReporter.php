@@ -62,7 +62,7 @@ class LineReporter extends ApiController
             return 400;
         }
         $reportAdder = new ReportAdder();
-        return $reportAdder->importLines($_POST['lines'], $status);
+        return $reportAdder->importLines($_POST['lines'], $_POST['status']);
     }
 
     private function getUnvoicedLines(): int
