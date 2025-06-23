@@ -92,6 +92,14 @@ class ReportAdder
         // Update status of lines that already exist
         (new ReportManager())->updateReport($chatMessages, $status);
 
+        $status = @[
+            'd' => 'unprocessed',   # Display in log
+            'm' => 'forwarded',     # Mute (don't display)
+            'y' => 'accepted',      # Yes (will be worked on)
+            'n' => 'rejected',      # No (will not be worked on)
+            'v' => 'fixed'          # Voiced already
+        ][$status];
+
         // Import the rest
         $db = new Db('Api/LineReporting/DbInfo.ini');
 
