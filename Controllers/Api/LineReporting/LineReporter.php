@@ -57,14 +57,8 @@ class LineReporter extends ApiController
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return 405;
         }
-        $status = @[
-            'd' => 'unprocessed',   # Display in log
-            'm' => 'forwarded',     # Mute (don't display)
-            'y' => 'accepted',      # Yes (will be worked on)
-            'n' => 'rejected',      # No (will not be worked on)
-            'v' => 'fixed'          # Voiced already
-        ][$_POST['status']];
-        if (empty($status)) {
+        
+        if (empty($_POST['status'])) {
             return 400;
         }
         $reportAdder = new ReportAdder();
