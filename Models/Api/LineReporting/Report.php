@@ -96,6 +96,28 @@ class Report implements JsonSerializable
         return $properties;
     }
 
+    public function reset()
+    {
+        if (empty($this->chatMessage)) {
+            throw new Exception("Too little information is known about this report to perform any action");
+        }
+
+        $db = new Db('Api/LineReporting/DbInfo.ini');
+        $result = $db->executeQuery('UPDATE report SET status = "unprocessed" WHERE chat_message = ? LIMIT 1', array($this->chatMessage));
+        return ($result) ? 204 : 500;
+    }
+
+    public function undecide()
+    {
+        if (empty($this->chatMessage)) {
+            throw new Exception("Too little information is known about this report to perform any action");
+        }
+
+        $db = new Db('Api/LineReporting/DbInfo.ini');
+        $result = $db->executeQuery('UPDATE report SET status = "forwarded" WHERE chat_message = ? LIMIT 1', array($this->chatMessage));
+        return ($result) ? 204 : 500;
+    }
+    
     public function accept()
     {
         if (empty($this->chatMessage)) {
