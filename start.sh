@@ -22,7 +22,6 @@ sed -i "s/line_report_collect=.*/line_report_collect=$LINE_REPORT_COLLECT/" /var
 sed -i "s/line_report_modify=.*/line_report_modify=$LINE_REPORT_MODIFY/" /var/www/html/Controllers/Api/ApiKeys.ini
 sed -i "s/statistics_aggregate=.*/statistics_aggregate=$STATISTICS_AGGREGATE/" /var/www/html/Controllers/Api/ApiKeys.ini
 sed -i "s/discord_integration=.*/discord_integration=$DISCORD_INTEGRATION/" /var/www/html/Controllers/Api/ApiKeys.ini
-sed -i "s/premium_authentication=.*/premium_authentication=$PREMIUM_AUTHENTICATION/" /var/www/html/Controllers/Api/ApiKeys.ini
 
 sleep 10
 
