@@ -2,6 +2,7 @@
 
 namespace VoicesOfWynn\Controllers\Api\LineReporting;
 
+use DateTime;
 use VoicesOfWynn\Controllers\Api\ApiController;
 use VoicesOfWynn\Controllers\Api\ApiKey;
 use VoicesOfWynn\Models\Api\LineReporting\ReportAdder;
@@ -170,6 +171,7 @@ class LineReporter extends ApiController
         }
         if (isset($_GET['youngerthan'])) {
             $youngerThan = DateTime::createFromFormat("Y-m-d", ($_GET['youngerthan']));
+            $youngerThan->setTime(0, 0, 0);
         }
         $responseCode = $reportReader->getReportsByNpc($npcName, array('accepted'), $minReports, $youngerThan);
         if ($responseCode >= 400) {
@@ -201,6 +203,7 @@ class LineReporter extends ApiController
         }
         if (isset($_GET['youngerthan'])) {
             $youngerThan = DateTime::createFromFormat("Y-m-d", ($_GET['youngerThan']));
+            $youngerThan->setTime(0, 0, 0);
         }
         $responseCode = $reportReader->getReportsByNpc($npcName, array('accepted', 'forwarded', 'unprocessed'), $minReports, $youngerThan);
         if ($responseCode >= 400) {
@@ -232,6 +235,7 @@ class LineReporter extends ApiController
         }
         if (isset($_GET['youngerthan'])) {
             $youngerThan = DateTime::createFromFormat("Y-m-d", ($_GET['youngerthan']));
+            $youngerThan->setTime(0, 0, 0);
         }
         $responseCode = $reportReader->getReportsByNpc($npcName, array('fixed', 'accepted', 'forwarded', 'unprocessed'), $minReports, $youngerThan);
         if ($responseCode >= 400) {

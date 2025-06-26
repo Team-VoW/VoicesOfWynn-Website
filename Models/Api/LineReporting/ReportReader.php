@@ -2,6 +2,7 @@
 
 namespace VoicesOfWynn\Models\Api\LineReporting;
 
+use DateTime;
 use PDO;
 use PDOException;
 use VoicesOfWynn\Models\Db;
@@ -100,11 +101,11 @@ class ReportReader
         if (!empty($npcName)) {
             $npcName = $_GET['npc'];
             $query = 'SELECT npc_name,pos_x,pos_y,pos_z,chat_message FROM report WHERE status IN '.$inString.' AND npc_name = ? AND reported_times >= ? AND time_submitted >= ?;';
-            $parameters = array_merge($statuses, [$npcName, $minReportedTimes, (is_null($maxCreationDateTime)) : '2013-01-01 00:00:00' : $maxCreationDateTime->format('Y-m-d H:i:s')]);
+            $parameters = array_merge($statuses, [$npcName, $minReportedTimes, (is_null($maxCreationDateTime)) ? '2013-01-01 00:00:00' : $maxCreationDateTime->format('Y-m-d H:i:s')]);
         }
         else {
             $query = 'SELECT npc_name,pos_x,pos_y,pos_z,chat_message FROM report WHERE status IN '.$inString.' AND reported_times >= ? AND time_submitted >= ?;';
-            $parameters = array_merge($statuses, $minReportedTimes, (is_null($maxCreationDateTime)) : '2013-01-01 00:00:00' : $maxCreationDateTime->format('Y-m-d H:i:s')]);
+            $parameters = array_merge($statuses, [$minReportedTimes, (is_null($maxCreationDateTime)) ? '2013-01-01 00:00:00' : $maxCreationDateTime->format('Y-m-d H:i:s')]);
         }
 
         $db = new Db('Api/LineReporting/DbInfo.ini');
