@@ -4,6 +4,7 @@ namespace VoicesOfWynn\Controllers\Api\BootupActions;
 
 use VoicesOfWynn\Controllers\Api\ApiController;
 use VoicesOfWynn\Models\Api\FunFacts\FunFactGenerator;
+use VoicesOfWynn\Models\Api\MessageBroadcast\BroadcastLoader;
 use VoicesOfWynn\Models\Api\UsageAnalysis\BootupLogger;
 use VoicesOfWynn\Models\Api\VersionChecker\VersionChecker;
 
@@ -23,7 +24,7 @@ class ModBootupLogger extends ApiController
         $uuidHash = @$_GET['id'];
         $ipHash = hash('sha256', $_SERVER['REMOTE_ADDR']);
         if (empty($uuidHash) || empty($ipHash)) {
-            //No stats, no fun fact or version check for you
+            //No stats --> no fun fact, broadcast or version check for you
             return 400;
         }
         $logger = new BootupLogger();
@@ -36,7 +37,10 @@ class ModBootupLogger extends ApiController
         $joker = new FunFactGenerator();
         $funFact = $joker->getRandomFact();
 
-        $response = array_merge($versionInfo, array('fact' => $funFact));
+        $broadcastLoader = new BroadcastLoader();
+        $broadcast = $broadcastLoader->loadBroadcast();
+
+        $response = array_merge($versionInfo, ['fact' => $funFact, 'broadcast' => $broadcast]);
 
         echo json_encode($response);
         return ($logResult !== 204) ? $logResult : 200;
