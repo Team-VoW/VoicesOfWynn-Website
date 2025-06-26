@@ -84,7 +84,7 @@ class Report implements JsonSerializable
             $properties['reporter'] = $this->player;
         }
         if (isset($this->submitted)) {
-            $properties['date reported'] = $this->submitted->format('Y-m-d H:i:s');
+            $properties['last reported'] = $this->submitted->format('Y-m-d H:i:s');
         }
         if (isset($this->reportedTimes)) {
             $properties['times reported'] = $this->reportedTimes;
