@@ -2,6 +2,7 @@
 
 namespace VoicesOfWynn\Models\Api\LineReporting;
 
+use DateTime;
 use PDO;
 use PDOException;
 use VoicesOfWynn\Models\Db;
@@ -94,18 +95,18 @@ class ReportReader
      * @param string|null $npcName Name of the NPC, whose lines should be returned
      * @return int HTTP response code
      */
-    public function getReportsByNpc(string $npcName = null, array $statuses): int
+    public function getReportsByNpc(string $npcName = null, array $statuses, int $minReportedTimes = 1, DateTime $maxCreationDateTime = null): int
     {
         $inString = '('.rtrim(str_repeat('?,', count($statuses)), ',').')';
         if (!empty($npcName)) {
             $npcName = $_GET['npc'];
-            $query = 'SELECT npc_name,pos_x,pos_y,pos_z,chat_message FROM report WHERE status IN '.$inString.' AND npc_name = ?;';
-            array_push($statuses, $npcName);
+            $query = 'SELECT npc_name,pos_x,pos_y,pos_z,chat_message FROM report WHERE status IN '.$inString.' AND npc_name = ? AND reported_times >= ? AND time_submitted >= ?;';
+            $parameters = array_merge($statuses, [$npcName, $minReportedTimes, (is_null($maxCreationDateTime)) ? '2013-01-01 00:00:00' : $maxCreationDateTime->format('Y-m-d H:i:s')]);
         }
         else {
-            $query = 'SELECT npc_name,pos_x,pos_y,pos_z,chat_message FROM report WHERE status IN '.$inString.';';
+            $query = 'SELECT npc_name,pos_x,pos_y,pos_z,chat_message FROM report WHERE status IN '.$inString.' AND reported_times >= ? AND time_submitted >= ?;';
+            $parameters = array_merge($statuses, [$minReportedTimes, (is_null($maxCreationDateTime)) ? '2013-01-01 00:00:00' : $maxCreationDateTime->format('Y-m-d H:i:s')]);
         }
-        $parameters = $statuses;
 
         $db = new Db('Api/LineReporting/DbInfo.ini');
 

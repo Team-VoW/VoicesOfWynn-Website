@@ -49,6 +49,14 @@ class ReportManager
                     $query = 'DELETE FROM report WHERE chat_message IN ('.$inString.')';
                     $parameters = $chatMessages;
                     break;
+                case 'd':
+                    $query = 'UPDATE report SET status = ? WHERE chat_message IN ('.$inString.')';
+                    $parameters = array_merge(['unprocessed'], $chatMessages);
+                    break;
+                case 'm':
+                    $query = 'UPDATE report SET status = ? WHERE chat_message IN ('.$inString.')';
+                    $parameters = array_merge(['forwarded'], $chatMessages);
+                    break;
                 case 'y':
                     $query = 'UPDATE report SET status = ? WHERE chat_message IN ('.$inString.')';
                     $parameters = array_merge(['accepted'], $chatMessages);
