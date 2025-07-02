@@ -6,7 +6,23 @@ use DateTime;
 use Exception;
 use JsonSerializable;
 use VoicesOfWynn\Models\Db;
+use OpenApi\Annotations as OA;
 
+/**
+ * @OA\Schema(
+ *     schema="Report",
+ *     @OA\Property(property="ID", type="integer"),
+ *     @OA\Property(property="message", type="string"),
+ *     @OA\Property(property="NPC", type="string"),
+ *     @OA\Property(property="X", type="integer"),
+ *     @OA\Property(property="Y", type="integer"),
+ *     @OA\Property(property="Z", type="integer"),
+ *     @OA\Property(property="reporter", type="string"),
+ *     @OA\Property(property="last reported", type="string"),
+ *     @OA\Property(property="times reported", type="integer"),
+ *     @OA\Property(property="status", type="string"),
+ * )
+ */
 class Report implements JsonSerializable
 {
     private int $id;

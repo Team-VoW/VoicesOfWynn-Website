@@ -7,7 +7,14 @@ use VoicesOfWynn\Controllers\Api\ApiKey;
 use VoicesOfWynn\Models\Api\DiscordIntegration\DiscordManager;
 use VoicesOfWynn\Models\Website\DiscordRole;
 use VoicesOfWynn\Models\Website\UserException;
+use OpenApi\Annotations as OA;
 
+/**
+ * @OA\Tag(
+ *     name="Discord Integration",
+ *     description="Endpoints for integrating with the Voices of Wynn Discord server."
+ * )
+ */
 class DiscordIntegration extends ApiController
 {
     public function process(array $args): int
@@ -43,6 +50,60 @@ class DiscordIntegration extends ApiController
     }
 
     /**
+     * @OA\Post(
+     *     path="/api/discord-integration",
+     *     summary="Synchronize a user",
+     *     tags={"Discord Integration"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="application/x-www-form-urlencoded",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     property="apiKey",
+     *                     type="string"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="action",
+     *                     type="string",
+     *                     enum={"syncUser"}
+     *                 ),
+     *                 @OA\Property(
+     *                     property="discordId",
+     *                     type="integer"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="discordName",
+     *                     type="string"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="imgurl",
+     *                     type="string"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="name",
+     *                     type="string"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="roles",
+     *                     type="string"
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success"
+     *     ),
+     *      @OA\Response(
+     *         response=201,
+     *         description="User created"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     )
+     * )
      * @throws UserException
      */
     private function post(): int

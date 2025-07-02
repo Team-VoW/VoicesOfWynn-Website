@@ -1,5 +1,5 @@
 # Use an official PHP image with Apache
-FROM php:8.1-apache
+FROM php:8.2-apache
 
 # Install necessary PHP extensions, Composer, and Java (required for Liquibase)
 RUN apt-get update && apt-get install -y \

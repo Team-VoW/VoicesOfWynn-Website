@@ -4,12 +4,18 @@ namespace VoicesOfWynn\Controllers\Api;
 
 use VoicesOfWynn\Controllers\Controller;
 use VoicesOfWynn\Controllers\Api\ApiKey;
+use OpenApi\Annotations as OA;
 
 /**
- * Base class for all API controllers
+ * @OA\Info(
+ *     title="Voices of Wynn API",
+ *     version="1.0.0",
+ *     description="API for the Voices of Wynn website and mod."
+ * )
  */
 abstract class ApiController extends Controller
 {
+
 
     /**
      * Controller constructor enabling output buffering and setting the Content-Type header

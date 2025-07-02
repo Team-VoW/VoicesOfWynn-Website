@@ -8,7 +8,14 @@
       "ext-mbstring": "*",
       "ext-curl": "*",
       "ezyang/htmlpurifier": "^4.14",
-      "ext-json": "*"
+      "ext-json": "*",
+        "zircote/swagger-php": "^5.1",
+        "doctrine/annotations": "^2.0"
+    },
+    "config": {
+        "platform": {
+            "php": "8.2.0"
+        }
     },
     "authors": [
         {

@@ -17,7 +17,9 @@ function autoloader(string $name): void
         $name = substr($name, strpos($name, '/') + 1);
     }
     $name .= '.php';
-    require $name;
+    if (file_exists($name)) {
+        require $name;
+    }
 }
 
 spl_autoload_register('VoicesOfWynn\autoloader');
