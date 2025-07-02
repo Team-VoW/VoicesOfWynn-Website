@@ -59,9 +59,11 @@ class DiscordIntegration extends ApiController
      *         @OA\MediaType(
      *             mediaType="application/x-www-form-urlencoded",
      *             @OA\Schema(
+     *                 required={"apiKey", "action", "discordId", "discordName"},
      *                 @OA\Property(
      *                     property="apiKey",
-     *                     type="string"
+     *                     type="string",
+     *                     default="testing"
      *                 ),
      *                 @OA\Property(
      *                     property="action",
@@ -93,7 +95,7 @@ class DiscordIntegration extends ApiController
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Success"
+     *         description="User updated"
      *     ),
      *      @OA\Response(
      *         response=201,

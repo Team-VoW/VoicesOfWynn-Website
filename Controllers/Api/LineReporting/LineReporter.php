@@ -13,7 +13,7 @@ use OpenApi\Annotations as OA;
 /**
  * @OA\Tag(
  *     name="Line Reporting",
- *     description="Endpoints for reporting unvoiced lines."
+ *     description="Endpoints for reporting and handling unvoiced lines."
  * )
  */
 class LineReporter extends ApiController
@@ -63,15 +63,18 @@ class LineReporter extends ApiController
      *             @OA\Schema(
      *                 @OA\Property(
      *                     property="full",
-     *                     type="string"
+     *                     type="string",
+     *                     default="[1/1] Test: This is an example line."
      *                 ),
      *                 @OA\Property(
      *                     property="npc",
-     *                     type="string"
+     *                     type="string",
+     *                     default="test"
      *                 ),
      *                 @OA\Property(
      *                     property="player",
-     *                     type="string"
+     *                     type="string",
+     *                     default="anonymous"
      *                 ),
      *                 @OA\Property(
      *                     property="x",
@@ -119,6 +122,7 @@ class LineReporter extends ApiController
      * @OA\Post(
      *     path="/api/unvoiced-line-report/import",
      *     summary="Import unvoiced lines",
+     *     description="Import multiple unvoiced lines with a specified status. Status codes: 'd' = draft, 'm' = missing, 'y' = yes/accepted, 'n' = no/rejected, 'v' = voiced/completed",
      *     tags={"Line Reporting"},
      *     @OA\RequestBody(
      *         required=true,
@@ -126,14 +130,21 @@ class LineReporter extends ApiController
      *             mediaType="application/x-www-form-urlencoded",
      *             @OA\Schema(
      *                 @OA\Property(
-     *                     property="lines",
+     *                     property="apiKey",
+     *                     type="string",
+     *                     default="testing"  
+     *                 ),
+     *                 @OA\Property(
+     *                     property="lines[]",
      *                     type="array",
-     *                     @OA\Items(type="string")
+     *                     @OA\Items(type="string"),
+     *                     example={"[1/2] Guard: Halt! Who goes there?"}
      *                 ),
      *                 @OA\Property(
      *                     property="status",
      *                     type="string",
-     *                     enum={"d", "m", "y", "n", "v"}
+     *                     enum={"d", "m", "y", "n", "v"},
+     *                     description="Status to assign to imported lines: 'd' = draft, 'm' = missing, 'y' = yes/accepted, 'n' = no/rejected, 'v' = voiced/completed"
      *                 )
      *             )
      *         )
@@ -145,6 +156,10 @@ class LineReporter extends ApiController
      *     @OA\Response(
      *         response=400,
      *         description="Bad request"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
      *     ),
      *     @OA\Response(
      *         response=500,
@@ -168,13 +183,13 @@ class LineReporter extends ApiController
     /**
      * @OA\Get(
      *     path="/api/unvoiced-line-report/index",
-     *     summary="Get unvoiced lines",
+     *     summary="Get all lines in draft state, after that set their state to forwarded",
      *     tags={"Line Reporting"},
      *     @OA\Parameter(
      *         name="apiKey",
      *         in="query",
      *         required=true,
-     *         @OA\Schema(type="string")
+     *         @OA\Schema(type="string", default="testing")
      *     ),
      *     @OA\Parameter(
      *         name="npc",
@@ -185,7 +200,10 @@ class LineReporter extends ApiController
      *     @OA\Response(
      *         response=200,
      *         description="Success",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Report"))
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(type="object")
+     *         )
      *     ),
      *     @OA\Response(
      *         response=401,
@@ -229,18 +247,18 @@ class LineReporter extends ApiController
      *         name="apiKey",
      *         in="query",
      *         required=true,
-     *         @OA\Schema(type="string")
+     *         @OA\Schema(type="string", default="testing")
      *     ),
      *     @OA\Parameter(
      *         name="line",
      *         in="query",
      *         required=true,
-     *         @OA\Schema(type="string")
+     *         @OA\Schema(type="string", default="[1/1] Test: This is an example line.")
      *     ),
      *     @OA\Response(
      *         response=200,
      *         description="Success",
-     *         @OA\JsonContent(ref="#/components/schemas/Report")
+     *         @OA\JsonContent(type="object")
      *     ),
      *     @OA\Response(
      *         response=401,
@@ -295,10 +313,11 @@ class LineReporter extends ApiController
      *             @OA\Schema(
      *                 @OA\Property(
      *                     property="apiKey",
-     *                     type="string"
+     *                     type="string",
+     *                     default="testing"
      *                 ),
      *                 @OA\Property(
-     *                     property="lines",
+     *                     property="lines[]",
      *                     type="array",
      *                     @OA\Items(type="string")
      *                 ),
@@ -365,11 +384,12 @@ class LineReporter extends ApiController
      *             @OA\Schema(
      *                 @OA\Property(
      *                     property="apiKey",
-     *                     type="string"
+     *                     type="string",
+     *                     default="testing"
      *                 ),
      *                 @OA\Property(
      *                     property="npc",
-     *                     type="string"
+     *                     type="string", default="",
      *                 )
      *             )
      *         )
@@ -415,7 +435,7 @@ class LineReporter extends ApiController
      *         name="apiKey",
      *         in="query",
      *         required=true,
-     *         @OA\Schema(type="string")
+     *         @OA\Schema(type="string", default="testing")
      *     ),
      *     @OA\Parameter(
      *         name="npc",
@@ -438,7 +458,10 @@ class LineReporter extends ApiController
      *     @OA\Response(
      *         response=200,
      *         description="Success",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Report"))
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(type="object")
+     *         )
      *     ),
      *     @OA\Response(
      *         response=401,
@@ -491,7 +514,7 @@ class LineReporter extends ApiController
      *         name="apiKey",
      *         in="query",
      *         required=true,
-     *         @OA\Schema(type="string")
+     *         @OA\Schema(type="string", default="testing")
      *     ),
      *     @OA\Parameter(
      *         name="npc",
@@ -514,7 +537,10 @@ class LineReporter extends ApiController
      *     @OA\Response(
      *         response=200,
      *         description="Success",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Report"))
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(type="object")
+     *         )
      *     ),
      *     @OA\Response(
      *         response=401,
@@ -567,7 +593,7 @@ class LineReporter extends ApiController
      *         name="apiKey",
      *         in="query",
      *         required=true,
-     *         @OA\Schema(type="string")
+     *         @OA\Schema(type="string", default="testing")
      *     ),
      *     @OA\Parameter(
      *         name="npc",
@@ -590,7 +616,10 @@ class LineReporter extends ApiController
      *     @OA\Response(
      *         response=200,
      *         description="Success",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Report"))
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(type="object")
+     *         )
      *     ),
      *     @OA\Response(
      *         response=401,

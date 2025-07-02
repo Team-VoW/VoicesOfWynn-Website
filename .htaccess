@@ -1,4 +1,4 @@
-Header set Access-Control-Allow-Origin "http://localhost:8081"
+Header set Access-Control-Allow-Origin "http://localhost:8090"
 Options -Indexes
 
 RewriteEngine On

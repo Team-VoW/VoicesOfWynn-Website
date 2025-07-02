@@ -44,9 +44,11 @@ class AnalysisProcessor extends ApiController
      *         @OA\MediaType(
      *             mediaType="application/x-www-form-urlencoded",
      *             @OA\Schema(
+     *                 required={"apiKey"},
      *                 @OA\Property(
      *                     property="apiKey",
-     *                     type="string"
+     *                     type="string",
+     *                     default="testing"
      *                 )
      *             )
      *         )
