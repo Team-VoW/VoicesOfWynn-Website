@@ -30,6 +30,66 @@ class DiscordIntegration extends ApiController
     }
 
     /**
+     * @OA\Get(
+     *     path="/api/discord-integration",
+     *     summary="Get Discord integration data",
+     *     tags={"Discord Integration"},
+     *     @OA\Parameter(
+     *         name="apiKey",
+     *         in="query",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="string",
+     *             default="testing"
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="action",
+     *         in="query",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="string",
+     *             enum={"getAllUsers"}
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 type="array",
+     *                 @OA\Items(
+     *                     type="object",
+     *                     description="User object with all account information including roles"
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Bad request - invalid action"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized - invalid API key"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal server error",
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="error",
+     *                     type="string",
+     *                     description="Error message"
+     *                 )
+     *             )
+     *         )
+     *     )
+     * )
      * @throws UserException
      */
     private function get(): int
@@ -42,6 +102,14 @@ class DiscordIntegration extends ApiController
         switch ($_GET['action']) {
             case 'getAllUsers':
                 $users = $manager->getAllUsers();
+                $decoded = json_decode($users, true);
+                
+                // Check if the response contains an error
+                if (isset($decoded['error'])) {
+                    echo $users;
+                    return 500;
+                }
+                
                 echo $users;
                 return 200;
             default:

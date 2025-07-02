@@ -24,6 +24,14 @@ class AccountManager
             true
         );
 
+        // Handle case where queries return false
+        if ($userData === false) {
+            return array();
+        }
+        if ($userRoles === false) {
+            $userRoles = array();
+        }
+
         $users = array();
         $role_array_itterator = 0;
         foreach ($userData as $userInfo) {
