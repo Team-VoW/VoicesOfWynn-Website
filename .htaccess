@@ -1,4 +1,6 @@
 Header set Access-Control-Allow-Origin "http://localhost:8090"
+Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS, HEAD"
+Header set Access-Control-Allow-Headers "Content-Type, Authorization"
 Options -Indexes
 
 RewriteEngine On
