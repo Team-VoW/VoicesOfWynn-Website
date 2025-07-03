@@ -501,10 +501,10 @@ br { margin-top: 2rem; }
         }
 
         .broadcast-message {
-            border: 2px solid gold;
+            border: 2px solid violet;
             width: 100%;
-            padding: 1rem;
-            background-image: linear-gradient(to right, #ffff8f, #ff8fff);
+            padding: 0;
+            background-image: linear-gradient(to right, #cf9fff, #ff8fff);
             border-radius: 1rem;
             font-weight: bold;
         }
