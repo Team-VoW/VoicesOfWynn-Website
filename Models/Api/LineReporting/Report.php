@@ -15,9 +15,9 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: "ID", type: "integer", description: "Unique identifier for the report"),
         new OA\Property(property: "message", type: "string", description: "The chat message/line content"),
         new OA\Property(property: "NPC", type: "string", description: "Name of the NPC", nullable: true),
-        new OA\Property(property: "X", type: "integer", description: "X coordinate", nullable: true),
-        new OA\Property(property: "Y", type: "integer", description: "Y coordinate", nullable: true),
-        new OA\Property(property: "Z", type: "integer", description: "Z coordinate", nullable: true),
+        new OA\Property(property: "X", type: "string", description: "X coordinate", nullable: true),
+        new OA\Property(property: "Y", type: "string", description: "Y coordinate", nullable: true),
+        new OA\Property(property: "Z", type: "string", description: "Z coordinate", nullable: true),
         new OA\Property(property: "reporter", type: "string", description: "Name of the player who reported this line"),
         new OA\Property(property: "last reported", type: "string", description: "Date and time when this was last reported", format: "datetime"),
         new OA\Property(property: "times reported", type: "integer", description: "Number of times this line was reported"),
@@ -29,12 +29,11 @@ use OpenApi\Attributes as OA;
     schema: "UnvoicedLineReport",
     description: "Simplified report structure for unvoiced line listings",
     properties: [
-        new OA\Property(property: "npc_name", type: "string", description: "Name of the NPC", nullable: true),
-        new OA\Property(property: "pos_x", type: "integer", description: "X coordinate", nullable: true),
-        new OA\Property(property: "pos_y", type: "integer", description: "Y coordinate", nullable: true),
-        new OA\Property(property: "pos_z", type: "integer", description: "Z coordinate", nullable: true),
-        new OA\Property(property: "player", type: "string", description: "Name of the player who reported this line"),
-        new OA\Property(property: "chat_message", type: "string", description: "The chat message/line content")
+        new OA\Property(property: "message", type: "string", description: "The chat message/line content"),
+        new OA\Property(property: "NPC", type: "string", description: "Name of the NPC", nullable: true),
+        new OA\Property(property: "X", type: "string", description: "X coordinate", nullable: true),
+        new OA\Property(property: "Y", type: "string", description: "Y coordinate", nullable: true),
+        new OA\Property(property: "Z", type: "string", description: "Z coordinate", nullable: true)
     ]
 )]
 class Report implements JsonSerializable

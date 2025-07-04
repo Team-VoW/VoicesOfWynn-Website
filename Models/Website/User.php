@@ -14,14 +14,20 @@ use OpenApi\Attributes as OA;
 #[OA\Schema(
     schema: "User",
     properties: [
-        new OA\Property(property: "id", type: "integer"),
-        new OA\Property(property: "email", type: "string"),
-        new OA\Property(property: "display_name", type: "string"),
-        new OA\Property(property: "bio", type: "string"),
-        new OA\Property(property: "discord_id", type: "integer"),
-        new OA\Property(property: "discord_name", type: "string"),
-        new OA\Property(property: "avatar", type: "string"),
-        new OA\Property(property: "roles", type: "array", items: new OA\Items(type: "string"))
+        new OA\Property(property: "id", type: "integer", description: "User ID"),
+        new OA\Property(property: "displayName", type: "string", description: "User's display name"),
+        new OA\Property(property: "email", type: "string", nullable: true, description: "User's email address"),
+        new OA\Property(property: "publicEmail", type: "boolean", description: "Whether email is public"),
+        new OA\Property(property: "avatarLink", type: "string", description: "Link to user's avatar image"),
+        new OA\Property(property: "bio", type: "string", nullable: true, description: "User's biography"),
+        new OA\Property(property: "lore", type: "string", description: "User's lore/quote"),
+        new OA\Property(property: "systemAdmin", type: "boolean", description: "Whether user is a system administrator"),
+        new OA\Property(property: "discordId", type: "integer", nullable: true, description: "Discord user ID"),
+        new OA\Property(property: "discordName", type: "string", nullable: true, description: "Discord username"),
+        new OA\Property(property: "youtube", type: "string", nullable: true, description: "YouTube channel"),
+        new OA\Property(property: "twitter", type: "string", nullable: true, description: "Twitter handle"),
+        new OA\Property(property: "castingCallClub", type: "string", nullable: true, description: "Casting Call Club username"),
+        new OA\Property(property: "roles", type: "array", items: new OA\Items(ref: "#/components/schemas/DiscordRole"), description: "User's Discord roles")
     ]
 )]
 class User implements JsonSerializable
