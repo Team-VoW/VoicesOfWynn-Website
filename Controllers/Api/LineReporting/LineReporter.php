@@ -10,10 +10,7 @@ use VoicesOfWynn\Models\Api\LineReporting\ReportManager;
 use VoicesOfWynn\Models\Api\LineReporting\ReportReader;
 use OpenApi\Attributes as OA;
 
-#[OA\Tag(
-    name: "Line Reporting",
-    description: "Endpoints for reporting and handling unvoiced lines."
-)]
+#[OA\Tag(name: "Line Reporting", description: "Endpoints for reporting and handling unvoiced lines.")]
 class LineReporter extends ApiController
 {
 
