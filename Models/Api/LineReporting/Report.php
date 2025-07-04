@@ -30,9 +30,9 @@ use OpenApi\Attributes as OA;
     description: "Simplified report structure for unvoiced line listings",
     properties: [
         new OA\Property(property: "npc_name", type: "string", description: "Name of the NPC", nullable: true),
-        new OA\Property(property: "pos_x", type: "string", description: "X coordinate", nullable: true),
-        new OA\Property(property: "pos_y", type: "string", description: "Y coordinate", nullable: true),
-        new OA\Property(property: "pos_z", type: "string", description: "Z coordinate", nullable: true),
+        new OA\Property(property: "pos_x", type: "integer", description: "X coordinate", nullable: true),
+        new OA\Property(property: "pos_y", type: "integer", description: "Y coordinate", nullable: true),
+        new OA\Property(property: "pos_z", type: "integer", description: "Z coordinate", nullable: true),
         new OA\Property(property: "player", type: "string", description: "Name of the player who reported this line"),
         new OA\Property(property: "chat_message", type: "string", description: "The chat message/line content")
     ]
