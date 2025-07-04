@@ -9,21 +9,21 @@ use JsonSerializable;
 use PDOException;
 use VoicesOfWynn\Controllers\Website\Account\Account;
 use VoicesOfWynn\Models\Db;
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Schema(
- *     schema="User",
- *     @OA\Property(property="id", type="integer"),
- *     @OA\Property(property="email", type="string"),
- *     @OA\Property(property="display_name", type="string"),
- *     @OA\Property(property="bio", type="string"),
- *     @OA\Property(property="discord_id", type="integer"),
- *     @OA\Property(property="discord_name", type="string"),
- *     @OA\Property(property="avatar", type="string"),
- *     @OA\Property(property="roles", type="array", @OA\Items(type="string")),
- * )
- */
+#[OA\Schema(
+    schema: "User",
+    properties: [
+        new OA\Property(property: "id", type: "integer"),
+        new OA\Property(property: "email", type: "string"),
+        new OA\Property(property: "display_name", type: "string"),
+        new OA\Property(property: "bio", type: "string"),
+        new OA\Property(property: "discord_id", type: "integer"),
+        new OA\Property(property: "discord_name", type: "string"),
+        new OA\Property(property: "avatar", type: "string"),
+        new OA\Property(property: "roles", type: "array", items: new OA\Items(type: "string"))
+    ]
+)]
 class User implements JsonSerializable
 {
     private const DEFAULT_PASSWORD_CHARACTERS = 'abcdefghijklmnopqrstuvwxyz0123456789';

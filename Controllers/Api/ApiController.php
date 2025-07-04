@@ -4,15 +4,22 @@ namespace VoicesOfWynn\Controllers\Api;
 
 use VoicesOfWynn\Controllers\Controller;
 use VoicesOfWynn\Controllers\Api\ApiKey;
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Info(
- *     title="Voices of Wynn API",
- *     version="1.0.0",
- *     description="API for the Voices of Wynn website and mod."
- * )
- */
+#[OA\Info(
+    title: "Voices of Wynn API",
+    version: "1.0.0",
+    description: "API for the Voices of Wynn website and mod."
+)]
+
+#[OA\Schema(
+    schema: "Error",
+    description: "Standard error response",
+    properties: [
+        new OA\Property(property: "error", type: "string", description: "Error message"),
+        new OA\Property(property: "code", type: "integer", description: "HTTP status code")
+    ]
+)]
 abstract class ApiController extends Controller
 {
 

@@ -6,23 +6,37 @@ use DateTime;
 use Exception;
 use JsonSerializable;
 use VoicesOfWynn\Models\Db;
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Schema(
- *     schema="Report",
- *     @OA\Property(property="ID", type="integer"),
- *     @OA\Property(property="message", type="string"),
- *     @OA\Property(property="NPC", type="string"),
- *     @OA\Property(property="X", type="integer"),
- *     @OA\Property(property="Y", type="integer"),
- *     @OA\Property(property="Z", type="integer"),
- *     @OA\Property(property="reporter", type="string"),
- *     @OA\Property(property="last reported", type="string"),
- *     @OA\Property(property="times reported", type="integer"),
- *     @OA\Property(property="status", type="string"),
- * )
- */
+#[OA\Schema(
+    schema: "Report",
+    description: "A report containing information about an unvoiced line",
+    properties: [
+        new OA\Property(property: "ID", type: "integer", description: "Unique identifier for the report"),
+        new OA\Property(property: "message", type: "string", description: "The chat message/line content"),
+        new OA\Property(property: "NPC", type: "string", description: "Name of the NPC", nullable: true),
+        new OA\Property(property: "X", type: "integer", description: "X coordinate", nullable: true),
+        new OA\Property(property: "Y", type: "integer", description: "Y coordinate", nullable: true),
+        new OA\Property(property: "Z", type: "integer", description: "Z coordinate", nullable: true),
+        new OA\Property(property: "reporter", type: "string", description: "Name of the player who reported this line"),
+        new OA\Property(property: "last reported", type: "string", description: "Date and time when this was last reported", format: "datetime"),
+        new OA\Property(property: "times reported", type: "integer", description: "Number of times this line was reported"),
+        new OA\Property(property: "status", type: "string", description: "Current status of the report", enum: ["unprocessed", "forwarded", "accepted", "rejected", "fixed", "draft", "missing"])
+    ]
+)]
+
+#[OA\Schema(
+    schema: "UnvoicedLineReport",
+    description: "Simplified report structure for unvoiced line listings",
+    properties: [
+        new OA\Property(property: "npc_name", type: "string", description: "Name of the NPC", nullable: true),
+        new OA\Property(property: "pos_x", type: "string", description: "X coordinate", nullable: true),
+        new OA\Property(property: "pos_y", type: "string", description: "Y coordinate", nullable: true),
+        new OA\Property(property: "pos_z", type: "string", description: "Z coordinate", nullable: true),
+        new OA\Property(property: "player", type: "string", description: "Name of the player who reported this line"),
+        new OA\Property(property: "chat_message", type: "string", description: "The chat message/line content")
+    ]
+)]
 class Report implements JsonSerializable
 {
     private int $id;

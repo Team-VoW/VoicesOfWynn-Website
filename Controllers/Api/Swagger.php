@@ -23,7 +23,10 @@ class Swagger extends ApiController{
             AnnotationReader::addGlobalIgnoredName('property-write');
         }
         $generator = new Generator();
-        $openapi = $generator->generate([__DIR__]);
+        $openapi = $generator->generate([
+            __DIR__,  // Controllers/Api directory
+            __DIR__ . '/../../Models'  // Models directory
+        ]);
         echo $openapi->toJson();
         return 200;
     }

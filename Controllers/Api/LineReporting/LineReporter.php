@@ -8,14 +8,12 @@ use VoicesOfWynn\Controllers\Api\ApiKey;
 use VoicesOfWynn\Models\Api\LineReporting\ReportAdder;
 use VoicesOfWynn\Models\Api\LineReporting\ReportManager;
 use VoicesOfWynn\Models\Api\LineReporting\ReportReader;
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="Line Reporting",
- *     description="Endpoints for reporting and handling unvoiced lines."
- * )
- */
+#[OA\Tag(
+    name: "Line Reporting",
+    description: "Endpoints for reporting and handling unvoiced lines."
+)]
 class LineReporter extends ApiController
 {
 
@@ -51,64 +49,34 @@ class LineReporter extends ApiController
         }
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/unvoiced-line-report/new",
-     *     summary="Create a new unvoiced line report",
-     *     tags={"Line Reporting"},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\MediaType(
-     *             mediaType="application/x-www-form-urlencoded",
-     *             @OA\Schema(
-     *                 @OA\Property(
-     *                     property="full",
-     *                     type="string",
-     *                     default="[1/1] Test: This is an example line."
-     *                 ),
-     *                 @OA\Property(
-     *                     property="npc",
-     *                     type="string",
-     *                     default="test"
-     *                 ),
-     *                 @OA\Property(
-     *                     property="player",
-     *                     type="string",
-     *                     default="anonymous"
-     *                 ),
-     *                 @OA\Property(
-     *                     property="x",
-     *                     type="integer"
-     *                 ),
-     *                 @OA\Property(
-     *                     property="y",
-     *                     type="integer"
-     *                 ),
-     *                 @OA\Property(
-     *                     property="z",
-     *                     type="integer"
-     *                 )
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="Report created"
-     *     ),
-     *     @OA\Response(
-     *         response=204,
-     *         description="Report updated"
-     *     ),
-     *     @OA\Response(
-     *         response=406,
-     *         description="Not acceptable"
-     *     ),
-     *     @OA\Response(
-     *         response=500,
-     *         description="Internal server error"
-     *     )
-     * )
-     */
+    #[OA\Post(
+        path: "/api/unvoiced-line-report/new",
+        summary: "Create a new unvoiced line report",
+        tags: ["Line Reporting"],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\MediaType(
+                mediaType: "application/x-www-form-urlencoded",
+                schema: new OA\Schema(
+                    properties: [
+                        new OA\Property(property: "full", type: "string", default: "[1/1] Test: This is an example line."),
+                        new OA\Property(property: "npc", type: "string", default: "test"),
+                        new OA\Property(property: "player", type: "string", default: "anonymous"),
+                        new OA\Property(property: "x", type: "integer"),
+                        new OA\Property(property: "y", type: "integer"),
+                        new OA\Property(property: "z", type: "integer")
+                    ],
+                    required: ["full", "npc", "player"]
+                )
+            )
+        ),
+        responses: [
+            new OA\Response(response: 201, description: "Report created"),
+            new OA\Response(response: 204, description: "Report updated"),
+            new OA\Response(response: 406, description: "Not acceptable"),
+            new OA\Response(response: 500, description: "Internal server error")
+        ]
+    )]
     private function newReport(): int
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -118,59 +86,41 @@ class LineReporter extends ApiController
         return $reportAdder->createReport($_POST['full'], $_POST['npc'], $_POST['player'], $_POST['x'], $_POST['y'], $_POST['z']);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/unvoiced-line-report/import",
-     *     summary="Import unvoiced lines",
-     *     description="Import multiple unvoiced lines with a specified status. Status codes: 'd' = draft, 'm' = missing, 'y' = yes/accepted, 'n' = no/rejected, 'v' = voiced/completed",
-     *     tags={"Line Reporting"},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\MediaType(
-     *             mediaType="application/x-www-form-urlencoded",
-     *             @OA\Schema(
-     *                 @OA\Property(
-     *                     property="apiKey",
-     *                     type="string",
-     *                     default="testing"  
-     *                 ),
-     *                 @OA\Property(
-     *                     property="lines[]",
-     *                     type="array",
-     *                     @OA\Items(type="string"),
-     *                     example={"[1/2] Guard: Halt! Who goes there?"}
-     *                 ),
-     *                 @OA\Property(
-     *                     property="status",
-     *                     type="string",
-     *                     enum={"d", "m", "y", "n", "v"},
-     *                     description="Status to assign to imported lines: 'd' = draft, 'm' = missing, 'y' = yes/accepted, 'n' = no/rejected, 'v' = voiced/completed"
-     *                 )
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=204,
-     *         description="Success"
-     *     ),
-     *     @OA\Response(
-     *         response=400,
-     *         description="Bad request"
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="Unauthorized"
-     *     ),
-     *     @OA\Response(
-     *         response=500,
-     *         description="Internal server error"
-     *     )
-     * )
-     */
+    #[OA\Post(
+        path: "/api/unvoiced-line-report/import",
+        summary: "Import unvoiced lines",
+        description: "Import multiple unvoiced lines with a specified status. Status codes: 'd' = draft, 'm' = missing, 'y' = yes/accepted, 'n' = no/rejected, 'v' = voiced/completed",
+        tags: ["Line Reporting"],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\MediaType(
+                mediaType: "application/x-www-form-urlencoded",
+                schema: new OA\Schema(
+                    properties: [
+                        new OA\Property(property: "apiKey", type: "string", default: "testing"),
+                        new OA\Property(property: "lines[]", type: "array", items: new OA\Items(type: "string"), example: ["[1/2] Guard: Halt! Who goes there?"]),
+                        new OA\Property(property: "status", type: "string", enum: ["d", "m", "y", "n", "v"], 
+                        description: "Status to assign to imported lines: 'd' = draft, 'm' = missing, 'y' = yes/accepted, 'n' = no/rejected, 'v' = voiced/completed")
+                    ],
+                    required: ["apiKey", "lines", "status"]
+                )
+            )
+        ),
+        responses: [
+            new OA\Response(response: 204, description: "Success"),
+            new OA\Response(response: 400, description: "Bad request"),
+            new OA\Response(response: 401, description: "Unauthorized"),
+            new OA\Response(response: 500, description: "Internal server error")
+        ]
+    )]
     private function importLines(): int
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return 405;
+        }
+        
+        if (!$this->checkApiKey(ApiKey::LINE_REPORT_MODIFY, $_POST['apiKey'])) {
+            return 401;
         }
         
         if (empty($_POST['status'])) {
@@ -180,41 +130,27 @@ class LineReporter extends ApiController
         return $reportAdder->importLines($_POST['lines'], $_POST['status']);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/unvoiced-line-report/index",
-     *     summary="Get all lines in draft state, after that set their state to forwarded",
-     *     tags={"Line Reporting"},
-     *     @OA\Parameter(
-     *         name="apiKey",
-     *         in="query",
-     *         required=true,
-     *         @OA\Schema(type="string", default="testing")
-     *     ),
-     *     @OA\Parameter(
-     *         name="npc",
-     *         in="query",
-     *         required=false,
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Success",
-     *         @OA\JsonContent(
-     *             type="array",
-     *             @OA\Items(type="object")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="Unauthorized"
-     *     ),
-     *     @OA\Response(
-     *         response=500,
-     *         description="Internal server error"
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: "/api/unvoiced-line-report/index",
+        summary: "Get all lines in draft state, after that set their state to forwarded",
+        tags: ["Line Reporting"],
+        parameters: [
+            new OA\Parameter(name: "apiKey", in: "query", required: true, schema: new OA\Schema(type: "string", default: "testing")),
+            new OA\Parameter(name: "npc", in: "query", required: false, schema: new OA\Schema(type: "string"))
+        ],
+        responses: [
+            new OA\Response(
+                response: 200, 
+                description: "Success", 
+                content: new OA\JsonContent(
+                    type: "array", 
+                    items: new OA\Items(ref: "#/components/schemas/UnvoicedLineReport")
+                )
+            ),
+            new OA\Response(response: 401, description: "Unauthorized"),
+            new OA\Response(response: 500, description: "Internal server error")
+        ]
+    )]
     private function getUnvoicedLines(): int
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
@@ -238,46 +174,26 @@ class LineReporter extends ApiController
         return 200;
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/unvoiced-line-report/raw",
-     *     summary="Get raw report info",
-     *     tags={"Line Reporting"},
-     *     @OA\Parameter(
-     *         name="apiKey",
-     *         in="query",
-     *         required=true,
-     *         @OA\Schema(type="string", default="testing")
-     *     ),
-     *     @OA\Parameter(
-     *         name="line",
-     *         in="query",
-     *         required=true,
-     *         @OA\Schema(type="string", default="[1/1] Test: This is an example line.")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Success",
-     *         @OA\JsonContent(type="object")
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="Unauthorized"
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Not found"
-     *     ),
-     *     @OA\Response(
-     *         response=406,
-     *         description="Not acceptable"
-     *     ),
-     *     @OA\Response(
-     *         response=500,
-     *         description="Internal server error"
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: "/api/unvoiced-line-report/raw",
+        summary: "Get raw report info",
+        tags: ["Line Reporting"],
+        parameters: [
+            new OA\Parameter(name: "apiKey", in: "query", required: true, schema: new OA\Schema(type: "string", default: "testing")),
+            new OA\Parameter(name: "line", in: "query", required: true, schema: new OA\Schema(type: "string", default: "[1/1] Test: This is an example line."))
+        ],
+        responses: [
+            new OA\Response(
+                response: 200, 
+                description: "Success", 
+                content: new OA\JsonContent(ref: "#/components/schemas/Report")
+            ),
+            new OA\Response(response: 401, description: "Unauthorized"),
+            new OA\Response(response: 404, description: "Not found"),
+            new OA\Response(response: 406, description: "Not acceptable"),
+            new OA\Response(response: 500, description: "Internal server error")
+        ]
+    )]
     private function getRawReportInfo(): int
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
@@ -301,56 +217,32 @@ class LineReporter extends ApiController
         return 200;
     }
 
-    /**
-     * @OA\Put(
-     *     path="/api/unvoiced-line-report/resolve",
-     *     summary="Update report status",
-     *     tags={"Line Reporting"},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\MediaType(
-     *             mediaType="application/x-www-form-urlencoded",
-     *             @OA\Schema(
-     *                 @OA\Property(
-     *                     property="apiKey",
-     *                     type="string",
-     *                     default="testing"
-     *                 ),
-     *                 @OA\Property(
-     *                     property="lines[]",
-     *                     type="array",
-     *                     @OA\Items(type="string")
-     *                 ),
-     *                 @OA\Property(
-     *                     property="status",
-     *                     type="string",
-     *                     enum={"r", "d", "m", "y", "n", "v"}
-     *                 )
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=204,
-     *         description="Success"
-     *     ),
-     *     @OA\Response(
-     *         response=400,
-     *         description="Bad request"
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="Unauthorized"
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Not found"
-     *     ),
-     *     @OA\Response(
-     *         response=500,
-     *         description="Internal server error"
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: "/api/unvoiced-line-report/resolve",
+        summary: "Update report status",
+        tags: ["Line Reporting"],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\MediaType(
+                mediaType: "application/x-www-form-urlencoded",
+                schema: new OA\Schema(
+                    properties: [
+                        new OA\Property(property: "apiKey", type: "string", default: "testing"),
+                        new OA\Property(property: "lines[]", type: "array", items: new OA\Items(type: "string")),
+                        new OA\Property(property: "status", type: "string", enum: ["r", "d", "m", "y", "n", "v"])
+                    ],
+                    required: ["apiKey", "lines", "status"]
+                )
+            )
+        ),
+        responses: [
+            new OA\Response(response: 204, description: "Success"),
+            new OA\Response(response: 400, description: "Bad request"),
+            new OA\Response(response: 401, description: "Unauthorized"),
+            new OA\Response(response: 404, description: "Not found"),
+            new OA\Response(response: 500, description: "Internal server error")
+        ]
+    )]
     private function updateReportStatus(): int
     {
         parse_str(file_get_contents("php://input"),$_PUT);
@@ -372,42 +264,29 @@ class LineReporter extends ApiController
         return $reportManager->updateReport($lines, $_PUT['status']);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/api/unvoiced-line-report/reset",
-     *     summary="Reset forwarded lines",
-     *     tags={"Line Reporting"},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\MediaType(
-     *             mediaType="application/x-www-form-urlencoded",
-     *             @OA\Schema(
-     *                 @OA\Property(
-     *                     property="apiKey",
-     *                     type="string",
-     *                     default="testing"
-     *                 ),
-     *                 @OA\Property(
-     *                     property="npc",
-     *                     type="string", default="",
-     *                 )
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=204,
-     *         description="Success"
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="Unauthorized"
-     *     ),
-     *     @OA\Response(
-     *         response=500,
-     *         description="Internal server error"
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: "/api/unvoiced-line-report/reset",
+        summary: "Reset forwarded lines",
+        tags: ["Line Reporting"],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\MediaType(
+                mediaType: "application/x-www-form-urlencoded",
+                schema: new OA\Schema(
+                    properties: [
+                        new OA\Property(property: "apiKey", type: "string", default: "testing"),
+                        new OA\Property(property: "npc", type: "string", default: "")
+                    ],
+                    required: ["apiKey"]
+                )
+            )
+        ),
+        responses: [
+            new OA\Response(response: 204, description: "Success"),
+            new OA\Response(response: 401, description: "Unauthorized"),
+            new OA\Response(response: 500, description: "Internal server error")
+        ]
+    )]
     private function resetForwardedLines(): int
     {
         parse_str(file_get_contents("php://input"),$_PUT);
@@ -426,53 +305,29 @@ class LineReporter extends ApiController
         return $reportManager->resetForwardedReports($npcName);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/unvoiced-line-report/accepted",
-     *     summary="Get accepted lines",
-     *     tags={"Line Reporting"},
-     *     @OA\Parameter(
-     *         name="apiKey",
-     *         in="query",
-     *         required=true,
-     *         @OA\Schema(type="string", default="testing")
-     *     ),
-     *     @OA\Parameter(
-     *         name="npc",
-     *         in="query",
-     *         required=false,
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         name="minreports",
-     *         in="query",
-     *         required=false,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="youngerthan",
-     *         in="query",
-     *         required=false,
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Success",
-     *         @OA\JsonContent(
-     *             type="array",
-     *             @OA\Items(type="object")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="Unauthorized"
-     *     ),
-     *     @OA\Response(
-     *         response=500,
-     *         description="Internal server error"
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: "/api/unvoiced-line-report/accepted",
+        summary: "Get accepted lines",
+        tags: ["Line Reporting"],
+        parameters: [
+            new OA\Parameter(name: "apiKey", in: "query", required: true, schema: new OA\Schema(type: "string", default: "testing")),
+            new OA\Parameter(name: "npc", in: "query", required: false, schema: new OA\Schema(type: "string")),
+            new OA\Parameter(name: "minreports", in: "query", required: false, schema: new OA\Schema(type: "integer")),
+            new OA\Parameter(name: "youngerthan", in: "query", required: false, schema: new OA\Schema(type: "string"))
+        ],
+        responses: [
+            new OA\Response(
+                response: 200, 
+                description: "Success", 
+                content: new OA\JsonContent(
+                    type: "array", 
+                    items: new OA\Items(ref: "#/components/schemas/UnvoicedLineReport")
+                )
+            ),
+            new OA\Response(response: 401, description: "Unauthorized"),
+            new OA\Response(response: 500, description: "Internal server error")
+        ]
+    )]
     private function getAcceptedLines(): int
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
@@ -505,53 +360,29 @@ class LineReporter extends ApiController
         return 200;
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/unvoiced-line-report/active",
-     *     summary="Get non-rejected lines",
-     *     tags={"Line Reporting"},
-     *     @OA\Parameter(
-     *         name="apiKey",
-     *         in="query",
-     *         required=true,
-     *         @OA\Schema(type="string", default="testing")
-     *     ),
-     *     @OA\Parameter(
-     *         name="npc",
-     *         in="query",
-     *         required=false,
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         name="minreports",
-     *         in="query",
-     *         required=false,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="youngerthan",
-     *         in="query",
-     *         required=false,
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Success",
-     *         @OA\JsonContent(
-     *             type="array",
-     *             @OA\Items(type="object")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="Unauthorized"
-     *     ),
-     *     @OA\Response(
-     *         response=500,
-     *         description="Internal server error"
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: "/api/unvoiced-line-report/active",
+        summary: "Get non-rejected lines",
+        tags: ["Line Reporting"],
+        parameters: [
+            new OA\Parameter(name: "apiKey", in: "query", required: true, schema: new OA\Schema(type: "string", default: "testing")),
+            new OA\Parameter(name: "npc", in: "query", required: false, schema: new OA\Schema(type: "string")),
+            new OA\Parameter(name: "minreports", in: "query", required: false, schema: new OA\Schema(type: "integer")),
+            new OA\Parameter(name: "youngerthan", in: "query", required: false, schema: new OA\Schema(type: "string"))
+        ],
+        responses: [
+            new OA\Response(
+                response: 200, 
+                description: "Success", 
+                content: new OA\JsonContent(
+                    type: "array", 
+                    items: new OA\Items(ref: "#/components/schemas/UnvoicedLineReport")
+                )
+            ),
+            new OA\Response(response: 401, description: "Unauthorized"),
+            new OA\Response(response: 500, description: "Internal server error")
+        ]
+    )]
     private function getNonRejectedLines(): int
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
@@ -584,53 +415,29 @@ class LineReporter extends ApiController
         return 200;
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/unvoiced-line-report/valid",
-     *     summary="Get valid NPC lines",
-     *     tags={"Line Reporting"},
-     *     @OA\Parameter(
-     *         name="apiKey",
-     *         in="query",
-     *         required=true,
-     *         @OA\Schema(type="string", default="testing")
-     *     ),
-     *     @OA\Parameter(
-     *         name="npc",
-     *         in="query",
-     *         required=false,
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         name="minreports",
-     *         in="query",
-     *         required=false,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="youngerthan",
-     *         in="query",
-     *         required=false,
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Success",
-     *         @OA\JsonContent(
-     *             type="array",
-     *             @OA\Items(type="object")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="Unauthorized"
-     *     ),
-     *     @OA\Response(
-     *         response=500,
-     *         description="Internal server error"
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: "/api/unvoiced-line-report/valid",
+        summary: "Get valid NPC lines",
+        tags: ["Line Reporting"],
+        parameters: [
+            new OA\Parameter(name: "apiKey", in: "query", required: true, schema: new OA\Schema(type: "string", default: "testing")),
+            new OA\Parameter(name: "npc", in: "query", required: false, schema: new OA\Schema(type: "string")),
+            new OA\Parameter(name: "minreports", in: "query", required: false, schema: new OA\Schema(type: "integer")),
+            new OA\Parameter(name: "youngerthan", in: "query", required: false, schema: new OA\Schema(type: "string"))
+        ],
+        responses: [
+            new OA\Response(
+                response: 200, 
+                description: "Success", 
+                content: new OA\JsonContent(
+                    type: "array", 
+                    items: new OA\Items(ref: "#/components/schemas/UnvoicedLineReport")
+                )
+            ),
+            new OA\Response(response: 401, description: "Unauthorized"),
+            new OA\Response(response: 500, description: "Internal server error")
+        ]
+    )]
     private function getValidNpcLines(): int
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'GET') {

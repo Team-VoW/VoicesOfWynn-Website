@@ -7,14 +7,9 @@ use VoicesOfWynn\Controllers\Api\ApiController;
 use VoicesOfWynn\Controllers\Api\ApiKey;
 use VoicesOfWynn\Models\Api\UsageAnalysis\BootupLogger;
 use VoicesOfWynn\Models\Api\UsageAnalysis\PingAggregator;
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="Usage Analysis",
- *     description="Endpoints for usage analysis."
- * )
- */
+#[OA\Tag(name: "Usage Analysis", description: "Endpoints for usage analysis.")]
 class AnalysisProcessor extends ApiController
 {
 
@@ -34,39 +29,26 @@ class AnalysisProcessor extends ApiController
         }
     }
 
-    /**
-     * @OA\Put(
-     *     path="/api/usage-analysis/aggregate",
-     *     summary="Aggregate usage data",
-     *     tags={"Usage Analysis"},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\MediaType(
-     *             mediaType="application/x-www-form-urlencoded",
-     *             @OA\Schema(
-     *                 required={"apiKey"},
-     *                 @OA\Property(
-     *                     property="apiKey",
-     *                     type="string",
-     *                     default="testing"
-     *                 )
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=204,
-     *         description="Success"
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="Unauthorized"
-     *     ),
-     *     @OA\Response(
-     *         response=500,
-     *         description="Internal server error"
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: "/api/usage-analysis/aggregate",
+        summary: "Aggregate usage data",
+        tags: ["Usage Analysis"]
+    )]
+    #[OA\RequestBody(
+        required: true,
+        content: new OA\MediaType(
+            mediaType: "application/x-www-form-urlencoded",
+            schema: new OA\Schema(
+                required: ["apiKey"],
+                properties: [
+                    new OA\Property(property: "apiKey", type: "string", default: "testing")
+                ]
+            )
+        )
+    )]
+    #[OA\Response(response: 204, description: "Success")]
+    #[OA\Response(response: 401, description: "Unauthorized")]
+    #[OA\Response(response: 500, description: "Internal server error")]
     private function aggregate(): int
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
