@@ -53,7 +53,6 @@ abstract class WebpageController extends Controller
     {
         header('Content-Type: text/html; charset=UTF-8');
         self::$data['base_broadcast'] = (new BroadcastLoader())->loadBroadcast();
-        self::$data['base_currentYear'] = date('Y');
     }
 
     /**
