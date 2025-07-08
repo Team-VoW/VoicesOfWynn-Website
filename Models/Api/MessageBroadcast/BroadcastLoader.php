@@ -15,8 +15,9 @@ class BroadcastLoader
     {
         $broadcasts = parse_ini_file(self::CONFIG_FILE, true);
         $result = [];
+        $currentTime = time();
         foreach ($broadcasts as $broadcast) {
-            if (strtotime($broadcast['since']) <= time() && strtotime($broadcast['until']) >= time()) {
+            if (strtotime($broadcast['since']) <= $currentTime && strtotime($broadcast['until']) >= $currentTime) {
                 $result[] = $broadcast['content'];
             }
         }
