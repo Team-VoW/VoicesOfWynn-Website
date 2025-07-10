@@ -30,7 +30,7 @@ Once the containers are running, you can access the following services:
 - **phpMyAdmin:** [http://localhost:8080](http://localhost:8080)  
   Use this interface to manage and inspect the MySQL database.
 
-- **API Documentation (Swagger UI):** [http://localhost:8000/api/docs](http://localhost:8000/api/docs)  
+- **API Documentation (Swagger UI):** [http://localhost:8090](http://localhost:8090)  
   Explore and test the API endpoints using Swagger UI.
 
 If you have some weird issues or want to reset everything do the command:
