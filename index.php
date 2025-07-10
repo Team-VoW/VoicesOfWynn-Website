@@ -10,6 +10,10 @@ require __DIR__.'/vendor/autoload.php';
 //Define and set autoloader for custom classes
 function autoloader(string $name): void
 {
+    // Only autoload classes from the VoicesOfWynn namespace
+    if (!str_starts_with($name, 'VoicesOfWynn\\')) {
+        return;
+    }
     //Replace '\' (used in namespaces) with '/' (used to navigate through directories)
     $name = str_replace('\\', '/', $name);
     //Remove the root folder from the path (this file is already in it)
@@ -17,9 +21,7 @@ function autoloader(string $name): void
         $name = substr($name, strpos($name, '/') + 1);
     }
     $name .= '.php';
-    if (file_exists($name)) {
-        require $name;
-    }
+    require $name;
 }
 
 spl_autoload_register('VoicesOfWynn\autoloader');
