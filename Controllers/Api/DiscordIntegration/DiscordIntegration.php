@@ -7,7 +7,9 @@ use VoicesOfWynn\Controllers\Api\ApiKey;
 use VoicesOfWynn\Models\Api\DiscordIntegration\DiscordManager;
 use VoicesOfWynn\Models\Website\DiscordRole;
 use VoicesOfWynn\Models\Website\UserException;
+use OpenApi\Attributes as OA;
 
+#[OA\Tag(name: "Discord Integration", description: "Endpoints for integrating with the Voices of Wynn Discord server.")]
 class DiscordIntegration extends ApiController
 {
     public function process(array $args): int
@@ -22,6 +24,21 @@ class DiscordIntegration extends ApiController
         }
     }
 
+    #[OA\Get(
+        path: "/api/discord-integration",
+        summary: "Get Discord integration data",
+        tags: ["Discord Integration"],
+        parameters: [
+            new OA\Parameter(name: "apiKey", in: "query", required: true, schema: new OA\Schema(type: "string", default: "testing")),
+            new OA\Parameter(name: "action", in: "query", required: true, schema: new OA\Schema(type: "string", enum: ["getAllUsers"]))
+        ],
+        responses: [
+            new OA\Response(response: 200, description: "Success", content: new OA\JsonContent(type: "array", items: new OA\Items(ref: "#/components/schemas/User"))),
+            new OA\Response(response: 400, description: "Bad request - invalid action"),
+            new OA\Response(response: 401, description: "Unauthorized - invalid API key"),
+            new OA\Response(response: 500, description: "Internal server error", content: new OA\JsonContent(properties: [new OA\Property(property: "error", type: "string", description: "Error message")]))
+        ]
+    )]
     /**
      * @throws UserException
      */
@@ -35,6 +52,14 @@ class DiscordIntegration extends ApiController
         switch ($_GET['action']) {
             case 'getAllUsers':
                 $users = $manager->getAllUsers();
+                $decoded = json_decode($users, true);
+                
+                // Check if the response contains an error
+                if (isset($decoded['error'])) {
+                    echo $users;
+                    return 500;
+                }
+                
                 echo $users;
                 return 200;
             default:
@@ -42,6 +67,34 @@ class DiscordIntegration extends ApiController
         }
     }
 
+    #[OA\Post(
+        path: "/api/discord-integration",
+        summary: "Synchronize a user",
+        tags: ["Discord Integration"],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\MediaType(
+                mediaType: "application/x-www-form-urlencoded",
+                schema: new OA\Schema(
+                    required: ["apiKey", "action", "discordId", "discordName"],
+                    properties: [
+                        new OA\Property(property: "apiKey", type: "string", default: "testing"),
+                        new OA\Property(property: "action", type: "string", enum: ["syncUser"]),
+                        new OA\Property(property: "discordId", type: "integer"),
+                        new OA\Property(property: "discordName", type: "string"),
+                        new OA\Property(property: "imgurl", type: "string"),
+                        new OA\Property(property: "name", type: "string"),
+                        new OA\Property(property: "roles", type: "string")
+                    ]
+                )
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: "User updated"),
+            new OA\Response(response: 201, description: "User created"),
+            new OA\Response(response: 401, description: "Unauthorized")
+        ]
+    )]
     /**
      * @throws UserException
      */
