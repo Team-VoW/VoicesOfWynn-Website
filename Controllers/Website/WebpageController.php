@@ -5,6 +5,7 @@ namespace VoicesOfWynn\Controllers\Website;
 use DateTime;
 use Exception;
 use VoicesOfWynn\Controllers\Controller;
+use VoicesOfWynn\Models\Api\MessageBroadcast\BroadcastLoader;
 use VoicesOfWynn\Models\Website\Comment;
 use VoicesOfWynn\Models\Website\DiscordRole;
 use VoicesOfWynn\Models\Website\ModDownload;
@@ -51,6 +52,7 @@ abstract class WebpageController extends Controller
     public function __construct()
     {
         header('Content-Type: text/html; charset=UTF-8');
+        self::$data['base_broadcast'] = (new BroadcastLoader())->loadBroadcast();
     }
 
     /**

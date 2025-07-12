@@ -38,9 +38,15 @@
             </div>
         </ul>
         <div id="vertical"></div>
-            <a href="" class="imglink">
-                <img class="logo" src="images/wynnvplogo.svg" alt="Voices of Wynn logo" width="160px" height="160px"/>
-            </a>
+        <a href="" class="imglink">
+            <img class="logo" src="images/wynnvplogo.svg" alt="Voices of Wynn logo" width="160px" height="160px"/>
+        </a>
+        <?php foreach (${basename(__FILE__, '.phtml').'_broadcast'} as $broadcast) : ?>
+            <table class="broadcast-message"><tr>
+                <td><img src="images/broadcast-icon.svg" style="height: 3rem;"></td>
+                <td><?= $broadcast ?></td>
+            </tr></table>
+        <?php endforeach ?>
     </div>
     <div class="content">
         <?php require $this->getNextView(); ?>

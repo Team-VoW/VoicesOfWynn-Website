@@ -504,6 +504,18 @@ br { margin-top: 2rem; }
                 margin-bottom: auto;
         }
 
+        .broadcast-message {
+            border: 2px solid violet;
+            width: 100%;
+            padding: 0;
+            background-image: linear-gradient(to right, #cf9fff, #ff8fff);
+            border-radius: 1rem;
+            font-weight: bold;
+        }
+        .broadcast-message:not(:last-child){
+            margin-bottom: 1rem;
+        }
+
 
 
                 /* ----- SPECIAL STYLES FOR LOGIN.PHTML ----- */
