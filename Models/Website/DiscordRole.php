@@ -3,8 +3,17 @@
 namespace VoicesOfWynn\Models\Website;
 
 use Exception;
+use OpenApi\Attributes as OA;
 use VoicesOfWynn\Models\Db;
 
+#[OA\Schema(
+    schema: "DiscordRole",
+    properties: [
+        new OA\Property(property: "name", type: "string", description: "Role name"),
+        new OA\Property(property: "color", type: "string", description: "Role color (hex code)"),
+        new OA\Property(property: "weight", type: "integer", description: "Role weight/priority")
+    ]
+)]
 class DiscordRole
 {
 	public string $name;

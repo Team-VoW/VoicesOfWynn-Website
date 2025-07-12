@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   web:
@@ -71,6 +71,15 @@ services:
     depends_on:
       - website
       - api
+
+  swagger-ui:
+    image: swaggerapi/swagger-ui
+    ports:
+      - "8090:8080"
+    environment:
+      - SWAGGER_JSON_URL=http://localhost/api/swagger
+    depends_on:
+      - web
 
 volumes:
   website_data:

@@ -24,13 +24,22 @@ class DiscordManager
      */
     public function getAllUsers(): string
     {
-        $accountManager = new AccountManager();
-        $users = $accountManager->getUsers();
-        foreach ($users as $user) {
-            $user->getRoles(); //Saves the roles in an attribute of the $user object too
-            $user->load();
+        try {
+            $accountManager = new AccountManager();
+            $users = $accountManager->getUsers();
+            
+            if (empty($users)) {
+                return json_encode([]);
+            }
+            
+            foreach ($users as $user) {
+                $user->getRoles(); //Saves the roles in an attribute of the $user object too
+                $user->load();
+            }
+            return json_encode($users);
+        } catch (\Exception $e) {
+            return json_encode(['error' => 'Failed to retrieve users: ' . $e->getMessage()]);
         }
-        return json_encode($users);
     }
 
     /**

@@ -1,35 +1,41 @@
 {
-    "name": "shady/voices-of-wynn-website",
-    "description": "A website for the community project Voices of Wynn - creating a mod for Minecraft MMORPG server Wynncraft",
-    "type": "project",
-    "require": {
-      "phpmailer/phpmailer": "^6.5",
-      "ext-pdo": "*",
-      "ext-mbstring": "*",
-      "ext-curl": "*",
-      "ezyang/htmlpurifier": "^4.14",
-      "ext-json": "*"
+  "name": "shady/voices-of-wynn-website",
+  "description": "A website for the community project Voices of Wynn - creating a mod for Minecraft MMORPG server Wynncraft",
+  "type": "project",
+  "require": {
+    "ext-pdo": "*",
+    "ext-mbstring": "*",
+    "ext-curl": "*",
+    "ezyang/htmlpurifier": "^4.14",
+    "ext-json": "*",
+    "zircote/swagger-php": "^4.0",
+    "doctrine/annotations": "^1.13"
+  },
+  "config": {
+    "platform": {
+      "php": "8.2.0"
+    }
+  },
+  "authors": [
+    {
+      "name": "Jan Štěch",
+      "email": "jan.stech@posteo.net",
+      "role": "Author, Back-end developer"
     },
-    "authors": [
-        {
-            "name": "Jan Štěch",
-            "email": "jan.stech@posteo.net",
-            "role" : "Author, Back-end developer"
-        },
-        {
-          "name": "Timo Angst",
-          "email": "timo.angst@bluewin.ch",
-          "role" : "Full-stack developer"
-        },
-        {
-          "name": "Just5MoreMinutes",
-          "email": "just5moreminutez@gmail.com",
-          "role" : "Front-end developer"
-        },
-        {
-          "name": "kmaxi",
-          "email": "kmaxiyt@gmail.com",
-          "role" : "DevOps"
-        }
-    ]
+    {
+      "name": "Timo Angst",
+      "email": "timo.angst@bluewin.ch",
+      "role": "Full-stack developer"
+    },
+    {
+      "name": "Just5MoreMinutes",
+      "email": "just5moreminutez@gmail.com",
+      "role": "Front-end developer"
+    },
+    {
+      "name": "kmaxi",
+      "email": "kmaxiyt@gmail.com",
+      "role": "DevOps"
+    }
+  ]
 }
