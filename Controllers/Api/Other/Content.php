@@ -26,13 +26,19 @@ class Content extends ApiController
             return $this->sendBadRequestError('MISSING_QUEST_ID', 'The \'questId\' parameter is required');
         }
 
-        $cnm = new ContentManager();
-		$questId = $_GET['questId'];
-		if (!is_numeric($questId)) {
-			return $this->sendBadRequestError('INVALID_QUEST_ID', 'The \'questId\' parameter must be a numeric value');
-		}
-        $quest = $cnm->getQuests($questId);
-        echo json_encode($quest);
-        return 200;
+        $questId = $_GET['questId'];
+        if (!is_numeric($questId)) {
+            return $this->sendBadRequestError('INVALID_QUEST_ID', 'The \'questId\' parameter must be a numeric value');
+        }
+
+        try {
+            $cnm = new ContentManager();
+            $quest = $cnm->getQuests($questId);
+            echo json_encode($quest);
+            return 200;
+        } catch (\Exception $e) {
+            error_log('Content::getQuest error: ' . $e->getMessage());
+            return 500;
+        }
     }
 }

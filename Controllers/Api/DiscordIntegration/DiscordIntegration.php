@@ -48,22 +48,32 @@ class DiscordIntegration extends ApiController
             return 401;
         }
 
-        $manager = new DiscordManager();
-        switch ($_GET['action']) {
-            case 'getAllUsers':
-                $users = $manager->getAllUsers();
-                $decoded = json_decode($users, true);
-                
-                // Check if the response contains an error
-                if (isset($decoded['error'])) {
+        // Validate action parameter
+        if (!isset($_GET['action']) || empty($_GET['action'])) {
+            return $this->sendBadRequestError('MISSING_ACTION_PARAMETER', 'The \'action\' parameter is required');
+        }
+
+        try {
+            $manager = new DiscordManager();
+            switch ($_GET['action']) {
+                case 'getAllUsers':
+                    $users = $manager->getAllUsers();
+                    $decoded = json_decode($users, true);
+
+                    // Check if the response contains an error
+                    if (isset($decoded['error'])) {
+                        echo $users;
+                        return 500;
+                    }
+
                     echo $users;
-                    return 500;
-                }
-                
-                echo $users;
-                return 200;
-            default:
-                return $this->sendBadRequestError('UNKNOWN_ACTION', 'The requested action is not recognized');
+                    return 200;
+                default:
+                    return $this->sendBadRequestError('UNKNOWN_ACTION', 'The requested action is not recognized');
+            }
+        } catch (\Exception $e) {
+            error_log('DiscordIntegration::get error: ' . $e->getMessage());
+            return 500;
         }
     }
 
@@ -104,38 +114,74 @@ class DiscordIntegration extends ApiController
             return 401;
         }
 
-        $manager = new DiscordManager();
-        switch ($_POST['action']) {
-            case 'syncUser':
-                $imgurl = (isset($_POST['imgurl'])) ? $_POST['imgurl'] : null;
-                $name = (isset($_POST['name'])) ? $_POST['name'] : null;
-                $rolesJson = (isset($_POST['roles'])) ? $_POST['roles'] : null;
+        // Validate action parameter
+        if (!isset($_POST['action']) || empty($_POST['action'])) {
+            return $this->sendBadRequestError('MISSING_ACTION_PARAMETER', 'The \'action\' parameter is required');
+        }
 
-                //Parse the JSON array of role names into array of DiscordRole objects
-                if (!is_null($rolesJson)) {
-                    $roles = array();
-                    $jsonData = json_decode($rolesJson);
-                    foreach ($jsonData as $roleName) {
-                        $roles[] = new DiscordRole($roleName);
+        try {
+            $manager = new DiscordManager();
+            switch ($_POST['action']) {
+                case 'syncUser':
+                    // Validate required parameters
+                    if (!isset($_POST['discordId']) || empty($_POST['discordId'])) {
+                        return $this->sendBadRequestError('MISSING_REQUIRED_PARAMETER', 'The \'discordId\' parameter is required');
                     }
-                } else {
-                    $roles = null;
-                }
+                    if (!isset($_POST['discordName']) || empty($_POST['discordName'])) {
+                        return $this->sendBadRequestError('MISSING_REQUIRED_PARAMETER', 'The \'discordName\' parameter is required');
+                    }
 
-                $responseCode = $manager->syncUser(
-                    $_POST['discordId'],
-                    $_POST['discordName'],
-                    $imgurl,
-                    $roles,
-                    $name
-                );
-                
-                if ($responseCode === 201) {
-                    echo json_encode(['tempPassword' => $manager->lastUserPassword]);
-                }
-                return $responseCode;
-            default:
-                return $this->sendBadRequestError('UNKNOWN_ACTION', 'The requested action is not recognized');
+                    // Validate discordId is numeric
+                    if (!is_numeric($_POST['discordId'])) {
+                        return $this->sendBadRequestError('INVALID_DISCORD_ID', 'The \'discordId\' must be a numeric value');
+                    }
+
+                    $imgurl = (isset($_POST['imgurl'])) ? $_POST['imgurl'] : null;
+                    $name = (isset($_POST['name'])) ? $_POST['name'] : null;
+                    $rolesJson = (isset($_POST['roles'])) ? $_POST['roles'] : null;
+
+                    //Parse the JSON array of role names into array of DiscordRole objects
+                    if (!is_null($rolesJson)) {
+                        $roles = array();
+                        $jsonData = json_decode($rolesJson);
+
+                        // Check if JSON decoding failed
+                        if (json_last_error() !== JSON_ERROR_NONE) {
+                            return $this->sendBadRequestError('INVALID_ROLES_JSON', 'The \'roles\' parameter must be valid JSON');
+                        }
+
+                        if (is_array($jsonData)) {
+                            foreach ($jsonData as $roleName) {
+                                $roles[] = new DiscordRole($roleName);
+                            }
+                        } else {
+                            return $this->sendBadRequestError('INVALID_ROLES_JSON', 'The \'roles\' parameter must be a JSON array');
+                        }
+                    } else {
+                        $roles = null;
+                    }
+
+                    $responseCode = $manager->syncUser(
+                        $_POST['discordId'],
+                        $_POST['discordName'],
+                        $imgurl,
+                        $roles,
+                        $name
+                    );
+
+                    if ($responseCode === 201) {
+                        echo json_encode(['tempPassword' => $manager->lastUserPassword]);
+                    }
+                    return $responseCode;
+                default:
+                    return $this->sendBadRequestError('UNKNOWN_ACTION', 'The requested action is not recognized');
+            }
+        } catch (UserException $e) {
+            error_log('DiscordIntegration::post UserException: ' . $e->getMessage());
+            return 500;
+        } catch (\Exception $e) {
+            error_log('DiscordIntegration::post error: ' . $e->getMessage());
+            return 500;
         }
     }
 }

@@ -79,8 +79,54 @@ class LineReporter extends ApiController
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return 405;
         }
-        $reportAdder = new ReportAdder();
-        return $reportAdder->createReport($_POST['full'], $_POST['npc'], $_POST['player'], $_POST['x'], $_POST['y'], $_POST['z']);
+
+        // Validate required parameters
+        if (!isset($_POST['full']) || empty($_POST['full'])) {
+            return $this->sendBadRequestError('MISSING_REQUIRED_PARAMETER', 'The required parameter \'full\' is missing or empty');
+        }
+        if (!isset($_POST['npc'])) {
+            return $this->sendBadRequestError('MISSING_REQUIRED_PARAMETER', 'The required parameter \'npc\' is missing');
+        }
+        if (!isset($_POST['player']) || empty($_POST['player'])) {
+            return $this->sendBadRequestError('MISSING_REQUIRED_PARAMETER', 'The required parameter \'player\' is missing or empty');
+        }
+
+        // Validate parameter lengths
+        if (strlen($_POST['full']) < 1 || strlen($_POST['full']) > 511) {
+            return $this->sendBadRequestError('INVALID_PARAMETER_LENGTH', 'The \'full\' parameter must be between 1 and 511 characters');
+        }
+        if (strlen($_POST['npc']) > 127) {
+            return $this->sendBadRequestError('INVALID_PARAMETER_LENGTH', 'The \'npc\' parameter must not exceed 127 characters');
+        }
+        if (strlen($_POST['player']) < 1 || strlen($_POST['player']) > 16) {
+            return $this->sendBadRequestError('INVALID_PARAMETER_LENGTH', 'The \'player\' parameter must be between 1 and 16 characters');
+        }
+
+        // Validate and parse coordinates
+        $x = isset($_POST['x']) ? $_POST['x'] : 0;
+        $y = isset($_POST['y']) ? $_POST['y'] : 0;
+        $z = isset($_POST['z']) ? $_POST['z'] : 0;
+
+        if (!is_numeric($x) || !is_numeric($y) || !is_numeric($z)) {
+            return $this->sendBadRequestError('INVALID_PARAMETER_TYPE', 'Coordinate parameters (x, y, z) must be numeric values');
+        }
+
+        $x = (int)$x;
+        $y = (int)$y;
+        $z = (int)$z;
+
+        // Validate coordinate ranges
+        if ($x < -8388608 || $x > 8388607 || $y < -8388608 || $y > 8388607 || $z < -8388608 || $z > 8388607) {
+            return $this->sendBadRequestError('INVALID_COORDINATE_RANGE', 'Coordinate values must be between -8388608 and 8388607');
+        }
+
+        try {
+            $reportAdder = new ReportAdder();
+            return $reportAdder->createReport($_POST['full'], $_POST['npc'], $_POST['player'], $x, $y, $z);
+        } catch (\Exception $e) {
+            error_log('LineReporter::newReport error: ' . $e->getMessage());
+            return 500;
+        }
     }
 
     #[OA\Post(
@@ -115,16 +161,41 @@ class LineReporter extends ApiController
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return 405;
         }
-        
+
         if (!$this->checkApiKey(ApiKey::LINE_REPORT_MODIFY, $_POST['apiKey'])) {
             return 401;
         }
 
-        if (empty($_POST['status'])) {
+        // Validate status parameter
+        if (!isset($_POST['status']) || empty($_POST['status'])) {
             return $this->sendBadRequestError('MISSING_STATUS', 'The \'status\' parameter is required');
         }
-        $reportAdder = new ReportAdder();
-        return $reportAdder->importLines($_POST['lines'], $_POST['status']);
+
+        $validStatuses = ['d', 'm', 'y', 'n', 'v'];
+        if (!in_array($_POST['status'], $validStatuses)) {
+            return $this->sendBadRequestError('INVALID_STATUS_VALUE', 'Status must be one of: d, m, y, n, v');
+        }
+
+        // Validate lines parameter
+        if (!isset($_POST['lines'])) {
+            return $this->sendBadRequestError('MISSING_LINES_PARAMETER', 'The \'lines\' parameter is required');
+        }
+
+        if (!is_array($_POST['lines'])) {
+            return $this->sendBadRequestError('INVALID_LINES_TYPE', 'The \'lines\' parameter must be an array');
+        }
+
+        if (count($_POST['lines']) === 0) {
+            return $this->sendBadRequestError('EMPTY_LINES_ARRAY', 'The \'lines\' array cannot be empty');
+        }
+
+        try {
+            $reportAdder = new ReportAdder();
+            return $reportAdder->importLines($_POST['lines'], $_POST['status']);
+        } catch (\Exception $e) {
+            error_log('LineReporter::importLines error: ' . $e->getMessage());
+            return 500;
+        }
     }
 
     #[OA\Get(
@@ -156,19 +227,29 @@ class LineReporter extends ApiController
         if (!$this->checkApiKey(ApiKey::LINE_REPORT_COLLECT, $_REQUEST['apiKey'])) {
             return 401;
         }
-        $reportReader = new ReportReader();
-        $npcName = null;
-        if (isset($_GET['npc'])) {
-            $npcName = $_GET['npc'];
+
+        try {
+            $reportReader = new ReportReader();
+            $npcName = null;
+            if (isset($_GET['npc'])) {
+                $npcName = $_GET['npc'];
+                // Basic sanitization
+                if (strlen($npcName) > 127) {
+                    return $this->sendBadRequestError('INVALID_NPC_NAME', 'The \'npc\' parameter must not exceed 127 characters');
+                }
+            }
+            $responseCode = $reportReader->listUnvoicedLineReports($npcName);
+            if ($responseCode >= 400) {
+                //An error occurred
+                return $responseCode;
+            }
+            $reports = $reportReader->result;
+            echo json_encode($reports, JSON_PRETTY_PRINT);
+            return 200;
+        } catch (\Exception $e) {
+            error_log('LineReporter::getUnvoicedLines error: ' . $e->getMessage());
+            return 500;
         }
-        $responseCode = $reportReader->listUnvoicedLineReports($npcName);
-        if ($responseCode >= 400) {
-            //An error occurred
-            return $responseCode;
-        }
-        $reports = $reportReader->result;
-        echo json_encode($reports, JSON_PRETTY_PRINT);
-        return 200;
     }
 
     #[OA\Get(
@@ -199,19 +280,27 @@ class LineReporter extends ApiController
         if (!$this->checkApiKey(ApiKey::LINE_REPORT_COLLECT, $_REQUEST['apiKey'])) {
             return 401;
         }
-        $reportReader = new ReportReader();
-        $line = null;
-        if (isset($_GET['line'])) {
+
+        // Validate required line parameter
+        if (!isset($_GET['line']) || empty($_GET['line'])) {
+            return $this->sendBadRequestError('MISSING_LINE_PARAMETER', 'The \'line\' parameter is required');
+        }
+
+        try {
+            $reportReader = new ReportReader();
             $line = $_GET['line'];
+            $responseCode = $reportReader->getRawReportData($line);
+            if ($responseCode >= 400) {
+                //An error occurred
+                return $responseCode;
+            }
+            $reportInfo = $reportReader->result;
+            echo json_encode($reportInfo, JSON_PRETTY_PRINT);
+            return 200;
+        } catch (\Exception $e) {
+            error_log('LineReporter::getRawReportInfo error: ' . $e->getMessage());
+            return 500;
         }
-        $responseCode = $reportReader->getRawReportData($line);
-        if ($responseCode >= 400) {
-            //An error occurred
-            return $responseCode;
-        }
-        $reportInfo = $reportReader->result;
-        echo json_encode($reportInfo, JSON_PRETTY_PRINT);
-        return 200;
     }
 
     #[OA\Put(
@@ -250,15 +339,37 @@ class LineReporter extends ApiController
         if (!$this->checkApiKey(ApiKey::LINE_REPORT_MODIFY, $_PUT['apiKey'])) {
             return 401;
         }
-        $reportManager = new ReportManager();
-        $lines = null;
-        if (isset($_PUT['lines'])) {
-            $lines = $_PUT['lines'];
+
+        // Validate lines parameter
+        if (!isset($_PUT['lines'])) {
+            return $this->sendBadRequestError('NO_LINES_PROVIDED', 'The \'lines\' parameter is required');
         }
-        if (is_null($lines) || count($lines) === 0) {
-            return $this->sendBadRequestError('NO_LINES_PROVIDED', 'No lines were provided or the lines array is empty');
+
+        if (!is_array($_PUT['lines'])) {
+            return $this->sendBadRequestError('INVALID_LINES_TYPE', 'The \'lines\' parameter must be an array');
         }
-        return $reportManager->updateReport($lines, $_PUT['status']);
+
+        if (count($_PUT['lines']) === 0) {
+            return $this->sendBadRequestError('NO_LINES_PROVIDED', 'The \'lines\' array cannot be empty');
+        }
+
+        // Validate status parameter
+        if (!isset($_PUT['status']) || empty($_PUT['status'])) {
+            return $this->sendBadRequestError('MISSING_STATUS', 'The \'status\' parameter is required');
+        }
+
+        $validStatuses = ['r', 'd', 'm', 'y', 'n', 'v'];
+        if (!in_array($_PUT['status'], $validStatuses)) {
+            return $this->sendBadRequestError('INVALID_STATUS_VALUE', 'Status must be one of: r, d, m, y, n, v');
+        }
+
+        try {
+            $reportManager = new ReportManager();
+            return $reportManager->updateReport($_PUT['lines'], $_PUT['status']);
+        } catch (\Exception $e) {
+            error_log('LineReporter::updateReportStatus error: ' . $e->getMessage());
+            return 500;
+        }
     }
 
     #[OA\Put(
@@ -294,12 +405,22 @@ class LineReporter extends ApiController
         if (!$this->checkApiKey(ApiKey::LINE_REPORT_MODIFY, $_PUT['apiKey'])) {
             return 401;
         }
-        $reportManager = new ReportManager();
-        $npcName = null;
-        if (isset($_PUT['npc'])) {
-            $npcName = $_PUT['npc'];
+
+        try {
+            $reportManager = new ReportManager();
+            $npcName = null;
+            if (isset($_PUT['npc'])) {
+                $npcName = $_PUT['npc'];
+                // Basic sanitization
+                if (strlen($npcName) > 127) {
+                    return $this->sendBadRequestError('INVALID_NPC_NAME', 'The \'npc\' parameter must not exceed 127 characters');
+                }
+            }
+            return $reportManager->resetForwardedReports($npcName);
+        } catch (\Exception $e) {
+            error_log('LineReporter::resetForwardedLines error: ' . $e->getMessage());
+            return 500;
         }
-        return $reportManager->resetForwardedReports($npcName);
     }
 
     #[OA\Get(
@@ -333,28 +454,47 @@ class LineReporter extends ApiController
         if (!$this->checkApiKey(ApiKey::LINE_REPORT_COLLECT, $_REQUEST['apiKey'])) {
             return 401;
         }
-        $reportReader = new ReportReader();
-        $npcName = null;
-        $minReports = 1;
-        $youngerThan = null;
-        if (isset($_GET['npc'])) {
-            $npcName = $_GET['npc'];
+
+        try {
+            $reportReader = new ReportReader();
+            $npcName = null;
+            $minReports = 1;
+            $youngerThan = null;
+
+            if (isset($_GET['npc'])) {
+                $npcName = $_GET['npc'];
+                if (strlen($npcName) > 127) {
+                    return $this->sendBadRequestError('INVALID_NPC_NAME', 'The \'npc\' parameter must not exceed 127 characters');
+                }
+            }
+
+            if (isset($_GET['minreports'])) {
+                if (!is_numeric($_GET['minreports']) || $_GET['minreports'] < 1) {
+                    return $this->sendBadRequestError('INVALID_MINREPORTS_TYPE', 'The \'minreports\' parameter must be a positive integer');
+                }
+                $minReports = (int)$_GET['minreports'];
+            }
+
+            if (isset($_GET['youngerthan'])) {
+                $youngerThan = DateTime::createFromFormat("Y-m-d", $_GET['youngerthan']);
+                if ($youngerThan === false) {
+                    return $this->sendBadRequestError('INVALID_DATE_FORMAT', 'The \'youngerthan\' parameter must be in Y-m-d format (e.g., 2025-01-15)');
+                }
+                $youngerThan->setTime(0, 0, 0);
+            }
+
+            $responseCode = $reportReader->getReportsByNpc($npcName, array('accepted'), $minReports, $youngerThan);
+            if ($responseCode >= 400) {
+                //An error occurred
+                return $responseCode;
+            }
+            $reports = $reportReader->result;
+            echo json_encode($reports, JSON_PRETTY_PRINT);
+            return 200;
+        } catch (\Exception $e) {
+            error_log('LineReporter::getAcceptedLines error: ' . $e->getMessage());
+            return 500;
         }
-        if (isset($_GET['minreports'])) {
-            $minReports = $_GET['minreports'];
-        }
-        if (isset($_GET['youngerthan'])) {
-            $youngerThan = DateTime::createFromFormat("Y-m-d", ($_GET['youngerthan']));
-            $youngerThan->setTime(0, 0, 0);
-        }
-        $responseCode = $reportReader->getReportsByNpc($npcName, array('accepted'), $minReports, $youngerThan);
-        if ($responseCode >= 400) {
-            //An error occurred
-            return $responseCode;
-        }
-        $reports = $reportReader->result;
-        echo json_encode($reports, JSON_PRETTY_PRINT);
-        return 200;
     }
 
     #[OA\Get(
@@ -388,28 +528,47 @@ class LineReporter extends ApiController
         if (!$this->checkApiKey(ApiKey::LINE_REPORT_COLLECT, $_REQUEST['apiKey'])) {
             return 401;
         }
-        $reportReader = new ReportReader();
-        $npcName = null;
-        $minReports = 1;
-        $youngerThan = null;
-        if (isset($_GET['npc'])) {
-            $npcName = $_GET['npc'];
+
+        try {
+            $reportReader = new ReportReader();
+            $npcName = null;
+            $minReports = 1;
+            $youngerThan = null;
+
+            if (isset($_GET['npc'])) {
+                $npcName = $_GET['npc'];
+                if (strlen($npcName) > 127) {
+                    return $this->sendBadRequestError('INVALID_NPC_NAME', 'The \'npc\' parameter must not exceed 127 characters');
+                }
+            }
+
+            if (isset($_GET['minreports'])) {
+                if (!is_numeric($_GET['minreports']) || $_GET['minreports'] < 1) {
+                    return $this->sendBadRequestError('INVALID_MINREPORTS_TYPE', 'The \'minreports\' parameter must be a positive integer');
+                }
+                $minReports = (int)$_GET['minreports'];
+            }
+
+            if (isset($_GET['youngerthan'])) {
+                $youngerThan = DateTime::createFromFormat("Y-m-d", $_GET['youngerthan']);
+                if ($youngerThan === false) {
+                    return $this->sendBadRequestError('INVALID_DATE_FORMAT', 'The \'youngerthan\' parameter must be in Y-m-d format (e.g., 2025-01-15)');
+                }
+                $youngerThan->setTime(0, 0, 0);
+            }
+
+            $responseCode = $reportReader->getReportsByNpc($npcName, array('accepted', 'forwarded', 'unprocessed'), $minReports, $youngerThan);
+            if ($responseCode >= 400) {
+                //An error occurred
+                return $responseCode;
+            }
+            $reports = $reportReader->result;
+            echo json_encode($reports, JSON_PRETTY_PRINT);
+            return 200;
+        } catch (\Exception $e) {
+            error_log('LineReporter::getNonRejectedLines error: ' . $e->getMessage());
+            return 500;
         }
-        if (isset($_GET['minreports'])) {
-            $minReports = $_GET['minreports'];
-        }
-        if (isset($_GET['youngerthan'])) {
-            $youngerThan = DateTime::createFromFormat("Y-m-d", ($_GET['youngerThan']));
-            $youngerThan->setTime(0, 0, 0);
-        }
-        $responseCode = $reportReader->getReportsByNpc($npcName, array('accepted', 'forwarded', 'unprocessed'), $minReports, $youngerThan);
-        if ($responseCode >= 400) {
-            //An error occurred
-            return $responseCode;
-        }
-        $reports = $reportReader->result;
-        echo json_encode($reports, JSON_PRETTY_PRINT);
-        return 200;
     }
 
     #[OA\Get(
@@ -443,27 +602,46 @@ class LineReporter extends ApiController
         if (!$this->checkApiKey(ApiKey::LINE_REPORT_COLLECT, $_REQUEST['apiKey'])) {
             return 401;
         }
-        $reportReader = new ReportReader();
-        $npcName = null;
-        $minReports = 1;
-        $youngerThan = null;
-        if (isset($_GET['npc'])) {
-            $npcName = $_GET['npc'];
+
+        try {
+            $reportReader = new ReportReader();
+            $npcName = null;
+            $minReports = 1;
+            $youngerThan = null;
+
+            if (isset($_GET['npc'])) {
+                $npcName = $_GET['npc'];
+                if (strlen($npcName) > 127) {
+                    return $this->sendBadRequestError('INVALID_NPC_NAME', 'The \'npc\' parameter must not exceed 127 characters');
+                }
+            }
+
+            if (isset($_GET['minreports'])) {
+                if (!is_numeric($_GET['minreports']) || $_GET['minreports'] < 1) {
+                    return $this->sendBadRequestError('INVALID_MINREPORTS_TYPE', 'The \'minreports\' parameter must be a positive integer');
+                }
+                $minReports = (int)$_GET['minreports'];
+            }
+
+            if (isset($_GET['youngerthan'])) {
+                $youngerThan = DateTime::createFromFormat("Y-m-d", $_GET['youngerthan']);
+                if ($youngerThan === false) {
+                    return $this->sendBadRequestError('INVALID_DATE_FORMAT', 'The \'youngerthan\' parameter must be in Y-m-d format (e.g., 2025-01-15)');
+                }
+                $youngerThan->setTime(0, 0, 0);
+            }
+
+            $responseCode = $reportReader->getReportsByNpc($npcName, array('fixed', 'accepted', 'forwarded', 'unprocessed'), $minReports, $youngerThan);
+            if ($responseCode >= 400) {
+                //An error occurred
+                return $responseCode;
+            }
+            $reports = $reportReader->result;
+            echo json_encode($reports, JSON_PRETTY_PRINT);
+            return 200;
+        } catch (\Exception $e) {
+            error_log('LineReporter::getValidNpcLines error: ' . $e->getMessage());
+            return 500;
         }
-        if (isset($_GET['minreports'])) {
-            $minReports = $_GET['minreports'];
-        }
-        if (isset($_GET['youngerthan'])) {
-            $youngerThan = DateTime::createFromFormat("Y-m-d", ($_GET['youngerthan']));
-            $youngerThan->setTime(0, 0, 0);
-        }
-        $responseCode = $reportReader->getReportsByNpc($npcName, array('fixed', 'accepted', 'forwarded', 'unprocessed'), $minReports, $youngerThan);
-        if ($responseCode >= 400) {
-            //An error occurred
-            return $responseCode;
-        }
-        $reports = $reportReader->result;
-        echo json_encode($reports, JSON_PRETTY_PRINT);
-        return 200;
     }
 }

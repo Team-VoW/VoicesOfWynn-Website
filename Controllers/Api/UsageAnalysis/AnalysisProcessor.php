@@ -58,13 +58,19 @@ class AnalysisProcessor extends ApiController
         if (!$this->checkApiKey(ApiKey::STATISTICS_AGGREGATE, $_PUT['apiKey'])) {
             return 401;
         }
-        $minDelay = max(BootupLogger::MINIMUM_DELAY_BETWEEN_PINGS_BY_IP, BootupLogger::MINIMUM_DELAY_BETWEEN_PINGS_BY_UUID);
-        $minDelayDays = ceil($minDelay / 86400);
-        $lastAggregatableDay = new DateTime();
-        $minDelayDays++;
-        $lastAggregatableDay->modify("-$minDelayDays days");
 
-        $logger = new PingAggregator();
-        return $logger->aggregateUpToDate($lastAggregatableDay);
+        try {
+            $minDelay = max(BootupLogger::MINIMUM_DELAY_BETWEEN_PINGS_BY_IP, BootupLogger::MINIMUM_DELAY_BETWEEN_PINGS_BY_UUID);
+            $minDelayDays = ceil($minDelay / 86400);
+            $lastAggregatableDay = new DateTime();
+            $minDelayDays++;
+            $lastAggregatableDay->modify("-$minDelayDays days");
+
+            $logger = new PingAggregator();
+            return $logger->aggregateUpToDate($lastAggregatableDay);
+        } catch (\Exception $e) {
+            error_log('AnalysisProcessor::aggregate error: ' . $e->getMessage());
+            return 500;
+        }
     }
 }
