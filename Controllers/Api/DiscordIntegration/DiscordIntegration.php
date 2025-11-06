@@ -63,7 +63,7 @@ class DiscordIntegration extends ApiController
                 echo $users;
                 return 200;
             default:
-                return 400;
+                return $this->sendBadRequestError('UNKNOWN_ACTION', 'The requested action is not recognized');
         }
     }
 
@@ -135,7 +135,7 @@ class DiscordIntegration extends ApiController
                 }
                 return $responseCode;
             default:
-                return 400;
+                return $this->sendBadRequestError('UNKNOWN_ACTION', 'The requested action is not recognized');
         }
     }
 }

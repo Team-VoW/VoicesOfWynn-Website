@@ -69,5 +69,20 @@ abstract class ApiController extends Controller
             $keys[strtolower(($keyType->name))] === $key
         );
     }
+
+    /**
+     * Sends a standardized 400 Bad Request error response with error code and message
+     * @param string $errorCode The error code identifier (see API_ERROR_CODES.md)
+     * @param string $message Human-readable explanation of the error
+     * @return int Always returns 400
+     */
+    protected function sendBadRequestError(string $errorCode, string $message): int
+    {
+        echo json_encode([
+            'error_code' => $errorCode,
+            'message' => $message
+        ]);
+        return 400;
+    }
 }
 

@@ -42,7 +42,7 @@ class LineReporter extends ApiController
             case 'getValidReports':
                 return $this->getValidNpcLines();
             default:
-                return 400;
+                return $this->sendBadRequestError('UNKNOWN_ACTION', 'The requested action is not recognized');
         }
     }
 
@@ -119,9 +119,9 @@ class LineReporter extends ApiController
         if (!$this->checkApiKey(ApiKey::LINE_REPORT_MODIFY, $_POST['apiKey'])) {
             return 401;
         }
-        
+
         if (empty($_POST['status'])) {
-            return 400;
+            return $this->sendBadRequestError('MISSING_STATUS', 'The \'status\' parameter is required');
         }
         $reportAdder = new ReportAdder();
         return $reportAdder->importLines($_POST['lines'], $_POST['status']);
@@ -256,7 +256,7 @@ class LineReporter extends ApiController
             $lines = $_PUT['lines'];
         }
         if (is_null($lines) || count($lines) === 0) {
-            return 400; //No lines provided
+            return $this->sendBadRequestError('NO_LINES_PROVIDED', 'No lines were provided or the lines array is empty');
         }
         return $reportManager->updateReport($lines, $_PUT['status']);
     }

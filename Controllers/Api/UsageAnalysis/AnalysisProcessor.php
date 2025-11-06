@@ -25,7 +25,7 @@ class AnalysisProcessor extends ApiController
             case 'aggregate':
                 return $this->aggregate();
             default:
-                return 400;
+                return $this->sendBadRequestError('UNKNOWN_ACTION', 'The requested action is not recognized');
         }
     }
 

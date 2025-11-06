@@ -36,7 +36,7 @@ class ModBootupLogger extends ApiController
         $ipHash = hash('sha256', $_SERVER['REMOTE_ADDR']);
         if (empty($uuidHash) || empty($ipHash)) {
             //No stats --> no fun fact, broadcast or version check for you
-            return 400;
+            return $this->sendBadRequestError('MISSING_REQUIRED_PARAMETER', 'The required parameter \'id\' is missing or empty');
         }
         $logger = new BootupLogger();
         $logResult = $logger->logBootup($uuidHash, $ipHash);

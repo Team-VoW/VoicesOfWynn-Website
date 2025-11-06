@@ -13,7 +13,7 @@ class Content extends ApiController
             case 'quests':
                 return $this->getQuest();
             default:
-                return 400;
+                return $this->sendBadRequestError('UNKNOWN_ACTION', 'The requested action is not recognized');
         }
     }
     private function getQuest(): int
@@ -22,14 +22,14 @@ class Content extends ApiController
             return 405;
         }
 
-        if($_GET['questId'] === null || $_GET['questId'] === ''){
-            return 404;
+        if(!isset($_GET['questId']) || $_GET['questId'] === null || $_GET['questId'] === ''){
+            return $this->sendBadRequestError('MISSING_QUEST_ID', 'The \'questId\' parameter is required');
         }
-        
+
         $cnm = new ContentManager();
 		$questId = $_GET['questId'];
 		if (!is_numeric($questId)) {
-			return 406;
+			return $this->sendBadRequestError('INVALID_QUEST_ID', 'The \'questId\' parameter must be a numeric value');
 		}
         $quest = $cnm->getQuests($questId);
         echo json_encode($quest);
