@@ -185,6 +185,7 @@ class Account extends WebpageController
 
         self::$data['account_name'] = $displayName;
 	    self::$data['account_email'] = $email;
+	    self::$data['account_publicEmail'] = $publicEmail;
 	    self::$data['account_discord'] = $discord;
 	    self::$data['account_youtube'] = $youtube;
 	    self::$data['account_twitter'] = $twitter;
