@@ -4,6 +4,7 @@ namespace VoicesOfWynn\Controllers\Api\UsageAnalysis;
 
 use DateTime;
 use VoicesOfWynn\Controllers\Api\ApiController;
+use VoicesOfWynn\Controllers\Api\ApiErrorCode;
 use VoicesOfWynn\Controllers\Api\ApiKey;
 use VoicesOfWynn\Models\Api\UsageAnalysis\BootupLogger;
 use VoicesOfWynn\Models\Api\UsageAnalysis\PingAggregator;
@@ -25,7 +26,7 @@ class AnalysisProcessor extends ApiController
             case 'aggregate':
                 return $this->aggregate();
             default:
-                return $this->sendBadRequestError('UNKNOWN_ACTION', 'The requested action is not recognized');
+                return $this->sendBadRequestError(ApiErrorCode::UNKNOWN_ACTION, 'The requested action is not recognized');
         }
     }
 

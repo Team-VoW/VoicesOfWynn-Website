@@ -4,6 +4,7 @@ namespace VoicesOfWynn\Controllers\Api\LineReporting;
 
 use DateTime;
 use VoicesOfWynn\Controllers\Api\ApiController;
+use VoicesOfWynn\Controllers\Api\ApiErrorCode;
 use VoicesOfWynn\Controllers\Api\ApiKey;
 use VoicesOfWynn\Models\Api\LineReporting\ReportAdder;
 use VoicesOfWynn\Models\Api\LineReporting\ReportManager;
@@ -42,7 +43,7 @@ class LineReporter extends ApiController
             case 'getValidReports':
                 return $this->getValidNpcLines();
             default:
-                return $this->sendBadRequestError('UNKNOWN_ACTION', 'The requested action is not recognized');
+                return $this->sendBadRequestError(ApiErrorCode::UNKNOWN_ACTION, 'The requested action is not recognized');
         }
     }
 
@@ -82,24 +83,24 @@ class LineReporter extends ApiController
 
         // Validate required parameters
         if (!isset($_POST['full']) || empty($_POST['full'])) {
-            return $this->sendBadRequestError('MISSING_REQUIRED_PARAMETER', 'The required parameter \'full\' is missing or empty');
+            return $this->sendBadRequestError(ApiErrorCode::MISSING_REQUIRED_PARAMETER, 'The required parameter \'full\' is missing or empty');
         }
         if (!isset($_POST['npc'])) {
-            return $this->sendBadRequestError('MISSING_REQUIRED_PARAMETER', 'The required parameter \'npc\' is missing');
+            return $this->sendBadRequestError(ApiErrorCode::MISSING_REQUIRED_PARAMETER, 'The required parameter \'npc\' is missing');
         }
         if (!isset($_POST['player']) || empty($_POST['player'])) {
-            return $this->sendBadRequestError('MISSING_REQUIRED_PARAMETER', 'The required parameter \'player\' is missing or empty');
+            return $this->sendBadRequestError(ApiErrorCode::MISSING_REQUIRED_PARAMETER, 'The required parameter \'player\' is missing or empty');
         }
 
         // Validate parameter lengths
         if (strlen($_POST['full']) < 1 || strlen($_POST['full']) > 511) {
-            return $this->sendBadRequestError('INVALID_PARAMETER_LENGTH', 'The \'full\' parameter must be between 1 and 511 characters');
+            return $this->sendBadRequestError(ApiErrorCode::INVALID_PARAMETER_LENGTH, 'The \'full\' parameter must be between 1 and 511 characters');
         }
         if (strlen($_POST['npc']) > 127) {
-            return $this->sendBadRequestError('INVALID_PARAMETER_LENGTH', 'The \'npc\' parameter must not exceed 127 characters');
+            return $this->sendBadRequestError(ApiErrorCode::INVALID_PARAMETER_LENGTH, 'The \'npc\' parameter must not exceed 127 characters');
         }
         if (strlen($_POST['player']) < 1 || strlen($_POST['player']) > 16) {
-            return $this->sendBadRequestError('INVALID_PARAMETER_LENGTH', 'The \'player\' parameter must be between 1 and 16 characters');
+            return $this->sendBadRequestError(ApiErrorCode::INVALID_PARAMETER_LENGTH, 'The \'player\' parameter must be between 1 and 16 characters');
         }
 
         // Validate and parse coordinates
@@ -108,7 +109,7 @@ class LineReporter extends ApiController
         $z = isset($_POST['z']) ? $_POST['z'] : 0;
 
         if (!is_numeric($x) || !is_numeric($y) || !is_numeric($z)) {
-            return $this->sendBadRequestError('INVALID_PARAMETER_TYPE', 'Coordinate parameters (x, y, z) must be numeric values');
+            return $this->sendBadRequestError(ApiErrorCode::INVALID_PARAMETER_TYPE, 'Coordinate parameters (x, y, z) must be numeric values');
         }
 
         $x = (int)$x;
@@ -117,7 +118,7 @@ class LineReporter extends ApiController
 
         // Validate coordinate ranges
         if ($x < -8388608 || $x > 8388607 || $y < -8388608 || $y > 8388607 || $z < -8388608 || $z > 8388607) {
-            return $this->sendBadRequestError('INVALID_COORDINATE_RANGE', 'Coordinate values must be between -8388608 and 8388607');
+            return $this->sendBadRequestError(ApiErrorCode::INVALID_COORDINATE_RANGE, 'Coordinate values must be between -8388608 and 8388607');
         }
 
         try {
@@ -168,25 +169,25 @@ class LineReporter extends ApiController
 
         // Validate status parameter
         if (!isset($_POST['status']) || empty($_POST['status'])) {
-            return $this->sendBadRequestError('MISSING_STATUS', 'The \'status\' parameter is required');
+            return $this->sendBadRequestError(ApiErrorCode::MISSING_STATUS, 'The \'status\' parameter is required');
         }
 
         $validStatuses = ['d', 'm', 'y', 'n', 'v'];
         if (!in_array($_POST['status'], $validStatuses)) {
-            return $this->sendBadRequestError('INVALID_STATUS_VALUE', 'Status must be one of: d, m, y, n, v');
+            return $this->sendBadRequestError(ApiErrorCode::INVALID_STATUS_VALUE, 'Status must be one of: d, m, y, n, v');
         }
 
         // Validate lines parameter
         if (!isset($_POST['lines'])) {
-            return $this->sendBadRequestError('MISSING_LINES_PARAMETER', 'The \'lines\' parameter is required');
+            return $this->sendBadRequestError(ApiErrorCode::MISSING_LINES_PARAMETER, 'The \'lines\' parameter is required');
         }
 
         if (!is_array($_POST['lines'])) {
-            return $this->sendBadRequestError('INVALID_LINES_TYPE', 'The \'lines\' parameter must be an array');
+            return $this->sendBadRequestError(ApiErrorCode::INVALID_LINES_TYPE, 'The \'lines\' parameter must be an array');
         }
 
         if (count($_POST['lines']) === 0) {
-            return $this->sendBadRequestError('EMPTY_LINES_ARRAY', 'The \'lines\' array cannot be empty');
+            return $this->sendBadRequestError(ApiErrorCode::EMPTY_LINES_ARRAY, 'The \'lines\' array cannot be empty');
         }
 
         try {
@@ -235,7 +236,7 @@ class LineReporter extends ApiController
                 $npcName = $_GET['npc'];
                 // Basic sanitization
                 if (strlen($npcName) > 127) {
-                    return $this->sendBadRequestError('INVALID_NPC_NAME', 'The \'npc\' parameter must not exceed 127 characters');
+                    return $this->sendBadRequestError(ApiErrorCode::INVALID_NPC_NAME, 'The \'npc\' parameter must not exceed 127 characters');
                 }
             }
             $responseCode = $reportReader->listUnvoicedLineReports($npcName);
@@ -283,7 +284,7 @@ class LineReporter extends ApiController
 
         // Validate required line parameter
         if (!isset($_GET['line']) || empty($_GET['line'])) {
-            return $this->sendBadRequestError('MISSING_LINE_PARAMETER', 'The \'line\' parameter is required');
+            return $this->sendBadRequestError(ApiErrorCode::MISSING_LINE_PARAMETER, 'The \'line\' parameter is required');
         }
 
         try {
@@ -342,25 +343,25 @@ class LineReporter extends ApiController
 
         // Validate lines parameter
         if (!isset($_PUT['lines'])) {
-            return $this->sendBadRequestError('NO_LINES_PROVIDED', 'The \'lines\' parameter is required');
+            return $this->sendBadRequestError(ApiErrorCode::NO_LINES_PROVIDED, 'The \'lines\' parameter is required');
         }
 
         if (!is_array($_PUT['lines'])) {
-            return $this->sendBadRequestError('INVALID_LINES_TYPE', 'The \'lines\' parameter must be an array');
+            return $this->sendBadRequestError(ApiErrorCode::INVALID_LINES_TYPE, 'The \'lines\' parameter must be an array');
         }
 
         if (count($_PUT['lines']) === 0) {
-            return $this->sendBadRequestError('NO_LINES_PROVIDED', 'The \'lines\' array cannot be empty');
+            return $this->sendBadRequestError(ApiErrorCode::NO_LINES_PROVIDED, 'The \'lines\' array cannot be empty');
         }
 
         // Validate status parameter
         if (!isset($_PUT['status']) || empty($_PUT['status'])) {
-            return $this->sendBadRequestError('MISSING_STATUS', 'The \'status\' parameter is required');
+            return $this->sendBadRequestError(ApiErrorCode::MISSING_STATUS, 'The \'status\' parameter is required');
         }
 
         $validStatuses = ['r', 'd', 'm', 'y', 'n', 'v'];
         if (!in_array($_PUT['status'], $validStatuses)) {
-            return $this->sendBadRequestError('INVALID_STATUS_VALUE', 'Status must be one of: r, d, m, y, n, v');
+            return $this->sendBadRequestError(ApiErrorCode::INVALID_STATUS_VALUE, 'Status must be one of: r, d, m, y, n, v');
         }
 
         try {
@@ -413,7 +414,7 @@ class LineReporter extends ApiController
                 $npcName = $_PUT['npc'];
                 // Basic sanitization
                 if (strlen($npcName) > 127) {
-                    return $this->sendBadRequestError('INVALID_NPC_NAME', 'The \'npc\' parameter must not exceed 127 characters');
+                    return $this->sendBadRequestError(ApiErrorCode::INVALID_NPC_NAME, 'The \'npc\' parameter must not exceed 127 characters');
                 }
             }
             return $reportManager->resetForwardedReports($npcName);
@@ -464,13 +465,13 @@ class LineReporter extends ApiController
             if (isset($_GET['npc'])) {
                 $npcName = $_GET['npc'];
                 if (strlen($npcName) > 127) {
-                    return $this->sendBadRequestError('INVALID_NPC_NAME', 'The \'npc\' parameter must not exceed 127 characters');
+                    return $this->sendBadRequestError(ApiErrorCode::INVALID_NPC_NAME, 'The \'npc\' parameter must not exceed 127 characters');
                 }
             }
 
             if (isset($_GET['minreports'])) {
                 if (!is_numeric($_GET['minreports']) || $_GET['minreports'] < 1) {
-                    return $this->sendBadRequestError('INVALID_MINREPORTS_TYPE', 'The \'minreports\' parameter must be a positive integer');
+                    return $this->sendBadRequestError(ApiErrorCode::INVALID_MINREPORTS_TYPE, 'The \'minreports\' parameter must be a positive integer');
                 }
                 $minReports = (int)$_GET['minreports'];
             }
@@ -478,7 +479,7 @@ class LineReporter extends ApiController
             if (isset($_GET['youngerthan'])) {
                 $youngerThan = DateTime::createFromFormat("Y-m-d", $_GET['youngerthan']);
                 if ($youngerThan === false) {
-                    return $this->sendBadRequestError('INVALID_DATE_FORMAT', 'The \'youngerthan\' parameter must be in Y-m-d format (e.g., 2025-01-15)');
+                    return $this->sendBadRequestError(ApiErrorCode::INVALID_DATE_FORMAT, 'The \'youngerthan\' parameter must be in Y-m-d format (e.g., 2025-01-15)');
                 }
                 $youngerThan->setTime(0, 0, 0);
             }
@@ -538,13 +539,13 @@ class LineReporter extends ApiController
             if (isset($_GET['npc'])) {
                 $npcName = $_GET['npc'];
                 if (strlen($npcName) > 127) {
-                    return $this->sendBadRequestError('INVALID_NPC_NAME', 'The \'npc\' parameter must not exceed 127 characters');
+                    return $this->sendBadRequestError(ApiErrorCode::INVALID_NPC_NAME, 'The \'npc\' parameter must not exceed 127 characters');
                 }
             }
 
             if (isset($_GET['minreports'])) {
                 if (!is_numeric($_GET['minreports']) || $_GET['minreports'] < 1) {
-                    return $this->sendBadRequestError('INVALID_MINREPORTS_TYPE', 'The \'minreports\' parameter must be a positive integer');
+                    return $this->sendBadRequestError(ApiErrorCode::INVALID_MINREPORTS_TYPE, 'The \'minreports\' parameter must be a positive integer');
                 }
                 $minReports = (int)$_GET['minreports'];
             }
@@ -552,7 +553,7 @@ class LineReporter extends ApiController
             if (isset($_GET['youngerthan'])) {
                 $youngerThan = DateTime::createFromFormat("Y-m-d", $_GET['youngerthan']);
                 if ($youngerThan === false) {
-                    return $this->sendBadRequestError('INVALID_DATE_FORMAT', 'The \'youngerthan\' parameter must be in Y-m-d format (e.g., 2025-01-15)');
+                    return $this->sendBadRequestError(ApiErrorCode::INVALID_DATE_FORMAT, 'The \'youngerthan\' parameter must be in Y-m-d format (e.g., 2025-01-15)');
                 }
                 $youngerThan->setTime(0, 0, 0);
             }
@@ -612,13 +613,13 @@ class LineReporter extends ApiController
             if (isset($_GET['npc'])) {
                 $npcName = $_GET['npc'];
                 if (strlen($npcName) > 127) {
-                    return $this->sendBadRequestError('INVALID_NPC_NAME', 'The \'npc\' parameter must not exceed 127 characters');
+                    return $this->sendBadRequestError(ApiErrorCode::INVALID_NPC_NAME, 'The \'npc\' parameter must not exceed 127 characters');
                 }
             }
 
             if (isset($_GET['minreports'])) {
                 if (!is_numeric($_GET['minreports']) || $_GET['minreports'] < 1) {
-                    return $this->sendBadRequestError('INVALID_MINREPORTS_TYPE', 'The \'minreports\' parameter must be a positive integer');
+                    return $this->sendBadRequestError(ApiErrorCode::INVALID_MINREPORTS_TYPE, 'The \'minreports\' parameter must be a positive integer');
                 }
                 $minReports = (int)$_GET['minreports'];
             }
@@ -626,7 +627,7 @@ class LineReporter extends ApiController
             if (isset($_GET['youngerthan'])) {
                 $youngerThan = DateTime::createFromFormat("Y-m-d", $_GET['youngerthan']);
                 if ($youngerThan === false) {
-                    return $this->sendBadRequestError('INVALID_DATE_FORMAT', 'The \'youngerthan\' parameter must be in Y-m-d format (e.g., 2025-01-15)');
+                    return $this->sendBadRequestError(ApiErrorCode::INVALID_DATE_FORMAT, 'The \'youngerthan\' parameter must be in Y-m-d format (e.g., 2025-01-15)');
                 }
                 $youngerThan->setTime(0, 0, 0);
             }

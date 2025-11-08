@@ -4,6 +4,7 @@ namespace VoicesOfWynn\Controllers\Api\BootupActions;
 
 use OpenApi\Attributes as OA;
 use VoicesOfWynn\Controllers\Api\ApiController;
+use VoicesOfWynn\Controllers\Api\ApiErrorCode;
 use VoicesOfWynn\Models\Api\FunFacts\FunFactGenerator;
 use VoicesOfWynn\Models\Api\MessageBroadcast\BroadcastLoader;
 use VoicesOfWynn\Models\Api\UsageAnalysis\BootupLogger;
@@ -33,14 +34,14 @@ class ModBootupLogger extends ApiController
 
         // Validate required parameter
         if (!isset($_GET['id']) || empty($_GET['id'])) {
-            return $this->sendBadRequestError('MISSING_REQUIRED_PARAMETER', 'The required parameter \'id\' is missing or empty');
+            return $this->sendBadRequestError(ApiErrorCode::MISSING_REQUIRED_PARAMETER, 'The required parameter \'id\' is missing or empty');
         }
 
         $uuidHash = $_GET['id'];
 
         // Validate ID format (should be a SHA-256 hash - 64 hexadecimal characters)
         if (!preg_match('/^[a-fA-F0-9]{64}$/', $uuidHash)) {
-            return $this->sendBadRequestError('INVALID_ID_FORMAT', 'The \'id\' parameter must be a valid SHA-256 hash (64 hexadecimal characters)');
+            return $this->sendBadRequestError(ApiErrorCode::INVALID_ID_FORMAT, 'The \'id\' parameter must be a valid SHA-256 hash (64 hexadecimal characters)');
         }
 
         try {

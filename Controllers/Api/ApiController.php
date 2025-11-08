@@ -4,6 +4,7 @@ namespace VoicesOfWynn\Controllers\Api;
 
 use VoicesOfWynn\Controllers\Controller;
 use VoicesOfWynn\Controllers\Api\ApiKey;
+use VoicesOfWynn\Controllers\Api\ApiErrorCode;
 use OpenApi\Attributes as OA;
 
 #[OA\Info(
@@ -72,14 +73,14 @@ abstract class ApiController extends Controller
 
     /**
      * Sends a standardized 400 Bad Request error response with error code and message
-     * @param string $errorCode The error code identifier (see API_ERROR_CODES.md)
+     * @param ApiErrorCode $errorCode The error code enum value (see API_ERROR_CODES.md)
      * @param string $message Human-readable explanation of the error
      * @return int Always returns 400
      */
-    protected function sendBadRequestError(string $errorCode, string $message): int
+    protected function sendBadRequestError(ApiErrorCode $errorCode, string $message): int
     {
         echo json_encode([
-            'error_code' => $errorCode,
+            'error_code' => $errorCode->value,
             'message' => $message
         ]);
         return 400;

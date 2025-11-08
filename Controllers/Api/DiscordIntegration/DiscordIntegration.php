@@ -3,6 +3,7 @@
 namespace VoicesOfWynn\Controllers\Api\DiscordIntegration;
 
 use VoicesOfWynn\Controllers\Api\ApiController;
+use VoicesOfWynn\Controllers\Api\ApiErrorCode;
 use VoicesOfWynn\Controllers\Api\ApiKey;
 use VoicesOfWynn\Models\Api\DiscordIntegration\DiscordManager;
 use VoicesOfWynn\Models\Website\DiscordRole;
@@ -50,7 +51,7 @@ class DiscordIntegration extends ApiController
 
         // Validate action parameter
         if (!isset($_GET['action']) || empty($_GET['action'])) {
-            return $this->sendBadRequestError('MISSING_ACTION_PARAMETER', 'The \'action\' parameter is required');
+            return $this->sendBadRequestError(ApiErrorCode::MISSING_ACTION_PARAMETER, 'The \'action\' parameter is required');
         }
 
         try {
@@ -69,7 +70,7 @@ class DiscordIntegration extends ApiController
                     echo $users;
                     return 200;
                 default:
-                    return $this->sendBadRequestError('UNKNOWN_ACTION', 'The requested action is not recognized');
+                    return $this->sendBadRequestError(ApiErrorCode::UNKNOWN_ACTION, 'The requested action is not recognized');
             }
         } catch (\Exception $e) {
             error_log('DiscordIntegration::get error: ' . $e->getMessage());
@@ -116,7 +117,7 @@ class DiscordIntegration extends ApiController
 
         // Validate action parameter
         if (!isset($_POST['action']) || empty($_POST['action'])) {
-            return $this->sendBadRequestError('MISSING_ACTION_PARAMETER', 'The \'action\' parameter is required');
+            return $this->sendBadRequestError(ApiErrorCode::MISSING_ACTION_PARAMETER, 'The \'action\' parameter is required');
         }
 
         try {
@@ -125,15 +126,15 @@ class DiscordIntegration extends ApiController
                 case 'syncUser':
                     // Validate required parameters
                     if (!isset($_POST['discordId']) || empty($_POST['discordId'])) {
-                        return $this->sendBadRequestError('MISSING_REQUIRED_PARAMETER', 'The \'discordId\' parameter is required');
+                        return $this->sendBadRequestError(ApiErrorCode::MISSING_REQUIRED_PARAMETER, 'The \'discordId\' parameter is required');
                     }
                     if (!isset($_POST['discordName']) || empty($_POST['discordName'])) {
-                        return $this->sendBadRequestError('MISSING_REQUIRED_PARAMETER', 'The \'discordName\' parameter is required');
+                        return $this->sendBadRequestError(ApiErrorCode::MISSING_REQUIRED_PARAMETER, 'The \'discordName\' parameter is required');
                     }
 
                     // Validate discordId is numeric
                     if (!is_numeric($_POST['discordId'])) {
-                        return $this->sendBadRequestError('INVALID_DISCORD_ID', 'The \'discordId\' must be a numeric value');
+                        return $this->sendBadRequestError(ApiErrorCode::INVALID_DISCORD_ID, 'The \'discordId\' must be a numeric value');
                     }
 
                     $imgurl = (isset($_POST['imgurl'])) ? $_POST['imgurl'] : null;
@@ -147,7 +148,7 @@ class DiscordIntegration extends ApiController
 
                         // Check if JSON decoding failed
                         if (json_last_error() !== JSON_ERROR_NONE) {
-                            return $this->sendBadRequestError('INVALID_ROLES_JSON', 'The \'roles\' parameter must be valid JSON');
+                            return $this->sendBadRequestError(ApiErrorCode::INVALID_ROLES_JSON, 'The \'roles\' parameter must be valid JSON');
                         }
 
                         if (is_array($jsonData)) {
@@ -155,7 +156,7 @@ class DiscordIntegration extends ApiController
                                 $roles[] = new DiscordRole($roleName);
                             }
                         } else {
-                            return $this->sendBadRequestError('INVALID_ROLES_JSON', 'The \'roles\' parameter must be a JSON array');
+                            return $this->sendBadRequestError(ApiErrorCode::INVALID_ROLES_JSON, 'The \'roles\' parameter must be a JSON array');
                         }
                     } else {
                         $roles = null;
@@ -174,7 +175,7 @@ class DiscordIntegration extends ApiController
                     }
                     return $responseCode;
                 default:
-                    return $this->sendBadRequestError('UNKNOWN_ACTION', 'The requested action is not recognized');
+                    return $this->sendBadRequestError(ApiErrorCode::UNKNOWN_ACTION, 'The requested action is not recognized');
             }
         } catch (UserException $e) {
             error_log('DiscordIntegration::post UserException: ' . $e->getMessage());

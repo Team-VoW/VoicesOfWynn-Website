@@ -3,6 +3,7 @@
 namespace VoicesOfWynn\Controllers\Api\Other;
 
 use VoicesOfWynn\Controllers\Api\ApiController;
+use VoicesOfWynn\Controllers\Api\ApiErrorCode;
 use VoicesOfWynn\Models\Website\ContentManager;
 
 class Content extends ApiController 
@@ -13,7 +14,7 @@ class Content extends ApiController
             case 'quests':
                 return $this->getQuest();
             default:
-                return $this->sendBadRequestError('UNKNOWN_ACTION', 'The requested action is not recognized');
+                return $this->sendBadRequestError(ApiErrorCode::UNKNOWN_ACTION, 'The requested action is not recognized');
         }
     }
     private function getQuest(): int
@@ -23,12 +24,12 @@ class Content extends ApiController
         }
 
         if(!isset($_GET['questId']) || $_GET['questId'] === null || $_GET['questId'] === ''){
-            return $this->sendBadRequestError('MISSING_QUEST_ID', 'The \'questId\' parameter is required');
+            return $this->sendBadRequestError(ApiErrorCode::MISSING_QUEST_ID, 'The \'questId\' parameter is required');
         }
 
         $questId = $_GET['questId'];
         if (!is_numeric($questId)) {
-            return $this->sendBadRequestError('INVALID_QUEST_ID', 'The \'questId\' parameter must be a numeric value');
+            return $this->sendBadRequestError(ApiErrorCode::INVALID_QUEST_ID, 'The \'questId\' parameter must be a numeric value');
         }
 
         try {
