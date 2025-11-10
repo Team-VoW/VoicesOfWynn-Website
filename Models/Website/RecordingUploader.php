@@ -45,7 +45,7 @@ class RecordingUploader
                 continue;
             }
 
-            if ($type !== 'audio/ogg' && $type !== 'video/ogg') { //Our server is treating audio/ogg as video/ogg for some reason
+            if ($type !== 'audio/ogg' && $type !== 'video/ogg' && $type !== 'application/ogg') { //Our server is treating audio/ogg as WHATEVER/ogg for some reason
                 $this->errors[] = [
                     'code' => 415,
                     'msg' => 'Unsupported Media Type',
