@@ -35,7 +35,9 @@ $(".clear-avatar-link").on('click', function(event) {
         url: "administration/accounts/" + userId + "/clear-avatar",
         type: 'PUT',
         success: function(result, message, error) {
-            $affectedAccount.find(".avatar").attr("src", "dynamic/avatars/default.png");
+            VoWStorage.getUrl('avatars', 'default.png').then(url => {
+                $affectedAccount.find(".avatar").attr("src", url);
+            });
             alert("Avatar of the user cleared.");
         },
         error: function(result, message, error) {

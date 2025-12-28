@@ -8,18 +8,18 @@
 </h1>
 
 <p class="npc-va-center-img txt-c mb-l">
-    <img class="avatar" src="dynamic/npcs/<?= ${basename(__FILE__, '.phtml').'_npc'}->getId() ?>.png" alt="NPC picture" width="200px" height="200px"/>
+    <img class="avatar" src="<?= \VoicesOfWynn\Models\Storage\storageUrl('npcs/' . ${basename(__FILE__, '.phtml').'_npc'}->getId() . '.png') ?>" alt="NPC picture" width="200px" height="200px"/>
 </p>
 <hr class="hr-f">
 <p class="txt-c valink-container">
     <strong class="lb-a">Voice actor: </strong>
     <?php if (${basename(__FILE__, '.phtml').'_voice_actor'} === null) : ?>
-        <img id="voice-actor-avatar" class="avatarcontents" src="dynamic/avatars/nobody.png" alt="Profile picture" />
+        <img id="voice-actor-avatar" class="avatarcontents" src="<?= \VoicesOfWynn\Models\Storage\storageUrl('avatars/nobody.png') ?>" alt="Profile picture" />
         <span id="voice-actor-name" class="lb-b"><i>Nobody</i></span>
         <hr class="hr-f">
     <?php else : ?>
         <a class="valink" href="cast/<?= ${basename(__FILE__, '.phtml').'_voice_actor'}->getId() ?>">
-            <img id="voice-actor-avatar" class="avatarcontents" src="<?= ${basename(__FILE__, '.phtml').'_voice_actor'}->getAvatarLink() ?>" alt="Profile picture" />
+            <img id="voice-actor-avatar" class="avatarcontents" src="<?= ${basename(__FILE__, '.phtml').'_voice_actor'}->getAvatarLink() ?>" onerror="this.onerror=null; this.src='<?= ${basename(__FILE__, '.phtml').'_voice_actor'}->getDefaultAvatarUrl() ?>'" alt="Profile picture" />
             <span id="voice-actor-name" class="lb-b"><?= ${basename(__FILE__, '.phtml').'_voice_actor'}->getName() ?></span>
         </a>
         <hr class="hr-f">
@@ -61,7 +61,7 @@
             <td class="ws-nw line-count"># <?= $recording->line ?></td>
             <td class="the-recording lb-a">
                 <audio controls preload="none">
-                    <source src="dynamic/recordings/<?= $recording->file ?>" type="audio/ogg">
+                    <source src="<?= \VoicesOfWynn\Models\Storage\storageUrl('recordings/' . $recording->file) ?>" type="audio/ogg">
                     Your browser does not support the OGG audio format.
                 </audio>
             </td>

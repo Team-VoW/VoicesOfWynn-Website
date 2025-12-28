@@ -18,7 +18,7 @@
         <?php foreach (${basename(__FILE__, '.phtml').'_accounts'} as $user) : ?>
             <tr data-user-id="<?= $user->getId() ?>">
                 <td class="userinfo"><?= $user->getId() ?></td>
-                <td><img class="avatar" src="<?= $user->getAvatarLink() ?>" alt="Profile picture" loading="lazy"/></td>
+                <td><img class="avatar" src="<?= $user->getAvatarLink() ?>" onerror="this.onerror=null; this.src='<?= $user->getDefaultAvatarUrl() ?>'" alt="Profile picture" loading="lazy"/></td>
                 <td class="userinfo"><?= $user->getName() ?></td>
                 <td class="userinfo" class="txt-l"><a href="/cast/<?= $user->getId() ?>#bio" target="_blank">Bio User <?= $user->getId() ?></a></td>
                 <td class="buttons-column">

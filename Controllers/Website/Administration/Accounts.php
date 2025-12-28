@@ -70,6 +70,7 @@ I know that it would be great if it was copied automatically, but I\'m having so
             self::$data['accounts_accounts'] = $accountManager->getUsers();
 
             self::$cssFiles[] = 'accounts';
+            self::$jsFiles[] = 'storage-config';
             self::$jsFiles[] = 'accounts';
             self::$views[] = 'accounts';
 

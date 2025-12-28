@@ -6,6 +6,23 @@ use VoicesOfWynn\Models\Db;
 
 class ContentManager
 {
+	/**
+	 * Gets a lightweight list of quests with only ID and name (no NPC data).
+	 * Used for the contents page initial load.
+	 * @return array Array of Quest objects with only basic data
+	 */
+	public function getQuestList(): array
+	{
+		$query = 'SELECT quest_id, name AS "qname" FROM quest ORDER BY quest_id;';
+		$result = (new Db('Website/DbInfo.ini'))->fetchQuery($query, array(), true);
+
+		$quests = array();
+		foreach ($result as $questData) {
+			$quests[] = new Quest($questData);
+		}
+		return $quests;
+	}
+
 	public function getQuests(?int $questId = null): array
 	{
 		$query = '

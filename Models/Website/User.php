@@ -9,6 +9,7 @@ use JsonSerializable;
 use PDOException;
 use VoicesOfWynn\Controllers\Website\Account\Account;
 use VoicesOfWynn\Models\Db;
+use VoicesOfWynn\Models\Storage\Storage;
 use OpenApi\Attributes as OA;
 
 #[OA\Schema(
@@ -397,21 +398,31 @@ class User implements JsonSerializable
      * @return string Link of the profile picture (a random number is appended to the end to prevent caching if
      * the avatar isn't the default one) and the argument $appendRandom is set to TRUE.
      */
-    public function getAvatarLink(bool $appendRandom = true)
+    public function getAvatarLink(bool $cacheBust = true): string
     {
         if (!$this->loaded && empty($this->avatarLink)) {
             $this->load();
         }
-        if ($appendRandom && $this->avatarLink !== 'default.png') {
-            return Account::PROFILE_AVATAR_DIRECTORY.$this->avatarLink.'?'.rand(0, 31);
+
+        $storage = Storage::get();
+
+        // Custom avatar takes priority
+        if ($this->avatarLink !== 'default.png') {
+            return $storage->getUrl(Account::AVATAR_PATH_PREFIX . $this->avatarLink, $cacheBust);
         }
-        if (!$appendRandom && $this->avatarLink !== 'default.png') {
-            return Account::PROFILE_AVATAR_DIRECTORY.$this->avatarLink;
-        }
-        if (file_exists(Account::DISCORD_AVATAR_DIRECTORY.$this->id.'.png')) {
-            return Account::DISCORD_AVATAR_DIRECTORY . $this->id . '.png';
-        }
-        return Account::PROFILE_AVATAR_DIRECTORY.$this->avatarLink;
+
+        // Try Discord avatar (browser will fallback to default via onerror if 404)
+        // Note: We don't check exists() to avoid API calls on every page load
+        $discordAvatarPath = Account::DISCORD_AVATAR_PATH_PREFIX . $this->id . '.png';
+        return $storage->getUrl($discordAvatarPath, false);
+    }
+
+    /**
+     * Get fallback avatar URL (for use in HTML onerror handlers)
+     */
+    public function getDefaultAvatarUrl(): string
+    {
+        return Storage::get()->getUrl(Account::AVATAR_PATH_PREFIX . 'default.png', false);
     }
     
     /**
@@ -781,7 +792,7 @@ class User implements JsonSerializable
         $this->avatarLink = 'default.png';
         $result = (new Db('Website/DbInfo.ini'))->executeQuery('UPDATE user SET picture = DEFAULT WHERE user_id = ?', array($this->id));
         if ($result) {
-            array_map('unlink', glob('dynamic/avatars/'.$this->getId().'.*'));
+            Storage::get()->deleteByPrefix(Account::AVATAR_PATH_PREFIX . $this->getId() . '.');
         }
         return $result;
     }

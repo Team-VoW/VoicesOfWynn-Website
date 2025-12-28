@@ -12,3 +12,4 @@ composer.phar
 .devcontainer
 /sessions/*
 !/sessions/.gitkeep
+*nul

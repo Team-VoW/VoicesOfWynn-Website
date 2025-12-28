@@ -3,6 +3,7 @@
 namespace VoicesOfWynn\Models\Website;
 
 use VoicesOfWynn\Models\Db;
+use VoicesOfWynn\Models\Storage\Storage;
 
 /**
  * Class taking care of processing new recording uploads
@@ -111,20 +112,21 @@ class RecordingUploader
             $fileReplaced = false;
             $fileRenamed = false;
             $originalFilename = $filename;
-            if (file_exists('dynamic/recordings/'.$filename)) {
+            $storage = Storage::get();
+            if ($storage->exists('recordings/'.$filename)) {
                 if ($overwrite) {
-                    unlink('dynamic/recordings/'.$filename);
+                    $storage->delete('recordings/'.$filename);
                     $fileReplaced = true;
                 } else {
                     $fileRenamed = true;
                     $filename = str_replace('.ogg', '_(1).ogg', $filename);
-                    for ($j = 2; file_exists('dynamic/recordings/'.$filename); $j++) {
+                    for ($j = 2; $storage->exists('recordings/'.$filename); $j++) {
                         $filename = preg_replace('/_\(\d*\)\.ogg$/', '_('.$j.').ogg', $filename);
                     }
                 }
             }
 
-            move_uploaded_file($tempName, 'dynamic/recordings/'.$filename);
+            $storage->upload($tempName, 'recordings/'.$filename, 'audio/ogg');
 
             if (!$fileReplaced) {
                 //Insert a new database record only if a new recording file was created on the server

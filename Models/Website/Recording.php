@@ -3,6 +3,7 @@
 namespace VoicesOfWynn\Models\Website;
 
 use VoicesOfWynn\Models\Db;
+use VoicesOfWynn\Models\Storage\Storage;
 
 class Recording
 {
@@ -332,7 +333,7 @@ class Recording
     public function archive(string $prefix = '_archived') : bool
     {
         //Rename the file
-        rename('dynamic/recordings/'.$this->file, 'dynamic/recordings/'.$prefix.$this->file);
+        Storage::get()->rename('recordings/'.$this->file, 'recordings/'.$prefix.$this->file);
 
         //Change the attributes
         $this->archived = true;

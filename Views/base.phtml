@@ -57,6 +57,18 @@
         <span class="f-r"> Designed with &hearts; by <a href="https://github.com/Just5MoreMinutes" target="_blank">Just5MoreMinutes</a> and <a href="https://github.com/t-d3v" target="_blank">TD3V</a></span> 
         <span>DevOps by <a href="https://github.com/kmaxii" target="_blank">kmaxi</a></span>
     </footer>
+    <!-- Storage Configuration -->
+    <script>
+        window.STORAGE_CONFIG = {
+            baseUrl: '<?= \VoicesOfWynn\Models\Storage\Storage::get()->getBaseUrl() ?>',
+            paths: {
+                recordings: 'recordings/',
+                avatars: 'avatars/',
+                npcs: 'npcs/',
+                discordAvatars: 'discord-avatars/'
+            }
+        };
+    </script>
     <!-- JavaScript -->
     <?php foreach (self::$jsFiles as $jsFile) : ?>
         <script type="text/javascript" src="js/<?= $jsFile ?>.js"></script>

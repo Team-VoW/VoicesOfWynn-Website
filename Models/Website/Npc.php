@@ -4,6 +4,7 @@ namespace VoicesOfWynn\Models\Website;
 
 use \JsonSerializable;
 use VoicesOfWynn\Models\Db;
+use VoicesOfWynn\Models\Storage\Storage;
 
 class Npc implements JsonSerializable
 {
@@ -100,7 +101,7 @@ class Npc implements JsonSerializable
         unset($replacementId);
 
         //Copy profile picture
-        copy('dynamic/npcs/'.$this->id.'.png', 'dynamic/npcs/'.$replacementNpc->getId().'.png');
+        Storage::get()->copy('npcs/'.$this->id.'.png', 'npcs/'.$replacementNpc->getId().'.png');
 
         //Unlink this NPC from all quests and link the new one
         $inString = trim(str_repeat('?,', count($questIds)), ',');
