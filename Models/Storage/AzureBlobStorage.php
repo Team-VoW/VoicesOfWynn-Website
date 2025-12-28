@@ -95,6 +95,10 @@ class AzureBlobStorage implements StorageInterface {
         try {
             // Azure doesn't support rename - must copy then delete
             $this->client->copyBlob($this->containerName, $newPath, $this->containerName, $oldPath);
+
+            // Wait for the copy to complete before deleting
+            $this->waitForCopyCompletion($newPath);
+
             $this->client->deleteBlob($this->containerName, $oldPath);
             return true;
         } catch (ServiceException $e) {
@@ -124,7 +128,12 @@ class AzureBlobStorage implements StorageInterface {
     }
 
     public function getUrl(string $path, bool $cacheBust = false): string {
-        $url = $this->baseUrl . $path;
+        // Encode each path segment to handle special characters while preserving directory separators
+        $segments = explode('/', $path);
+        $encodedSegments = array_map('rawurlencode', $segments);
+        $encodedPath = implode('/', $encodedSegments);
+
+        $url = $this->baseUrl . $encodedPath;
         if ($cacheBust) {
             $url .= '?v=' . time();
         }
@@ -133,5 +142,60 @@ class AzureBlobStorage implements StorageInterface {
 
     public function getBaseUrl(): string {
         return $this->baseUrl;
+    }
+
+    /**
+     * Waits for an asynchronous blob copy operation to complete.
+     * Polls the blob properties until the copy status is 'success' or fails.
+     *
+     * @param string $blobPath Path to the destination blob being copied
+     * @throws StorageException If copy fails or times out
+     */
+    private function waitForCopyCompletion(string $blobPath): void {
+        $maxAttempts = 60; // Maximum 60 attempts
+        $sleepSeconds = 1; // Wait 1 second between polls
+
+        for ($i = 0; $i < $maxAttempts; $i++) {
+            try {
+                $properties = $this->client->getBlobProperties($this->containerName, $blobPath);
+                $copyStatus = $properties->getProperties()->getCopyState();
+
+                if ($copyStatus === null) {
+                    // No copy operation found - might be a same-container instant copy
+                    return;
+                }
+
+                $status = $copyStatus->getStatus();
+
+                if ($status === 'success') {
+                    return;
+                }
+
+                if ($status === 'failed' || $status === 'aborted') {
+                    throw new StorageException(
+                        "Blob copy failed with status: {$status}",
+                        'waitForCopyCompletion',
+                        $blobPath
+                    );
+                }
+
+                // Status is 'pending' - wait and retry
+                sleep($sleepSeconds);
+
+            } catch (ServiceException $e) {
+                throw new StorageException(
+                    "Failed to check copy status: " . $e->getMessage(),
+                    'waitForCopyCompletion',
+                    $blobPath,
+                    $e
+                );
+            }
+        }
+
+        throw new StorageException(
+            "Blob copy timed out after {$maxAttempts} seconds",
+            'waitForCopyCompletion',
+            $blobPath
+        );
     }
 }
