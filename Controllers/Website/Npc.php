@@ -8,6 +8,7 @@ use VoicesOfWynn\Models\Website\ContentManager;
 use VoicesOfWynn\Models\Website\RecordingUploader;
 use VoicesOfWynn\Models\Website\User;
 use VoicesOfWynn\Models\Website\Npc as NpcModel;
+use VoicesOfWynn\Models\Storage\Storage;
 
 class Npc extends WebpageController
 {
@@ -161,7 +162,7 @@ class Npc extends WebpageController
 			array($recordingId, $this->npc->getId()));
 		if ($result) {
 			//Delete file
-			unlink('dynamic/recordings/'.$filename);
+			Storage::get()->delete('recordings/'.$filename);
 		}
 		exit($result);
 	}

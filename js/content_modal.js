@@ -5,39 +5,37 @@ $(function () {
     let $questBoxes = $(".mod-contents").find('.card.q-voice')
     let $searchbar = $("#q_search")
 
+    // Helper to build NPC HTML with proper storage URLs
+    async function buildNpcHtml(npcs) {
+        const config = await VoWStorage.getConfig();
+        let html = '';
+        npcs.forEach(npc => {
+            const imgUrl = config.baseUrl + config.paths.npcs + npc.id + '.png';
+            html += `
+                <div class="npc">
+                    <img class="image" src="${imgUrl}" alt="NPC avatar"/>
+                    <p class="name"><a href="contents/npc/${npc.id}">${npc.name}</a></p>
+                </div>
+            `;
+        });
+        return html;
+    }
+
     $searchbar.keyup(function () {
         $('#results_container').find('.card.q-voice').click(function () {
-            $.getJSON(`/api/content/quest-info?apiKey=11OpnUsvX54xFG19&questId=${$(this).attr("data-q-id")}`, function (data) {
-                let npcs = data[0].npcs
-                let html = ``
-                npcs.forEach(npc => {
-                    html += `
-                        <div class="npc">
-                            <img class="image" src="dynamic/npcs/${npc.id}.png" alt="NPC avatar"/>
-                            <p class="name"><a href="contents/npc/${npc.id}">${npc.name}</a></p>
-                        </div>     
-                    `
-                });
-                $content.html(html)
-                $modal.css('display','flex')
+            $.getJSON(`/api/content/quest-info?questId=${$(this).attr("data-q-id")}`, async function (data) {
+                let npcs = data[0].npcs;
+                $content.html(await buildNpcHtml(npcs));
+                $modal.css('display','flex');
             })
         })
     })
 
     $questBoxes.click(function () {
-        $.getJSON(`/api/content/quest-info?questId=${$(this).attr("data-q-id")}`, function (data) {
-            let npcs = data[0].npcs
-            let html = ``
-            npcs.forEach(npc => {
-                html += `
-                    <div class="npc">
-                        <img class="image" src="dynamic/npcs/${npc.id}.png" alt="NPC avatar"/>
-                        <p class="name"><a href="contents/npc/${npc.id}">${npc.name}</a></p>
-                    </div>     
-                `
-            });
-            $content.html(html)
-            $modal.css('display','flex')
+        $.getJSON(`/api/content/quest-info?questId=${$(this).attr("data-q-id")}`, async function (data) {
+            let npcs = data[0].npcs;
+            $content.html(await buildNpcHtml(npcs));
+            $modal.css('display','flex');
         })
     })
 

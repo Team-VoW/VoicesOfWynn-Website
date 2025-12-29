@@ -6,12 +6,13 @@ namespace VoicesOfWynn\Controllers\Website\Account;
 use VoicesOfWynn\Controllers\Website\WebpageController;
 use VoicesOfWynn\Models\Website\AccountDataValidator;
 use VoicesOfWynn\Models\Website\User;
+use VoicesOfWynn\Models\Storage\Storage;
 
 class Account extends WebpageController
 {
 
-    public const PROFILE_AVATAR_DIRECTORY = 'dynamic/avatars/';
-    public const DISCORD_AVATAR_DIRECTORY = 'dynamic/discord-avatars/';
+    public const AVATAR_PATH_PREFIX = 'avatars/';
+    public const DISCORD_AVATAR_PATH_PREFIX = 'discord-avatars/';
 
     /**
      * @var User The user object that we're editing
@@ -170,10 +171,11 @@ class Account extends WebpageController
         if (empty($validator->errors)) {
             if ($_FILES['avatar']['error'] !== UPLOAD_ERR_NO_FILE) {
                 //Delete old avatars
-                array_map('unlink', glob(self::PROFILE_AVATAR_DIRECTORY.$this->user->getId().'.*'));
+                $storage = Storage::get();
+                $storage->deleteByPrefix(self::AVATAR_PATH_PREFIX . $this->user->getId() . '.');
 
                 //Save changes
-                move_uploaded_file($_FILES['avatar']['tmp_name'], self::PROFILE_AVATAR_DIRECTORY.$avatar);
+                $storage->upload($_FILES['avatar']['tmp_name'], self::AVATAR_PATH_PREFIX . $avatar);
             } else {
                 $avatar = $this->user->getAvatar();
             }

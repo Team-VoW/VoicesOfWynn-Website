@@ -7,6 +7,7 @@ use VoicesOfWynn\Models\Website\AccountManager;
 use VoicesOfWynn\Models\Website\DiscordRole;
 use VoicesOfWynn\Models\Website\User;
 use VoicesOfWynn\Models\Website\UserException;
+use VoicesOfWynn\Models\Storage\Storage;
 
 class DiscordManager
 {
@@ -117,23 +118,35 @@ class DiscordManager
      */
     private function updateDiscordAvatar(int $userId, string $avatarUrl): bool
     {
-        $fh = fopen(Account::DISCORD_AVATAR_DIRECTORY.$userId.'.png', 'w'); //Also clears the current file, if it exists
-        $ch = curl_init();
+        // Download to temp file first
+        $tempFile = tempnam(sys_get_temp_dir(), 'discord_avatar_');
+        try {
+            $fh = fopen($tempFile, 'w');
+            $ch = curl_init();
 
-        curl_setopt($ch, CURLOPT_URL, $avatarUrl);
-        curl_setopt($ch, CURLOPT_FILE, $fh);
-        curl_setopt($ch, CURLOPT_HEADER, false);
-        curl_setopt($ch, CURLOPT_USERAGENT, 'Voices of Wynn +https://www.voicesofwynn.com');
-        curl_exec($ch);
-        $error = curl_errno($ch);
+            curl_setopt($ch, CURLOPT_URL, $avatarUrl);
+            curl_setopt($ch, CURLOPT_FILE, $fh);
+            curl_setopt($ch, CURLOPT_HEADER, false);
+            curl_setopt($ch, CURLOPT_USERAGENT, 'Voices of Wynn +https://www.voicesofwynn.com');
+            curl_exec($ch);
+            $error = curl_errno($ch);
 
-        curl_close($ch);
-        fclose($fh);
+            curl_close($ch);
+            fclose($fh);
 
-        if ($error === 0) {
-            return true;
+            if ($error === 0) {
+                // Upload to storage
+                $storage = Storage::get();
+                $storage->upload($tempFile, Account::DISCORD_AVATAR_PATH_PREFIX . $userId . '.png', 'image/png');
+                return true;
+            }
+            return false;
+        } finally {
+            // Always clean up temp file
+            if (file_exists($tempFile)) {
+                unlink($tempFile);
+            }
         }
-        return false;
     }
 }
 

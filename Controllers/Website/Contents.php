@@ -17,10 +17,11 @@ class Contents extends WebpageController
 		self::$data['base_keywords'] = 'Minecraft,Wynncraft,Mod,Voice,Contents,Content,Recordings,List,Voting';
 		
 		$cnm = new ContentManager();
-		self::$data['contents_quests'] = $cnm->getQuests();
+		self::$data['contents_quests'] = $cnm->getQuestList();
 		
 		self::$cssFiles[] = 'contents';
 		self::$jsFiles[] = 'search_bar';
+		self::$jsFiles[] = 'storage-config';
 		self::$jsFiles[] = 'content_modal';
 		self::$views[] = 'contents';
 		return true;

@@ -26,6 +26,14 @@ function autoloader(string $name): void
 
 spl_autoload_register('VoicesOfWynn\autoloader');
 
+//Storage helper functions for views
+function storageUrl(string $path, bool $cacheBust = false): string {
+    return \VoicesOfWynn\Models\Storage\Storage::get()->getUrl($path, $cacheBust);
+}
+
+function storageBaseUrl(): string {
+    return \VoicesOfWynn\Models\Storage\Storage::get()->getBaseUrl();
+}
 
 // Create "sessions" folder if it does not exist
 $sessionsPath = __DIR__.'/sessions';

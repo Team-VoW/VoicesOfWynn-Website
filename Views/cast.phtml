@@ -29,7 +29,7 @@
     <div id="socials-container">
         <div class="socials-row txt-c" id="scoials-row-1">
             <div class="socials-card">
-                <img class="contributor-img lb-a" src="<?= $voiceActor->getAvatarLink() ?>" alt="Voice actor's avatar">
+                <img class="contributor-img lb-a" src="<?= $voiceActor->getAvatarLink() ?>" onerror="this.onerror=null; this.src='<?= $voiceActor->getDefaultAvatarUrl() ?>'" alt="Voice actor's avatar">
 
                 <?php if (!empty($voiceActor->getEmail()) && $voiceActor->hasPublicEmail()) : ?>
 
@@ -85,7 +85,7 @@
                       <td class="ws-nw line-count" rowspan="1"># <?= $recording->line ?></td>
                       <td class="the-recording lb-a">
                           <audio controls preload="none">
-                              <source src="dynamic/recordings/<?= $recording->file ?>" type="audio/ogg">
+                              <source src="<?= \VoicesOfWynn\Models\Storage\storageUrl('recordings/' . $recording->file) ?>" type="audio/ogg">
                               Oops! Your browser doesnt support the OGG format :(
                           </audio>
                       <td class="voting-buttons">
