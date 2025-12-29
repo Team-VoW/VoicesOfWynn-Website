@@ -12,7 +12,7 @@
 
 <p class="txt-c mb-m">
     <audio controls>
-        <source src="<?= \VoicesOfWynn\Models\Storage\storageUrl('recordings/' . ${basename(__FILE__, '.phtml').'_recording'}->file) ?>" type="audio/ogg">
+        <source src="<?= \VoicesOfWynn\storageUrl('recordings/' . ${basename(__FILE__, '.phtml').'_recording'}->file) ?>" type="audio/ogg">
         Oops! Your browser doesnt support the OGG format :(
     </audio>
 </p>

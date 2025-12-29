@@ -85,7 +85,7 @@
                       <td class="ws-nw line-count" rowspan="1"># <?= $recording->line ?></td>
                       <td class="the-recording lb-a">
                           <audio controls preload="none">
-                              <source src="<?= \VoicesOfWynn\Models\Storage\storageUrl('recordings/' . $recording->file) ?>" type="audio/ogg">
+                              <source src="<?= \VoicesOfWynn\storageUrl('recordings/' . $recording->file) ?>" type="audio/ogg">
                               Oops! Your browser doesnt support the OGG format :(
                           </audio>
                       <td class="voting-buttons">
