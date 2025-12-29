@@ -51,6 +51,41 @@ To change anything about the database structure you need to create a new changes
 
 For more information on how to use Liquibase, refer to the [official documentation](https://www.liquibase.org/documentation/index.html).
 
+### Storage Configuration
+
+The application supports two storage backends for dynamic files (recordings, avatars, etc.):
+
+#### Local Storage (Default)
+Files are stored in the `./dynamic/` directory on the server filesystem.
+
+**Configuration:**
+```env
+STORAGE_TYPE=local
+```
+
+This is the recommended option for local development.
+
+#### Azure Blob Storage
+Files are stored in Azure Blob Storage, which is recommended for production deployments.
+
+**Setup Instructions:**
+
+1. Create an Azure Storage Account at [https://portal.azure.com](https://portal.azure.com)
+2. Create a container named "vow" with "Blob" public access level
+3. Get your connection string from: Storage Account > Access Keys > Connection String
+4. In your `.env` file, set:
+   ```env
+   STORAGE_TYPE=azure
+   AZURE_STORAGE_CONNECTION_STRING=DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...;EndpointSuffix=core.windows.net
+   ```
+5. Comment out the `dynamic_data` volume mount in `docker-compose.yml`
+6. Restart containers:
+   ```bash
+   docker-compose -f docker-compose.dev.yml restart web
+   ```
+
+**Note:** For local development, use `STORAGE_TYPE=local`. For production, use `STORAGE_TYPE=azure`.
+
 ## Planned featuers
 
 🔲 Index page with basic information about the project  
