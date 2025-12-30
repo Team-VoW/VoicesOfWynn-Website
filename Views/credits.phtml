@@ -1,32 +1,45 @@
-<h1>Contribu&shy;tors</h1>
-<p class="txt-c">A lot of people worked hard on this mod. Take a moment to appreciate their work.</p>
-<?php foreach (${basename(__FILE__, '.phtml').'_contributors'} as $contributor) : ?>
-  <?php if (@$currentHighestRole > $contributor->getRoles()[0]->weight && $currentHighestRole !== null) :?>
-    </div>
-  <?php endif ?>
-	<?php if (@$currentHighestRole > $contributor->getRoles()[0]->weight || @$currentHighestRole === null) : /*New highest role*/ $currentHighestRole = $contributor->getRoles()[0]->weight;?>
-    <hr class="hr-f">
-    <h2 style="color:#<?= $contributor->getRoles()[0]->color ?>;"><?= $contributor->getRoles()[0]->name ?><?php if ($contributor->getRoles()[0]->name !== 'Owner') : ?>s<?php endif ?></h2>
-    <div class="row">
-	<?php endif ?>
-	    <div class="cardwrapper">
-	      <div class="col-3">
-		      <a class="a-no-hover" href="/cast/<?= $contributor->getId(); ?>">
-		        <div class="card">
-			        <img class="avatar" src="<?= $contributor->getAvatarLink(); ?>" onerror="this.onerror=null; this.src='<?= $contributor->getDefaultAvatarUrl(); ?>'" alt="Contributor's profile picture" loading="lazy"/><br>
-			        <p class="contributor_name"><strong><?= $contributor->getName(); ?></strong></p>
-				      <hr class="hr-f"> 
-				      <?php if (!empty($contributor->getLore())) : ?>
-				        <i><?= $contributor->getLore() ?></i>
-				      <?php endif ?>
-				      <ul class="roles">
-					      <?php foreach ($contributor->getRoles() as $role) : ?>
-					      <li style="color:#<?= $role->color ?>;"><?= $role->name ?></li>
-					      <?php endforeach ?>
-				      </ul>
-              <hr class="hr-f">
-			      </div>
-          </a>
-			  </div>
-      </div>
-<?php endforeach ?>
+<header class="credits-header">
+    <h1>Contributors</h1>
+    <p>A lot of people worked hard on this mod. Take a moment to appreciate their work.</p>
+</header>
+
+<?php
+$currentRole = null;
+foreach (${basename(__FILE__, '.phtml').'_contributors'} as $contributor) :
+    $topRole = $contributor->getRoles()[0];
+
+    // Close previous section and start new one when role changes
+    if ($currentRole !== $topRole->weight) :
+        if ($currentRole !== null) : ?>
+            </div>
+        </section>
+        <?php endif;
+        $currentRole = $topRole->weight;
+        ?>
+        <section class="role-section">
+            <h2 class="role-title" style="color: #<?= $topRole->color ?>;">
+                <?= $topRole->name ?><?php if ($topRole->name !== 'Owner') : ?>s<?php endif ?>
+            </h2>
+            <div class="contributors-grid">
+    <?php endif; ?>
+
+    <a class="contributor-card" href="/cast/<?= $contributor->getId(); ?>">
+        <img
+            class="contributor-avatar"
+            src="<?= $contributor->getAvatarLink(); ?>"
+            onerror="this.onerror=null; this.src='<?= $contributor->getDefaultAvatarUrl(); ?>'"
+            alt="<?= htmlspecialchars($contributor->getName()); ?>'s profile picture"
+            loading="lazy"
+        />
+        <p class="contributor-name"><?= htmlspecialchars($contributor->getName()); ?></p>
+        <?php if (!empty($contributor->getLore())) : ?>
+            <p class="contributor-lore"><?= htmlspecialchars($contributor->getLore()); ?></p>
+        <?php endif ?>
+    </a>
+
+<?php endforeach; ?>
+
+<?php if ($currentRole !== null) : ?>
+            </div>
+        </section>
+<?php endif; ?>
