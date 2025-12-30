@@ -188,6 +188,11 @@
   grid-column: span 2;
 }
 
+/* Full width card - spans all columns */
+.card--full-width {
+  grid-column: 1 / -1;
+}
+
 /* --------------------------------------------------------------------------
    5. CARD VARIANTS (Accent Colors)
    -------------------------------------------------------------------------- */
@@ -241,7 +246,7 @@
 
 .video-container {
   position: relative;
-  width: 320px;
+  width: 400px;
   aspect-ratio: 16 / 9;
   cursor: pointer;
   flex-shrink: 0;
@@ -451,6 +456,10 @@
     grid-column: span 2;
   }
 
+  .card--full-width {
+    grid-column: 1 / -1;
+  }
+
   .hero-title {
     font-size: 2.5rem;
   }
@@ -461,7 +470,7 @@
   }
 
   .video-container {
-    width: 280px;
+    width: 320px;
   }
 }
 
@@ -471,13 +480,14 @@
     gap: var(--space-md);
   }
 
-  .card--featured {
+  .card--featured,
+  .card--full-width {
     grid-column: span 1;
   }
 
   .hero-section {
     padding: var(--space-lg) var(--space-sm);
-    margin: -1.5rem -1.5rem var(--space-md);
+    margin: 0 -1.5rem var(--space-md);
   }
 
   .hero-title {
