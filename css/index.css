@@ -1,49 +1,556 @@
-/* Styling for the video section on the homepage */
+/* ==========================================================================
+   VOICES OF WYNN - MODERN HOMEPAGE STYLES
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. CSS CUSTOM PROPERTIES (Design Tokens)
+   -------------------------------------------------------------------------- */
+
+:root {
+  /* Primary gradient colors - gaming/Minecraft aesthetic */
+  --gradient-purple: #7b1a9b;
+  --gradient-violet: #a340c4;
+  --gradient-pink: #ff6b9d;
+  --gradient-cyan: #00d4ff;
+  --gradient-green: #00ff87;
+
+  /* Card styling */
+  --card-bg: rgba(255, 255, 255, 0.98);
+  --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  --card-shadow-hover: 0 16px 48px rgba(123, 26, 155, 0.2);
+  --card-border-radius: 1rem;
+
+  /* Animation timings */
+  --transition-fast: 0.2s;
+  --transition-medium: 0.3s;
+  --transition-slow: 0.5s;
+
+  /* Spacing scale */
+  --space-xs: 0.5rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+}
+
+/* --------------------------------------------------------------------------
+   2. HERO SECTION
+   -------------------------------------------------------------------------- */
+
+.hero-section {
+  position: relative;
+  padding: var(--space-xl) var(--space-md);
+  margin: 0 -1.5rem var(--space-lg);
+  background: linear-gradient(135deg, var(--gradient-purple), var(--gradient-violet), var(--gradient-pink));
+  border-radius: var(--card-border-radius);
+  overflow: hidden;
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('../images/Website_background.webp') center/cover;
+  opacity: 0.08;
+  pointer-events: none;
+}
+
+.hero-section::after {
+  content: '';
+  position: absolute;
+  bottom: -50px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120%;
+  height: 100px;
+  background: whitesmoke;
+  border-radius: 50% 50% 0 0;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+
+.hero-title {
+  color: white;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3),
+               0 0 40px rgba(123, 26, 155, 0.5);
+  margin-bottom: var(--space-md);
+  font-size: 3rem;
+}
+
+.hero-description {
+  color: rgba(255, 255, 255, 0.95);
+  max-width: 700px;
+  margin: 0 auto var(--space-lg);
+  font-size: 1.15rem;
+  line-height: 1.7;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.hero-actions {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.hero-btn {
+  padding: 1rem 1.8rem;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+.hero-btn:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+}
+
+/* --------------------------------------------------------------------------
+   3. CARDS GRID LAYOUT
+   -------------------------------------------------------------------------- */
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-lg);
+  padding: var(--space-sm) 0;
+}
+
+/* --------------------------------------------------------------------------
+   4. CARD COMPONENT
+   -------------------------------------------------------------------------- */
+
+.card {
+  background: var(--card-bg);
+  border-radius: var(--card-border-radius);
+  padding: var(--space-lg);
+  box-shadow: var(--card-shadow);
+  transition: transform var(--transition-medium) ease,
+              box-shadow var(--transition-medium) ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--gradient-purple), var(--gradient-cyan));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--transition-medium) ease;
+}
+
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--card-shadow-hover);
+}
+
+.card:hover::before {
+  transform: scaleX(1);
+}
+
+.card__title {
+  margin: 0 0 var(--space-sm);
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.card__description {
+  color: #555;
+  margin-bottom: var(--space-md);
+  flex-grow: 1;
+  line-height: 1.6;
+}
+
+.card__actions {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: auto;
+}
+
+/* Featured card - spans 2 columns */
+.card--featured {
+  grid-column: span 2;
+}
+
+/* --------------------------------------------------------------------------
+   5. CARD VARIANTS (Accent Colors)
+   -------------------------------------------------------------------------- */
+
+/* Credits Card - Purple theme */
+.card--credits::before {
+  background: linear-gradient(90deg, #AB5DFC, #d08fff);
+}
+
+/* FAQ Card - Green theme */
+.card--faq::before {
+  background: linear-gradient(90deg, rgb(47, 104, 0), rgb(100, 200, 50));
+}
+
+/* Contents Card - Cyan theme */
+.card--contents::before {
+  background: linear-gradient(90deg, rgb(21, 220, 255), var(--gradient-green));
+}
+
+/* Video Card - Purple/Cyan theme */
+.card--video::before {
+  background: linear-gradient(90deg, var(--gradient-purple), var(--gradient-cyan));
+}
+
+/* Login Card - Gold theme */
+.card--login::before {
+  background: linear-gradient(90deg, #FFD751, #ff9500);
+}
+
+/* Patreon Card - Coral theme */
+.card--patreon::before {
+  background: linear-gradient(90deg, #ffa599, var(--gradient-pink));
+}
+
+/* Support Card - Green theme */
+.card--support::before {
+  background: linear-gradient(90deg, lightgreen, var(--gradient-green));
+}
+
+/* --------------------------------------------------------------------------
+   6. VIDEO SECTION STYLING
+   -------------------------------------------------------------------------- */
+
 .video-wrapper {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    /* Allows wrapping on smaller screens */
-    gap: 20px;
-    /* Adds space between videos */
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  width: 100%;
 }
 
 .video-container {
-    position: relative;
-    width: 350px;
-    /* Fixed width */
-    aspect-ratio: 16 / 9;
-    /* Maintains correct video proportions */
-    cursor: pointer;
-    flex-shrink: 0;
-    /* Prevents shrinking */
+  position: relative;
+  width: 320px;
+  aspect-ratio: 16 / 9;
+  cursor: pointer;
+  flex-shrink: 0;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  transition: transform var(--transition-medium) ease,
+              box-shadow var(--transition-medium) ease;
+}
+
+.video-container:hover {
+  transform: scale(1.03);
+  box-shadow: 0 8px 30px rgba(123, 26, 155, 0.3);
 }
 
 .video-container img,
 .video-container iframe {
-    width: 100%;
-    height: 100%;
-    display: block;
-    object-fit: cover;
-    /* This removes black bars */
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
 }
 
 .play-button {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.6);
-    border-radius: 50%;
-    width: 80px;
-    height: 80px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(135deg, var(--gradient-purple), var(--gradient-pink));
+  border-radius: 50%;
+  width: 70px;
+  height: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 20px rgba(123, 26, 155, 0.4);
+  transition: transform var(--transition-fast) ease,
+              box-shadow var(--transition-fast) ease;
+}
+
+.video-container:hover .play-button {
+  transform: translate(-50%, -50%) scale(1.1);
+  box-shadow: 0 6px 25px rgba(123, 26, 155, 0.5);
 }
 
 .play-button::before {
-    content: "▶";
-    font-size: 40px;
-    color: white;
+  content: "";
+  width: 0;
+  height: 0;
+  border-left: 22px solid white;
+  border-top: 14px solid transparent;
+  border-bottom: 14px solid transparent;
+  margin-left: 5px;
+}
+
+/* --------------------------------------------------------------------------
+   7. LOGIN SECTION
+   -------------------------------------------------------------------------- */
+
+.card--login .session-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: stretch;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  width: 100%;
+}
+
+.card--login .session-buttons > a {
+  flex: 1;
+  min-width: 100px;
+  max-width: 180px;
+  display: inline-flex;
+}
+
+.card--login .session-buttons button {
+  width: 100%;
+  height: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   8. BUTTON ENHANCEMENTS
+   -------------------------------------------------------------------------- */
+
+.hero-btn,
+.card__actions button,
+.card--login button {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Fix text contrast for dark background buttons */
+.card__actions .creditsbtn,
+.card__actions .faqbtn,
+.discordbtn {
+  color: white;
+}
+
+.card__actions .creditsbtn:hover,
+.card__actions .faqbtn:hover,
+.discordbtn:hover {
+  color: white;
+}
+
+/* Shine effect on hover */
+.hero-btn::after,
+.card__actions button::after,
+.card--login button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.35),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.hero-btn:hover::after,
+.card__actions button:hover::after,
+.card--login button:hover::after {
+  left: 100%;
+}
+
+/* Icon animations */
+.hero-btn .buttonicon,
+.card__actions .buttonicon {
+  transition: transform var(--transition-fast) ease;
+}
+
+.hero-btn:hover .buttonicon,
+.card__actions button:hover .buttonicon {
+  transform: scale(1.15) rotate(-5deg);
+}
+
+/* --------------------------------------------------------------------------
+   9. SCROLL ANIMATIONS
+   -------------------------------------------------------------------------- */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Initial state for animated elements */
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.animate-on-scroll.is-visible {
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+/* Stagger animations for grid items */
+.cards-grid .card:nth-child(1).is-visible { animation-delay: 0s; }
+.cards-grid .card:nth-child(2).is-visible { animation-delay: 0.1s; }
+.cards-grid .card:nth-child(3).is-visible { animation-delay: 0.2s; }
+.cards-grid .card:nth-child(4).is-visible { animation-delay: 0.1s; }
+.cards-grid .card:nth-child(5).is-visible { animation-delay: 0.2s; }
+.cards-grid .card:nth-child(6).is-visible { animation-delay: 0.1s; }
+.cards-grid .card:nth-child(7).is-visible { animation-delay: 0.2s; }
+
+/* Hero animations */
+.animate-fade-in {
+  animation: fadeIn 0.8s ease forwards;
+}
+
+.animate-fade-in-delay {
+  animation: fadeIn 0.8s ease 0.2s forwards;
+  opacity: 0;
+}
+
+.animate-fade-in-delay-2 {
+  animation: fadeIn 0.8s ease 0.4s forwards;
+  opacity: 0;
+}
+
+/* --------------------------------------------------------------------------
+   10. RESPONSIVE DESIGN
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 62.5rem) {
+  .cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-md);
+  }
+
+  .card--featured {
+    grid-column: span 2;
+  }
+
+  .hero-title {
+    font-size: 2.5rem;
+  }
+
+  .hero-description {
+    font-size: 1.05rem;
+    padding: 0 var(--space-sm);
+  }
+
+  .video-container {
+    width: 280px;
+  }
+}
+
+@media (max-width: 40rem) {
+  .cards-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+
+  .card--featured {
+    grid-column: span 1;
+  }
+
+  .hero-section {
+    padding: var(--space-lg) var(--space-sm);
+    margin: -1.5rem -1.5rem var(--space-md);
+  }
+
+  .hero-title {
+    font-size: 2rem;
+  }
+
+  .hero-description {
+    font-size: 1rem;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .hero-btn {
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .video-wrapper {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .video-container {
+    width: 100%;
+    max-width: 350px;
+  }
+
+  .card {
+    padding: var(--space-md);
+  }
+
+  .card--login .session-buttons > a {
+    min-width: 80px;
+    max-width: none;
+    flex: 1 1 40%;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   11. ACCESSIBILITY - Reduced Motion
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-on-scroll {
+    opacity: 1;
+    transform: none;
+  }
+
+  .animate-on-scroll.is-visible {
+    animation: none;
+  }
+
+  .animate-fade-in,
+  .animate-fade-in-delay,
+  .animate-fade-in-delay-2 {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+
+  .card,
+  .video-container,
+  .play-button,
+  button,
+  .buttonicon {
+    transition: none !important;
+  }
+
+  .hero-btn::after,
+  .card__actions button::after,
+  .card--login button::after {
+    display: none;
+  }
 }
