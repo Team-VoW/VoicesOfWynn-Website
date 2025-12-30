@@ -239,17 +239,16 @@
 .video-wrapper {
   display: flex;
   justify-content: center;
-  flex-wrap: wrap;
   gap: var(--space-md);
   width: 100%;
 }
 
 .video-container {
   position: relative;
-  width: 400px;
+  flex: 1;
+  max-width: 50%;
   aspect-ratio: 16 / 9;
   cursor: pointer;
-  flex-shrink: 0;
   border-radius: 0.75rem;
   overflow: hidden;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
@@ -470,7 +469,7 @@
   }
 
   .video-container {
-    width: 320px;
+    max-width: 50%;
   }
 }
 
@@ -515,7 +514,7 @@
 
   .video-container {
     width: 100%;
-    max-width: 350px;
+    max-width: 100%;
   }
 
   .card {

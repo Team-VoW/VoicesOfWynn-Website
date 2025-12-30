@@ -572,17 +572,15 @@ br { margin-top: 2rem; }
 
 @media (max-width: 62.5rem) {
         body {
-                width: 100%; background: whitesmoke;
-                box-shadow: none;}
+                width: 100%;
+                padding: 0.5rem;
+                box-shadow: none;
+        }
         main {
                 max-width: 100%;
-                min-width: 100%;
+                min-width: auto;
         }
         html {
-                max-width: 100%;
-                min-width: 100%;
-        }
-        body {
                 max-width: 100%;
                 min-width: 100%;
         }
