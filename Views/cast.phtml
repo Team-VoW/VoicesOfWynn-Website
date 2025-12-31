@@ -83,7 +83,9 @@
     <div class="cast-quest-card">
         <div class="cast-quest-header">
             <h3 class="cast-quest-title">
-                <span class="cast-npc-name"><?= $quest->getNpcs()[0]->getName() ?></span>
+                <a href="/contents/npc/<?= $quest->getNpcs()[0]->getId() ?>" class="cast-npc-link">
+                    <span class="cast-npc-name"><?= $quest->getNpcs()[0]->getName() ?></span>
+                </a>
                 <span class="cast-quest-separator">in</span>
                 <span class="cast-quest-name"><?= $quest->getName() ?></span>
                 <?php if ($quest->getNpcs()[0]->isArchived()) : ?>

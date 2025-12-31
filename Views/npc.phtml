@@ -1,99 +1,107 @@
 <script>var npcId = <?= ${basename(__FILE__, '.phtml').'_npc'}->getId() ?>;</script>
 
-<h1 class="mb-l">
-    <?= ${basename(__FILE__, '.phtml').'_npc'}->getName() ?>
-    <?php if (${basename(__FILE__, '.phtml').'_npc'}->isArchived()) : ?>
-     (outdated)
-    <?php endif ?>
-</h1>
+<!-- Hero Section -->
+<section class="npc-hero npc-animate-fade-in">
+    <div class="npc-hero-content">
+        <h1 class="npc-hero-title">
+            <?= ${basename(__FILE__, '.phtml').'_npc'}->getName() ?>
+            <?php if (${basename(__FILE__, '.phtml').'_npc'}->isArchived()) : ?>
+                <span class="outdated-tag">outdated</span>
+            <?php endif ?>
+        </h1>
+        <img class="npc-avatar" src="<?= \VoicesOfWynn\storageUrl('npcs/' . ${basename(__FILE__, '.phtml').'_npc'}->getId() . '.png') ?>" alt="NPC picture" />
+    </div>
+</section>
 
-<p class="npc-va-center-img txt-c mb-l">
-    <img class="avatar" src="<?= \VoicesOfWynn\storageUrl('npcs/' . ${basename(__FILE__, '.phtml').'_npc'}->getId() . '.png') ?>" alt="NPC picture" width="200px" height="200px"/>
-</p>
-<hr class="hr-f">
-<p class="txt-c valink-container">
-    <strong class="lb-a">Voice actor: </strong>
+<!-- Voice Actor Card -->
+<section class="voice-actor-card npc-animate-on-scroll">
+    <h3>Voice Actor</h3>
+
     <?php if (${basename(__FILE__, '.phtml').'_voice_actor'} === null) : ?>
-        <img id="voice-actor-avatar" class="avatarcontents" src="<?= \VoicesOfWynn\storageUrl('avatars/nobody.png') ?>" alt="Profile picture" />
-        <span id="voice-actor-name" class="lb-b"><i>Nobody</i></span>
-        <hr class="hr-f">
+        <div class="voice-actor-info">
+            <img id="voice-actor-avatar" class="voice-actor-avatar" src="<?= \VoicesOfWynn\storageUrl('avatars/nobody.png') ?>" alt="Profile picture" />
+            <span id="voice-actor-name" class="voice-actor-name unassigned">Nobody</span>
+        </div>
     <?php else : ?>
-        <a class="valink" href="cast/<?= ${basename(__FILE__, '.phtml').'_voice_actor'}->getId() ?>">
-            <img id="voice-actor-avatar" class="avatarcontents" src="<?= ${basename(__FILE__, '.phtml').'_voice_actor'}->getAvatarLink() ?>" onerror="this.onerror=null; this.src='<?= ${basename(__FILE__, '.phtml').'_voice_actor'}->getDefaultAvatarUrl() ?>'" alt="Profile picture" />
-            <span id="voice-actor-name" class="lb-b"><?= ${basename(__FILE__, '.phtml').'_voice_actor'}->getName() ?></span>
+        <a class="voice-actor-link" href="cast/<?= ${basename(__FILE__, '.phtml').'_voice_actor'}->getId() ?>">
+            <img id="voice-actor-avatar" class="voice-actor-avatar" src="<?= ${basename(__FILE__, '.phtml').'_voice_actor'}->getAvatarLink() ?>" onerror="this.onerror=null; this.src='<?= ${basename(__FILE__, '.phtml').'_voice_actor'}->getDefaultAvatarUrl() ?>'" alt="Profile picture" />
+            <span id="voice-actor-name" class="voice-actor-name"><?= ${basename(__FILE__, '.phtml').'_voice_actor'}->getName() ?></span>
         </a>
-        <hr class="hr-f">
     <?php endif ?>
+
     <?php if (${basename(__FILE__, '.phtml').'_admin'}) : ?>
-        <p class="txt-c mb-l"><button id="change-actor-btn">Change</button></p>
+        <div class="admin-controls">
+            <button id="change-actor-btn">Change</button>
+            <button id="archive-btn">Archive NPC</button>
+        </div>
         <form id="voice-actor-form">
-            <select name="actor" class="mb-d">
+            <select name="actor">
                 <?php if (${basename(__FILE__, '.phtml').'_voice_actor'} === null) : ?>
                     <option selected disabled hidden></option>
                 <?php endif ?>
                 <?php foreach (${basename(__FILE__, '.phtml').'_voice_actors'} as $vactor) : ?>
                     <?php if (!${basename(__FILE__, '.phtml').'_voice_actor'} === null && ${basename(__FILE__, '.phtml').'_voice_actor'}->getId() === $vactor->getId) : ?>
-                    <option selected value="<?= $vactor->getId() ?>" data-avatar-link="<?= $vactor->getAvatarLink() ?>"><?= $vactor->getName() ?></option>
+                        <option selected value="<?= $vactor->getId() ?>" data-avatar-link="<?= $vactor->getAvatarLink() ?>"><?= $vactor->getName() ?></option>
                     <?php else : ?>
-                    <option value="<?= $vactor->getId() ?>" data-avatar-link="<?= $vactor->getAvatarLink() ?>"><?= $vactor->getName() ?></option>
+                        <option value="<?= $vactor->getId() ?>" data-avatar-link="<?= $vactor->getAvatarLink() ?>"><?= $vactor->getName() ?></option>
                     <?php endif ?>
                 <?php endforeach ?>
             </select>
             <input type="submit" value="Confirm" id="va-confirm-change"/>
         </form>
-        <p class="txt-c mb-l"><button id="archive-btn">Archive</button></p>
-        <hr class="hr-f">
-    <?php endif ?>
-</p>
-
-<h3 class="txt-c">Recordings</h3>
-<?php foreach (${basename(__FILE__, '.phtml').'_quest_recordings'} as $quest) : ?>
-
-<div class="reccenter">
-<section class="table-center">
-    <table>
-        <tr class="recordings-table-quest-header">
-            <th colspan="<?php if (${basename(__FILE__, '.phtml').'_admin'}) : ?>6<?php else : ?>5<?php endif ?>"><?= $quest->getName() ?></th>
-        </tr>
-	    <?php $recordings = $quest->getNpcs()[0]->getRecordings(); ?>
-        <?php foreach ($recordings as $recording) : ?>
-        <tr class="voting-audio-box">
-            <td class="ws-nw line-count"># <?= $recording->line ?></td>
-            <td class="the-recording lb-a">
-                <audio controls preload="none">
-                    <source src="<?= \VoicesOfWynn\storageUrl('recordings/' . $recording->file) ?>" type="audio/ogg">
-                    Your browser does not support the OGG audio format.
-                </audio>
-            </td>
-            <td class="voting-buttons">
-                <button class="upvote<?php if (in_array($recording->id, ${basename(__FILE__, '.phtml').'_upvoted'})) : ?> clicked<?php endif ?>" data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>">👍 <span><?= $recording->upvotes ?></span></button>
-            </td>
-            <td class="voting-buttons">
-                <button class="downvote<?php if (in_array($recording->id, ${basename(__FILE__, '.phtml').'_downvoted'})) : ?> clicked<?php endif ?>" data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>">👎 <span><?= $recording->downvotes ?></span></button>
-            </td>
-            <td class="voting-buttons">
-                <a href="contents/npc/<?= $recording->npcId ?>/comments/<?= $recording->id ?>"><button class="commentbtn">💬 <span><?= $recording->comments ?></span></button></a>
-            </td>
-            <td class="voting-buttons">
-                <?php if (${basename(__FILE__, '.phtml').'_admin'}) : ?>
-                    <button class="delete-recording-btn" data-recording-id="<?= $recording->id ?>">×</button>
-                <?php endif ?>
-            </td>
-        </tr>
-        <?php endforeach ?>
-    </table>
-    <?php if (${basename(__FILE__, '.phtml').'_admin'}) : ?>
-        <p class="txt-c mb-l"><button class="archive-all-recordings-btn" data-quest-id="<?= $quest->getId() ?>">Archive all recordings</button></p>
-
-        <p class="txt-c mb-l"><a href="/administration/upload?questId=<?= $quest->getId() ?>&npcId=<?= ${basename(__FILE__, '.phtml').'_npc'}->getId() ?>">
-                <button class="uploadbtn">Add new recordings</button>
-        </a></p>
     <?php endif ?>
 </section>
+
+<!-- Recordings Section -->
+<section class="recordings-section">
+    <h2 class="recordings-section-title">Recordings</h2>
+
+    <?php foreach (${basename(__FILE__, '.phtml').'_quest_recordings'} as $quest) : ?>
+        <article class="quest-card npc-animate-on-scroll">
+            <header class="quest-card-header">
+                <?= $quest->getName() ?>
+            </header>
+            <div class="quest-card-body">
+                <?php $recordings = $quest->getNpcs()[0]->getRecordings(); ?>
+                <?php foreach ($recordings as $recording) : ?>
+                    <div class="recording-row">
+                        <span class="recording-line-number"># <?= $recording->line ?></span>
+                        <div class="recording-audio">
+                            <audio controls preload="none">
+                                <source src="<?= \VoicesOfWynn\storageUrl('recordings/' . $recording->file) ?>" type="audio/ogg">
+                                Your browser does not support the OGG audio format.
+                            </audio>
+                        </div>
+                        <div class="recording-actions">
+                            <button class="vote-btn upvote-btn upvote<?php if (in_array($recording->id, ${basename(__FILE__, '.phtml').'_upvoted'})) : ?> clicked<?php endif ?>" data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>">
+                                👍 <span><?= $recording->upvotes ?></span>
+                            </button>
+                            <button class="vote-btn downvote-btn downvote<?php if (in_array($recording->id, ${basename(__FILE__, '.phtml').'_downvoted'})) : ?> clicked<?php endif ?>" data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>">
+                                👎 <span><?= $recording->downvotes ?></span>
+                            </button>
+                            <a href="contents/npc/<?= $recording->npcId ?>/comments/<?= $recording->id ?>">
+                                <button class="vote-btn comment-btn">💬 <span><?= $recording->comments ?></span></button>
+                            </a>
+                            <?php if (${basename(__FILE__, '.phtml').'_admin'}) : ?>
+                                <button class="delete-recording-btn" data-recording-id="<?= $recording->id ?>">×</button>
+                            <?php endif ?>
+                        </div>
+                    </div>
+                <?php endforeach ?>
+            </div>
+            <?php if (${basename(__FILE__, '.phtml').'_admin'}) : ?>
+                <div class="quest-admin-actions">
+                    <button class="archive-all-recordings-btn" data-quest-id="<?= $quest->getId() ?>">Archive all recordings</button>
+                    <a href="/administration/upload?questId=<?= $quest->getId() ?>&npcId=<?= ${basename(__FILE__, '.phtml').'_npc'}->getId() ?>">
+                        <button class="uploadbtn">Add new recordings</button>
+                    </a>
+                </div>
+            <?php endif ?>
+        </article>
+    <?php endforeach ?>
+</section>
+
+<!-- Back Button -->
+<div class="back-btn-container">
+    <button class="backbtn" onclick="history.go(-1)">← Go Back</button>
 </div>
-
-<?php endforeach ?>
-
-<br>
-<button class="backbtn" onclick="history.go(-1)">< Go Back</button>
-
