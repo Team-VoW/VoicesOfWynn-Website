@@ -1,108 +1,147 @@
-<?php 
-  $voiceActor = ${basename(__FILE__, '.phtml').'_voice_actor'}; 
+<?php
+  $voiceActor = ${basename(__FILE__, '.phtml').'_voice_actor'};
   const SOCIALS = ['twitter','youtube','castingcallclub'];
   const SOCIAL_PRE_LINK = ['youtube' => '', 'twitter' => 'https://twitter.com/', 'castingcallclub' => 'https://castingcall.club/'];
   const SOCIAL_ICONS = ['youtube' =>'images/youtube_icon.png', 'twitter' => 'images/twitter_icon.png', 'castingcallclub' => 'images/castingcallclub_icon.png'];
   const SOCIAL_NAME = ['youtube' => 'YouTube', 'twitter' => 'Twitter', 'castingcallclub' => 'Casting Call Club'];
 ?>
-<h1><?= $voiceActor->getName(); ?></h1>
-<hr class="hr-f">
-<div class="roles-display">
-  <?php foreach ($voiceActor->getRoles() as $role) : ?>
-  <div class="role" style="color:#<?= $role->color ?>; 
-                          border-color: #<?= $role->color?>;">
-      <?= $role->name ?></div>
-  <?php endforeach ?>
-</div>
-<hr class="hr-f">
-<?php if (!empty($voiceActor->getSocial('discord'))) : ?>
-  <h6 class="txt-c txt-main">
-      <div id='discord-container'>
-        <img src="images/discord_icon.png" alt="Discord icon" width="50px" height="50px"/>
-        <span class="vertical-bottom-text-span arial" id="discord-tag-cast"><?= $voiceActor->getSocial('discord') ?></span>
+
+<header class="cast-header">
+    <div class="cast-profile-card">
+        <img
+            class="cast-avatar"
+            src="<?= $voiceActor->getAvatarLink() ?>"
+            onerror="this.onerror=null; this.src='<?= $voiceActor->getDefaultAvatarUrl() ?>'"
+            alt="<?= htmlspecialchars($voiceActor->getName()) ?>'s avatar"
+        />
+        <h1 class="cast-name"><?= $voiceActor->getName(); ?></h1>
+        <div class="cast-roles">
+            <?php foreach ($voiceActor->getRoles() as $role) : ?>
+            <span class="cast-role-badge" style="--role-color: #<?= $role->color ?>;">
+                <?= $role->name ?>
+            </span>
+            <?php endforeach ?>
+        </div>
     </div>
-  </h6>
-  <hr class="hr-f">
+</header>
+
+<section class="cast-contact-section">
+    <?php if (!empty($voiceActor->getSocial('discord'))) : ?>
+    <div class="cast-discord">
+        <img src="images/discord_icon.png" alt="Discord" class="social-icon" />
+        <span class="discord-tag"><?= $voiceActor->getSocial('discord') ?></span>
+    </div>
+    <?php endif ?>
+
+    <div class="cast-social-links">
+        <?php foreach(SOCIALS as $social): ?>
+            <?php if($voiceActor->getSocial($social)): ?>
+            <a
+                href="<?= SOCIAL_PRE_LINK[$social] . $voiceActor->getSocial($social) ?>"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="cast-social-btn cast-social-<?= $social ?>"
+            >
+                <img src="<?= SOCIAL_ICONS[$social] ?>" alt="" class="social-btn-icon" />
+                <span class="social-btn-label">
+                    <?= $social === 'youtube' ? SOCIAL_NAME[$social] : $voiceActor->getSocial($social) ?>
+                </span>
+            </a>
+            <?php endif; ?>
+        <?php endforeach; ?>
+
+        <?php if (!empty($voiceActor->getEmail()) && $voiceActor->hasPublicEmail()) : ?>
+        <a href="mailto:<?= $voiceActor->getEmail() ?>" class="cast-social-btn cast-social-contact">
+            <span class="social-btn-icon-text">&#9993;</span>
+            <span class="social-btn-label">Contact</span>
+        </a>
+        <?php endif ?>
+    </div>
+</section>
+
+<?php if (!empty($voiceActor->getBio())) : ?>
+<section class="cast-bio-section">
+    <h2 class="cast-section-title">About</h2>
+    <div class="cast-bio-card">
+        <article class="cast-bio-content">
+            <?= $voiceActor->getBio(); ?>
+        </article>
+    </div>
+</section>
 <?php endif ?>
 
-<section>
-    <div id="socials-container">
-        <div class="socials-row txt-c" id="scoials-row-1">
-            <div class="socials-card">
-                <img class="contributor-img lb-a" src="<?= $voiceActor->getAvatarLink() ?>" onerror="this.onerror=null; this.src='<?= $voiceActor->getDefaultAvatarUrl() ?>'" alt="Voice actor's avatar">
+<section class="cast-recordings-section">
+    <h2 class="cast-section-title">Recordings</h2>
 
-                <?php if (!empty($voiceActor->getEmail()) && $voiceActor->hasPublicEmail()) : ?>
-
-                    <a href="mailto:<?= $voiceActor->getEmail() ?>"><button class="contactbtn">
-                        ✉ Contact
-                    </button></a>
-                <?php endif ?>
-            </div>
-        </div>
-                
-        <div class="socials-row txt-c" id="socials-row-2">
-          <?php foreach(SOCIALS as $social):?>
-            <?php if($voiceActor->getSocial($social)):?>
-              <div class="socials-card">
-                <a href="<?= SOCIAL_PRE_LINK[$social]?><?= $voiceActor->getSocial($social)?>" target="_blank" class="<?= $social?>">
-                  <span class="social-component">
-                    <img src="<?= SOCIAL_ICONS[$social]?>" alt="<?= SOCIAL_NAME[$social]?> icon" class="lb-b"/>
-                    <button class="<?= $social?>btn">
-                      <?= $social === 'youtube' ? SOCIAL_NAME[$social]: $voiceActor->getSocial($social) ?>
-                    </button>
-                  </span>
-                </a>
-              </div>
-            <?php endif;?>
-          <?php endforeach;?>
-        </div>
-    </div>
-    
-    <hr>
-    <article class="wb-a txt-c" id="bio"><?= $voiceActor->getBio(); ?></article>
-    <?= $voiceActor->getBio() ===''?'':'<hr class="hr-f">'?>
-</section>
-<section>
-    <h3 class="txt-c">Recordings</h3>
     <?php if (count(${basename(__FILE__, '.phtml').'_quest_recordings'}) === 0) : ?>
-    <p class="txt-c error-color"><i>This contributor didn't submit any recordings.</i></p>
+    <p class="cast-no-recordings">
+        <em>This contributor hasn't submitted any recordings yet.</em>
+    </p>
     <?php endif ?>
+
     <?php foreach (${basename(__FILE__, '.phtml').'_quest_recordings'} as $quest) : ?>
-    <div class="reccenter">
-        <section>
-            <table>
-                <tr>
-                    <th colspan="5">
-                        <b><?= $quest->getNpcs()[0]->getName() ?></b> in <i><?= $quest->getName() ?></i>
-                        <?php if ($quest->getNpcs()[0]->isArchived()) : ?>
-                            (outdated)
-                        <?php endif ?>
-                    </th>
-                </tr>
-                <?php $recordings = $quest->getNpcs()[0]->getRecordings(); ?>
-                <?php foreach ($recordings as $recording) : ?>
-                    <tr class="voting-audio-box">
-                      <td class="ws-nw line-count" rowspan="1"># <?= $recording->line ?></td>
-                      <td class="the-recording lb-a">
-                          <audio controls preload="none">
-                              <source src="<?= \VoicesOfWynn\storageUrl('recordings/' . $recording->file) ?>" type="audio/ogg">
-                              Oops! Your browser doesnt support the OGG format :(
-                          </audio>
-                      <td class="voting-buttons">
-                          <button class="upvote<?php if (in_array($recording->id, ${basename(__FILE__, '.phtml').'_upvoted'})) : ?> clicked<?php endif ?>" data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>">👍 <span><?= $recording->upvotes ?></span></button>
-                      </td>
-                      <td class="voting-buttons">
-                          <button class="downvote<?php if (in_array($recording->id, ${basename(__FILE__, '.phtml').'_downvoted'})) : ?> clicked<?php endif ?>" data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>">👎 <span><?= $recording->downvotes ?></span></button>
-                      </td>
-                      <td class="voting-buttons">
-                          <a href="contents/npc/<?= $recording->npcId ?>/comments/<?= $recording->id ?>"><button class="commentbtn">💬 <span><?= $recording->comments ?></span></button></a>
-                      </td>
-                    </tr><hr class="hr-m mobile-hr">
-                <?php endforeach ?>
-            </table>
-        </section>
+    <div class="cast-quest-card">
+        <div class="cast-quest-header">
+            <h3 class="cast-quest-title">
+                <span class="cast-npc-name"><?= $quest->getNpcs()[0]->getName() ?></span>
+                <span class="cast-quest-separator">in</span>
+                <span class="cast-quest-name"><?= $quest->getName() ?></span>
+                <?php if ($quest->getNpcs()[0]->isArchived()) : ?>
+                <span class="cast-archived-badge">outdated</span>
+                <?php endif ?>
+            </h3>
+        </div>
+
+        <div class="cast-recordings-list">
+            <?php $recordings = $quest->getNpcs()[0]->getRecordings(); ?>
+            <?php foreach ($recordings as $recording) : ?>
+            <div class="cast-recording-item voting-audio-box">
+                <div class="cast-recording-line">
+                    <span class="line-number"># <?= $recording->line ?></span>
+                </div>
+
+                <div class="cast-recording-player">
+                    <audio controls preload="none">
+                        <source src="<?= \VoicesOfWynn\storageUrl('recordings/' . $recording->file) ?>" type="audio/ogg">
+                        Your browser does not support the OGG audio format.
+                    </audio>
+                </div>
+
+                <div class="cast-recording-actions">
+                    <button
+                        class="cast-vote-btn upvote<?php if (in_array($recording->id, ${basename(__FILE__, '.phtml').'_upvoted'})) : ?> clicked<?php endif ?>"
+                        data-recording-id="<?= $recording->id ?>"
+                        data-npc-id="<?= $recording->npcId ?>"
+                    >
+                        <span class="vote-icon">&#128077;</span>
+                        <span class="vote-count"><?= $recording->upvotes ?></span>
+                    </button>
+
+                    <button
+                        class="cast-vote-btn downvote<?php if (in_array($recording->id, ${basename(__FILE__, '.phtml').'_downvoted'})) : ?> clicked<?php endif ?>"
+                        data-recording-id="<?= $recording->id ?>"
+                        data-npc-id="<?= $recording->npcId ?>"
+                    >
+                        <span class="vote-icon">&#128078;</span>
+                        <span class="vote-count"><?= $recording->downvotes ?></span>
+                    </button>
+
+                    <a href="contents/npc/<?= $recording->npcId ?>/comments/<?= $recording->id ?>" class="cast-comment-link">
+                        <button class="cast-comment-btn">
+                            <span class="vote-icon">&#128172;</span>
+                            <span class="vote-count"><?= $recording->comments ?></span>
+                        </button>
+                    </a>
+                </div>
+            </div>
+            <?php endforeach ?>
+        </div>
     </div>
+    <?php endforeach ?>
 </section>
-<?php endforeach ?>
-<br>
-<button class="backbtn" onclick="history.go(-1)">< Go Back</button>
+
+<div class="cast-back-wrapper">
+    <button class="cast-back-btn" onclick="history.go(-1)">
+        <span class="back-arrow">&larr;</span> Go Back
+    </button>
+</div>
