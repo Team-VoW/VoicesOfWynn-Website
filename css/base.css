@@ -33,7 +33,7 @@ body {
   background: url(../images/Website_background.webp);
   background-repeat: repeat!important;
   margin: auto;                                                                   /* classless.css */
-  max-width: 50rem;
+  max-width: 80rem;
   padding: 2rem 0.5rem 0;
   overflow-x: hidden;
 }
