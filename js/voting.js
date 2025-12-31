@@ -25,10 +25,10 @@ $(".upvote").on('click', function(event) {
         type: 'POST',
         success: function(result, message) {
             $clickedRating.find('span').text(voteCount);
-            $clickedRating.closest('tr').find('button.upvote.clicked,button.downvote.clicked').find('span').text((Number)($clickedRating.closest('tr').find('button.upvote.clicked,button.downvote.clicked').find('span').text()) - 1);
-            $clickedRating.closest('tr').find('button.upvote,button.downvote').removeClass('clicked');
+            $clickedRating.closest('.voting-audio-box').find('button.upvote.clicked,button.downvote.clicked').find('span').text((Number)($clickedRating.closest('.voting-audio-box').find('button.upvote.clicked,button.downvote.clicked').find('span').text()) - 1);
+            $clickedRating.closest('.voting-audio-box').find('button.upvote,button.downvote').removeClass('clicked');
             if (voteType === "add")
-                $clickedRating.closest('tr').find('button.upvote').addClass('clicked');
+                $clickedRating.closest('.voting-audio-box').find('button.upvote').addClass('clicked');
             $clickedRating = undefined;
             voteCount = undefined;
             voteType = undefined;
@@ -64,10 +64,10 @@ $(".downvote").on('click', function(event) {
         type: 'POST',
         success: function(result, message) {
             $clickedRating.find('span').text(voteCount);
-            $clickedRating.closest('tr').find('button.upvote.clicked,button.downvote.clicked').find('span').text((Number)($clickedRating.closest('tr').find('button.upvote.clicked,button.downvote.clicked').find('span').text()) - 1);
-            $clickedRating.closest('tr').find('button.upvote,button.downvote').removeClass('clicked');
+            $clickedRating.closest('.voting-audio-box').find('button.upvote.clicked,button.downvote.clicked').find('span').text((Number)($clickedRating.closest('.voting-audio-box').find('button.upvote.clicked,button.downvote.clicked').find('span').text()) - 1);
+            $clickedRating.closest('.voting-audio-box').find('button.upvote,button.downvote').removeClass('clicked');
             if (voteType === "add")
-                $clickedRating.closest('tr').find('button.downvote').addClass('clicked');
+                $clickedRating.closest('.voting-audio-box').find('button.downvote').addClass('clicked');
             $clickedRating = undefined;
             voteCount = undefined;
             voteType = undefined;
