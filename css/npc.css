@@ -1,45 +1,753 @@
-#change-actor-btn { background: rgb(255, 204, 0);}
-#change-actor-btn:hover { border-color: rgb(210, 176, 43); }
+/* ==========================================================================
+   VOICES OF WYNN - MODERN NPC PAGE STYLES
+   ========================================================================== */
 
-#archive-btn { background: rgb(140, 140, 140);}
-#archive-btn:hover { border-color: rgb(197, 16, 16); }
+/* --------------------------------------------------------------------------
+   1. CSS CUSTOM PROPERTIES (Design Tokens)
+   -------------------------------------------------------------------------- */
 
-.archive-all-recordings-btn { background: rgb(255, 79, 79);}
-.archive-all-recordings-btn:hover  { border-color: rgb(187, 79, 79);}
+:root {
+  /* Primary gradient colors */
+  --npc-gradient-purple: #7b1a9b;
+  --npc-gradient-violet: #a340c4;
+  --npc-gradient-pink: #ff6b9d;
+  --npc-gradient-cyan: #00d4ff;
+  --npc-gradient-green: #00ff87;
+
+  /* Card styling */
+  --npc-card-bg: rgba(255, 255, 255, 0.98);
+  --npc-card-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  --npc-card-shadow-hover: 0 16px 48px rgba(123, 26, 155, 0.2);
+  --npc-card-border-radius: 1rem;
+
+  /* Animation timings */
+  --npc-transition-fast: 0.2s;
+  --npc-transition-medium: 0.3s;
+  --npc-transition-slow: 0.5s;
+
+  /* Spacing scale */
+  --npc-space-xs: 0.5rem;
+  --npc-space-sm: 1rem;
+  --npc-space-md: 1.5rem;
+  --npc-space-lg: 2rem;
+  --npc-space-xl: 3rem;
+}
+
+/* --------------------------------------------------------------------------
+   2. NPC HERO SECTION
+   -------------------------------------------------------------------------- */
+
+.npc-hero {
+  position: relative;
+  padding: var(--npc-space-xl) var(--npc-space-md);
+  margin: 0 -1.5rem var(--npc-space-lg);
+  background: linear-gradient(135deg, var(--npc-gradient-purple), var(--npc-gradient-violet), var(--npc-gradient-pink));
+  border-radius: var(--npc-card-border-radius);
+  overflow: hidden;
+  text-align: center;
+}
+
+.npc-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('../images/Website_background.webp') center/cover;
+  opacity: 0.08;
+  pointer-events: none;
+}
+
+.npc-hero::after {
+  content: '';
+  position: absolute;
+  bottom: -50px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120%;
+  height: 100px;
+  background: whitesmoke;
+  border-radius: 50% 50% 0 0;
+}
+
+.npc-hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+.npc-hero-title {
+  color: white;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3),
+               0 0 40px rgba(123, 26, 155, 0.5);
+  margin-bottom: var(--npc-space-md);
+  font-size: 2.5rem;
+}
+
+.npc-hero-title .outdated-tag {
+  font-size: 1rem;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.5rem;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}
+
+.npc-avatar {
+  width: 180px;
+  height: 180px;
+  border-radius: 0.75rem;
+  border: 4px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  margin: var(--npc-space-md) auto;
+  display: block;
+  object-fit: cover;
+  transition: transform var(--npc-transition-medium) ease,
+              box-shadow var(--npc-transition-medium) ease;
+}
+
+.npc-avatar:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* --------------------------------------------------------------------------
+   3. VOICE ACTOR CARD
+   -------------------------------------------------------------------------- */
+
+.voice-actor-card {
+  background: var(--npc-card-bg);
+  border-radius: var(--npc-card-border-radius);
+  padding: var(--npc-space-lg);
+  box-shadow: var(--npc-card-shadow);
+  margin-bottom: var(--npc-space-lg);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--npc-transition-medium) ease,
+              box-shadow var(--npc-transition-medium) ease;
+}
+
+.voice-actor-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--npc-gradient-purple), var(--npc-gradient-cyan));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--npc-transition-medium) ease;
+}
+
+.voice-actor-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--npc-card-shadow-hover);
+}
+
+.voice-actor-card:hover::before {
+  transform: scaleX(1);
+}
+
+.voice-actor-card h3 {
+  margin: 0 0 var(--npc-space-md);
+  color: #555;
+  font-weight: normal;
+  font-size: 1.1rem;
+}
+
+.voice-actor-link {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  transition: transform var(--npc-transition-fast) ease;
+}
+
+.voice-actor-link:hover {
+  transform: scale(1.02);
+}
+
+.voice-actor-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 3px solid var(--npc-gradient-purple);
+  box-shadow: 0 4px 20px rgba(123, 26, 155, 0.2);
+  margin-bottom: var(--npc-space-sm);
+  transition: border-color var(--npc-transition-fast) ease,
+              box-shadow var(--npc-transition-fast) ease;
+}
+
+.voice-actor-link:hover .voice-actor-avatar {
+  border-color: var(--npc-gradient-pink);
+  box-shadow: 0 6px 25px rgba(123, 26, 155, 0.3);
+}
+
+.voice-actor-name {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: var(--npc-gradient-purple);
+  transition: color var(--npc-transition-fast) ease;
+}
+
+.voice-actor-link:hover .voice-actor-name {
+  color: var(--npc-gradient-pink);
+}
+
+.voice-actor-name.unassigned {
+  color: #999;
+  font-style: italic;
+}
+
+/* Admin Controls */
+.admin-controls {
+  margin-top: var(--npc-space-md);
+  padding-top: var(--npc-space-md);
+  border-top: 1px solid #eee;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--npc-space-sm);
+  justify-content: center;
+}
+
+#change-actor-btn {
+  background: linear-gradient(135deg, #FFD751, #ff9500);
+  color: #333;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform var(--npc-transition-fast) ease,
+              box-shadow var(--npc-transition-fast) ease;
+}
+
+#change-actor-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255, 149, 0, 0.4);
+  border-color: transparent;
+}
+
+#archive-btn {
+  background: linear-gradient(135deg, #888, #666);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform var(--npc-transition-fast) ease,
+              box-shadow var(--npc-transition-fast) ease;
+}
+
+#archive-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(197, 16, 16, 0.4);
+  background: linear-gradient(135deg, #c53030, #9b2c2c);
+  border-color: transparent;
+}
 
 #voice-actor-form {
-    display: none;
+  display: none;
+  margin-top: var(--npc-space-md);
+  padding: var(--npc-space-md);
+  background: #f9f9f9;
+  border-radius: 0.5rem;
+  width: 100%;
 }
 
-#overwrite-checkbox {
-    height: 1.25rem;
-    width: 1.25rem;
+#voice-actor-form select {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: 2px solid #ddd;
+  font-size: 1rem;
+  margin-right: var(--npc-space-sm);
 }
+
+#va-confirm-change {
+  background: linear-gradient(135deg, var(--npc-gradient-green), #00cc6a);
+  color: #333;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* --------------------------------------------------------------------------
+   4. RECORDINGS SECTION
+   -------------------------------------------------------------------------- */
+
+.recordings-section {
+  margin-bottom: var(--npc-space-lg);
+}
+
+.recordings-section-title {
+  text-align: center;
+  font-size: 1.75rem;
+  margin-bottom: var(--npc-space-lg);
+  color: #333;
+}
+
+/* --------------------------------------------------------------------------
+   5. QUEST CARD
+   -------------------------------------------------------------------------- */
+
+.quest-card {
+  background: var(--npc-card-bg);
+  border-radius: var(--npc-card-border-radius);
+  box-shadow: var(--npc-card-shadow);
+  margin-bottom: var(--npc-space-lg);
+  overflow: hidden;
+  transition: transform var(--npc-transition-medium) ease,
+              box-shadow var(--npc-transition-medium) ease;
+}
+
+.quest-card:hover {
+  box-shadow: var(--npc-card-shadow-hover);
+}
+
+.quest-card-header {
+  background: linear-gradient(135deg, var(--npc-gradient-purple), var(--npc-gradient-violet));
+  color: white;
+  padding: var(--npc-space-md) var(--npc-space-lg);
+  font-size: 1.25rem;
+  font-weight: bold;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.quest-card-body {
+  padding: var(--npc-space-md);
+}
+
+/* --------------------------------------------------------------------------
+   6. RECORDING ROW
+   -------------------------------------------------------------------------- */
+
+.recording-row {
+  display: flex;
+  align-items: center;
+  gap: var(--npc-space-md);
+  padding: var(--npc-space-md);
+  border-radius: 0.75rem;
+  background: #fafafa;
+  margin-bottom: var(--npc-space-sm);
+  transition: background var(--npc-transition-fast) ease,
+              transform var(--npc-transition-fast) ease;
+}
+
+.recording-row:hover {
+  background: #f0f0f0;
+  transform: translateX(4px);
+}
+
+.recording-row:last-child {
+  margin-bottom: 0;
+}
+
+.recording-line-number {
+  font-weight: bold;
+  color: var(--npc-gradient-purple);
+  min-width: 50px;
+  font-size: 1.1rem;
+}
+
+.recording-audio {
+  flex: 1;
+  min-width: 200px;
+}
+
+.recording-audio audio {
+  width: 100%;
+  max-width: 350px;
+  height: 40px;
+}
+
+.recording-actions {
+  display: flex;
+  gap: var(--npc-space-xs);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* --------------------------------------------------------------------------
+   7. VOTING BUTTONS (Modern Style)
+   -------------------------------------------------------------------------- */
+
+.vote-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.5rem 0.85rem;
+  border-radius: 2rem;
+  border: 2px solid transparent;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--npc-transition-fast) ease;
+}
+
+.vote-btn span {
+  font-weight: bold;
+}
+
+.upvote-btn {
+  background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+  color: #2e7d32;
+  border-color: #81c784;
+}
+
+.upvote-btn:hover {
+  background: linear-gradient(135deg, #c8e6c9, #a5d6a7);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+}
+
+.upvote-btn.clicked {
+  background: linear-gradient(135deg, #4caf50, #388e3c);
+  color: white;
+  border-color: #2e7d32;
+}
+
+.downvote-btn {
+  background: linear-gradient(135deg, #ffebee, #ffcdd2);
+  color: #c62828;
+  border-color: #ef9a9a;
+}
+
+.downvote-btn:hover {
+  background: linear-gradient(135deg, #ffcdd2, #ef9a9a);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(198, 40, 40, 0.3);
+}
+
+.downvote-btn.clicked {
+  background: linear-gradient(135deg, #ef5350, #e53935);
+  color: white;
+  border-color: #c62828;
+}
+
+.comment-btn {
+  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+  color: #1565c0;
+  border-color: #64b5f6;
+}
+
+.comment-btn:hover {
+  background: linear-gradient(135deg, #bbdefb, #90caf9);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(21, 101, 192, 0.3);
+}
+
+/* --------------------------------------------------------------------------
+   8. DELETE & ADMIN BUTTONS
+   -------------------------------------------------------------------------- */
 
 .delete-recording-btn {
-    background-color: #f63613;
-    color: white;
-    font-size: 3em;
-    padding: 0;
-    width: 64px;
-    height: 64px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff5252, #f44336);
+  color: white;
+  border: none;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--npc-transition-fast) ease;
+  padding: 0;
+  line-height: 1;
+}
+
+.delete-recording-btn:hover {
+  transform: scale(1.1) rotate(90deg);
+  box-shadow: 0 4px 15px rgba(244, 67, 54, 0.5);
+}
+
+.archive-all-recordings-btn {
+  background: linear-gradient(135deg, #ff7043, #f4511e);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all var(--npc-transition-fast) ease;
+}
+
+.archive-all-recordings-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(244, 81, 30, 0.4);
+  border-color: transparent;
+}
+
+.uploadbtn {
+  background: linear-gradient(135deg, var(--npc-gradient-cyan), var(--npc-gradient-green));
+  color: #333;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all var(--npc-transition-fast) ease;
+}
+
+.uploadbtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4);
+  border-color: transparent;
+}
+
+.quest-admin-actions {
+  display: flex;
+  gap: var(--npc-space-sm);
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: var(--npc-space-md);
+  border-top: 1px solid #eee;
+}
+
+/* --------------------------------------------------------------------------
+   9. BACK BUTTON
+   -------------------------------------------------------------------------- */
+
+.back-btn-container {
+  text-align: center;
+  margin-top: var(--npc-space-lg);
+}
+
+.back-btn-container .backbtn {
+  background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
+  color: #333;
+  border: 2px solid #ccc;
+  padding: 0.75rem 2rem;
+  border-radius: 0.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all var(--npc-transition-fast) ease;
+}
+
+.back-btn-container .backbtn:hover {
+  background: linear-gradient(135deg, #e0e0e0, #bdbdbd);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* --------------------------------------------------------------------------
+   10. SCROLL ANIMATIONS
+   -------------------------------------------------------------------------- */
+
+@keyframes npcFadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes npcFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.npc-animate-on-scroll {
+  opacity: 1;
+}
+
+.npc-animate-on-scroll.animate-ready {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.npc-animate-on-scroll.is-visible {
+  animation: npcFadeInUp 0.6s ease forwards;
+}
+
+/* Stagger animations for quest cards */
+.quest-card:nth-child(1).is-visible { animation-delay: 0s; }
+.quest-card:nth-child(2).is-visible { animation-delay: 0.1s; }
+.quest-card:nth-child(3).is-visible { animation-delay: 0.2s; }
+.quest-card:nth-child(4).is-visible { animation-delay: 0.3s; }
+.quest-card:nth-child(5).is-visible { animation-delay: 0.4s; }
+
+/* Hero animations */
+.npc-animate-fade-in {
+  animation: npcFadeIn 0.8s ease forwards;
+}
+
+.npc-animate-fade-in-delay {
+  animation: npcFadeIn 0.8s ease 0.2s forwards;
+  opacity: 0;
+}
+
+/* --------------------------------------------------------------------------
+   11. RESPONSIVE DESIGN
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 62.5rem) {
+  .npc-hero {
+    padding: var(--npc-space-lg) var(--npc-space-sm);
+  }
+
+  .npc-hero-title {
+    font-size: 2rem;
+  }
+
+  .npc-avatar {
+    width: 150px;
+    height: 150px;
+  }
+
+  .recording-row {
+    flex-wrap: wrap;
+  }
+
+  .recording-audio {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .recording-audio audio {
+    max-width: 100%;
+  }
+
+  .recording-actions {
+    width: 100%;
+    justify-content: center;
+    margin-top: var(--npc-space-sm);
+  }
+}
+
+@media (max-width: 40rem) {
+  .npc-hero {
+    margin: 0 -1.5rem var(--npc-space-md);
+    padding: var(--npc-space-md) var(--npc-space-sm);
+  }
+
+  .npc-hero-title {
+    font-size: 1.5rem;
+  }
+
+  .npc-hero-title .outdated-tag {
+    display: block;
+    margin: 0.5rem auto 0;
+  }
+
+  .npc-avatar {
+    width: 120px;
+    height: 120px;
+  }
+
+  .voice-actor-card {
+    padding: var(--npc-space-md);
+  }
+
+  .voice-actor-avatar {
+    width: 100px;
+    height: 100px;
+  }
+
+  .quest-card-header {
+    padding: var(--npc-space-sm) var(--npc-space-md);
+    font-size: 1.1rem;
+  }
+
+  .recording-row {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+
+  .recording-line-number {
+    text-align: center;
+    margin-bottom: var(--npc-space-xs);
+  }
+
+  .vote-btn {
+    padding: 0.4rem 0.7rem;
+    font-size: 0.85rem;
+  }
+
+  .delete-recording-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 1.25rem;
+  }
+
+  .admin-controls {
+    flex-direction: column;
+  }
+
+  #change-actor-btn,
+  #archive-btn {
+    width: 100%;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   12. ACCESSIBILITY - Reduced Motion
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .npc-animate-on-scroll {
+    opacity: 1;
+    transform: none;
+  }
+
+  .npc-animate-on-scroll.is-visible {
+    animation: none;
+  }
+
+  .npc-animate-fade-in,
+  .npc-animate-fade-in-delay {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+
+  .npc-avatar,
+  .voice-actor-card,
+  .voice-actor-link,
+  .voice-actor-avatar,
+  .quest-card,
+  .recording-row,
+  .vote-btn,
+  .delete-recording-btn,
+  button {
+    transition: none !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   13. LEGACY SUPPORT (Upload form styles)
+   -------------------------------------------------------------------------- */
+
+#overwrite-checkbox {
+  height: 1.25rem;
+  width: 1.25rem;
 }
 
 .add-more-recordings-button {
-    /* Will be displayed again by jQuery when the initial field is filled */
-    display:none;
+  display: none;
 }
 
 .upload-form-overwrite {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: .2rem;
-    margin: 2rem 0rem;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 0.2rem;
+  margin: 2rem 0;
 }
 
 .upload-form-overwrite > span {
-    color: red;
+  color: red;
 }

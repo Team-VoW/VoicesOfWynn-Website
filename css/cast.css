@@ -262,6 +262,18 @@
   text-align: center;
 }
 
+.cast-npc-link {
+  color: #fff;
+  text-decoration: none;
+  transition: all var(--transition-medium) ease;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.4);
+}
+
+.cast-npc-link:hover {
+  color: #ffd54f;
+  border-bottom-color: #ffd54f;
+}
+
 .cast-npc-name {
   font-weight: 700;
 }

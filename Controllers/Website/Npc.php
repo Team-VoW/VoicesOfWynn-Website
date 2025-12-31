@@ -83,9 +83,7 @@ class Npc extends WebpageController
 		self::$cssFiles[] = 'npc';
 		self::$cssFiles[] = 'voting';
 		self::$jsFiles[] = 'voting';
-		if (!$this->disallowAdministration) {
-			self::$jsFiles[] = 'npc'; //Administrative functions
-		}
+		self::$jsFiles[] = 'npc'; //Scroll animations + administrative functions
 
 		return true;
 	}
