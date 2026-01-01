@@ -28,13 +28,17 @@ _______________ CONTENTS _______________
 :root { font: 13pt default-font-face, sans-serif; line-height: 1.5; color: #424456; } /* classless.css */
 * {box-sizing: border-box; border-spacing: 0;}                                      /* classless.css */
 
+html {
+    min-height: 100%;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+    background-attachment: fixed;
+}
 
 body {
-  background: url(../images/Website_background.webp);
-  background-repeat: repeat!important;
-  margin: auto;                                                                   /* classless.css */
-  max-width: 80rem;
-  padding: 2rem 0.5rem 0;
+  background: transparent;
+  margin: 0;
+  max-width: 100%;
+  padding: 0;
   overflow-x: hidden;
 }
 
@@ -63,15 +67,34 @@ main {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-right: 1.5rem;
-    padding-left: 1.5rem;
-    padding-bottom: .6rem;
-    border-radius: .6rem;
-
+    width: 100%;
+    padding: 0;
     background: whitesmoke;
-    box-shadow: .2rem .2rem .7rem 0 #777;
 }
-footer { margin: 10rem 0 0; }                                                 /* classless.css */
+
+main > .header,
+main > .content {
+    width: 100%;
+    max-width: 95rem;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+main > .header {
+    padding-top: 1rem;
+}
+
+main > .content {
+    padding-bottom: 2rem;
+    min-height: 60vh;
+}
+
+footer {
+    width: 100%;
+    max-width: 95rem;
+    margin: 0 auto;
+    padding: 1.5rem 2rem;
+}                                                 /* classless.css */
 
         /* default styling for a lot of stuffs :') */
 header, footer, figure ,table, video, blockquote,                                   /* classless.css */
@@ -573,12 +596,21 @@ br { margin-top: 2rem; }
 @media (max-width: 62.5rem) {
         body {
                 width: 100%;
-                padding: 0.5rem;
-                box-shadow: none;
+                padding: 0;
         }
         main {
                 max-width: 100%;
                 min-width: auto;
+        }
+        main > .header,
+        main > .content {
+                padding: 0 1rem;
+        }
+        main > .header {
+                padding-top: 0.5rem;
+        }
+        footer {
+                padding: 1rem;
         }
         html {
                 max-width: 100%;
