@@ -1,40 +1,32 @@
-<h1>Mod Contents</h1>
-<p class="txt-c">On this page you can find all voiced NPCs and listen to their lines.</p>
+<header class="contents-header">
+    <h1>Mod Contents</h1>
+    <p>Explore all voiced NPCs and listen to their lines from every quest in the game.</p>
+</header>
 
-<p class="txt-c">
-<i>Looking for a quest in particular? Search it!</i>
-</p>
-
-<p class="txt-c"><input id="q_search" class="login-form" type="text" name="searchbar" placeholder="Search quest..."></input></p>
-
-<div class="mod-contents">
-	<div id="results_container"></div>
-	<?php for ($i = 0; $i < count(${basename(__FILE__, '.phtml').'_quests'}); $i++) : ?>
-		<?php $quest = ${basename(__FILE__, '.phtml').'_quests'}[$i]; ?>
-		<?php if ($i % 3 === 0) : ?>
-			<div class="row mod_list">
-		<?php endif ?>
-			<div class="col-4">
-				<div class="card-wrapper">
-				<div class="card q-voice" data-q-id="<?= $quest->getId()?>">
-					<h3 class="quest-name"><?= $quest->getName(); ?></h3>
-				</div>
-				</div>
-			</div>
-		<?php if (($i + 1) % 3 === 0) : ?>
-			</div>
-		<?php endif ?>
-	<?php endfor ?>
+<div class="search-container">
+    <input id="q_search" type="text" class="search-input" placeholder="Search for a quest..." />
 </div>
-		</div>
 
-<div id="content-modal">
-	<div id="modal">
-		<div class="head">
-			<button class="close" type="button">
-				<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
-			</button>
-		</div>
-		<div id="content"></div>
-	</div>
+<div class="quests-grid" id="results_container"></div>
+
+<div class="quests-grid">
+    <?php foreach (${basename(__FILE__, '.phtml').'_quests'} as $index => $quest) : ?>
+        <div class="quest-card animate-on-scroll" data-q-id="<?= $quest->getId()?>">
+            <div class="quest-card__accent"></div>
+            <h3 class="quest-card__name"><?= $quest->getName(); ?></h3>
+        </div>
+    <?php endforeach ?>
+</div>
+
+<div id="content-modal" class="modal-overlay">
+    <div class="modal">
+        <div class="modal__header">
+            <button class="modal__close" type="button" aria-label="Close modal">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+            </button>
+        </div>
+        <div id="content" class="modal__content"></div>
+    </div>
 </div>

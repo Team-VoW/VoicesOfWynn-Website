@@ -1,49 +1,83 @@
-document.addEventListener("DOMContentLoaded",function() {
-    var queryfield =  document.querySelector("#q_search")
-    queryfield.addEventListener("keyup", search_quest)
+document.addEventListener("DOMContentLoaded", function() {
+    var queryfield = document.querySelector("#q_search");
+    if (!queryfield) return;
+
+    var resultsContainer = document.querySelector("#results_container");
+    var questsGrid = document.querySelectorAll(".quests-grid:not(#results_container)");
+    var allQuestCards = document.querySelectorAll(".quests-grid:not(#results_container) .quest-card");
+
+    queryfield.addEventListener("keyup", search_quest);
+
     function search_quest() {
-        var inpt = document.querySelector('#q_search').value
-        var row_result =  document.querySelector("#results_container")
-        var rows_list = document.querySelectorAll(".mod_list")
-        var q_elements = []
-
-        for(var i = 0; i< rows_list.length; i++) {
-            rows_list[i].querySelectorAll(".quest-name").forEach(element => {
-                q_elements.push(element)
-            })
+        var input = queryfield.value.toLowerCase().trim();
+        
+        // Clear previous results
+        while (resultsContainer.lastChild) {
+            resultsContainer.removeChild(resultsContainer.lastChild);
         }
 
-        while(row_result.lastChild) {
-            row_result.removeChild(row_result.lastChild)
-        }
+        if (input !== "") {
+            var searchRegex = new RegExp(input, 'gi');
+            var results = [];
 
-        if(inpt !== ""){
-            var search_query = new RegExp(`${inpt.toLowerCase()}`, 'gm')
-            var results = []
-            q_elements.forEach(element => {
-                var name = element.innerHTML.toLowerCase()
-                var coll = element.parentElement.parentElement.parentElement
-                if(name.match(search_query) !== null){
-                    results.push(coll.cloneNode(true))
+            allQuestCards.forEach(function(card) {
+                var questName = card.querySelector(".quest-card__name");
+                if (questName && questName.textContent.toLowerCase().match(searchRegex)) {
+                    var clone = card.cloneNode(true);
+                    results.push(clone);
                 }
-            })
-            for(var i = 0; i < results.length; i++){
-                if(i+1%3 === 0|| i === 0){
-                    var row = document.createElement("div")
-                    row.classList.add("row")
-                    row_result.appendChild(row)
-                }
-                row.appendChild(results[i])
-            }
-            row_result.style.display = "block"
-            rows_list.forEach(row => {
-                row.style.display = "none"
-            })
-        }else {
-            row_result.style.display = "none"
-            rows_list.forEach(row => {
-                row.style.display = "flex"
-            })
+            });
+
+            // Add cloned results to results container
+            results.forEach(function(card) {
+                resultsContainer.appendChild(card);
+            });
+
+            // Show results, hide main grid
+            resultsContainer.style.display = "grid";
+            questsGrid.forEach(function(grid) {
+                grid.style.display = "none";
+            });
+        } else {
+            // No search query, show main grids
+            resultsContainer.style.display = "none";
+            questsGrid.forEach(function(grid) {
+                grid.style.display = "grid";
+            });
         }
     }
-})
+
+    // Initialize scroll animations for quest cards
+    initScrollAnimations();
+});
+
+// Intersection Observer for scroll animations
+function initScrollAnimations() {
+    var animatedElements = document.querySelectorAll('.animate-on-scroll');
+    
+    // Check if user prefers reduced motion
+    var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    
+    if (prefersReducedMotion) {
+        animatedElements.forEach(function(el) {
+            el.classList.add('is-visible');
+        });
+        return;
+    }
+    
+    var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    });
+    
+    animatedElements.forEach(function(el) {
+        observer.observe(el);
+    });
+}

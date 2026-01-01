@@ -1,8 +1,8 @@
 $(function () {
     let $modal = $('#content-modal')
-    let $closeButton = $($modal.find('.head').find('.close'))
-    let $content = $($modal.find('#content'))
-    let $questBoxes = $(".mod-contents").find('.card.q-voice')
+    let $closeButton = $modal.find('.modal__close')
+    let $content = $modal.find('#content')
+    let $questBoxes = $(".quests-grid").find('.quest-card')
     let $searchbar = $("#q_search")
 
     // Helper to build NPC HTML with proper storage URLs
@@ -22,7 +22,7 @@ $(function () {
     }
 
     $searchbar.keyup(function () {
-        $('#results_container').find('.card.q-voice').click(function () {
+        $('#results_container').find('.quest-card, .card.q-voice').click(function () {
             $.getJSON(`/api/content/quest-info?questId=${$(this).attr("data-q-id")}`, async function (data) {
                 let npcs = data[0].npcs;
                 $content.html(await buildNpcHtml(npcs));
@@ -41,5 +41,12 @@ $(function () {
 
     $closeButton.click(function () {
         $modal.css('display','none')
+    })
+
+    // Close modal when clicking outside (on the overlay)
+    $modal.click(function(e) {
+        if (e.target === this) {
+            $modal.css('display','none')
+        }
     })
 })
