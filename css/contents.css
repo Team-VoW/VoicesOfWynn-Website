@@ -1,244 +1,385 @@
-/* ------------------------------------------------------------------
+/* ==========================================================================
+   VOICES OF WYNN - MODERN MOD CONTENTS PAGE STYLES
+   ========================================================================== */
 
-styling for contents page
+/* --------------------------------------------------------------------------
+   1. CSS CUSTOM PROPERTIES
+   -------------------------------------------------------------------------- */
 
---------------------------------------------------------------------- */
+:root {
+  --card-bg: rgba(255, 255, 255, 0.98);
+  --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  --card-shadow-hover: 0 12px 40px rgba(0, 180, 200, 0.25);
+  --card-radius: 1rem;
+  --transition-fast: 0.2s;
+  --transition-medium: 0.3s;
+  --gradient-cyan: #00d4ff;
+  --gradient-green: #00ff87;
+  --gradient-purple: #7b1a9b;
+  --gradient-pink: #ff6b9d;
+}
 
+/* --------------------------------------------------------------------------
+   2. PAGE HEADER
+   -------------------------------------------------------------------------- */
 
+.contents-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
 
+.contents-header h1 {
+  margin-bottom: 0.5rem;
+}
+
+.contents-header p {
+  color: #666;
+  font-size: 1.1rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* --------------------------------------------------------------------------
+   3. SEARCH INPUT
+   -------------------------------------------------------------------------- */
+
+.search-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2.5rem;
+}
+
+.search-input {
+  width: 100%;
+  max-width: 400px;
+  padding: 0.875rem 1.25rem;
+  font-size: 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 2rem;
+  background: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  transition: border-color var(--transition-medium) ease,
+              box-shadow var(--transition-medium) ease;
+  outline: none;
+}
+
+.search-input:focus {
+  border-color: var(--gradient-cyan);
+  box-shadow: 0 4px 20px rgba(0, 212, 255, 0.15);
+}
+
+.search-input::placeholder {
+  color: #999;
+}
+
+/* --------------------------------------------------------------------------
+   4. QUESTS GRID
+   -------------------------------------------------------------------------- */
+
+.quests-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  width: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   5. QUEST CARD
+   -------------------------------------------------------------------------- */
+
+.quest-card {
+  background: var(--card-bg);
+  border-radius: var(--card-radius);
+  padding: 2rem 1.5rem;
+  box-shadow: var(--card-shadow);
+  transition: transform var(--transition-medium) ease,
+              box-shadow var(--transition-medium) ease;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  min-height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quest-card__accent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--gradient-cyan), var(--gradient-green));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--transition-medium) ease;
+}
+
+.quest-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--card-shadow-hover);
+}
+
+.quest-card:hover .quest-card__accent {
+  transform: scaleX(1);
+}
+
+.quest-card__name {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #333;
+  line-height: 1.4;
+}
+
+/* --------------------------------------------------------------------------
+   6. MODAL OVERLAY
+   -------------------------------------------------------------------------- */
+
+.modal-overlay {
+  display: none;
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(4px);
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal {
+  width: 90%;
+  max-width: 700px;
+  max-height: 85vh;
+  background: white;
+  border-radius: var(--card-radius);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: modalSlideIn var(--transition-medium) ease;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal__header {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0.75rem 1rem 0;
+}
+
+.modal__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color var(--transition-fast) ease;
+}
+
+.modal__close:hover {
+  background: rgba(0, 0, 0, 0.05);
+  box-shadow: none;
+  transform: none;
+}
+
+.modal__close svg {
+  width: 24px;
+  height: 24px;
+  color: #666;
+}
+
+.modal__content {
+  overflow-y: auto;
+  padding: 1rem 2rem 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 1.5rem;
+  justify-items: center;
+}
+
+/* --------------------------------------------------------------------------
+   7. NPC ITEMS IN MODAL
+   -------------------------------------------------------------------------- */
+
+.npc {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.npc .image {
+  width: 120px;
+  height: 120px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 3px solid transparent;
+  background: linear-gradient(white, white) padding-box,
+              linear-gradient(135deg, var(--gradient-cyan), var(--gradient-green)) border-box;
+  margin-bottom: 0.5rem;
+}
+
+.npc .name {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.npc .name a {
+  color: var(--gradient-purple);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color var(--transition-fast) ease;
+}
+
+.npc .name a:hover {
+  color: var(--gradient-pink);
+  text-decoration: underline;
+}
+
+/* --------------------------------------------------------------------------
+   8. SCROLL ANIMATIONS
+   -------------------------------------------------------------------------- */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.animate-on-scroll.is-visible {
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+/* Staggered delays */
+.quests-grid .quest-card:nth-child(3n+1).is-visible { animation-delay: 0s; }
+.quests-grid .quest-card:nth-child(3n+2).is-visible { animation-delay: 0.1s; }
+.quests-grid .quest-card:nth-child(3n).is-visible { animation-delay: 0.2s; }
+
+/* --------------------------------------------------------------------------
+   9. RESPONSIVE DESIGN
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 1000px) {
+  .quests-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .quests-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .quest-card {
+    min-height: 100px;
+    padding: 1.5rem 1rem;
+  }
+
+  .contents-header p {
+    font-size: 1rem;
+    padding: 0 0.5rem;
+  }
+
+  .search-input {
+    max-width: 100%;
+  }
+
+  .modal {
+    width: 95%;
+    max-height: 90vh;
+  }
+
+  .modal__content {
+    padding: 1rem 1.5rem 1.5rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   10. REDUCED MOTION
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .quest-card,
+  .search-input,
+  .modal__close,
+  .npc .name a {
+    transition: none;
+  }
+
+  .quest-card:hover {
+    transform: none;
+  }
+
+  .animate-on-scroll {
+    opacity: 1;
+    transform: none;
+  }
+
+  .animate-on-scroll.is-visible {
+    animation: none;
+  }
+
+  .modal {
+    animation: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   11. LEGACY COMPATIBILITY (for dynamic search results)
+   -------------------------------------------------------------------------- */
+
+#results_container .quest-card,
+#results_container .card.q-voice {
+  background: var(--card-bg);
+  border-radius: var(--card-radius);
+  padding: 2rem 1.5rem;
+  box-shadow: var(--card-shadow);
+  cursor: pointer;
+  min-height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--transition-medium) ease,
+              box-shadow var(--transition-medium) ease;
+}
+
+#results_container .quest-card:hover,
+#results_container .card.q-voice:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--card-shadow-hover);
+}
+
+/* Hide the old results display */
 #results { display: none; }
-
-
-
-
-/*                                                               */
-/* _________________________ CONTAINER _________________________ */
-/*                                                               */
-.mod-contents { width: 100%; }
-
-
-
-
-/*                                                             		 */
-/* _________________________ QUEST DETAILS _________________________ */
-/*                                                             		 */
-
-
-		/* avatar/picture of NPC */
-
-	/* ---- quest card ---- */
-
-
-			/* container for every single card */
-.card-wrapper {
-	display: flex;
-	flex-direction: row;
-	justify-content: center;
-
-	padding-top: .6rem;
-}
-
-			/* quest cards */
-.q-voice {
-	display: flex;
-	flex: 3 0 21%;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-
-	position: relative;
-	z-index: 1;
-
-	overflow: hidden;
-	margin: 0;
-	padding: .5rem;
-	
-	background: aliceblue;
-
-	font-family: Georgia, 'Times New Roman', Times, serif;
-    color: #424456;
-	text-align: center;
-
-	border: 0.25rem solid #DC9587;
-	border-radius: .3rem; 
-	box-shadow: .1rem .1rem .4rem 0 #777;
-
-	cursor: default;
-
-	width: auto;
-	min-width: calc(50rem / 3 - 0.5rem - 1rem);
-	max-width: calc(50rem / 3 - 0.5rem - 1rem);
-    min-height: 200px;
-    max-height: fit-content;
-}
-
-.q-voice:hover {
-	pointer-events: visible;
-	cursor: pointer;
-	box-shadow: .2rem .2rem .7rem 0 #777;
-}
-
-
-			/* quest names */
-.quest-name { padding-top: 15%; }
-
-.q-voice > h3 {
-	margin: 0;
-	padding: 0;
-  	display: flex;
-  	justify-content: center;
-  	align-items: center;
-  	text-align: center;
-	height:min-content;
-}
-
-
-		/* all NPCs in quest */
-.quest-info {
-	display: none;
-	overflow: hidden;
-	cursor: default;
-
-	text-align: left;
-	list-style: none;
-	margin: 0 auto;
-
-	width: 100%;
-}
-
-
-
-		/*overwrite classles*/
-.row { margin: 0; }
-
-.row > .col-4 {
-	padding: 0;
-	margin:0;
-}
-
-		/* specific mini-classes */
-.sub-line { border-bottom: 1px solid black; margin-top: .5rem; }
-
-
-@media (max-width: 62.5rem) {
-	.q-voice {
-		height: 350px;
-		width: 350px;
-	}
-
-
-
-	@media (min-width: 37.5rem) {
-		.row {
-			display: flex;
-			align-items: stretch;
-			justify-content: center;
-		}
-		.card-wrapper {
-			display: flex;
-			flex-direction: row;
-			justify-content: center;
-		
-			padding-top: .6rem;
-		}
-		.q-voice {
-			width: auto;
-			min-width: 100px;
-			max-width: calc(50rem / 3 - 0.5rem - 1rem);
-			min-height: 200px;
-			max-height: fit-content;
-		}	
-	}
-}
-
-/* Content Modal */
-
-#content-modal {
-	display: none;	
-	z-index: 100;
-	position: fixed;
-	height: 100%;
-	width: 100%;
-	top: 0;
-	right: 0;
-	background-color: rgba(0, 0, 0, 0.9);
-	flex-direction: row;
-	align-items: center;
-	justify-content: center;
-}
-
-#content-modal > #modal {
-	width: 25%;
-	max-height: 100%;
-	background-color: whitesmoke;
-	display: flex;
-	flex-direction: column;
-	justify-content: start;
-	align-items: center;
-	border-radius: 1%;
-}
-
-#content-modal > #modal > .head {
-	width: 100%;
-	display: flex;
-	flex-direction: row;
-	justify-content: flex-end;
-	align-items: center;
-}
-
-#content-modal > #modal > .head > .close {
-	color: black;
-	border: none;
-	background-color: transparent;
-	display: inline-flex;
-    width: 10%;
-	padding: 0!important;
-}
-
-#content-modal > #modal > .head > .close > svg {
-	width: 100%;
-	height: 100%;
-}
-
-#content-modal > #modal > .head > .close:hover {
-	border: none;
-	background-color: transparent;
-	box-shadow: none;
-	border-radius: 0;
-	transform: translateY(0);
-}
-
-#content-modal > #modal > #content {
-	overflow-y: auto;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: start;
-	gap: 5px;
-	width: 100%;
-}
-
-#content-modal > #modal > #content > .npc {
-	width: 50%;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-}
-
-#content-modal > #modal > #content > .npc > .image {
-	height: 128px;
-    width: 128px;
-	border-radius: 5px;
-}
-
-#content-modal > #modal > #content > .npc > .name {
-	font-size: 1.5rem;
-	text-decoration: underline;
-}
-
-@media  screen and (max-width: 1000px) {
-	#content-modal > #modal {
-		width: 100%;
-	}
-}
