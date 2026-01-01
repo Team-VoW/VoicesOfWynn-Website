@@ -25,30 +25,49 @@
 </head>
 
 <body>
-    <main>
-    <div class="header">
-        <ul class="nav">
-            <div class="f-l">
-                <li><a href="/"> Home </a></li>
-                <li><a href="/downloads"> Downloads </a></li>
-                <li><a href="/faq">FAQ </a></li>
+    <!-- Modern Fixed Header -->
+    <header class="site-header">
+        <div class="header-container">
+            <a href="/" class="header-logo">
+                <img src="images/wynnvplogo.svg" alt="Voices of Wynn logo" />
+                <span class="header-logo-text">Voices of Wynn</span>
+            </a>
             
-                    <li><a target='_blank' rel="noopener" href="https://www.patreon.com/Voices_Of_Wynn"><img src="images/patreon.png" alt="Patreon logo" width="20px" height="20px"/> Patreon</a></li>
-                    <li><a target='_blank' rel="noopener" href="https://discord.gg/kuEK3XH4Y5"><img src="images/discord.png" alt="Discord logo" width="20px" height="20px"/> Discord</a></li>
-            </div>
-        </ul>
-        <div id="vertical"></div>
-        <a href="" class="imglink">
-            <img class="logo" src="images/wynnvplogo.svg" alt="Voices of Wynn logo" width="160px" height="160px"/>
-        </a>
+            <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" onclick="this.classList.toggle('active'); document.querySelector('.header-nav').classList.toggle('active');">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <nav class="header-nav">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/downloads" class="nav-link">Downloads</a>
+                <a href="/faq" class="nav-link">FAQ</a>
+                <a href="/credits" class="nav-link">Credits</a>
+                <a href="/mod-contents" class="nav-link">Contents</a>
+                
+                <div class="nav-divider"></div>
+                
+                <a href="https://www.patreon.com/Voices_Of_Wynn" target="_blank" rel="noopener" class="nav-link nav-link--external">
+                    <img src="images/patreon.png" alt="Patreon" /> Patreon
+                </a>
+                <a href="https://discord.gg/kuEK3XH4Y5" target="_blank" rel="noopener" class="nav-link nav-link--external">
+                    <img src="images/discord.png" alt="Discord" /> Discord
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+    <div class="content">
+        <!-- Broadcast messages (if any) -->
         <?php foreach (${basename(__FILE__, '.phtml').'_broadcast'} as $broadcast) : ?>
             <table class="broadcast-message"><tr>
                 <td><img src="images/broadcast-icon.svg" style="height: 3rem;"></td>
                 <td><?= $broadcast ?></td>
             </tr></table>
         <?php endforeach ?>
-    </div>
-    <div class="content">
+        
         <?php require $this->getNextView(); ?>
     </div>
     </main>
