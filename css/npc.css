@@ -39,12 +39,18 @@
 
 .npc-hero {
   position: relative;
-  padding: var(--npc-space-xl) var(--npc-space-md);
-  margin: 0 -1.5rem var(--npc-space-lg);
+  padding: var(--npc-space-xl) 0;
+  margin-top: 0;
+  margin-bottom: var(--npc-space-lg);
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  width: 100vw;
   background: linear-gradient(135deg, var(--npc-gradient-purple), var(--npc-gradient-violet), var(--npc-gradient-pink));
-  border-radius: var(--npc-card-border-radius);
+  border-radius: 0;
   overflow: hidden;
   text-align: center;
+  left: auto;
+  transform: none;
 }
 
 .npc-hero::before {
@@ -74,6 +80,10 @@
 .npc-hero-content {
   position: relative;
   z-index: 1;
+  text-align: center;
+  max-width: 95rem;
+  margin: 0 auto;
+  padding: 0 2rem;
 }
 
 .npc-hero-title {

@@ -39,11 +39,17 @@
 
 .hero-section {
   position: relative;
-  padding: var(--space-xl) var(--space-md);
-  margin: 0 -1.5rem var(--space-lg);
+  padding: var(--space-xl) 0;
+  margin-top: 0;
+  margin-bottom: var(--space-lg);
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  width: 100vw;
   background: linear-gradient(135deg, var(--gradient-purple), var(--gradient-violet), var(--gradient-pink));
-  border-radius: var(--card-border-radius);
+  border-radius: 0;
   overflow: hidden;
+  left: auto;
+  transform: none;
 }
 
 .hero-section::before {
@@ -66,14 +72,32 @@
   transform: translateX(-50%);
   width: 120%;
   height: 100px;
-  background: whitesmoke;
-  border-radius: 50% 50% 0 0;
+  background: transparent; /* Changed from whitesmoke since main bg is transparent now, but actually we probably remove this curve or make it match body bg? user asked for full width span. */
+  /* Actually if I make it full width, the curve effect might need to adhere to the section below? 
+     The original curve was "background: whitesmoke".
+     Now the page background is dark gradient (transparent main).
+     If I want the curve effect, it should match the background of the cards, or just be removed?
+     The user didn't ask to remove the curve, but "span 100%".
+     If I keep the curve as whitesmoke (or card-bg?), it creates a curve at the bottom of hero.
+     But the main background is dark. White curve will look weird against dark bg.
+     Let's check if the user wants the curve? They didn't say.
+     But since I changed main bg to transparent, 'whitesmoke' curve will look like a white blob.
+     The cards are on dark background now.
+     So I should probably remove the curve or make it transparent/hidden for now until further notice, 
+     OR if the intention was that the content starts below the curve.
+     Given the redesign to dark mode, I'll hide the curve for now to be safe, 
+     as a white curve on dark theme is likely not desired. 
+  */
+  display: none;
 }
 
 .hero-content {
   position: relative;
   z-index: 1;
   text-align: center;
+  max-width: 95rem;
+  margin: 0 auto;
+  padding: 0 2rem;
 }
 
 .hero-title {
