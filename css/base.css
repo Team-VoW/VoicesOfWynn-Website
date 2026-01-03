@@ -493,6 +493,7 @@ br { margin-top: 2rem; }
             background: linear-gradient(135deg, #7b1a9b, #a340c4);
             box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
             margin: 0;
+            overflow: visible;
         }
 
         .header-container {
