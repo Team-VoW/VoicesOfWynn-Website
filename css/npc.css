@@ -394,7 +394,7 @@
   padding: 0.5rem 0.85rem;
   border-radius: 2rem;
   border: 2px solid transparent;
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   transition: all var(--npc-transition-fast) ease;
@@ -683,7 +683,7 @@
 
   .vote-btn {
     padding: 0.4rem 0.7rem;
-    font-size: 0.85rem;
+    font-size: 1rem;
   }
 
   .delete-recording-btn {
