@@ -362,18 +362,6 @@
   overflow: hidden;
 }
 
-/* Fix text contrast for dark background buttons */
-.card__actions .creditsbtn,
-.card__actions .faqbtn,
-.discordbtn {
-  color: white;
-}
-
-.card__actions .creditsbtn:hover,
-.card__actions .faqbtn:hover,
-.discordbtn:hover {
-  color: white;
-}
 
 /* Shine effect on hover */
 .hero-btn::after,
