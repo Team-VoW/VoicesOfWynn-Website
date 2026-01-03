@@ -242,14 +242,14 @@
 }
 
 .npc .name a {
-  color: var(--gradient-purple);
+  color: var(--gradient-cyan);
   text-decoration: none;
   font-weight: 600;
   transition: color var(--transition-fast) ease;
 }
 
 .npc .name a:hover {
-  color: var(--gradient-pink);
+  color: var(--gradient-green);
   text-decoration: underline;
 }
 
