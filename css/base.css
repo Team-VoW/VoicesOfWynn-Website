@@ -446,35 +446,36 @@ br { margin-top: 2rem; }
 
 
                 /* ----- SPECIAL STYLES FOR INDEX.PHTML ----- */
-        .downloadbtn { background: lightgreen; }
-        .downloadbtn:hover { border-color: limegreen;  }
+        /* All buttons use ~75% lightness for consistent appearance and dark text */
+        .downloadbtn { background: hsl(120, 60%, 75%); color: #333; }
+        .downloadbtn:hover { border-color: hsl(120, 60%, 65%); color: #333; }
 
-        .uploadbtn { background: cornflowerblue; }
-        .uploadbtn:hover { border-color: lightskyblue;  }
+        .uploadbtn { background: hsl(220, 70%, 78%); color: #333; }
+        .uploadbtn:hover { border-color: hsl(220, 70%, 68%); color: #333; }
 
-        .discordbtn { background: #5662F6;}
-        .discordbtn:hover { border-color: #656ffd; }
+        .discordbtn { background: #5865F2; color: white; }
+        .discordbtn:hover { border-color: #7983f5; color: white; }
 
-        .creditsbtn { background: #AB5DFC; }
-        .creditsbtn:hover { border-color:#b16afd; }
+        .creditsbtn { background: hsl(270, 65%, 78%); color: #333; }
+        .creditsbtn:hover { border-color: hsl(270, 65%, 68%); color: #333; }
 
-        .faqbtn { background: rgb(47, 104, 0); }
-        .faqbtn:hover { border-color: rgb(56, 99, 22); }
+        .faqbtn { background: hsl(85, 55%, 72%); color: #333; }
+        .faqbtn:hover { border-color: hsl(85, 55%, 62%); color: #333; }
 
-        .contentsbtn { background: rgb(21, 220, 255); }
-        .contentsbtn:hover { border-color: rgb(103, 232, 255); }
+        .contentsbtn { background: hsl(185, 65%, 75%); color: #333; }
+        .contentsbtn:hover { border-color: hsl(185, 65%, 65%); color: #333; }
 
-        .patreonbtn { background: #ffa599; }
-        .patreonbtn:hover { border-color: #ffb5aa; }
+        .patreonbtn { background: hsl(10, 80%, 80%); color: #333; }
+        .patreonbtn:hover { border-color: hsl(10, 80%, 70%); color: #333; }
 
-        .loginbtn { background: #FFD751; }
-        .loginbtn:hover { border-color: #fadb76; }
+        .loginbtn { background: hsl(45, 85%, 75%); color: #333; }
+        .loginbtn:hover { border-color: hsl(45, 85%, 65%); color: #333; }
 
-        .logoutbtn { background: rgb(255, 83, 83); }
-        .logoutbtn:hover { border-color: rgb(255, 131, 131); }
+        .logoutbtn { background: hsl(0, 70%, 78%); color: #333; }
+        .logoutbtn:hover { border-color: hsl(0, 70%, 68%); color: #333; }
 
-        .adminbtn { background: rgb(255, 146, 45); }
-        .adminbtn:hover { border-color: rgb(255, 176, 102); }
+        .adminbtn { background: hsl(30, 80%, 75%); color: #333; }
+        .adminbtn:hover { border-color: hsl(30, 80%, 65%); color: #333; }
 
 
 
