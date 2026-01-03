@@ -42,7 +42,7 @@ class Login extends WebpageController
         self::$data['base_title'] = 'Login';
         self::$data['base_description'] = 'Did you contribute to this project? Then login here to change your display name, bio or profile picture.';
         self::$data['base_keywords'] = 'Minecraft,Wynncraft,Mod,Voice,Login';
-        
+
         if (empty(self::$data['login_username'])) {
             self::$data['login_username'] = '';
         }
@@ -52,7 +52,8 @@ class Login extends WebpageController
         if (empty(self::$data['login_change_password'])) {
             self::$data['login_change_password'] = false;
         }
-        
+
+        self::$cssFiles[] = 'login';
         self::$views[] = 'login';
         return true;
     }
