@@ -65,22 +65,42 @@
                 <?php $recordings = $quest->getNpcs()[0]->getRecordings(); ?>
                 <?php foreach ($recordings as $recording) : ?>
                     <div class="recording-row">
-                        <span class="recording-line-number"># <?= $recording->line ?></span>
-                        <div class="recording-audio">
+                        <span class="recording-line-number"><?= $recording->line ?></span>
+                        <!-- Native audio player (shown on larger screens) -->
+                        <div class="recording-audio recording-audio--native">
                             <audio controls preload="none">
                                 <source src="<?= \VoicesOfWynn\storageUrl('recordings/' . $recording->file) ?>" type="audio/ogg">
-                                Your browser does not support the OGG audio format.
                             </audio>
                         </div>
+                        <!-- Compact custom player (shown on mobile) -->
+                        <div class="custom-audio-player">
+                            <button class="audio-play-btn" data-src="<?= \VoicesOfWynn\storageUrl('recordings/' . $recording->file) ?>">
+                                <span class="play-icon"></span>
+                                <span class="pause-icon"></span>
+                            </button>
+                            <div class="audio-waveform">
+                                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                            </div>
+                        </div>
+                        <!-- Vote buttons (stacked on mobile, inline on desktop) -->
                         <div class="recording-actions">
                             <button class="vote-btn upvote-btn upvote<?php if (in_array($recording->id, ${basename(__FILE__, '.phtml').'_upvoted'})) : ?> clicked<?php endif ?>" data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>">
-                                👍 <span><?= $recording->upvotes ?></span>
+                                <span class="vote-icon">👍</span>
+                                <span class="vote-count"><?= $recording->upvotes ?></span>
                             </button>
                             <button class="vote-btn downvote-btn downvote<?php if (in_array($recording->id, ${basename(__FILE__, '.phtml').'_downvoted'})) : ?> clicked<?php endif ?>" data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>">
-                                👎 <span><?= $recording->downvotes ?></span>
+                                <span class="vote-icon">👎</span>
+                                <span class="vote-count"><?= $recording->downvotes ?></span>
                             </button>
                             <a href="contents/npc/<?= $recording->npcId ?>/comments/<?= $recording->id ?>">
-                                <button class="vote-btn comment-btn">💬 <span><?= $recording->comments ?></span></button>
+                                <button class="vote-btn comment-btn">
+                                    <span class="vote-icon">💬</span>
+                                    <span class="vote-count"><?= $recording->comments ?></span>
+                                </button>
                             </a>
                             <?php if (${basename(__FILE__, '.phtml').'_admin'}) : ?>
                                 <button class="delete-recording-btn" data-recording-id="<?= $recording->id ?>">×</button>

@@ -340,18 +340,17 @@
 .recording-row {
   display: flex;
   align-items: center;
-  gap: var(--npc-space-md);
-  padding: var(--npc-space-md);
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
   border-radius: 0.75rem;
   background: #fafafa;
   margin-bottom: var(--npc-space-sm);
-  transition: background var(--npc-transition-fast) ease,
-              transform var(--npc-transition-fast) ease;
+  transition: background var(--npc-transition-fast) ease;
+  flex-wrap: nowrap;
 }
 
 .recording-row:hover {
   background: #f0f0f0;
-  transform: translateX(4px);
 }
 
 .recording-row:last-child {
@@ -361,35 +360,134 @@
 .recording-line-number {
   font-weight: bold;
   color: var(--npc-gradient-purple);
-  min-width: 50px;
-  font-size: 1.1rem;
+  min-width: 2rem;
+  font-size: 1rem;
+  flex-shrink: 0;
 }
 
-.recording-audio {
-  flex: 1;
-  min-width: 200px;
+/* Hide native audio player - using custom player everywhere */
+.recording-audio--native {
+  display: none;
 }
 
-.recording-audio audio {
-  width: 100%;
-  max-width: 350px;
-  height: 40px;
+/* Custom Audio Player (shown on all screens) */
+.custom-audio-player {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 0 0 auto;
+}
+
+.audio-play-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--npc-gradient-purple), var(--npc-gradient-violet));
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform var(--npc-transition-fast) ease,
+              box-shadow var(--npc-transition-fast) ease;
+  padding: 0;
+}
+
+.audio-play-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(123, 26, 155, 0.4);
+}
+
+.audio-play-btn .play-icon {
+  width: 0;
+  height: 0;
+  border-left: 10px solid white;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  margin-left: 3px;
+}
+
+.audio-play-btn .pause-icon {
+  display: none;
+  width: 10px;
+  height: 12px;
+  border-left: 3px solid white;
+  border-right: 3px solid white;
+}
+
+.audio-play-btn.playing .play-icon {
+  display: none;
+}
+
+.audio-play-btn.playing .pause-icon {
+  display: block;
+}
+
+/* Static Waveform Visualization */
+.audio-waveform {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 28px;
+  min-width: 80px;
+  max-width: 120px;
+}
+
+.audio-waveform .bar {
+  width: 3px;
+  background: var(--npc-gradient-violet);
+  border-radius: 2px;
+  opacity: 0.6;
+}
+
+/* Decorative bar heights - creates waveform look */
+.audio-waveform .bar:nth-child(1) { height: 40%; }
+.audio-waveform .bar:nth-child(2) { height: 70%; }
+.audio-waveform .bar:nth-child(3) { height: 50%; }
+.audio-waveform .bar:nth-child(4) { height: 90%; }
+.audio-waveform .bar:nth-child(5) { height: 60%; }
+.audio-waveform .bar:nth-child(6) { height: 100%; }
+.audio-waveform .bar:nth-child(7) { height: 75%; }
+.audio-waveform .bar:nth-child(8) { height: 55%; }
+.audio-waveform .bar:nth-child(9) { height: 85%; }
+.audio-waveform .bar:nth-child(10) { height: 45%; }
+.audio-waveform .bar:nth-child(11) { height: 70%; }
+.audio-waveform .bar:nth-child(12) { height: 95%; }
+.audio-waveform .bar:nth-child(13) { height: 50%; }
+.audio-waveform .bar:nth-child(14) { height: 65%; }
+.audio-waveform .bar:nth-child(15) { height: 40%; }
+
+.audio-play-btn.playing + .audio-waveform .bar {
+  opacity: 1;
+  animation: waveformPulse 0.8s ease-in-out infinite alternate;
+}
+
+.audio-waveform .bar:nth-child(odd) {
+  animation-delay: 0.1s;
+}
+
+@keyframes waveformPulse {
+  from { opacity: 0.6; }
+  to { opacity: 1; }
 }
 
 .recording-actions {
   display: flex;
-  gap: var(--npc-space-xs);
+  gap: 0.35rem;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  margin-left: auto;
 }
 
 /* --------------------------------------------------------------------------
-   7. VOTING BUTTONS (Modern Style)
+   7. VOTING BUTTONS (Desktop - Original Style)
    -------------------------------------------------------------------------- */
 
 .vote-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.35rem;
   padding: 0.5rem 0.85rem;
   border-radius: 2rem;
@@ -398,10 +496,19 @@
   font-weight: 600;
   cursor: pointer;
   transition: all var(--npc-transition-fast) ease;
+  min-height: 2.25rem;
+  box-sizing: border-box;
 }
 
-.vote-btn span {
+.vote-btn .vote-icon {
+  font-size: 1rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.vote-btn .vote-count {
   font-weight: bold;
+  flex-shrink: 0;
 }
 
 .upvote-btn {
@@ -450,6 +557,16 @@
   background: linear-gradient(135deg, #bbdefb, #90caf9);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(21, 101, 192, 0.3);
+}
+
+/* Ensure comment button link wrapper doesn't affect sizing */
+.recording-actions a {
+  display: inline-flex;
+  text-decoration: none;
+}
+
+.recording-actions a .vote-btn {
+  margin: 0;
 }
 
 /* --------------------------------------------------------------------------
@@ -615,25 +732,6 @@
     width: 150px;
     height: 150px;
   }
-
-  .recording-row {
-    flex-wrap: wrap;
-  }
-
-  .recording-audio {
-    width: 100%;
-    min-width: unset;
-  }
-
-  .recording-audio audio {
-    max-width: 100%;
-  }
-
-  .recording-actions {
-    width: 100%;
-    justify-content: center;
-    margin-top: var(--npc-space-sm);
-  }
 }
 
 @media (max-width: 40rem) {
@@ -670,26 +768,65 @@
     font-size: 1.1rem;
   }
 
+  .quest-card-body {
+    padding: 0.5rem;
+  }
+
+  /* Compact layout on mobile */
   .recording-row {
-    flex-direction: column;
-    align-items: stretch;
-    text-align: center;
+    gap: 0.4rem;
+    padding: 0.5rem;
   }
 
   .recording-line-number {
-    text-align: center;
-    margin-bottom: var(--npc-space-xs);
+    font-size: 0.85rem;
+    min-width: 1.5rem;
+  }
+
+  .audio-play-btn {
+    width: 32px;
+    height: 32px;
+  }
+
+  .audio-play-btn .play-icon {
+    border-left-width: 8px;
+    border-top-width: 5px;
+    border-bottom-width: 5px;
+    margin-left: 2px;
+  }
+
+  .audio-waveform {
+    min-width: 50px;
+    max-width: 80px;
+    height: 24px;
+    gap: 1px;
+  }
+
+  .audio-waveform .bar {
+    width: 2px;
+  }
+
+  .recording-actions {
+    gap: 0.2rem;
   }
 
   .vote-btn {
-    padding: 0.4rem 0.7rem;
-    font-size: 1rem;
+    padding: 0.3rem 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  .vote-btn .vote-icon {
+    font-size: 0.85rem;
+  }
+
+  .vote-btn .vote-count {
+    font-size: 0.75rem;
   }
 
   .delete-recording-btn {
-    width: 36px;
-    height: 36px;
-    font-size: 1.25rem;
+    width: 28px;
+    height: 28px;
+    font-size: 1rem;
   }
 
   .admin-controls {
