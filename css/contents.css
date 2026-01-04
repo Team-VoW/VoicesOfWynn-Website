@@ -63,9 +63,11 @@
   outline: none;
 }
 
+.search-input:hover,
 .search-input:focus {
   border-color: var(--gradient-cyan);
   box-shadow: 0 4px 20px rgba(0, 212, 255, 0.15);
+  border-radius: 2rem;
 }
 
 .search-input::placeholder {

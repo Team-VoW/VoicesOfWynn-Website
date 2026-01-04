@@ -24,6 +24,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 var questName = card.querySelector(".quest-card__name");
                 if (questName && questName.textContent.toLowerCase().match(searchRegex)) {
                     var clone = card.cloneNode(true);
+                    // Ensure cloned cards are visible (bypass scroll animation)
+                    clone.classList.add('is-visible');
                     results.push(clone);
                 }
             });
