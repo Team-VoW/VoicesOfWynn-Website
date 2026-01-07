@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
     <base href="/" />
     <meta charset="UTF-8">
@@ -17,6 +17,9 @@
     <meta name="msapplication-TileColor" content="#7b1a9b">
     <meta name="msapplication-config" content="browserconfig.xml">
     <meta name="theme-color" content="#7b1a9b">
+    
+    <!-- No-JS toggle script -->
+    <script>document.documentElement.classList.remove('no-js'); document.documentElement.classList.add('js');</script>
     
     <!-- Stylesheets -->
     <?php foreach (self::$cssFiles as $cssFile) : ?>

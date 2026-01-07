@@ -45,7 +45,12 @@
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
   width: 100vw;
-  background: linear-gradient(135deg, var(--gradient-purple), var(--gradient-violet), var(--gradient-pink));
+  background: linear-gradient(
+    135deg,
+    var(--gradient-purple),
+    var(--gradient-violet),
+    var(--gradient-pink)
+  );
   border-radius: 0;
   overflow: hidden;
   left: auto;
@@ -53,19 +58,19 @@
 }
 
 .hero-section::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: url('../images/Website_background.webp') center/cover;
+  background: url("../images/Website_background.webp") center/cover;
   opacity: 0.08;
   pointer-events: none;
 }
 
 .hero-section::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -50px;
   left: 50%;
@@ -102,8 +107,7 @@
 
 .hero-title {
   color: white;
-  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3),
-               0 0 40px rgba(123, 26, 155, 0.5);
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3), 0 0 40px rgba(123, 26, 155, 0.5);
   margin-bottom: var(--space-md);
   font-size: 3rem;
 }
@@ -155,7 +159,7 @@
   padding: var(--space-lg);
   box-shadow: var(--card-shadow);
   transition: transform var(--transition-medium) ease,
-              box-shadow var(--transition-medium) ease;
+    box-shadow var(--transition-medium) ease;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -165,13 +169,17 @@
 }
 
 .card::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, var(--gradient-purple), var(--gradient-cyan));
+  background: linear-gradient(
+    90deg,
+    var(--gradient-purple),
+    var(--gradient-cyan)
+  );
   transform: scaleX(0);
   transform-origin: left;
   transition: transform var(--transition-medium) ease;
@@ -223,7 +231,7 @@
 
 /* Credits Card - Purple theme */
 .card--credits::before {
-  background: linear-gradient(90deg, #AB5DFC, #d08fff);
+  background: linear-gradient(90deg, #ab5dfc, #d08fff);
 }
 
 /* FAQ Card - Green theme */
@@ -238,12 +246,16 @@
 
 /* Video Card - Purple/Cyan theme */
 .card--video::before {
-  background: linear-gradient(90deg, var(--gradient-purple), var(--gradient-cyan));
+  background: linear-gradient(
+    90deg,
+    var(--gradient-purple),
+    var(--gradient-cyan)
+  );
 }
 
 /* Login Card - Gold theme */
 .card--login::before {
-  background: linear-gradient(90deg, #FFD751, #ff9500);
+  background: linear-gradient(90deg, #ffd751, #ff9500);
 }
 
 /* Patreon Card - Coral theme */
@@ -277,7 +289,7 @@
   overflow: hidden;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   transition: transform var(--transition-medium) ease,
-              box-shadow var(--transition-medium) ease;
+    box-shadow var(--transition-medium) ease;
 }
 
 .video-container:hover {
@@ -298,7 +310,11 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: linear-gradient(135deg, var(--gradient-purple), var(--gradient-pink));
+  background: linear-gradient(
+    135deg,
+    var(--gradient-purple),
+    var(--gradient-pink)
+  );
   border-radius: 50%;
   width: 70px;
   height: 70px;
@@ -307,7 +323,7 @@
   align-items: center;
   box-shadow: 0 4px 20px rgba(123, 26, 155, 0.4);
   transition: transform var(--transition-fast) ease,
-              box-shadow var(--transition-fast) ease;
+    box-shadow var(--transition-fast) ease;
 }
 
 .video-container:hover .play-button {
@@ -362,12 +378,11 @@
   overflow: hidden;
 }
 
-
 /* Shine effect on hover */
 .hero-btn::after,
 .card__actions button::after,
 .card--login button::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
@@ -415,8 +430,12 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* Initial state for animated elements */
@@ -429,14 +448,34 @@
   animation: fadeInUp 0.6s ease forwards;
 }
 
+/* No-JS fallback for animate-on-scroll elements */
+.no-js .animate-on-scroll {
+  opacity: 1;
+  transform: none;
+}
+
 /* Stagger animations for grid items */
-.cards-grid .card:nth-child(1).is-visible { animation-delay: 0s; }
-.cards-grid .card:nth-child(2).is-visible { animation-delay: 0.1s; }
-.cards-grid .card:nth-child(3).is-visible { animation-delay: 0.2s; }
-.cards-grid .card:nth-child(4).is-visible { animation-delay: 0.1s; }
-.cards-grid .card:nth-child(5).is-visible { animation-delay: 0.2s; }
-.cards-grid .card:nth-child(6).is-visible { animation-delay: 0.1s; }
-.cards-grid .card:nth-child(7).is-visible { animation-delay: 0.2s; }
+.cards-grid .card:nth-child(1).is-visible {
+  animation-delay: 0s;
+}
+.cards-grid .card:nth-child(2).is-visible {
+  animation-delay: 0.1s;
+}
+.cards-grid .card:nth-child(3).is-visible {
+  animation-delay: 0.2s;
+}
+.cards-grid .card:nth-child(4).is-visible {
+  animation-delay: 0.1s;
+}
+.cards-grid .card:nth-child(5).is-visible {
+  animation-delay: 0.2s;
+}
+.cards-grid .card:nth-child(6).is-visible {
+  animation-delay: 0.1s;
+}
+.cards-grid .card:nth-child(7).is-visible {
+  animation-delay: 0.2s;
+}
 
 /* Hero animations */
 .animate-fade-in {

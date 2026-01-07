@@ -640,11 +640,6 @@ br { margin-top: 2rem; }
             transform: rotate(-45deg) translate(5px, -5px);
         }
 
-        /* Hide old header */
-        .header {
-            display: none;
-        }
-
         /* Broadcast message - updated style */
         .broadcast-message {
             border: 2px solid #a340c4;
