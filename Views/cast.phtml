@@ -103,10 +103,8 @@
                 </div>
 
                 <div class="cast-recording-player">
-                    <audio controls preload="none">
-                        <source src="<?= \VoicesOfWynn\storageUrl('recordings/' . $recording->file) ?>" type="audio/ogg">
-                        Your browser does not support the OGG audio format.
-                    </audio>
+                    <?php $audioSrc = \VoicesOfWynn\storageUrl('recordings/' . $recording->file); ?>
+                    <?php include 'Views/partials/audio-player.phtml'; ?>
                 </div>
 
                 <div class="cast-recording-actions">

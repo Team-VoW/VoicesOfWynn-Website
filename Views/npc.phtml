@@ -72,20 +72,9 @@
                                 <source src="<?= \VoicesOfWynn\storageUrl('recordings/' . $recording->file) ?>" type="audio/ogg">
                             </audio>
                         </div>
-                        <!-- Compact custom player (shown on mobile) -->
-                        <div class="custom-audio-player">
-                            <button class="audio-play-btn" data-src="<?= \VoicesOfWynn\storageUrl('recordings/' . $recording->file) ?>">
-                                <span class="play-icon"></span>
-                                <span class="pause-icon"></span>
-                            </button>
-                            <div class="audio-waveform">
-                                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-                                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-                                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-                                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-                                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-                            </div>
-                        </div>
+                        <!-- Custom audio player component -->
+                        <?php $audioSrc = \VoicesOfWynn\storageUrl('recordings/' . $recording->file); ?>
+                        <?php include 'Views/partials/audio-player.phtml'; ?>
                         <!-- Vote buttons (stacked on mobile, inline on desktop) -->
                         <div class="recording-actions">
                             <button class="vote-btn upvote-btn upvote<?php if (in_array($recording->id, ${basename(__FILE__, '.phtml').'_upvoted'})) : ?> clicked<?php endif ?>" data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>">

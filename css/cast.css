@@ -333,20 +333,14 @@
 }
 
 .cast-recording-player {
-  flex: 1;
-  min-width: 0;
-}
-
-.cast-recording-player audio {
-  width: 100%;
-  max-width: 100%;
-  height: 40px;
+  flex: 0 0 auto;
 }
 
 .cast-recording-actions {
   display: flex;
   gap: 0.5rem;
   flex-shrink: 0;
+  margin-left: auto;
 }
 
 /* Vote buttons */
@@ -465,25 +459,6 @@
 
   .cast-name {
     font-size: 1.75rem;
-  }
-
-  .cast-recording-item {
-    flex-wrap: wrap;
-  }
-
-  .cast-recording-line {
-    width: 100%;
-    text-align: center;
-    min-width: auto;
-  }
-
-  .cast-recording-player {
-    width: 100%;
-  }
-
-  .cast-recording-actions {
-    width: 100%;
-    justify-content: center;
   }
 }
 
