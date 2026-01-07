@@ -241,6 +241,15 @@
   border-color: transparent;
 }
 
+#change-actor-btn:focus,
+#change-actor-btn:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255, 149, 0, 0.4);
+  border-color: transparent;
+  outline: 2px solid var(--npc-gradient-purple);
+  outline-offset: 2px;
+}
+
 #archive-btn {
   background: linear-gradient(135deg, #888, #666);
   color: white;
@@ -258,6 +267,16 @@
   box-shadow: 0 4px 15px rgba(197, 16, 16, 0.4);
   background: linear-gradient(135deg, #c53030, #9b2c2c);
   border-color: transparent;
+}
+
+#archive-btn:focus,
+#archive-btn:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(197, 16, 16, 0.4);
+  background: linear-gradient(135deg, #c53030, #9b2c2c);
+  border-color: transparent;
+  outline: 2px solid var(--npc-gradient-purple);
+  outline-offset: 2px;
 }
 
 #voice-actor-form {
@@ -421,6 +440,15 @@
   box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
 }
 
+.upvote-btn:focus,
+.upvote-btn:focus-visible {
+  background: linear-gradient(135deg, #c8e6c9, #a5d6a7);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+  outline: 2px solid var(--npc-gradient-purple);
+  outline-offset: 2px;
+}
+
 .upvote-btn.clicked {
   background: linear-gradient(135deg, #4caf50, #388e3c);
   color: white;
@@ -439,6 +467,15 @@
   box-shadow: 0 4px 12px rgba(198, 40, 40, 0.3);
 }
 
+.downvote-btn:focus,
+.downvote-btn:focus-visible {
+  background: linear-gradient(135deg, #ffcdd2, #ef9a9a);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(198, 40, 40, 0.3);
+  outline: 2px solid var(--npc-gradient-purple);
+  outline-offset: 2px;
+}
+
 .downvote-btn.clicked {
   background: linear-gradient(135deg, #ef5350, #e53935);
   color: white;
@@ -455,6 +492,15 @@
   background: linear-gradient(135deg, #bbdefb, #90caf9);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(21, 101, 192, 0.3);
+}
+
+.comment-btn:focus,
+.comment-btn:focus-visible {
+  background: linear-gradient(135deg, #bbdefb, #90caf9);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(21, 101, 192, 0.3);
+  outline: 2px solid var(--npc-gradient-purple);
+  outline-offset: 2px;
 }
 
 /* Ensure comment button link wrapper doesn't affect sizing */
@@ -494,6 +540,14 @@
   box-shadow: 0 4px 15px rgba(244, 67, 54, 0.5);
 }
 
+.delete-recording-btn:focus,
+.delete-recording-btn:focus-visible {
+  transform: scale(1.1) rotate(90deg);
+  box-shadow: 0 4px 15px rgba(244, 67, 54, 0.5);
+  outline: 2px solid var(--npc-gradient-purple);
+  outline-offset: 2px;
+}
+
 .archive-all-recordings-btn {
   background: linear-gradient(135deg, #ff7043, #f4511e);
   color: white;
@@ -511,6 +565,15 @@
   border-color: transparent;
 }
 
+.archive-all-recordings-btn:focus,
+.archive-all-recordings-btn:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(244, 81, 30, 0.4);
+  border-color: transparent;
+  outline: 2px solid var(--npc-gradient-purple);
+  outline-offset: 2px;
+}
+
 .uploadbtn {
   background: linear-gradient(135deg, var(--npc-gradient-cyan), var(--npc-gradient-green));
   color: #333;
@@ -526,6 +589,15 @@
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4);
   border-color: transparent;
+}
+
+.uploadbtn:focus,
+.uploadbtn:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4);
+  border-color: transparent;
+  outline: 2px solid var(--npc-gradient-purple);
+  outline-offset: 2px;
 }
 
 .quest-admin-actions {
@@ -561,6 +633,15 @@
   background: linear-gradient(135deg, #e0e0e0, #bdbdbd);
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.back-btn-container .backbtn:focus,
+.back-btn-container .backbtn:focus-visible {
+  background: linear-gradient(135deg, #e0e0e0, #bdbdbd);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  outline: 2px solid var(--npc-gradient-purple);
+  outline-offset: 2px;
 }
 
 /* --------------------------------------------------------------------------

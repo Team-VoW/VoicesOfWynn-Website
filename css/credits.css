@@ -54,14 +54,18 @@
 }
 
 .role-title::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
   width: 80px;
   height: 3px;
-  background: linear-gradient(90deg, var(--gradient-purple), var(--gradient-pink));
+  background: linear-gradient(
+    90deg,
+    var(--gradient-purple),
+    var(--gradient-pink)
+  );
   border-radius: 2px;
 }
 
@@ -86,7 +90,7 @@
   padding: 1.5rem;
   box-shadow: var(--card-shadow);
   transition: transform var(--transition-medium) ease,
-              box-shadow var(--transition-medium) ease;
+    box-shadow var(--transition-medium) ease;
   text-align: center;
   width: 100%;
   max-width: 220px;
@@ -98,13 +102,17 @@
 }
 
 .contributor-card::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, var(--gradient-purple), var(--gradient-pink));
+  background: linear-gradient(
+    90deg,
+    var(--gradient-purple),
+    var(--gradient-pink)
+  );
   transform: scaleX(0);
   transform-origin: left;
   transition: transform var(--transition-medium) ease;
@@ -115,10 +123,20 @@
   box-shadow: var(--card-shadow-hover);
 }
 
-.contributor-card:hover::before {
+.contributor-card:focus-visible {
+  outline: 2px solid var(--gradient-purple);
+  outline-offset: 2px;
+  transform: translateY(-8px);
+  box-shadow: var(--card-shadow-hover);
+}
+
+.contributor-card:focus-visible::before {
   transform: scaleX(1);
 }
 
+.contributor-card:hover::before {
+  transform: scaleX(1);
+}
 /* --------------------------------------------------------------------------
    6. AVATAR STYLING
    -------------------------------------------------------------------------- */
@@ -131,9 +149,10 @@
   margin-bottom: 1rem;
   border: 4px solid transparent;
   background: linear-gradient(white, white) padding-box,
-              linear-gradient(135deg, var(--gradient-purple), var(--gradient-pink)) border-box;
+    linear-gradient(135deg, var(--gradient-purple), var(--gradient-pink))
+      border-box;
   transition: transform var(--transition-medium) ease,
-              box-shadow var(--transition-medium) ease;
+    box-shadow var(--transition-medium) ease;
 }
 
 .contributor-card:hover .contributor-avatar {

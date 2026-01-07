@@ -42,18 +42,20 @@
         currentAudio.addEventListener('ended', function() {
             playBtn.classList.remove('playing');
             currentButton = null;
+            currentAudio = null;
         });
-
         currentAudio.addEventListener('error', function() {
             playBtn.classList.remove('playing');
             currentButton = null;
+            currentAudio = null;
             console.error('Error loading audio:', audioSrc);
         });
-
         currentAudio.play().then(() => {
             playBtn.classList.add('playing');
         }).catch(err => {
             console.error('Playback failed:', err);
-        });
-    });
+            playBtn.classList.remove('playing');
+            currentButton = null;
+            currentAudio = null;
+        });    });
 })();

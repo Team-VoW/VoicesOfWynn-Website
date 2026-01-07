@@ -214,6 +214,15 @@ td a {
   box-shadow: 0 4px 12px rgba(129, 140, 248, 0.4);
 }
 
+.contactbtn:focus-visible,
+.youtubebtn:focus-visible,
+.twitterbtn:focus-visible,
+.castingcallclubbtn:focus-visible,
+.commentbtn:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
 /* --------------------------------------------------------------------------
    6. VOTING BUTTONS (Legacy - for pages that still use old structure)
    -------------------------------------------------------------------------- */
@@ -254,6 +263,11 @@ td a {
   box-shadow: 0 4px 12px rgba(198, 40, 40, 0.3);
 }
 
+.upvote:focus-visible, .downvote:focus-visible, .comment:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
 .clicked {
   border-style: solid;
 }
@@ -292,20 +306,7 @@ td a {
     width: 100%;
     text-align: center;
   }
-
-  .mobile-hr {
-    display: block;
-  }
-
-  .voting-audio-box {
-    display: table;
-    margin-bottom: 4.375rem;
-  }
 }
-
-/* --------------------------------------------------------------------------
-   8. ACCESSIBILITY - Reduced Motion
-   -------------------------------------------------------------------------- */
 
 @media (prefers-reduced-motion: reduce) {
   .role,
@@ -315,7 +316,8 @@ td a {
   .castingcallclubbtn,
   .commentbtn,
   .upvote,
-  .downvote {
+  .downvote,
+  .comment {
     transition: none !important;
   }
 }

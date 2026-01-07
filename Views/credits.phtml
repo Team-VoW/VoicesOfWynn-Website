@@ -6,8 +6,11 @@
 <?php
 $currentRole = null;
 foreach (${basename(__FILE__, '.phtml').'_contributors'} as $contributor) :
-    $topRole = $contributor->getRoles()[0];
-
+    $roles = $contributor->getRoles();
+    if (empty($roles)) {
+        continue; // Skip contributors without roles
+    }
+    $topRole = $roles[0];
     // Close previous section and start new one when role changes
     if ($currentRole !== $topRole->weight) :
         if ($currentRole !== null) : ?>
@@ -22,12 +25,11 @@ foreach (${basename(__FILE__, '.phtml').'_contributors'} as $contributor) :
             </h2>
             <div class="contributors-grid">
     <?php endif; ?>
-
-    <a class="contributor-card" href="/cast/<?= $contributor->getId(); ?>">
+    <a class="contributor-card" href="/cast/<?= htmlspecialchars($contributor->getId(), ENT_QUOTES, 'UTF-8'); ?>">
         <img
             class="contributor-avatar"
-            src="<?= $contributor->getAvatarLink(); ?>"
-            onerror="this.onerror=null; this.src='<?= $contributor->getDefaultAvatarUrl(); ?>'"
+            src="<?= htmlspecialchars($contributor->getAvatarLink(), ENT_QUOTES, 'UTF-8'); ?>"
+            onerror="this.onerror=null; this.src='<?= htmlspecialchars($contributor->getDefaultAvatarUrl(), ENT_QUOTES, 'UTF-8'); ?>'"
             alt="<?= htmlspecialchars($contributor->getName()); ?>'s profile picture"
             loading="lazy"
         />

@@ -14,10 +14,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     if (prefersReducedMotion) {
-        // If user prefers reduced motion, just show all elements immediately
+        // If user prefers reduced motion, show all elements immediately without animation
+        animatedElements.forEach(el => {
+            el.classList.add('is-visible');
+        });
         return;
     }
-
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -67,9 +69,9 @@ $("#voice-actor-form").on('submit', function(event) {
         url: "administration/npcs/manage/" + npcId + "/recast/" + voiceActorId,
         type: 'PUT',
         success: function(result, message) {
-            $("#voice-actor-avatar").attr('src', voiceActorAvatar);
-            $("#voice-actor-name").text(voiceActorName);
-            $("#voice-actor-name").removeClass('unassigned');
+            $(".voice-actor-avatar").attr('src', voiceActorAvatar);
+            $(".voice-actor-name").text(voiceActorName);
+            $(".voice-actor-name").removeClass('unassigned');
             $(".voice-actor-link").attr("href", "cast/" + voiceActorId);
             toggleRecastingButton();
         },
