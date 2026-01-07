@@ -1,0 +1,159 @@
+/* ==========================================================================
+   SHARED CUSTOM AUDIO PLAYER STYLES
+   ========================================================================== */
+
+:root {
+  --audio-player-gradient-purple: #7b1a9b;
+  --audio-player-gradient-violet: #a340c4;
+  --audio-player-transition-fast: 0.2s;
+}
+
+/* Custom Audio Player Container */
+.custom-audio-player {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 0 0 auto;
+}
+
+/* Play Button */
+.audio-play-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--audio-player-gradient-purple), var(--audio-player-gradient-violet));
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform var(--audio-player-transition-fast) ease,
+              box-shadow var(--audio-player-transition-fast) ease;
+  padding: 0;
+}
+
+.audio-play-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(123, 26, 155, 0.4);
+}
+
+/* Play Icon (triangle) */
+.audio-play-btn .play-icon {
+  width: 0;
+  height: 0;
+  border-left: 10px solid white;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  margin-left: 3px;
+}
+
+/* Pause Icon (two bars) */
+.audio-play-btn .pause-icon {
+  display: none;
+  width: 10px;
+  height: 12px;
+  border-left: 3px solid white;
+  border-right: 3px solid white;
+}
+
+/* Toggle icons when playing */
+.audio-play-btn.playing .play-icon {
+  display: none;
+}
+
+.audio-play-btn.playing .pause-icon {
+  display: block;
+}
+
+/* Static Waveform Visualization */
+.audio-waveform {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 28px;
+  min-width: 80px;
+  max-width: 120px;
+}
+
+.audio-waveform .bar {
+  width: 3px;
+  background: var(--audio-player-gradient-violet);
+  border-radius: 2px;
+  opacity: 0.6;
+}
+
+/* Decorative bar heights - creates waveform look */
+.audio-waveform .bar:nth-child(1) { height: 40%; }
+.audio-waveform .bar:nth-child(2) { height: 70%; }
+.audio-waveform .bar:nth-child(3) { height: 50%; }
+.audio-waveform .bar:nth-child(4) { height: 90%; }
+.audio-waveform .bar:nth-child(5) { height: 60%; }
+.audio-waveform .bar:nth-child(6) { height: 100%; }
+.audio-waveform .bar:nth-child(7) { height: 75%; }
+.audio-waveform .bar:nth-child(8) { height: 55%; }
+.audio-waveform .bar:nth-child(9) { height: 85%; }
+.audio-waveform .bar:nth-child(10) { height: 45%; }
+.audio-waveform .bar:nth-child(11) { height: 70%; }
+.audio-waveform .bar:nth-child(12) { height: 95%; }
+.audio-waveform .bar:nth-child(13) { height: 50%; }
+.audio-waveform .bar:nth-child(14) { height: 65%; }
+.audio-waveform .bar:nth-child(15) { height: 40%; }
+
+/* Animate waveform when playing */
+.audio-play-btn.playing + .audio-waveform .bar {
+  opacity: 1;
+  animation: waveformPulse 0.8s ease-in-out infinite alternate;
+}
+
+.audio-waveform .bar:nth-child(odd) {
+  animation-delay: 0.1s;
+}
+
+@keyframes waveformPulse {
+  from { opacity: 0.6; }
+  to { opacity: 1; }
+}
+
+/* --------------------------------------------------------------------------
+   RESPONSIVE DESIGN
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 40rem) {
+  .audio-play-btn {
+    width: 32px;
+    height: 32px;
+  }
+
+  .audio-play-btn .play-icon {
+    border-left-width: 8px;
+    border-top-width: 5px;
+    border-bottom-width: 5px;
+    margin-left: 2px;
+  }
+
+  .audio-waveform {
+    min-width: 50px;
+    max-width: 80px;
+    height: 24px;
+    gap: 1px;
+  }
+
+  .audio-waveform .bar {
+    width: 2px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   ACCESSIBILITY - Reduced Motion
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .audio-play-btn {
+    transition: none !important;
+  }
+
+  .audio-play-btn.playing + .audio-waveform .bar {
+    animation: none;
+  }
+}
