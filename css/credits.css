@@ -250,15 +250,16 @@
 
 @media (prefers-reduced-motion: reduce) {
   .contributor-card,
-  .contributor-avatar {
+  .contributor-avatar,
+  .contributor-card::before {
     transition: none;
   }
 
-  .contributor-card:hover {
-    transform: none;
-  }
-
-  .contributor-card:hover .contributor-avatar {
+  .contributor-card:hover,
+  .contributor-card:focus-visible,
+  .contributor-card:hover .contributor-avatar,
+  .contributor-card:hover::before,
+  .contributor-card:focus-visible::before {
     transform: none;
   }
 }

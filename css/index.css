@@ -44,7 +44,6 @@
   margin-bottom: var(--space-lg);
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
-  width: 100vw;
   background: linear-gradient(
     135deg,
     var(--gradient-purple),
@@ -263,9 +262,9 @@
   background: linear-gradient(90deg, #ffa599, var(--gradient-pink));
 }
 
-/* Support Card - Green theme */
+/* Support Card - Discord Blue theme */
 .card--support::before {
-  background: linear-gradient(90deg, lightgreen, var(--gradient-green));
+  background: linear-gradient(90deg, #5865F2, var(--gradient-cyan));
 }
 
 /* --------------------------------------------------------------------------

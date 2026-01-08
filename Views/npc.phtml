@@ -24,7 +24,8 @@
         </div>
     <?php else : ?>
         <a class="voice-actor-link" href="cast/<?= htmlspecialchars(${basename(__FILE__, '.phtml').'_voice_actor'}->getId(), ENT_QUOTES, 'UTF-8') ?>">
-            <img class="voice-actor-avatar" src="<?= htmlspecialchars(${basename(__FILE__, '.phtml').'_voice_actor'}->getAvatarLink(), ENT_QUOTES, 'UTF-8') ?>" onerror="this.onerror=null; this.src='<?= htmlspecialchars(${basename(__FILE__, '.phtml').'_voice_actor'}->getDefaultAvatarUrl(), ENT_QUOTES, 'UTF-8') ?>'" alt="Profile picture" />
+            <img class="voice-actor-avatar" src="<?= htmlspecialchars(${basename(__FILE__, '.phtml').'_voice_actor'}->getAvatarLink(), ENT_QUOTES, 'UTF-8') ?>" onerror='this.onerror=null; this.src=<?= json_encode(${basename(__FILE__, '.phtml').'_voice_actor'}->getDefaultAvatarUrl()) ?>' alt="Profile picture" />
+
             <span class="voice-actor-name"><?= htmlspecialchars(${basename(__FILE__, '.phtml').'_voice_actor'}->getName(), ENT_QUOTES, 'UTF-8') ?></span>
         </a>
     <?php endif ?>
@@ -41,9 +42,9 @@
                 <?php endif ?>
                 <?php foreach (${basename(__FILE__, '.phtml').'_voice_actors'} as $vactor) : ?>
                     <?php if (${basename(__FILE__, '.phtml').'_voice_actor'} !== null && ${basename(__FILE__, '.phtml').'_voice_actor'}->getId() === $vactor->getId()) : ?>
-                        <option selected value="<?= $vactor->getId() ?>" data-avatar-link="<?= htmlspecialchars($vactor->getAvatarLink(), ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($vactor->getName(), ENT_QUOTES, 'UTF-8') ?></option>
+                        <option selected value="<?= htmlspecialchars($vactor->getId(), ENT_QUOTES, 'UTF-8') ?>" data-avatar-link="<?= htmlspecialchars($vactor->getAvatarLink(), ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($vactor->getName(), ENT_QUOTES, 'UTF-8') ?></option>
                     <?php else : ?>
-                        <option value="<?= $vactor->getId() ?>" data-avatar-link="<?= htmlspecialchars($vactor->getAvatarLink(), ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($vactor->getName(), ENT_QUOTES, 'UTF-8') ?></option>
+                        <option value="<?= htmlspecialchars($vactor->getId(), ENT_QUOTES, 'UTF-8') ?>" data-avatar-link="<?= htmlspecialchars($vactor->getAvatarLink(), ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($vactor->getName(), ENT_QUOTES, 'UTF-8') ?></option>
                     <?php endif ?>
                 <?php endforeach ?>
             </select>
@@ -81,15 +82,15 @@
                         <div class="recording-actions">
                             <button class="vote-btn upvote-btn upvote<?php if (in_array($recording->id, ${basename(__FILE__, '.phtml').'_upvoted'})) : ?> clicked<?php endif ?>" data-recording-id="<?= htmlspecialchars($recording->id, ENT_QUOTES, 'UTF-8') ?>" data-npc-id="<?= htmlspecialchars($recording->npcId, ENT_QUOTES, 'UTF-8') ?>">
                                 <span class="vote-icon">👍</span>
-                                <span class="vote-count"><?= $recording->upvotes ?></span>
+                                <span class="vote-count"><?= htmlspecialchars($recording->upvotes, ENT_QUOTES, 'UTF-8') ?></span>
                             </button>
                             <button class="vote-btn downvote-btn downvote<?php if (in_array($recording->id, ${basename(__FILE__, '.phtml').'_downvoted'})) : ?> clicked<?php endif ?>" data-recording-id="<?= htmlspecialchars($recording->id, ENT_QUOTES, 'UTF-8') ?>" data-npc-id="<?= htmlspecialchars($recording->npcId, ENT_QUOTES, 'UTF-8') ?>">
                                 <span class="vote-icon">👎</span>
-                                <span class="vote-count"><?= $recording->downvotes ?></span>
+                                <span class="vote-count"><?= htmlspecialchars($recording->downvotes, ENT_QUOTES, 'UTF-8') ?></span>
                             </button>
                             <a href="contents/npc/<?= htmlspecialchars($recording->npcId, ENT_QUOTES, 'UTF-8') ?>/comments/<?= htmlspecialchars($recording->id, ENT_QUOTES, 'UTF-8') ?>" class="vote-btn comment-btn">
                                 <span class="vote-icon">💬</span>
-                                <span class="vote-count"><?= $recording->comments ?></span>
+                                <span class="vote-count"><?= htmlspecialchars($recording->comments, ENT_QUOTES, 'UTF-8') ?></span>
                             </a>
                             <?php if (${basename(__FILE__, '.phtml').'_admin'}) : ?>
                                 <button class="delete-recording-btn" data-recording-id="<?= htmlspecialchars($recording->id, ENT_QUOTES, 'UTF-8') ?>">×</button>
