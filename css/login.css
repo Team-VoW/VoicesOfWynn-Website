@@ -114,6 +114,12 @@
 .newaccform [type="submit"]:focus {
   outline: 3px solid var(--login-focus-color);
   outline-offset: 3px;
+}
+
+/* --------------------------------------------------------------------------
+   BACK BUTTON
+   -------------------------------------------------------------------------- */
+
 .backbtn {
   background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
   color: #333;
@@ -143,25 +149,6 @@
 .backbtn:focus-visible {
   outline: 3px solid var(--login-gradient-purple);
   outline-offset: 2px;
-}
-  font-weight: 600;
-  cursor: pointer;
-  transition: all var(--login-transition-fast) ease;
-  display: block;
-  margin: 1.5rem auto 0;
-  font-size: 1rem;
-}
-
-.backbtn:hover {
-  background: linear-gradient(135deg, #e0e0e0, #bdbdbd);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-  border-color: #999;
-}
-
-.backbtn:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* --------------------------------------------------------------------------

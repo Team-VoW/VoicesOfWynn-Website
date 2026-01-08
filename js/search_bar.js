@@ -17,7 +17,8 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         if (input !== "") {
-            var searchRegex = new RegExp(input, 'gi');
+            var escapedInput = input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            var searchRegex = new RegExp(escapedInput, 'gi');
             var results = [];
 
             allQuestCards.forEach(function (card) {
