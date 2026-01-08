@@ -36,7 +36,6 @@ class Cast extends WebpageController
 		self::$jsFiles[] = 'voting';
 		self::$jsFiles[] = 'audio-player';
 		self::$views[] = 'cast';
-		return true;
-	}
+		return 200;	}
 }
 
