@@ -27,10 +27,12 @@
             if (currentAudio.paused) {
                 currentAudio.play().then(() => {
                     playBtn.classList.add('playing');
+                    playBtn.setAttribute('aria-label', 'Pause audio');
                 }).catch(err => console.error('Playback failed:', err));
             } else {
                 currentAudio.pause();
                 playBtn.classList.remove('playing');
+                playBtn.setAttribute('aria-label', 'Play audio');
             }
             return;
         }
@@ -55,6 +57,7 @@
             // Remove the 'playing' class from the previous button
             if (currentButton) {
                 currentButton.classList.remove('playing');
+                currentButton.setAttribute('aria-label', 'Play audio');
             }
 
             // Null out references
@@ -74,6 +77,7 @@
             // Only clear state if this audio is still the current one
             if (audioRef === currentAudio) {
                 playBtn.classList.remove('playing');
+                playBtn.setAttribute('aria-label', 'Play audio');
                 currentButton = null;
                 currentAudio = null;
             }
@@ -85,6 +89,7 @@
             // Only clear state if this audio is still the current one
             if (audioRef === currentAudio) {
                 playBtn.classList.remove('playing');
+                playBtn.setAttribute('aria-label', 'Play audio');
                 currentButton = null;
                 currentAudio = null;
                 console.error('Error loading audio:', audioSrc);
@@ -98,9 +103,11 @@
 
         currentAudio.play().then(() => {
             playBtn.classList.add('playing');
+            playBtn.setAttribute('aria-label', 'Pause audio');
         }).catch(err => {
             console.error('Playback failed:', err);
             playBtn.classList.remove('playing');
+            playBtn.setAttribute('aria-label', 'Play audio');
             currentButton = null;
             currentAudio = null;
         });
