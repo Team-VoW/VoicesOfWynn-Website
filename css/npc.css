@@ -294,6 +294,14 @@
   border: 2px solid #ddd;
   font-size: 1rem;
   margin-right: var(--npc-space-sm);
+  transition: border-color var(--npc-transition-fast) ease;
+}
+
+#voice-actor-form select:focus,
+#voice-actor-form select:focus-visible {
+  border-color: var(--npc-gradient-purple);
+  outline: 2px solid var(--npc-gradient-purple);
+  outline-offset: 2px;
 }
 
 #va-confirm-change {
