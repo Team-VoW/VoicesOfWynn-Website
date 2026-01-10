@@ -36,7 +36,7 @@
                 <span class="header-logo-text">Voices of Wynn</span>
             </a>
             
-            <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" onclick="this.classList.toggle('active'); document.querySelector('.header-nav').classList.toggle('active');">
+            <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" onclick="this.classList.toggle('active'); document.querySelector('.header-nav').classList.toggle('active'); this.setAttribute('aria-expanded', this.classList.contains('active') ? 'true' : 'false');">
                 <span></span>
                 <span></span>
                 <span></span>

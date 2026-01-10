@@ -215,7 +215,7 @@
   }
 
   .contributor-card {
-    flex: 1 1 calc(50% - 0.75rem);
+    flex: 1 1 calc(50% - 0.375rem);
     max-width: calc(50% - 0.375rem);
     padding: 1rem;
   }

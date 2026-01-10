@@ -85,7 +85,7 @@ class Npc extends WebpageController
 		self::$cssFiles[] = 'audio-player';
 		self::$jsFiles[] = 'voting';
 		self::$jsFiles[] = 'audio-player';
-		self::$jsFiles[] = 'npc'; //Scroll animations + administrative functions
+		self::$jsFiles[] = 'npc'; //Scroll animations + admin functions (admin UI not rendered for non-admins, so handlers attach to nothing)
 
 		return true;
 	}

@@ -39,4 +39,28 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   animatedElements.forEach(el => observer.observe(el));
+
+  // Video container event listeners (CSP-compliant)
+  const videoContainers = document.querySelectorAll('.video-container');
+
+  videoContainers.forEach(container => {
+    // Click event
+    container.addEventListener('click', function() {
+      const videoId = this.dataset.videoId;
+      if (videoId) {
+        loadVideo(this, videoId);
+      }
+    });
+
+    // Keyboard event (Enter or Space)
+    container.addEventListener('keydown', function(event) {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        const videoId = this.dataset.videoId;
+        if (videoId) {
+          loadVideo(this, videoId);
+        }
+      }
+    });
+  });
 });
