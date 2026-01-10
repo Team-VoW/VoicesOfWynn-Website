@@ -4,7 +4,7 @@
 </header>
 
 <div class="search-container">
-    <input id="q_search" type="text" class="search-input" placeholder="Search for a quest..." />
+    <input id="q_search" type="search" class="search-input" placeholder="Search for a quest..." aria-label="Search for a quest" />
 </div>
 
 <div class="quests-grid" id="results_container"></div>
@@ -18,8 +18,8 @@
     <?php endforeach ?>
 </div>
 
-<div id="content-modal" class="modal-overlay">
-    <div class="modal">
+<div id="content-modal" class="modal-overlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="Quest NPCs">
         <div class="modal__header">
             <button class="modal__close" type="button" aria-label="Close modal">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
