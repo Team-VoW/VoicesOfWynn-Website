@@ -2,7 +2,7 @@ var $clickedRating;
 var voteCount;
 var voteType;
 
-$(".upvote").on('click', function(event) {
+$(".upvote").on('click', function (event) {
     $clickedRating = $(event.target);
     if ($clickedRating.prop('tagName') !== 'BUTTON') {
         $clickedRating = $clickedRating.closest('button');
@@ -18,22 +18,24 @@ $(".upvote").on('click', function(event) {
     }
 
     let recordingId = $clickedRating.attr('data-recording-id');
-    let npcId =$clickedRating.attr('data-npc-id');
+    let npcId = $clickedRating.attr('data-npc-id');
 
     $.ajax({
         url: "contents/npc/" + npcId + "/upvote/" + recordingId,
         type: 'POST',
-        success: function(result, message) {
+        success: function (result, message) {
             $clickedRating.find('span').text(voteCount);
-            $clickedRating.closest('.voting-audio-box').find('button.upvote.clicked,button.downvote.clicked').find('span').text((Number)($clickedRating.closest('.voting-audio-box').find('button.upvote.clicked,button.downvote.clicked').find('span').text()) - 1);
-            $clickedRating.closest('.voting-audio-box').find('button.upvote,button.downvote').removeClass('clicked');
+            const $box = $clickedRating.closest('.voting-audio-box');
+            const $clickedButtons = $box.find('button.upvote.clicked,button.downvote.clicked');
+            $clickedButtons.find('span').text(Number($clickedButtons.find('span').text()) - 1);
+            $box.find('button.upvote,button.downvote').removeClass('clicked');
             if (voteType === "add")
-                $clickedRating.closest('.voting-audio-box').find('button.upvote').addClass('clicked');
+                $box.find('button.upvote').addClass('clicked');
             $clickedRating = undefined;
             voteCount = undefined;
             voteType = undefined;
         },
-        error: function(result, message, error) {
+        error: function (result, message, error) {
             alert("An error occurred: " + error);
             $clickedRating = undefined;
             voteCount = undefined;
@@ -42,7 +44,7 @@ $(".upvote").on('click', function(event) {
     });
 });
 
-$(".downvote").on('click', function(event) {
+$(".downvote").on('click', function (event) {
     $clickedRating = $(event.target);
     if ($clickedRating.prop('tagName') !== 'BUTTON') {
         $clickedRating = $clickedRating.closest('button');
@@ -62,17 +64,19 @@ $(".downvote").on('click', function(event) {
     $.ajax({
         url: "contents/npc/" + npcId + "/downvote/" + recordingId,
         type: 'POST',
-        success: function(result, message) {
+        success: function (result, message) {
             $clickedRating.find('span').text(voteCount);
-            $clickedRating.closest('.voting-audio-box').find('button.upvote.clicked,button.downvote.clicked').find('span').text((Number)($clickedRating.closest('.voting-audio-box').find('button.upvote.clicked,button.downvote.clicked').find('span').text()) - 1);
-            $clickedRating.closest('.voting-audio-box').find('button.upvote,button.downvote').removeClass('clicked');
+            const $box = $clickedRating.closest('.voting-audio-box');
+            const $clickedButtons = $box.find('button.upvote.clicked,button.downvote.clicked');
+            $clickedButtons.find('span').text(Number($clickedButtons.find('span').text()) - 1);
+            $box.find('button.upvote,button.downvote').removeClass('clicked');
             if (voteType === "add")
-                $clickedRating.closest('.voting-audio-box').find('button.downvote').addClass('clicked');
+                $box.find('button.downvote').addClass('clicked');
             $clickedRating = undefined;
             voteCount = undefined;
             voteType = undefined;
         },
-        error: function(result, message, error) {
+        error: function (result, message, error) {
             alert("An error occurred: " + error);
             $clickedRating = undefined;
             voteCount = undefined;

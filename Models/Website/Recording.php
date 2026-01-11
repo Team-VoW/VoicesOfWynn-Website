@@ -259,7 +259,7 @@ class Recording
 
         //Save the comment
 		$commentId = (new Db('Website/DbInfo.ini'))->executeQuery('INSERT INTO comment (verified,user_id,ip,name,email,content,recording_id) VALUES (?,?,?,?,?,?,?);', array(
-			$verified,
+			(int)$verified,
             $userId,
 			inet_pton($ip),
             $author,

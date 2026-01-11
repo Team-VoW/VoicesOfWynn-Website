@@ -135,8 +135,7 @@ td a {
    5. BUTTON STYLES
    -------------------------------------------------------------------------- */
 
-.contactbtn {
-  background: linear-gradient(135deg, #fff3b0, #ffef66);
+.btn-base {
   border: none;
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
@@ -145,82 +144,60 @@ td a {
   transition: all 0.2s ease;
 }
 
-.contactbtn:hover {
+.btn-base:hover {
   transform: translateY(-2px);
+}
+
+.btn-base:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.contactbtn {
+  background: linear-gradient(135deg, #fff3b0, #ffef66);
+}
+
+.contactbtn:hover {
   box-shadow: 0 4px 15px rgba(239, 228, 143, 0.5);
 }
 
 .youtubebtn {
   color: white;
   background: linear-gradient(135deg, #FF5252, #FF3D00);
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.2s ease;
 }
 
 .youtubebtn:hover {
-  transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(255, 61, 0, 0.4);
 }
 
 .twitterbtn {
   color: white;
   background: linear-gradient(135deg, #42A5F5, #1DA1F2);
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.2s ease;
 }
 
 .twitterbtn:hover {
-  transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(29, 161, 242, 0.4);
 }
 
 .castingcallclubbtn {
   color: white;
   background: linear-gradient(135deg, #8b5cf6, #6827F7);
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.2s ease;
 }
 
 .castingcallclubbtn:hover {
-  transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(104, 39, 247, 0.4);
 }
 
 .commentbtn {
   background: linear-gradient(135deg, #a5b4fc, #818cf8);
   color: white;
-  border: none;
   padding: 0.5rem 0.85rem;
   border-radius: 2rem;
   font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
 }
 
 .commentbtn:hover {
-  transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(129, 140, 248, 0.4);
-}
-
-.contactbtn:focus-visible,
-.youtubebtn:focus-visible,
-.twitterbtn:focus-visible,
-.castingcallclubbtn:focus-visible,
-.commentbtn:focus-visible {
-  outline: 2px solid currentColor;
-  outline-offset: 2px;
 }
 
 /* --------------------------------------------------------------------------
@@ -310,11 +287,7 @@ td a {
 
 @media (prefers-reduced-motion: reduce) {
   .role,
-  .contactbtn,
-  .youtubebtn,
-  .twitterbtn,
-  .castingcallclubbtn,
-  .commentbtn,
+  .btn-base,
   .upvote,
   .downvote,
   .comment {

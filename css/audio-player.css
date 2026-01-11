@@ -142,6 +142,13 @@
     margin-left: 2px;
   }
 
+  .audio-play-btn .pause-icon {
+    width: 8px;
+    height: 10px;
+    border-left-width: 2px;
+    border-right-width: 2px;
+  }
+
   .audio-waveform {
     min-width: 50px;
     max-width: 80px;
@@ -153,7 +160,6 @@
     width: 2px;
   }
 }
-
 /* --------------------------------------------------------------------------
    ACCESSIBILITY - Reduced Motion
    -------------------------------------------------------------------------- */
