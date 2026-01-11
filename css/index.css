@@ -31,6 +31,7 @@
   --space-md: 1.5rem;
   --space-lg: 2rem;
   --space-xl: 3rem;
+  --container-padding: 2rem;
 }
 
 /* --------------------------------------------------------------------------
@@ -550,7 +551,7 @@
 
   .hero-section {
     padding: var(--space-lg) var(--space-sm);
-    margin: 0 calc(-1 * var(--container-padding)) var(--space-md);
+    margin: 0 calc(-1 * var(--container-padding, 0px)) var(--space-md);
   }
 
   .hero-title {
