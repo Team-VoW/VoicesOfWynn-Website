@@ -3,120 +3,80 @@
 // ==========================================================================
 
 (function () {
-    // Single active audio playback — new Audio instances created per play (see 'new Audio' usage), only one plays at a time. 'currentAudio' tracks the active instance.
+    // Single active audio playback — controls existing <audio> elements, only one plays at a time.
     let currentAudio = null;
     let currentButton = null;
     let onEnded = null;
     let onError = null;
+
+    // Progressive functionality: Hide native controls so custom UI takes over
+    // If JS is active, we assume the custom player UI (button + waveform) handles interaction.
+    const audioElements = document.querySelectorAll('.custom-audio-player .audio-element');
+    audioElements.forEach(audio => {
+        audio.controls = false;
+        audio.style.display = 'none'; // visually hide
+    });
 
     // Handle play button clicks
     document.addEventListener('click', function (e) {
         const playBtn = e.target.closest('.audio-play-btn');
         if (!playBtn) return;
 
-        const audioSrc = playBtn.dataset.src;
+        const playerContainer = playBtn.closest('.custom-audio-player');
+        if (!playerContainer) return;
 
-        // Validate audio source
-        if (!audioSrc) {
-            console.error('No audio source found for button:', playBtn);
+        const audioEl = playerContainer.querySelector('.audio-element');
+
+        // Validate audio element
+        if (!audioEl) {
+            console.error('No audio element found for button:', playBtn);
             return;
         }
 
         // If clicking the same button that's playing/paused, toggle it
-        if (currentButton === playBtn && currentAudio) {
+        if (currentButton === playBtn && currentAudio === audioEl) {
             if (currentAudio.paused) {
                 currentAudio.play().then(() => {
-                    playBtn.classList.add('playing');
-                    playBtn.setAttribute('aria-label', 'Pause audio');
+                    setButtonState(playBtn, true);
                 }).catch(err => {
                     console.error('Playback failed:', err);
-
-                    // Remove event listeners to prevent memory leaks
-                    if (onEnded) {
-                        currentAudio.removeEventListener('ended', onEnded);
-                    }
-                    if (onError) {
-                        currentAudio.removeEventListener('error', onError);
-                    }
-
-                    // Pause and clear source to release resources
-                    currentAudio.pause();
-                    currentAudio.src = '';
-
-                    // Update UI
-                    playBtn.classList.remove('playing');
-                    playBtn.setAttribute('aria-label', 'Play audio');
-
-                    // Clear references
-                    currentAudio = null;
-                    currentButton = null;
+                    cleanupCurrentAudio();
                 });
             } else {
                 currentAudio.pause();
-                playBtn.classList.remove('playing');
-                playBtn.setAttribute('aria-label', 'Play audio');
+                setButtonState(playBtn, false);
             }
             return;
         }
 
         // Stop and properly clean up any currently playing audio
         if (currentAudio) {
-            // Remove event listeners using stored handler references
-            if (onEnded) {
-                currentAudio.removeEventListener('ended', onEnded);
-            }
-            if (onError) {
-                currentAudio.removeEventListener('error', onError);
-            }
-
-            // Pause and reset the audio
-            currentAudio.pause();
-            currentAudio.currentTime = 0;
-
-            // Clear the source to release resources
-            currentAudio.src = '';
-
-            // Remove the 'playing' class from the previous button
-            if (currentButton) {
-                currentButton.classList.remove('playing');
-                currentButton.setAttribute('aria-label', 'Play audio');
-            }
-
-            // Null out references
-            currentAudio = null;
-            currentButton = null;
+            cleanupCurrentAudio();
         }
 
-        // Create new audio and play
-        currentAudio = new Audio(audioSrc);
+        // Set new audio state
+        currentAudio = audioEl;
         currentButton = playBtn;
 
-        // Store a local reference to this audio instance for validation in callbacks
+        // Store reference for callbacks
         const audioRef = currentAudio;
 
-        // Store event handler references for later cleanup
-        onEnded = function (event) {
-            // Only clear state if this audio is still the current one
+        onEnded = function () {
             if (audioRef === currentAudio) {
-                playBtn.classList.remove('playing');
-                playBtn.setAttribute('aria-label', 'Play audio');
+                setButtonState(playBtn, false);
                 currentButton = null;
                 currentAudio = null;
             }
-            // Remove listener after handling to prevent duplicate calls
             audioRef.removeEventListener('ended', onEnded);
         };
 
-        onError = function (event) {
-            // Only clear state if this audio is still the current one
+        onError = function () {
             if (audioRef === currentAudio) {
-                playBtn.classList.remove('playing');
-                playBtn.setAttribute('aria-label', 'Play audio');
+                setButtonState(playBtn, false);
                 currentButton = null;
                 currentAudio = null;
-                console.error('Error loading audio:', audioSrc);
+                console.error('Error playing audio');
             }
-            // Remove listener after handling to prevent duplicate calls
             audioRef.removeEventListener('error', onError);
         };
 
@@ -124,30 +84,41 @@
         currentAudio.addEventListener('error', onError);
 
         currentAudio.play().then(() => {
-            playBtn.classList.add('playing');
-            playBtn.setAttribute('aria-label', 'Pause audio');
+            setButtonState(playBtn, true);
         }).catch(err => {
             console.error('Playback failed:', err);
-
-            // Remove event listeners to prevent memory leaks
-            if (onEnded) {
-                currentAudio.removeEventListener('ended', onEnded);
-            }
-            if (onError) {
-                currentAudio.removeEventListener('error', onError);
-            }
-
-            // Pause and clear source to release resources
-            currentAudio.pause();
-            currentAudio.src = '';
-
-            // Update UI
-            playBtn.classList.remove('playing');
-            playBtn.setAttribute('aria-label', 'Play audio');
-
-            // Clear references
-            currentButton = null;
-            currentAudio = null;
+            cleanupCurrentAudio();
         });
     });
+
+    function setButtonState(button, isPlaying) {
+        if (isPlaying) {
+            button.classList.add('playing');
+            button.setAttribute('aria-label', 'Pause audio');
+            button.setAttribute('aria-pressed', 'true');
+        } else {
+            button.classList.remove('playing');
+            button.setAttribute('aria-label', 'Play audio');
+            button.setAttribute('aria-pressed', 'false');
+        }
+    }
+
+    function cleanupCurrentAudio() {
+        if (!currentAudio) return;
+
+        if (onEnded) currentAudio.removeEventListener('ended', onEnded);
+        if (onError) currentAudio.removeEventListener('error', onError);
+
+        currentAudio.pause();
+        currentAudio.currentTime = 0; // Reset position
+
+        if (currentButton) {
+            setButtonState(currentButton, false);
+        }
+
+        currentAudio = null;
+        currentButton = null;
+        onEnded = null;
+        onError = null;
+    }
 })();
