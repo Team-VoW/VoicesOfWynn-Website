@@ -122,6 +122,8 @@ textarea:focus {
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(123, 26, 155, 0.3);
+            display: inline-block;
+            text-decoration: none;
         }
 
         .viewbtn:hover {
