@@ -8,17 +8,13 @@
             more!
         </p>
         <div class="hero-actions animate-fade-in-delay-2">
-            <a href="https://modrinth.com/mod/vow" target="_blank" rel="noopener noreferrer"> <button
-                    class="downloadbtn hero-btn">
-                    <img src="images/download.png" alt="Download icon" class="buttonicon" />
-                    Try it now! It's free!
-                </button>
+            <a href="https://modrinth.com/mod/vow" target="_blank" rel="noopener noreferrer" class="btn downloadbtn hero-btn">
+                <img src="images/download.png" alt="Download icon" class="buttonicon" />
+                Try it now! It's free!
             </a>
-            <a href="https://discord.gg/kuEK3XH4Y5" target="_blank" rel="noopener">
-                <button class="discordbtn hero-btn">
-                    <img src="images/discord.png" alt="Discord logo" class="buttonicon" />
-                    Join our community!
-                </button>
+            <a href="https://discord.gg/kuEK3XH4Y5" target="_blank" rel="noopener" class="btn discordbtn hero-btn">
+                <img src="images/discord.png" alt="Discord logo" class="buttonicon" />
+                Join our community!
             </a>
         </div>
     </div>
@@ -35,7 +31,7 @@
             work!
         </p>
         <div class="card__actions">
-            <a href="/credits"><button class="creditsbtn"><b class="arial large-font-size">👥 </b>Credits</button></a>
+            <a href="/credits" class="btn creditsbtn"><b class="arial large-font-size">👥 </b>Credits</a>
         </div>
     </article>
 
@@ -46,7 +42,7 @@
             Do you have any unanswered questions? Check out the FAQ!
         </p>
         <div class="card__actions">
-            <a href="/faq"><button class="faqbtn"><b class="arial large-font-size">? </b>FAQ</button></a>
+            <a href="/faq" class="btn faqbtn"><b class="arial large-font-size">? </b>FAQ</a>
         </div>
     </article>
 
@@ -57,8 +53,8 @@
             Do you want to know who your favorite NPCs were voiced by? Want to listen to specific voice lines?
         </p>
         <div class="card__actions">
-            <a href="/contents"><button class="contentsbtn"><img src="images/contents0.png" alt="Contents"
-                        class="buttonicon" /> Mod Contents</button></a>
+            <a href="/contents" class="btn contentsbtn"><img src="images/contents0.png" alt="Contents"
+                        class="buttonicon" /> Mod Contents</a>
         </div>
     </article>
 
@@ -88,23 +84,15 @@
         </p>
         <div class="session-buttons">
             <?php if (!isset($_SESSION['user'])): ?>
-                <a href="/login" class="display-contents">
-                    <button class="loginbtn">
-                        <img src="images/user.png" alt="login icon" class="buttonicon" />
-                        Login
-                    </button>
+                <a href="/login" class="btn loginbtn">
+                    <img src="images/user.png" alt="login icon" class="buttonicon" />
+                    Login
                 </a>
             <?php else: ?>
-                <a href="/logout" class="display-contents">
-                    <button class="logoutbtn">Logout</button>
-                </a>
-                <a href="/account" class="display-contents">
-                    <button class="adminbtn">My Account</button>
-                </a>
+                <a href="/logout" class="btn logoutbtn">Logout</a>
+                <a href="/account" class="btn adminbtn">My Account</a>
                 <?php if ($_SESSION['user']->isSysAdmin()): ?>
-                    <a href="/administration" class="display-contents">
-                        <button class="adminbtn">Administration</button>
-                    </a>
+                    <a href="/administration" class="btn adminbtn">Administration</a>
                 <?php endif ?>
             <?php endif ?>
         </div>
@@ -118,9 +106,8 @@
             spectacular Patrons!
         </p>
         <div class="card__actions">
-            <a href="https://www.patreon.com/Voices_Of_Wynn" target="_blank" rel="noopener">
-                <button class="patreonbtn"><img src="images/patreon.png" alt="Patreon icon" class="buttonicon" /> Become
-                    a Patron!</button>
+            <a href="https://www.patreon.com/Voices_Of_Wynn" target="_blank" rel="noopener" class="btn patreonbtn">
+                <img src="images/patreon.png" alt="Patreon icon" class="buttonicon" /> Become a Patron!
             </a>
         </div>
     </article>
@@ -133,9 +120,8 @@
             assist!
         </p>
         <div class="card__actions">
-            <a href="https://discord.gg/kuEK3XH4Y5" target="_blank" rel="noopener">
-                <button class="discordbtn"><img src="images/discord.png" alt="Discord logo" class="buttonicon" /> Join
-                    our community!</button>
+            <a href="https://discord.gg/kuEK3XH4Y5" target="_blank" rel="noopener" class="btn discordbtn">
+                <img src="images/discord.png" alt="Discord logo" class="buttonicon" /> Join our community!
             </a>
         </div>
     </article>
