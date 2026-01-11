@@ -44,7 +44,6 @@
   margin-bottom: var(--npc-space-lg);
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
-  width: 100%;
   background: linear-gradient(135deg, var(--npc-gradient-purple), var(--npc-gradient-violet), var(--npc-gradient-pink));
   border-radius: 0;
   overflow: hidden;

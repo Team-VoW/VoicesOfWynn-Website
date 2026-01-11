@@ -116,7 +116,7 @@
   animation: waveformPulse 0.8s ease-in-out infinite alternate;
 }
 
-.audio-waveform .bar:nth-child(odd) {
+.audio-play-btn.playing + .audio-waveform .bar:nth-child(odd) {
   animation-delay: 0.1s;
 }
 

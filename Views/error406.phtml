@@ -1,11 +1,12 @@
 <!DOCTYPE HTML>
 <html lang="en">
+
 <head>
     <base href="/" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width" />
-    <title><?= ${basename(__FILE__, '.phtml').'_title'} ?></title>
-    <meta name="description" content="<?= ${basename(__FILE__, '.phtml').'_description'} ?>" />
+    <title><?= ${basename(__FILE__, '.phtml') . '_title'} ?></title>
+    <meta name="description" content="<?= ${basename(__FILE__, '.phtml') . '_description'} ?>" />
     <!-- Icons -->
     <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="images/wynnvplogo.svg">
@@ -18,16 +19,19 @@
     <meta name="theme-color" content="#7b1a9b">
 
     <!-- Stylesheets -->
-    <?php foreach (self::$cssFiles as $cssFile) : ?>
+    <?php foreach (self::$cssFiles as $cssFile): ?>
         <link rel="stylesheet" type="text/css" href="css/<?= $cssFile ?>.css">
     <?php endforeach ?>
 </head>
+
 <body>
-<h1 class="error-header">406 – Not Acceptable</h1>
-<p><i>What in the world have you submitted?</i></p>
-<p>One or more of the arguments passed with this request didn't meat the criteria.</p>
-<p>Check all the arguments again and repeat the request, please.</p>
-<img src="images/lucio_where_the_frick_are_we.webp" alt="An illustration of two Wynncraft characters looking for something." id="error-picture" /><br>
-<span class="art-credit">Art by <a href="https://twitter.com/gleeokenspiel" target="blank_">Gleeokenspiel</a></span><br>
-<a href="https://voicesofwynn.com" class="return-button">Back to Homepage</a>
+    <h1 class="error-header">406 – Not Acceptable</h1>
+    <p><i>What in the world have you submitted?</i></p>
+    <p>One or more of the arguments passed with this request didn't meat the criteria.</p>
+    <p>Check all the arguments again and repeat the request, please.</p>
+    <img src="images/lucio_where_the_frick_are_we.webp"
+        alt="An illustration of two Wynncraft characters looking for something." id="error-picture" /><br>
+    <span class="art-credit">Art by <a href="https://twitter.com/gleeokenspiel"
+            target="_blank">Gleeokenspiel</a></span><br><a href="https://voicesofwynn.com" class="return-button">Back to
+        Homepage</a>
 </body>
