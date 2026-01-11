@@ -116,7 +116,7 @@ class Recording
 	public function upvote(): bool
 	{
 		if ($this->wasVotedFor("-")) {
-			//Remove upvote
+			//Conver downvote to upvote
 			(new Db('Website/DbInfo.ini'))->executeQuery(
 				'UPDATE vote SET type = "+" WHERE recording_id = ? AND ip = ?;',
 				array($this->id, inet_pton($_SERVER['REMOTE_ADDR']))
@@ -140,7 +140,7 @@ class Recording
 	public function downvote(): bool
 	{
 		if ($this->wasVotedFor("+")) {
-			//Remove downvote
+			//Convert upvote to downvote
 			(new Db('Website/DbInfo.ini'))->executeQuery(
 				'UPDATE vote SET type = "-" WHERE recording_id = ? AND ip = ?;',
 				array($this->id, inet_pton($_SERVER['REMOTE_ADDR']))
