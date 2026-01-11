@@ -3,7 +3,7 @@
 // ==========================================================================
 
 (function () {
-    // Single shared audio element for all play buttons
+    // Single active audio playback — new Audio instances created per play (see 'new Audio' usage), only one plays at a time. 'currentAudio' tracks the active instance.
     let currentAudio = null;
     let currentButton = null;
     let onEnded = null;
@@ -30,8 +30,24 @@
                     playBtn.setAttribute('aria-label', 'Pause audio');
                 }).catch(err => {
                     console.error('Playback failed:', err);
+
+                    // Remove event listeners to prevent memory leaks
+                    if (onEnded) {
+                        currentAudio.removeEventListener('ended', onEnded);
+                    }
+                    if (onError) {
+                        currentAudio.removeEventListener('error', onError);
+                    }
+
+                    // Pause and clear source to release resources
+                    currentAudio.pause();
+                    currentAudio.src = '';
+
+                    // Update UI
                     playBtn.classList.remove('playing');
                     playBtn.setAttribute('aria-label', 'Play audio');
+
+                    // Clear references
                     currentAudio = null;
                     currentButton = null;
                 });
@@ -112,8 +128,24 @@
             playBtn.setAttribute('aria-label', 'Pause audio');
         }).catch(err => {
             console.error('Playback failed:', err);
+
+            // Remove event listeners to prevent memory leaks
+            if (onEnded) {
+                currentAudio.removeEventListener('ended', onEnded);
+            }
+            if (onError) {
+                currentAudio.removeEventListener('error', onError);
+            }
+
+            // Pause and clear source to release resources
+            currentAudio.pause();
+            currentAudio.src = '';
+
+            // Update UI
             playBtn.classList.remove('playing');
             playBtn.setAttribute('aria-label', 'Play audio');
+
+            // Clear references
             currentButton = null;
             currentAudio = null;
         });

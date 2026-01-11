@@ -176,7 +176,7 @@ h1.mb-l {
    CHANGE PASSWORD SECTION
    -------------------------------------------------------------------------- */
 
-.newaccform p {
+.newaccform .password-notice {
   background: #fff3cd;
   border: 2px solid #ffc107;
   border-radius: 0.5rem;

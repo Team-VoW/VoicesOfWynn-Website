@@ -25,7 +25,12 @@ _______________ CONTENTS _______________
 
 
         /*  */
-:root { font: 13pt default-font-face, sans-serif; line-height: 1.5; color: #424456; } /* classless.css */
+:root {
+  font: 13pt default-font-face, sans-serif;
+  line-height: 1.5;
+  color: #424456;
+  --container-padding: 2rem;
+} /* classless.css */
 * {box-sizing: border-box; border-spacing: 0;}                                      /* classless.css */
 
 html {
@@ -77,7 +82,7 @@ main > .content {
     width: 100%;
     max-width: 95rem;
     margin: 0 auto;
-    padding: 0 2rem;
+    padding: 0 var(--container-padding);
 }
 
 main > .header {
@@ -185,7 +190,7 @@ button:hover, .btn:hover {
 }
 
         /* set default size for images on buttons */
-button img, .btn img { width: 20px; height: 20px; vertical-align: bottom; }
+button img, .btn img { width: 20px; height: 20px; vertical-align: middle; }
 
 
 /* ---- 1.4) input types ---- */
@@ -431,7 +436,8 @@ br { margin-top: 2rem; }
 
 .session-buttons > .btn {
   display: inline-flex;
-  height: 100%;
+  align-items: center;
+  gap: 0.3rem;
 }
 
 
@@ -764,6 +770,9 @@ br { margin-top: 2rem; }
 
 
 @media (max-width: 62.5rem) {
+        :root {
+                --container-padding: 1rem;
+        }
         body {
                 width: 100%;
                 padding: 0;
@@ -771,10 +780,6 @@ br { margin-top: 2rem; }
         main {
                 max-width: 100%;
                 min-width: auto;
-        }
-        main > .header,
-        main > .content {
-                padding: 0 1rem;
         }
         main > .header {
                 padding-top: 0.5rem;

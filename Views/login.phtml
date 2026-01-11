@@ -26,7 +26,7 @@
     </div>
 
     <?php if (${basename(__FILE__, '.phtml').'_change_password'}) : ?>
-        <p>You logged in using a temporary password. You need to set a new password before proceeding (<?= \VoicesOfWynn\Models\Website\AccountDataValidator::PASSWORD_MIN_LENGTH ?> characters minimum).</p>
+        <p class="password-notice">You logged in using a temporary password. You need to set a new password before proceeding (<?= \VoicesOfWynn\Models\Website\AccountDataValidator::PASSWORD_MIN_LENGTH ?> characters minimum).</p>
         <label for="new-password">New Password</label>
         <input id="new-password" type="password" name="newPassword" />
     <?php endif ?>

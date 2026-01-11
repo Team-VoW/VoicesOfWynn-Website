@@ -216,7 +216,7 @@ textarea:focus {
 }
 
 /* Headings */
-h1 {
+#account-edit-container h1 {
     text-align: center;
     color: #333;
     margin-bottom: 1.5rem;
