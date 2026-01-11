@@ -28,7 +28,13 @@
                 currentAudio.play().then(() => {
                     playBtn.classList.add('playing');
                     playBtn.setAttribute('aria-label', 'Pause audio');
-                }).catch(err => console.error('Playback failed:', err));
+                }).catch(err => {
+                    console.error('Playback failed:', err);
+                    playBtn.classList.remove('playing');
+                    playBtn.setAttribute('aria-label', 'Play audio');
+                    currentAudio = null;
+                    currentButton = null;
+                });
             } else {
                 currentAudio.pause();
                 playBtn.classList.remove('playing');

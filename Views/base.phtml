@@ -1,12 +1,13 @@
 <!DOCTYPE HTML>
 <html lang="en" class="no-js">
+
 <head>
     <base href="/" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width" />
-    <title><?= ${basename(__FILE__, '.phtml').'_title'} ?></title>
-    <meta name="description" content="<?= ${basename(__FILE__, '.phtml').'_description'} ?>" />
-    <meta name="keywords" content="<?= ${basename(__FILE__, '.phtml').'_keywords'} ?>" />
+    <title><?= ${basename(__FILE__, '.phtml') . '_title'} ?></title>
+    <meta name="description" content="<?= ${basename(__FILE__, '.phtml') . '_description'} ?>" />
+    <meta name="keywords" content="<?= ${basename(__FILE__, '.phtml') . '_keywords'} ?>" />
     <!-- Icons -->
     <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="images/wynnvplogo.svg">
@@ -17,12 +18,12 @@
     <meta name="msapplication-TileColor" content="#7b1a9b">
     <meta name="msapplication-config" content="browserconfig.xml">
     <meta name="theme-color" content="#7b1a9b">
-    
+
     <!-- No-JS toggle script -->
     <script>document.documentElement.classList.remove('no-js'); document.documentElement.classList.add('js');</script>
-    
+
     <!-- Stylesheets -->
-    <?php foreach (self::$cssFiles as $cssFile) : ?>
+    <?php foreach (self::$cssFiles as $cssFile): ?>
         <link rel="stylesheet" type="text/css" href="css/<?= $cssFile ?>.css">
     <?php endforeach ?>
 </head>
@@ -35,26 +36,32 @@
                 <img src="images/wynnvplogo.svg" alt="Voices of Wynn logo" />
                 <span class="header-logo-text">Voices of Wynn</span>
             </a>
-            
-            <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" onclick="this.classList.toggle('active'); document.querySelector('.header-nav').classList.toggle('active'); this.setAttribute('aria-expanded', this.classList.contains('active') ? 'true' : 'false');">
+
+            <!-- Inline onclick is fine here - simple toggle logic, no need for external JS -->
+            <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false"
+                onclick="this.classList.toggle('active'); document.querySelector('.header-nav').classList.toggle('active'); this.setAttribute('aria-expanded', this.classList.contains('active') ? 'true' : 'false');">
                 <span></span>
                 <span></span>
                 <span></span>
             </button>
-            
+
+            <!-- No aria-hidden needed: CSS visibility:hidden already hides from screen readers on mobile,
+                 and adding aria-hidden=" true" here would incorrectly hide the nav on desktop -->
             <nav class="header-nav">
                 <a href="/" class="nav-link">Home</a>
                 <a href="/downloads" class="nav-link">Downloads</a>
                 <a href="/faq" class="nav-link">FAQ</a>
                 <a href="/credits" class="nav-link">Credits</a>
                 <a href="/contents" class="nav-link">Contents</a>
-                
+
                 <div class="nav-divider"></div>
-                
-                <a href="https://www.patreon.com/Voices_Of_Wynn" target="_blank" rel="noopener" class="nav-link nav-link--external">
+
+                <a href="https://www.patreon.com/Voices_Of_Wynn" target="_blank" rel="noopener"
+                    class="nav-link nav-link--external">
                     <img src="images/patreon.png" alt="Patreon" /> Patreon
                 </a>
-                <a href="https://discord.gg/kuEK3XH4Y5" target="_blank" rel="noopener" class="nav-link nav-link--external">
+                <a href="https://discord.gg/kuEK3XH4Y5" target="_blank" rel="noopener"
+                    class="nav-link nav-link--external">
                     <img src="images/discord.png" alt="Discord" /> Discord
                 </a>
             </nav>
@@ -62,21 +69,25 @@
     </header>
 
     <main>
-    <div class="content">
-        <!-- Broadcast messages (if any) -->
-        <?php foreach (${basename(__FILE__, '.phtml').'_broadcast'} as $broadcast) : ?>
-            <table class="broadcast-message"><tr>
-                <td><img src="images/broadcast-icon.svg" style="height: 3rem;"></td>
-                <td><?= htmlspecialchars($broadcast, ENT_QUOTES, 'UTF-8') ?></td>
-            </tr></table>
-        <?php endforeach ?>
-        
-        <?php require $this->getNextView(); ?>
-    </div>
+        <div class="content">
+            <!-- Broadcast messages (if any) -->
+            <?php foreach (${basename(__FILE__, '.phtml') . '_broadcast'} as $broadcast): ?>
+                <table class="broadcast-message">
+                    <tr>
+                        <td><img src="images/broadcast-icon.svg" style="height: 3rem;"></td>
+                        <td><?= htmlspecialchars($broadcast, ENT_QUOTES, 'UTF-8') ?></td>
+                    </tr>
+                </table>
+            <?php endforeach ?>
+
+            <?php require $this->getNextView(); ?>
+        </div>
     </main>
     <footer class="fw-bb">
         <span>Coded by <a href="https://github.com/ShadyMedic" target="_blank" rel="noopener">Shady</a></span>
-        <span>Designed with &hearts; by <a href="https://github.com/Just5MoreMinutes" target="_blank" rel="noopener">Just5MoreMinutes</a> and <a href="https://github.com/t-d3v" target="_blank" rel="noopener">TD3V</a></span>
+        <span>Designed with &hearts; by <a href="https://github.com/Just5MoreMinutes" target="_blank"
+                rel="noopener">Just5MoreMinutes</a> and <a href="https://github.com/t-d3v" target="_blank"
+                rel="noopener">TD3V</a></span>
         <span>DevOps by <a href="https://github.com/kmaxii" target="_blank" rel="noopener">kmaxi</a></span>
     </footer>
     <!-- Storage Configuration -->
@@ -92,8 +103,9 @@
         };
     </script>
     <!-- JavaScript -->
-    <?php foreach (self::$jsFiles as $jsFile) : ?>
+    <?php foreach (self::$jsFiles as $jsFile): ?>
         <script type="text/javascript" src="js/<?= $jsFile ?>.js"></script>
     <?php endforeach ?>
 </body>
+
 </html>

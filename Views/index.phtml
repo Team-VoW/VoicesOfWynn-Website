@@ -3,11 +3,13 @@
     <div class="hero-content">
         <h1 class="hero-title animate-fade-in">Voices of Wynn</h1>
         <p class="hero-description animate-fade-in-delay">
-            Do you want a more immersive Wynncraft experience? Are you tired of having to read dialogue while doing quests? Then Voices of Wynn is the mod for you! It adds voice acting for all 130+ quests in Wynncraft and more!
+            Do you want a more immersive Wynncraft experience? Are you tired of having to read dialogue while doing
+            quests? Then Voices of Wynn is the mod for you! It adds voice acting for all 130+ quests in Wynncraft and
+            more!
         </p>
         <div class="hero-actions animate-fade-in-delay-2">
-            <a href="https://modrinth.com/mod/vow" rel="noopener noreferrer">
-                <button class="downloadbtn hero-btn">
+            <a href="https://modrinth.com/mod/vow" target="_blank" rel="noopener noreferrer"> <button
+                    class="downloadbtn hero-btn">
                     <img src="images/download.png" alt="Download icon" class="buttonicon" />
                     Try it now! It's free!
                 </button>
@@ -29,7 +31,8 @@
     <article class="card card--credits animate-on-scroll">
         <h2 class="card__title">Credits</h2>
         <p class="card__description">
-            A lot of great people have put tons of effort into the Voices of Wynn mod. Take a minute to appreciate their work!
+            A lot of great people have put tons of effort into the Voices of Wynn mod. Take a minute to appreciate their
+            work!
         </p>
         <div class="card__actions">
             <a href="/credits"><button class="creditsbtn"><b class="arial large-font-size">👥 </b>Credits</button></a>
@@ -54,7 +57,8 @@
             Do you want to know who your favorite NPCs were voiced by? Want to listen to specific voice lines?
         </p>
         <div class="card__actions">
-            <a href="/contents"><button class="contentsbtn"><img src="images/contents0.png" alt="Contents" class="buttonicon" /> Mod Contents</button></a>
+            <a href="/contents"><button class="contentsbtn"><img src="images/contents0.png" alt="Contents"
+                        class="buttonicon" /> Mod Contents</button></a>
         </div>
     </article>
 
@@ -65,14 +69,15 @@
             Do you want a taste of the Voices of Wynn experience? Check out our teaser and trailer below!
         </p>
         <div class="video-wrapper">
-            <div class="video-container" role="button" tabindex="0" data-video-id="RIeDziFpoWI">
+            <div class="video-container" role="button" tabindex="0" data-video-id="RIeDziFpoWI" aria-label="Play trailer video">
                 <img src="https://img.youtube.com/vi/RIeDziFpoWI/hqdefault.jpg" alt="Trailer Thumbnail">
                 <div class="play-button"></div>
             </div>
-            <div class="video-container" role="button" tabindex="0" data-video-id="7xkl_dOVkUI">
+            <div class="video-container" role="button" tabindex="0" data-video-id="7xkl_dOVkUI" aria-label="Play teaser video">
                 <img src="https://img.youtube.com/vi/7xkl_dOVkUI/hqdefault.jpg" alt="Teaser Thumbnail">
                 <div class="play-button"></div>
-            </div>        </div>
+            </div>
+        </div>
     </article>
 
     <!-- Login Card -->
@@ -82,21 +87,21 @@
             Are you a contributor? Make sure to log into your account!
         </p>
         <div class="session-buttons">
-            <?php if (!isset($_SESSION['user'])) : ?>
+            <?php if (!isset($_SESSION['user'])): ?>
                 <a href="/login" class="display-contents">
                     <button class="loginbtn">
                         <img src="images/user.png" alt="login icon" class="buttonicon" />
                         Login
                     </button>
                 </a>
-            <?php else : ?>
+            <?php else: ?>
                 <a href="/logout" class="display-contents">
                     <button class="logoutbtn">Logout</button>
                 </a>
                 <a href="/account" class="display-contents">
                     <button class="adminbtn">My Account</button>
                 </a>
-                <?php if ($_SESSION['user']->isSysAdmin()) : ?>
+                <?php if ($_SESSION['user']->isSysAdmin()): ?>
                     <a href="/administration" class="display-contents">
                         <button class="adminbtn">Administration</button>
                     </a>
@@ -109,11 +114,13 @@
     <article class="card card--patreon animate-on-scroll">
         <h2 class="card__title">Show Some Love</h2>
         <p class="card__description">
-            Would you like to help keep this mod running and support the team? Feel free to become one of our spectacular Patrons!
+            Would you like to help keep this mod running and support the team? Feel free to become one of our
+            spectacular Patrons!
         </p>
         <div class="card__actions">
             <a href="https://www.patreon.com/Voices_Of_Wynn" target="_blank" rel="noopener">
-                <button class="patreonbtn"><img src="images/patreon.png" alt="Patreon icon" class="buttonicon" /> Become a Patron!</button>
+                <button class="patreonbtn"><img src="images/patreon.png" alt="Patreon icon" class="buttonicon" /> Become
+                    a Patron!</button>
             </a>
         </div>
     </article>
@@ -122,11 +129,13 @@
     <article class="card card--support animate-on-scroll">
         <h2 class="card__title">Support</h2>
         <p class="card__description">
-            Need some help? Want to report a bug or suggest a feature? Our staff and community are always willing to assist!
+            Need some help? Want to report a bug or suggest a feature? Our staff and community are always willing to
+            assist!
         </p>
         <div class="card__actions">
             <a href="https://discord.gg/kuEK3XH4Y5" target="_blank" rel="noopener">
-                <button class="discordbtn"><img src="images/discord.png" alt="Discord logo" class="buttonicon" /> Join our community!</button>
+                <button class="discordbtn"><img src="images/discord.png" alt="Discord logo" class="buttonicon" /> Join
+                    our community!</button>
             </a>
         </div>
     </article>

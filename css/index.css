@@ -296,6 +296,12 @@
   box-shadow: 0 8px 30px rgba(123, 26, 155, 0.3);
 }
 
+.video-container:focus,
+.video-container:focus-visible {
+  outline: 3px solid var(--gradient-purple);
+  outline-offset: 3px;
+}
+
 .video-container img,
 .video-container iframe {
   width: 100%;

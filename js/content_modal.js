@@ -3,7 +3,6 @@ $(function () {
     let $closeButton = $modal.find('.modal__close')
     let $content = $modal.find('#content')
     let $questBoxes = $(".quests-grid").find('.quest-card')
-    let $searchbar = $("#q_search")
     let lastFocusedElement = null
 
     // Helper to build NPC HTML with proper storage URLs
@@ -53,6 +52,12 @@ $(function () {
     // Focus trap: handle Tab and Shift+Tab
     function handleTabKey(e) {
         const focusableElements = getFocusableElements();
+
+        // Guard against empty collection
+        if (focusableElements.length === 0) {
+            return;
+        }
+
         const firstElement = focusableElements.first()[0];
         const lastElement = focusableElements.last()[0];
 
@@ -84,14 +89,15 @@ $(function () {
         }
     }
 
-    $searchbar.keyup(function () {
-        $('#results_container').find('.quest-card, .card.q-voice').click(function () {
-            $.getJSON(`/api/content/quest-info?questId=${$(this).attr("data-q-id")}`, async function (data) {
-                let npcs = data[0].npcs;
-                $content.html(await buildNpcHtml(npcs));
-                openModal();
-            })
-        })
+    // Use event delegation for dynamically added search results
+    $('#results_container').on('click', '.quest-card, .card.q-voice', function () {
+        $.getJSON(`/api/content/quest-info?questId=${$(this).attr("data-q-id")}`, async function (data) {
+            let npcs = data[0].npcs;
+            $content.html(await buildNpcHtml(npcs));
+            openModal();
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.error('Failed to load quest info:', textStatus, errorThrown);
+        });
     })
 
     $questBoxes.click(function () {
@@ -99,7 +105,9 @@ $(function () {
             let npcs = data[0].npcs;
             $content.html(await buildNpcHtml(npcs));
             openModal();
-        })
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.error('Failed to load quest info:', textStatus, errorThrown);
+        });
     })
 
     $closeButton.click(function () {
