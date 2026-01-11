@@ -15,7 +15,7 @@ class Recording
 		'purple' => '#CC33CC'
 	);
 	private const ANTISPAM_TOLLERANCE = 20; //In % out of 256
-    private const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1123272683380031539/[TOKEN-REDACTED]';
+	private const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1123272683380031539/[TOKEN-REDACTED]';
 
 	private int $id = 0;
 	private int $npcId = 0;
@@ -25,7 +25,7 @@ class Recording
 	private int $upvotes = 0;
 	private int $downvotes = 0;
 	private int $comments = 0;
-    private bool $archived = false;
+	private bool $archived = false;
 
 	/**
 	 * @param array $data Data returned from database, invalid items are skipped, multiple key names are supported for
@@ -74,10 +74,10 @@ class Recording
 				case 'commentCount':
 					$this->comments = $value;
 					break;
-                case 'archived':
-                case 'hidden':
-                    $this->archived = $value;
-                    break;
+				case 'archived':
+				case 'hidden':
+					$this->archived = $value;
+					break;
 			}
 		}
 	}
@@ -95,17 +95,18 @@ class Recording
 		return null;
 	}
 
-    /**
-     * Checks if this recording has been voted for by the client communicating from the current IP
-     * @param string $type Either "+" to check for upvotes or "-" to check for downvotes
-     * @return bool TRUE if it was, FALSE if it wasn't
-     */
-    public function wasVotedFor(string $type): bool {
-        $result = (new Db('Website/DbInfo.ini'))->fetchQuery('
+	/**
+	 * Checks if this recording has been voted for by the client communicating from the current IP
+	 * @param string $type Either "+" to check for upvotes or "-" to check for downvotes
+	 * @return bool TRUE if it was, FALSE if it wasn't
+	 */
+	public function wasVotedFor(string $type): bool
+	{
+		$result = (new Db('Website/DbInfo.ini'))->fetchQuery('
             SELECT COUNT(*) as "cnt" FROM vote WHERE recording_id = ? AND ip = ? AND type = ?
         ', array($this->id, inet_pton($_SERVER['REMOTE_ADDR']), $type));
-        return !(($result['cnt'] === 0));
-    }
+		return !(($result['cnt'] === 0));
+	}
 
 	/**
 	 * Upvotes this recording and sets the cookie preventing duplicate votes
@@ -114,18 +115,21 @@ class Recording
 	 */
 	public function upvote(): bool
 	{
-        if ($this->wasVotedFor("-")) {
-            //Remove upvote
-            (new Db('Website/DbInfo.ini'))->executeQuery('UPDATE vote SET type = "+" WHERE recording_id = ? AND ip = ?;',
-                array($this->id, inet_pton($_SERVER['REMOTE_ADDR'])));
-        }
-        else {
-            //Add upvote
-            (new Db('Website/DbInfo.ini'))->executeQuery('INSERT INTO vote(recording_id, ip, type) VALUES (?,?,"+");',
-                array($this->id, inet_pton($_SERVER['REMOTE_ADDR'])));
-        }
+		if ($this->wasVotedFor("-")) {
+			//Remove upvote
+			(new Db('Website/DbInfo.ini'))->executeQuery(
+				'UPDATE vote SET type = "+" WHERE recording_id = ? AND ip = ?;',
+				array($this->id, inet_pton($_SERVER['REMOTE_ADDR']))
+			);
+		} else {
+			//Add upvote
+			(new Db('Website/DbInfo.ini'))->executeQuery(
+				'INSERT INTO vote(recording_id, ip, type) VALUES (?,?,"+");',
+				array($this->id, inet_pton($_SERVER['REMOTE_ADDR']))
+			);
+		}
 
-        return $this->updateVotesCounts();
+		return $this->updateVotesCounts();
 	}
 
 	/**
@@ -135,51 +139,56 @@ class Recording
 	 */
 	public function downvote(): bool
 	{
-        if ($this->wasVotedFor("+")) {
-            //Remove downvote
-            (new Db('Website/DbInfo.ini'))->executeQuery('UPDATE vote SET type = "-" WHERE recording_id = ? AND ip = ?;',
-                array($this->id, inet_pton($_SERVER['REMOTE_ADDR'])));
-        }
-        else {
-            //Add downvote
-            (new Db('Website/DbInfo.ini'))->executeQuery('INSERT INTO vote(recording_id, ip, type) VALUES (?,?,"-");',
-                array($this->id, inet_pton($_SERVER['REMOTE_ADDR'])));
-        }
+		if ($this->wasVotedFor("+")) {
+			//Remove downvote
+			(new Db('Website/DbInfo.ini'))->executeQuery(
+				'UPDATE vote SET type = "-" WHERE recording_id = ? AND ip = ?;',
+				array($this->id, inet_pton($_SERVER['REMOTE_ADDR']))
+			);
+		} else {
+			//Add downvote
+			(new Db('Website/DbInfo.ini'))->executeQuery(
+				'INSERT INTO vote(recording_id, ip, type) VALUES (?,?,"-");',
+				array($this->id, inet_pton($_SERVER['REMOTE_ADDR']))
+			);
+		}
 
 		return $this->updateVotesCounts();
 	}
 
-    /**
-     * Removes any upvote or downvote on this recording left by the current IP
-     * @return bool
-     * @throws \Exception
-     */
-    public function resetVote(): bool
-    {
-        (new Db('Website/DbInfo.ini'))->executeQuery('DELETE FROM vote WHERE recording_id = ? AND ip = ?',
-            array($this->id, inet_pton($_SERVER['REMOTE_ADDR'])));
-        return $this->updateVotesCounts();
-    }
+	/**
+	 * Removes any upvote or downvote on this recording left by the current IP
+	 * @return bool
+	 * @throws \Exception
+	 */
+	public function resetVote(): bool
+	{
+		(new Db('Website/DbInfo.ini'))->executeQuery(
+			'DELETE FROM vote WHERE recording_id = ? AND ip = ?',
+			array($this->id, inet_pton($_SERVER['REMOTE_ADDR']))
+		);
+		return $this->updateVotesCounts();
+	}
 
-    /**
-     * Updates upvote/downvote count for this recording in the database
-     * @return bool
-     * @throws \Exception
-     */
-    private function updateVotesCounts()
-    {
-        return (new Db('Website/DbInfo.ini'))->executeQuery('
+	/**
+	 * Updates upvote/downvote count for this recording in the database
+	 * @return bool
+	 * @throws \Exception
+	 */
+	private function updateVotesCounts()
+	{
+		return (new Db('Website/DbInfo.ini'))->executeQuery('
             UPDATE recording SET
             upvotes = (SELECT COUNT(*) FROM vote WHERE recording_id = ? AND type = "+"),
             downvotes = (SELECT COUNT(*) FROM vote WHERE recording_id = ? AND type = "-")
             WHERE recording_id = ?;
             ', array($this->id, $this->id, $this->id));
-    }
+	}
 
 	/**
 	 * Adds a new comment to this recording
-     * Also sends the comment to the Discord webhook
-     * @param $verified bool TRUE, if the user is posting as an contributor (verification if anyone is actually logged in will be performed), FALSE, if they're posting as a guest
+	 * Also sends the comment to the Discord webhook
+	 * @param $verified bool TRUE, if the user is posting as an contributor (verification if anyone is actually logged in will be performed), FALSE, if they're posting as a guest
 	 * @param $ip string|null
 	 * @param $author string|null
 	 * @param $email string|null
@@ -206,42 +215,41 @@ class Recording
 				$greenPartAnswer + $absoluteTollerance < $greenPart || $greenPartAnswer - $absoluteTollerance > $greenPart ||
 				$bluePartAnswer + $absoluteTollerance < $bluePart || $bluePartAnswer - $absoluteTollerance > $bluePart
 			) {
-				throw new UserException('The colour you picked was too distinct from '.$antispamQuestion.'. Try again please.');
+				throw new UserException('The colour you picked was too distinct from ' . $antispamQuestion . '. Try again please.');
 			}
 		}
 
-        if ($verified) {
-            if (!isset($_SESSION['user'])) {
-                throw new UserException('No contributor is logged in.');
-            }
-            $userId = $_SESSION['user']->getId();
-	        $ip = null;
-	        $author = null;
-	        $email = null;
-        }
-        else {
-            $author = trim($author);
-            if (empty($author)) {
-                $author = 'Anonymous';
-            }
-            if (mb_strlen($author) > 31) {
-                throw new UserException('Name is too long, 31 characters is the limit.');
-            }
+		if ($verified) {
+			if (!isset($_SESSION['user'])) {
+				throw new UserException('No contributor is logged in.');
+			}
+			$userId = $_SESSION['user']->getId();
+			$ip = null;
+			$author = null;
+			$email = null;
+		} else {
+			$author = trim($author);
+			if (empty($author)) {
+				$author = 'Anonymous';
+			}
+			if (mb_strlen($author) > 31) {
+				throw new UserException('Name is too long, 31 characters is the limit.');
+			}
 
-	        $email = trim($email);
-	        if (empty($email)) {
-		        $email = ""; //NULL would mess up with the SQL MD5 function used inside the CONCAT function
-	        }
-	        if (mb_strlen($email) > 255) {
-		        throw new UserException('E-mail is too long, 255 characters is the limit.');
-	        }
-	        //Check e-mail format (might not allow some exotic but valid e-mail domains)
-	        if ($email !== "" && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-		        throw new UserException('E-mail address doesn\'t seem to be in the correct format. If you are sure that you entered your e-mail address properly, ping shady_medic on Discord.');
-	        }
+			$email = trim($email);
+			if (empty($email)) {
+				$email = ""; //NULL would mess up with the SQL MD5 function used inside the CONCAT function
+			}
+			if (mb_strlen($email) > 255) {
+				throw new UserException('E-mail is too long, 255 characters is the limit.');
+			}
+			//Check e-mail format (might not allow some exotic but valid e-mail domains)
+			if ($email !== "" && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+				throw new UserException('E-mail address doesn\'t seem to be in the correct format. If you are sure that you entered your e-mail address properly, ping shady_medic on Discord.');
+			}
 
-	        $userId = null;
-        }
+			$userId = null;
+		}
 
 		$content = trim($content);
 		if (empty($content)) {
@@ -257,91 +265,92 @@ class Recording
 			throw new UserException('Comment is too long, 65,535 characters is the limit.');
 		}
 
-        //Save the comment
+		//Save the comment
 		$commentId = (new Db('Website/DbInfo.ini'))->executeQuery('INSERT INTO comment (verified,user_id,ip,name,email,content,recording_id) VALUES (?,?,?,?,?,?,?);', array(
-			(int)$verified,
-            $userId,
-			inet_pton($ip),
-            $author,
+			(int) $verified,
+			$userId,
+			($ip === null) ? null : inet_pton($ip),
+			$author,
 			$email,
 			$content,
 			$this->id
 		), true);
 
-        //Construct the object to easily get name and avatar for the webhook message
-        $comment = new Comment(array(
-            'id' => $commentId,
-            'verified' => $verified,
-            'userId' => $userId,
-            'ip' => $ip,
-            'author' => $author,
-            'email' => $email,
-            'content' => $content,
-            'recordingId' => $this->id
-        ));
+		//Construct the object to easily get name and avatar for the webhook message
+		$comment = new Comment(array(
+			'id' => $commentId,
+			'verified' => $verified,
+			'userId' => $userId,
+			'ip' => $ip,
+			'author' => $author,
+			'email' => $email,
+			'content' => $content,
+			'recordingId' => $this->id
+		));
 
-        //Comment couldn't be saved
-        if ($commentId === false) {
-            return false;
-        }
+		//Comment couldn't be saved
+		if ($commentId === false) {
+			return false;
+		}
 
-        //Forward to the webhook
-        $cnm = new ContentManager();
-        $commentLines = preg_split("/\r\n|\n|\r/", $content); //Copied from https://stackoverflow.com/a/11165332/14011077
-        $discordMessage = 'New comment has been posted on the following recording: `'.$cnm->getRecordingTitle($this).'`\n';
-        foreach ($commentLines as $commentLine) {
-            $discordMessage .= '\n> '.htmlspecialchars(trim($commentLine));
-        }
-        $discordMessage .= '\n\nView the comment at http://'.$_SERVER['SERVER_NAME'].'/contents/npc/'.$this->npcId.'/comments/'.$this->id.'#c'.$commentId.'.';
+		//Forward to the webhook
+		$cnm = new ContentManager();
+		$commentLines = preg_split("/\r\n|\n|\r/", $content); //Copied from https://stackoverflow.com/a/11165332/14011077
+		$discordMessage = 'New comment has been posted on the following recording: `' . $cnm->getRecordingTitle($this) . '`\n';
+		foreach ($commentLines as $commentLine) {
+			$discordMessage .= '\n> ' . htmlspecialchars(trim($commentLine));
+		}
+		$discordMessage .= '\n\nView the comment at http://' . $_SERVER['SERVER_NAME'] . '/contents/npc/' . $this->npcId . '/comments/' . $this->id . '#c' . $commentId . '.';
 
-        $webhookResult = $this->sendWebhookMessage($discordMessage, $comment->getName().' via voicesofwynn.com', $comment->getAvatar());
+		$webhookResult = $this->sendWebhookMessage($discordMessage, $comment->getName() . ' via voicesofwynn.com', $comment->getAvatar());
 
-        return $webhookResult ? $commentId : false;
+		return $webhookResult ? $commentId : false;
 	}
 
-    /**
-     * Method forwarding the message to our Discord server via webhook
-     * @param string $message Message that was posted
-     * @param string|null $username Username of the poster (either their account user name or whatever they filled into the relevant field)
-     * @param string|null $avatar Avatar of the poster (either their account avatar, or the Gravatar image generated from their e-mail, if they used one)
-     * @return bool TRUE on success, FALSE on failure
-     */
-    private function sendWebhookMessage(string $message, ?string $username = null, ?string $avatar = null) {
-        $curl = curl_init(self::DISCORD_WEBHOOK_URL);
-        curl_setopt($curl, CURLOPT_URL, self::DISCORD_WEBHOOK_URL);
-        curl_setopt($curl, CURLOPT_POST, true);
+	/**
+	 * Method forwarding the message to our Discord server via webhook
+	 * @param string $message Message that was posted
+	 * @param string|null $username Username of the poster (either their account user name or whatever they filled into the relevant field)
+	 * @param string|null $avatar Avatar of the poster (either their account avatar, or the Gravatar image generated from their e-mail, if they used one)
+	 * @return bool TRUE on success, FALSE on failure
+	 */
+	private function sendWebhookMessage(string $message, ?string $username = null, ?string $avatar = null)
+	{
+		$curl = curl_init(self::DISCORD_WEBHOOK_URL);
+		curl_setopt($curl, CURLOPT_URL, self::DISCORD_WEBHOOK_URL);
+		curl_setopt($curl, CURLOPT_POST, true);
 
-        $headers = array(
-            "Content-Type: application/json",
-        );
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+		$headers = array(
+			"Content-Type: application/json",
+		);
+		curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
 
-        $data = '{"content":"'.$message.'","username":"'.$username.'","avatar_url":"'.$avatar.'"}';
+		$data = '{"content":"' . $message . '","username":"' . $username . '","avatar_url":"' . $avatar . '"}';
 
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+		curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
 
-        $result = curl_exec($curl);
-        curl_close($curl);
-        return $result;
-    }
+		$result = curl_exec($curl);
+		curl_close($curl);
+		return $result;
+	}
 
-    /**
-     * Method archiving this recording by marking it as archived in the database and renaming the recording file
-     * @param string $prefix Custom prefix to be appended to the current file name of the recording file; "_archived" as default
-     * @return bool Whether the database query was executed successfully
-     */
-    public function archive(string $prefix = '_archived') : bool
-    {
-        //Rename the file
-        Storage::get()->rename('recordings/'.$this->file, 'recordings/'.$prefix.$this->file);
+	/**
+	 * Method archiving this recording by marking it as archived in the database and renaming the recording file
+	 * @param string $prefix Custom prefix to be appended to the current file name of the recording file; "_archived" as default
+	 * @return bool Whether the database query was executed successfully
+	 */
+	public function archive(string $prefix = '_archived'): bool
+	{
+		//Rename the file
+		Storage::get()->rename('recordings/' . $this->file, 'recordings/' . $prefix . $this->file);
 
-        //Change the attributes
-        $this->archived = true;
-        $this->file = $prefix.$this->file;
+		//Change the attributes
+		$this->archived = true;
+		$this->file = $prefix . $this->file;
 
-        //Update the database
-        $db = new Db('Website/DbInfo.ini');
-        return $db->executeQuery('UPDATE recording SET archived = TRUE, file = ? WHERE recording_id = ?;', array($this->file, $this->id));
-    }
+		//Update the database
+		$db = new Db('Website/DbInfo.ini');
+		return $db->executeQuery('UPDATE recording SET archived = TRUE, file = ? WHERE recording_id = ?;', array($this->file, $this->id));
+	}
 }
 

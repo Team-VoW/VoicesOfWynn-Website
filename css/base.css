@@ -575,6 +575,15 @@ br { margin-top: 2rem; }
             border-color: rgba(255, 217, 102, 0.3);
         }
 
+        .nav-link:focus,
+        .nav-link:focus-visible {
+            color: #FFD966;
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 217, 102, 0.5);
+            outline: 2px solid #FFD966;
+            outline-offset: 2px;
+        }
+
         .nav-link img {
             width: 18px;
             height: 18px;
@@ -583,6 +592,11 @@ br { margin-top: 2rem; }
         }
 
         .nav-link:hover img {
+            transform: scale(1.1);
+        }
+
+        .nav-link:focus img,
+        .nav-link:focus-visible img {
             transform: scale(1.1);
         }
 
@@ -604,7 +618,6 @@ br { margin-top: 2rem; }
             background: rgba(255, 255, 255, 0.2);
             border-color: rgba(255, 217, 102, 0.5);
         }
-
         /* Mobile Menu Toggle */
         .mobile-menu-toggle {
             display: none;

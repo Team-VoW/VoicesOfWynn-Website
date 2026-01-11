@@ -12,7 +12,7 @@ function loadVideo(container, videoId) {
 }
 
 // Intersection Observer for scroll animations
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   const animatedElements = document.querySelectorAll('.animate-on-scroll');
 
   // Check if user prefers reduced motion
@@ -23,29 +23,28 @@ document.addEventListener('DOMContentLoaded', function() {
     animatedElements.forEach(el => {
       el.classList.add('is-visible');
     });
-    return;
-  }
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('is-visible');
-        observer.unobserve(entry.target);
-      }
+  } else {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
     });
-  }, {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
-  });
 
-  animatedElements.forEach(el => observer.observe(el));
+    animatedElements.forEach(el => observer.observe(el));
+  }
 
   // Video container event listeners (CSP-compliant)
   const videoContainers = document.querySelectorAll('.video-container');
 
   videoContainers.forEach(container => {
     // Click event
-    container.addEventListener('click', function() {
+    container.addEventListener('click', function () {
       const videoId = this.dataset.videoId;
       if (videoId) {
         loadVideo(this, videoId);
@@ -53,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Keyboard event (Enter or Space)
-    container.addEventListener('keydown', function(event) {
+    container.addEventListener('keydown', function (event) {
       if (event.key === 'Enter' || event.key === ' ') {
         event.preventDefault();
         const videoId = this.dataset.videoId;
