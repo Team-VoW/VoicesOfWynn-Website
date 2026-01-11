@@ -355,6 +355,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .quest-card,
+  .quest-card__accent,
   .search-input,
   .modal__close,
   .npc .name a {
@@ -363,6 +364,10 @@
 
   .quest-card:hover {
     transform: none;
+  }
+
+  .quest-card__accent {
+    transform: scaleX(1);
   }
 
   .animate-on-scroll {

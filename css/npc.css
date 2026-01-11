@@ -44,7 +44,7 @@
   margin-bottom: var(--npc-space-lg);
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
-  width: 100vw;
+  width: 100%;
   background: linear-gradient(135deg, var(--npc-gradient-purple), var(--npc-gradient-violet), var(--npc-gradient-pink));
   border-radius: 0;
   overflow: hidden;
@@ -312,6 +312,23 @@
   border-radius: 0.5rem;
   font-weight: bold;
   cursor: pointer;
+  transition: transform var(--npc-transition-fast) ease,
+              box-shadow var(--npc-transition-fast) ease;
+}
+
+#va-confirm-change:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 255, 135, 0.4);
+  border-color: transparent;
+}
+
+#va-confirm-change:focus,
+#va-confirm-change:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 255, 135, 0.4);
+  border-color: transparent;
+  outline: 2px solid var(--npc-gradient-purple);
+  outline-offset: 2px;
 }
 
 /* --------------------------------------------------------------------------

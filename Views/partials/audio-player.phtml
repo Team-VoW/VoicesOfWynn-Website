@@ -6,12 +6,15 @@
  * Required variable: $audioSrc - URL to the audio file
  */
 
-// Validate that $audioSrc is provided
-if (!isset($audioSrc) || empty($audioSrc)) {
-    throw new InvalidArgumentException(
-        'Audio player partial requires $audioSrc variable to be set and non-empty. ' .
-        'Please provide a valid audio source URL.'
-    );
+// Validate that $audioSrc is provided and valid
+if (!isset($audioSrc) || empty($audioSrc) || !is_string($audioSrc)) {
+    error_log(sprintf(
+        'Audio player partial: Invalid $audioSrc provided (type: %s, value: %s)',
+        gettype($audioSrc ?? null),
+        var_export($audioSrc ?? null, true)
+    ));
+    // Fail silently - render nothing instead of breaking the page
+    return;
 }
 ?>
 <div class="custom-audio-player">
