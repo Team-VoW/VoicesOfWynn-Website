@@ -234,6 +234,7 @@ h1.mb-l {
   .login-form:not([type="submit"]),
   .login-form[type="submit"],
   .newaccform [type="submit"],
+  .newaccform input#new-password,
   .backbtn {
     transition: none;
   }

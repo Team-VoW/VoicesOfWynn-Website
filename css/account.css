@@ -111,6 +111,12 @@ textarea:focus {
             box-shadow: 0 2px 10px rgba(0, 212, 255, 0.3);
         }
 
+        #account-edit-save-button:focus-visible {
+            outline: 2px solid #00a8cc;
+            outline-offset: 2px;
+            box-shadow: 0 6px 25px rgba(0, 212, 255, 0.4);
+        }
+
         .viewbtn {
             background: linear-gradient(135deg, #7b1a9b, #a340c4);
             color: white;
@@ -136,6 +142,12 @@ textarea:focus {
         .viewbtn:active {
             transform: translateY(0);
             box-shadow: 0 2px 10px rgba(123, 26, 155, 0.3);
+        }
+
+        .viewbtn:focus-visible {
+            outline: 2px solid #5a1375;
+            outline-offset: 2px;
+            box-shadow: 0 6px 25px rgba(123, 26, 155, 0.4);
         }
 
 
