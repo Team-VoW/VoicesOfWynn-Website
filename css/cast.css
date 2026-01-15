@@ -540,7 +540,11 @@
   .cast-social-btn:hover,
   .cast-vote-btn:hover,
   .cast-comment-btn:hover,
-  .cast-back-btn:hover {
+  .cast-back-btn:hover,
+  .cast-social-btn:active,
+  .cast-vote-btn:active,
+  .cast-comment-btn:active,
+  .cast-back-btn:active {
     transform: none;
   }
 }
