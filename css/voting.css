@@ -201,64 +201,79 @@ td a {
 }
 
 /* --------------------------------------------------------------------------
-   6. VOTING BUTTONS (Legacy - for pages that still use old structure)
+   6. VOTING BUTTONS (Matching Cast Page Style)
    -------------------------------------------------------------------------- */
 
 .upvote, .downvote, .comment {
-  color: #333;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
   border: 2px solid transparent;
-  padding: 0.5rem 0.85rem;
-  border-radius: 2rem;
-  font-weight: 600;
+  font-size: 1rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 .upvote {
-  background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+  background: #e8f5e9;
+  border-color: #4caf50;
   color: #2e7d32;
-  border-color: #81c784;
-}
-
-.downvote {
-  background: linear-gradient(135deg, #ffebee, #ffcdd2);
-  color: #c62828;
-  border-color: #ef9a9a;
-}
-
-.upvote:hover, .downvote:hover {
-  transform: translateY(-2px);
 }
 
 .upvote:hover {
-  background: linear-gradient(135deg, #c8e6c9, #a5d6a7);
-  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+  background: #c8e6c9;
+  transform: translateY(-2px);
 }
 
-.downvote:hover {
-  background: linear-gradient(135deg, #ffcdd2, #ef9a9a);
-  box-shadow: 0 4px 12px rgba(198, 40, 40, 0.3);
-}
-
-.upvote:focus-visible, .downvote:focus-visible, .comment:focus-visible {
-  outline: 2px solid currentColor;
+.upvote:focus-visible {
+  outline: 2px solid #4caf50;
   outline-offset: 2px;
 }
 
-.clicked {
-  border-style: solid;
+.upvote.clicked {
+  background: #4caf50;
+  color: white;
 }
 
-.upvote.clicked {
-  background: linear-gradient(135deg, #4caf50, #388e3c);
-  color: white;
-  border-color: #2e7d32;
+.downvote {
+  background: #ffebee;
+  border-color: #f44336;
+  color: #c62828;
+}
+
+.downvote:hover {
+  background: #ffcdd2;
+  transform: translateY(-2px);
+}
+
+.downvote:focus-visible {
+  outline: 2px solid #f44336;
+  outline-offset: 2px;
 }
 
 .downvote.clicked {
-  background: linear-gradient(135deg, #ef5350, #e53935);
+  background: #f44336;
   color: white;
-  border-color: #c62828;
+}
+
+.comment {
+  background: #e3f2fd;
+  border-color: #2196f3;
+  color: #1565c0;
+  text-decoration: none;
+}
+
+.comment:hover {
+  background: #bbdefb;
+  transform: translateY(-2px);
+  color: #1565c0;
+}
+
+.comment:focus-visible {
+  outline: 2px solid #2196f3;
+  outline-offset: 2px;
 }
 
 /* --------------------------------------------------------------------------

@@ -422,108 +422,79 @@
 }
 
 /* --------------------------------------------------------------------------
-   7. VOTING BUTTONS (Desktop - Original Style)
+   7. VOTING BUTTONS (Matching Cast Page Style)
    -------------------------------------------------------------------------- */
 
-.vote-btn {
+.vote-btn,
+.comment-btn {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.35rem;
-  padding: 0.5rem 0.85rem;
-  border-radius: 2rem;
+  gap: 0.3rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
   border: 2px solid transparent;
   font-size: 1rem;
-  font-weight: 600;
   cursor: pointer;
-  transition: all var(--npc-transition-fast) ease;
-  min-height: 2.25rem;
-  box-sizing: border-box;
+  transition: all var(--transition-medium) ease;
 }
 
-.vote-btn .vote-icon {
-  font-size: 1rem;
-  line-height: 1;
-  flex-shrink: 0;
-}
-
-.vote-btn .vote-count {
-  font-weight: bold;
-  flex-shrink: 0;
-}
-
-.upvote-btn {
-  background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+.vote-btn.upvote-btn {
+  background: #e8f5e9;
+  border-color: #4caf50;
   color: #2e7d32;
-  border-color: #81c784;
 }
 
-.upvote-btn:hover {
-  background: linear-gradient(135deg, #c8e6c9, #a5d6a7);
+.vote-btn.upvote-btn:hover {
+  background: #c8e6c9;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
 }
 
-.upvote-btn:focus,
-.upvote-btn:focus-visible {
-  background: linear-gradient(135deg, #c8e6c9, #a5d6a7);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
-  outline: 2px solid var(--npc-gradient-purple);
+.vote-btn.upvote-btn:focus-visible {
+  outline: 2px solid #4caf50;
   outline-offset: 2px;
 }
 
-.upvote-btn.clicked {
-  background: linear-gradient(135deg, #4caf50, #388e3c);
+.vote-btn.upvote-btn.clicked {
+  background: #4caf50;
   color: white;
-  border-color: #2e7d32;
 }
 
-.downvote-btn {
-  background: linear-gradient(135deg, #ffebee, #ffcdd2);
+.vote-btn.downvote-btn {
+  background: #ffebee;
+  border-color: #f44336;
   color: #c62828;
-  border-color: #ef9a9a;
 }
 
-.downvote-btn:hover {
-  background: linear-gradient(135deg, #ffcdd2, #ef9a9a);
+.vote-btn.downvote-btn:hover {
+  background: #ffcdd2;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(198, 40, 40, 0.3);
 }
 
-.downvote-btn:focus,
-.downvote-btn:focus-visible {
-  background: linear-gradient(135deg, #ffcdd2, #ef9a9a);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(198, 40, 40, 0.3);
-  outline: 2px solid var(--npc-gradient-purple);
+.vote-btn.downvote-btn:focus-visible {
+  outline: 2px solid #f44336;
   outline-offset: 2px;
 }
 
-.downvote-btn.clicked {
-  background: linear-gradient(135deg, #ef5350, #e53935);
+.vote-btn.downvote-btn.clicked {
+  background: #f44336;
   color: white;
-  border-color: #c62828;
 }
 
 .comment-btn {
-  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+  background: #e3f2fd;
+  border-color: #2196f3;
   color: #1565c0;
-  border-color: #64b5f6;
+  text-decoration: none;
 }
 
 .comment-btn:hover {
-  background: linear-gradient(135deg, #bbdefb, #90caf9);
+  background: #bbdefb;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(21, 101, 192, 0.3);
+  color: #1565c0;
 }
 
-.comment-btn:focus,
 .comment-btn:focus-visible {
-  background: linear-gradient(135deg, #bbdefb, #90caf9);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(21, 101, 192, 0.3);
-  outline: 2px solid var(--npc-gradient-purple);
+  outline: 2px solid #2196f3;
   outline-offset: 2px;
 }
 
@@ -790,17 +761,10 @@
     gap: 0.2rem;
   }
 
-  .vote-btn {
-    padding: 0.3rem 0.5rem;
-    font-size: 0.85rem;
-  }
-
-  .vote-btn .vote-icon {
-    font-size: 0.85rem;
-  }
-
-  .vote-btn .vote-count {
-    font-size: 0.75rem;
+  .vote-btn,
+  .comment-btn {
+    padding: 0.4rem 0.6rem;
+    font-size: 1rem;
   }
 
   .delete-recording-btn {

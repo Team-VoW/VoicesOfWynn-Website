@@ -210,6 +210,9 @@
 .cast-bio-section {
   margin-bottom: 2rem;
   width: 100%;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .cast-section-title {
@@ -344,6 +347,13 @@
 
 .cast-recording-item:hover {
   background: #ebebeb;
+}
+
+.cast-recording-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-left: auto;
 }
 
 .cast-vote-btn,
