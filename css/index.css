@@ -374,6 +374,9 @@
   min-width: 100px;
   max-width: 180px;
   display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.3rem;
 }
 
 .card--login .session-buttons button {
