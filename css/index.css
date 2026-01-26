@@ -77,22 +77,7 @@
   transform: translateX(-50%);
   width: 120%;
   height: 100px;
-  background: transparent; /* Changed from whitesmoke since main bg is transparent now, but actually we probably remove this curve or make it match body bg? user asked for full width span. */
-  /* Actually if I make it full width, the curve effect might need to adhere to the section below? 
-     The original curve was "background: whitesmoke".
-     Now the page background is dark gradient (transparent main).
-     If I want the curve effect, it should match the background of the cards, or just be removed?
-     The user didn't ask to remove the curve, but "span 100%".
-     If I keep the curve as whitesmoke (or card-bg?), it creates a curve at the bottom of hero.
-     But the main background is dark. White curve will look weird against dark bg.
-     Let's check if the user wants the curve? They didn't say.
-     But since I changed main bg to transparent, 'whitesmoke' curve will look like a white blob.
-     The cards are on dark background now.
-     So I should probably remove the curve or make it transparent/hidden for now until further notice, 
-     OR if the intention was that the content starts below the curve.
-     Given the redesign to dark mode, I'll hide the curve for now to be safe, 
-     as a white curve on dark theme is likely not desired. 
-  */
+  /* Curve effect hidden - incompatible with dark theme */
   display: none;
 }
 
