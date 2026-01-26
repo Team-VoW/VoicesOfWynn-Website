@@ -14,7 +14,7 @@ body {
 }
 .art-credit {
     font-style: italic;
-    font-size: small;
+    font-size: 1rem;
 }
 .return-button {
     margin-top: 1.5rem;
@@ -27,4 +27,7 @@ body {
     padding-bottom: 7px;
     padding-right: 10px;
     padding-left: 10px;
+    display: inline-block;
+    text-decoration: none;
+    color: #333;
 }

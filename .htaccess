@@ -26,11 +26,11 @@ RewriteEngine On
 
 RewriteRule ^downloads$ https://modrinth.com/mod/vow [R=301,L]
 
-RewriteCond %{REQUEST_URI} ^files/updater-data/.*
+RewriteCond %{REQUEST_URI} ^/files/updater-data/.*
 RewriteRule ^.*$ - [NC,L]
 
-RewriteCond %{REQUEST_URI} ^browserconfig\.xml$ [OR]
-RewriteCond %{REQUEST_URI} ^site\.webmanifest$
+RewriteCond %{REQUEST_URI} ^/browserconfig\.xml$ [OR]
+RewriteCond %{REQUEST_URI} ^/site\.webmanifest$
 RewriteRule ^.*$ - [NC,L]
 
 RewriteCond %{REQUEST_FILENAME} -s [OR]

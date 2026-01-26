@@ -82,10 +82,10 @@ class Npc extends WebpageController
 		self::$views[] = 'npc';
 		self::$cssFiles[] = 'npc';
 		self::$cssFiles[] = 'voting';
+		self::$cssFiles[] = 'audio-player';
 		self::$jsFiles[] = 'voting';
-		if (!$this->disallowAdministration) {
-			self::$jsFiles[] = 'npc'; //Administrative functions
-		}
+		self::$jsFiles[] = 'audio-player';
+		self::$jsFiles[] = 'npc'; //Scroll animations + admin functions (admin UI not rendered for non-admins, so handlers attach to nothing)
 
 		return true;
 	}

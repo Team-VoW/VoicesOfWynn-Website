@@ -1,211 +1,311 @@
-/* ------------------------------------------------------------------
+/* ==========================================================================
+   VOICES OF WYNN - VOTING & CAST STYLES (MODERNIZED)
+   ========================================================================== */
 
-styling for cast & voting
+/* --------------------------------------------------------------------------
+   1. TABLE LINKS
+   -------------------------------------------------------------------------- */
 
---------------------------------------------------------------------- */
-
-
-
-
-/*                                                             */
-/* _________________________ SPECIFC _________________________ */
-/*                                                             */
-
-
-    /* tables */
 td a {
-    font-weight: bolder;
-    color: unset;
+  font-weight: bolder;
+  color: unset;
 }
 
+/* --------------------------------------------------------------------------
+   2. CAST PAGE - ROLES DISPLAY
+   -------------------------------------------------------------------------- */
 
-
-
-/*                                                            */
-/* _________________________ ITEMS  _________________________ */
-/*                                                            */
-
-/* sorted chronologically as seen in webpage */
-
-
-    /* ---- CAST ---- */
-        /* recordings */
 .reccenter {
-    display: flex;
-    justify-content: center;
+  display: flex;
+  justify-content: center;
 }
 
 .roles-display {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
 }
 
 .role {
-    flex-grow: 1;
-    border-width: 1px;
-    border-radius: 1rem;
-    border-style: solid;
-
-    padding: 5px;
-    margin-right: 5px; margin-left: 5px; margin-top: 5px;
-    float: left;
-
-    text-align: center;
-
-    min-width: 9.375rem; max-width: 9.375rem;
+  flex-grow: 1;
+  border-width: 2px;
+  border-radius: 1rem;
+  border-style: solid;
+  border-color: rgba(123, 26, 155, 0.2);
+  padding: 0.75rem;
+  text-align: center;
+  min-width: 9.375rem;
+  max-width: 9.375rem;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
+.role:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(123, 26, 155, 0.15);
+  border-color: rgba(123, 26, 155, 0.4);
+}
 
-        /* social */
+/* --------------------------------------------------------------------------
+   3. SOCIALS SECTION
+   -------------------------------------------------------------------------- */
+
 #socials-container {
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    gap: .6rem;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0.6rem;
 }
 
-.socials-row{
-	display: flex;
-	flex-direction: row;
-	justify-content: space-around;
+.socials-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
 }
 
-.socials-card { width: 8.625rem; }
+.socials-card {
+  width: 8.625rem;
+}
 
 .social-component {
-    display: inline-flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: start;
-    gap: 5px;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+  gap: 5px;
 }
 
-            /* discord */
+/* Discord */
 #discord-container {
-    display: flex;
-    justify-content: center;
-    flex-direction: row;
-    gap: 1.25rem;
-    font-family: Arial, Helvetica, sans-serif;
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  gap: 1.25rem;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .vertical-bottom-text-span {
-    display: inline-flex;
-    align-items: flex-end;
+  display: inline-flex;
+  align-items: flex-end;
 }
 
+/* --------------------------------------------------------------------------
+   4. IMAGES
+   -------------------------------------------------------------------------- */
 
-            /* images */
 .contributor-img {
-    max-width: 10vh; max-height: 10vh;
-    border-radius: 5px;
+  max-width: 10vh;
+  max-height: 10vh;
+  border-radius: 5px;
 }
 
 .wb-a.txt-c img {
-    max-width: 100%;
+  max-width: 100%;
 }
 
 .valink-container {
-    display: inline-flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    width: 100%;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
 }
 
 .valink {
-    display: inline-flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
 }
 
-#voice-actor-avatar{
-    padding-top: .1rem;
-	min-width: 9.375rem;
-	max-width: 9.375rem;
-	border-radius: .3rem;
-    height: 9.375rem;
+#voice-actor-avatar {
+  padding-top: 0.1rem;
+  min-width: 9.375rem;
+  max-width: 9.375rem;
+  border-radius: 50%;
+  height: 9.375rem;
 }
 
+/* --------------------------------------------------------------------------
+   5. BUTTON STYLES
+   -------------------------------------------------------------------------- */
 
-            /* buttons */
-.contactbtn { background:rgb(255, 239, 102); }
-.contactbtn:hover { border-color: rgb(239, 228, 143); }
+.btn-base {
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
 
-.youtubebtn { color: white; background-color: #FF3D00;}
+.btn-base:hover {
+  transform: translateY(-2px);
+}
 
-.twitterbtn { color: white; background-color: #1DA1F2;}
+.btn-base:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
 
-.castingcallclubbtn { color: white; background-color:#6827F7; }
+.contactbtn {
+  background: linear-gradient(135deg, #fff3b0, #ffef66);
+}
 
-.commentbtn { background: rgb(128, 128, 221); }
-.commentbtn:hover { border-color: rgb(104, 104, 219); }
+.contactbtn:hover {
+  box-shadow: 0 4px 15px rgba(239, 228, 143, 0.5);
+}
 
+.youtubebtn {
+  color: white;
+  background: linear-gradient(135deg, #FF5252, #FF3D00);
+}
 
-    /* ---- VOTING ---- */
+.youtubebtn:hover {
+  box-shadow: 0 4px 15px rgba(255, 61, 0, 0.4);
+}
+
+.twitterbtn {
+  color: white;
+  background: linear-gradient(135deg, #42A5F5, #1DA1F2);
+}
+
+.twitterbtn:hover {
+  box-shadow: 0 4px 15px rgba(29, 161, 242, 0.4);
+}
+
+.castingcallclubbtn {
+  color: white;
+  background: linear-gradient(135deg, #8b5cf6, #6827F7);
+}
+
+.castingcallclubbtn:hover {
+  box-shadow: 0 4px 15px rgba(104, 39, 247, 0.4);
+}
+
+.commentbtn {
+  background: linear-gradient(135deg, #a5b4fc, #818cf8);
+  color: white;
+  padding: 0.5rem 0.85rem;
+  border-radius: 2rem;
+  font-weight: 600;
+}
+
+.commentbtn:hover {
+  box-shadow: 0 4px 12px rgba(129, 140, 248, 0.4);
+}
+
+/* --------------------------------------------------------------------------
+   6. VOTING BUTTONS (Matching Cast Page Style)
+   -------------------------------------------------------------------------- */
+
 .upvote, .downvote, .comment {
-    color: #333;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 2px solid transparent;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .upvote {
-    border-color: rgb(57, 117, 57);
-    border-style: outset;
-    background: rgb(137, 210, 134);
-}
-.downvote {
-    border-color: rgb(129, 52, 52);
-    border-style: outset;
-    background: rgb(210, 134, 134);
+  background: #e8f5e9;
+  border-color: #4caf50;
+  color: #2e7d32;
 }
 
-.upvote:hover, .downvote:hover {
-    /* Cancel the "prompting" hover effect that is defaultly applied to all buttons */
-    transform: translateY(-5px);
+.upvote:hover {
+  background: #c8e6c9;
+  transform: translateY(-2px);
 }
-.clicked {
-    border-style: inset;
-    background: #c0c0c0;
+
+.upvote:focus-visible {
+  outline: 2px solid #4caf50;
+  outline-offset: 2px;
 }
+
 .upvote.clicked {
-    background: rgb(79, 180, 79);
+  background: #4caf50;
+  color: white;
 }
+
+.downvote {
+  background: #ffebee;
+  border-color: #f44336;
+  color: #c62828;
+}
+
+.downvote:hover {
+  background: #ffcdd2;
+  transform: translateY(-2px);
+}
+
+.downvote:focus-visible {
+  outline: 2px solid #f44336;
+  outline-offset: 2px;
+}
+
 .downvote.clicked {
-    background: rgb(171, 81, 81);
+  background: #f44336;
+  color: white;
 }
 
+.comment {
+  background: #e3f2fd;
+  border-color: #2196f3;
+  color: #1565c0;
+  text-decoration: none;
+}
 
+.comment:hover {
+  background: #bbdefb;
+  transform: translateY(-2px);
+  color: #1565c0;
+}
 
+.comment:focus-visible {
+  outline: 2px solid #2196f3;
+  outline-offset: 2px;
+}
 
-
-
-
+/* --------------------------------------------------------------------------
+   7. RESPONSIVE DESIGN
+   -------------------------------------------------------------------------- */
 
 @media (max-width: 62.5rem) {
-    .the-recording {
-        display: flex;
-        justify-content: center;
-        position: relative;
-        margin-bottom: .9rem;
-    }
-    .voting-buttons {
-        display: inline;
-        margin-left: .75rem;
-    }
-    .line-count {
-        display: block;
-        width: 100%;
-        text-align: center;
-    }
-    .mobile-hr {
-        display: block;
-    }
-    .voting-audio-box {
-        display: table;
-        margin-bottom: 4.375rem;
-    }
+  .the-recording {
+    display: flex;
+    justify-content: center;
+    position: relative;
+    margin-bottom: 0.9rem;
+  }
+
+  .voting-buttons {
+    display: inline;
+    margin-left: 0.75rem;
+  }
+
+  .line-count {
+    display: block;
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .role,
+  .btn-base,
+  .upvote,
+  .downvote,
+  .comment {
+    transition: none !important;
+  }
 }

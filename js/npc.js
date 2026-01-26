@@ -3,7 +3,45 @@ var voiceActorName;
 var voiceActorAvatar;
 // var npcId; - filled by PHP in the view
 
-//------------------------------CHANGING VOICE ACTORS SECTION------------------------------
+// ==========================================================================
+// SCROLL ANIMATIONS
+// ==========================================================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    const animatedElements = document.querySelectorAll('.npc-animate-on-scroll');
+
+    // Check if user prefers reduced motion
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (prefersReducedMotion) {
+        // If user prefers reduced motion, show all elements immediately without animation
+        animatedElements.forEach(el => {
+            el.classList.add('is-visible');
+        });
+        return;
+    }
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0,
+        rootMargin: '0px 0px -50px 0px'
+    });
+
+    // First add animate-ready class, then observe
+    animatedElements.forEach(el => {
+        el.classList.add('animate-ready');
+        observer.observe(el);
+    });
+});
+
+// ==========================================================================
+// CHANGING VOICE ACTORS SECTION
+// ==========================================================================
 
 function toggleRecastingButton()
 {
@@ -31,9 +69,10 @@ $("#voice-actor-form").on('submit', function(event) {
         url: "administration/npcs/manage/" + npcId + "/recast/" + voiceActorId,
         type: 'PUT',
         success: function(result, message) {
-            $("#voice-actor-avatar").attr('src', voiceActorAvatar);
-            $("#voice-actor-name").text(voiceActorName);
-            $(".valink").attr("href", "cast/" + voiceActorId)
+            $(".voice-actor-avatar").attr('src', voiceActorAvatar);
+            $(".voice-actor-name").text(voiceActorName);
+            $(".voice-actor-name").removeClass('unassigned');
+            $(".voice-actor-link").attr("href", "cast/" + voiceActorId);
             toggleRecastingButton();
         },
         error: function(result, message, error) {
@@ -42,7 +81,9 @@ $("#voice-actor-form").on('submit', function(event) {
     });
 });
 
-//-----------------------------------ARCHIVING SECTION-----------------------------------
+// ==========================================================================
+// ARCHIVING SECTION
+// ==========================================================================
 
 $("#archive-btn").on('click', function() {
     if (!confirm('Are you sure you want to archive this NPC?\n' +
@@ -76,16 +117,17 @@ $("#archive-btn").on('click', function() {
     });
 });
 
+// ==========================================================================
+// DELETING RECORDINGS SECTION
+// ==========================================================================
 
-//------------------------------DELETING RECORDINGS SECTION------------------------------
-
-var $deletingRecording; //HTML <tr> element with recording that is being deleted
+var $deletingRecording; //HTML element with recording that is being deleted
 
 $(".delete-recording-btn").on('click', function(event){
     if (!confirm("Do you really want to delete this recording?")) {
         return;
     }
-    $deletingRecording = $(event.target).closest("tr");
+    $deletingRecording = $(event.target).closest(".recording-row");
     $.ajax({
         url: "administration/npcs/manage/" + npcId + "/delete/" + $(event.target).attr("data-recording-id"),
         type: 'DELETE',
@@ -113,7 +155,7 @@ $(".archive-all-recordings-btn").on('click', function(event) {
     }
 
     let questId = $(event.target).attr('data-quest-id');
-    $archivingRecordings = $(event.target).closest('.table-center').find('tr:not(.recordings-table-quest-header)');
+    $archivingRecordings = $(event.target).closest('.quest-card').find('.recording-row');
     $.ajax({
         url: "administration/npcs/manage/" + npcId + "/archive-quest-recordings/" + questId,
         type: 'PUT',

@@ -58,7 +58,7 @@ td { vertical-align: top; }
     width: 100%;
     text-align: center;
     margin-top: 10px;
-    font-size: x-small;
+    font-size: 1rem;
     text-align: center;
     display: inline-block;
 }
@@ -166,7 +166,7 @@ border-color: #a5a147;}
                 /* badges */
 .contributor-badge {
     display: inline-block;
-    font-size: small;
+    font-size: 1rem;
     color: white;
     padding: 5px;
     border-radius: 1rem;
@@ -177,7 +177,7 @@ border-color: #a5a147;}
 }
 .author-badge {
     display: inline-block;
-    font-size: small;
+    font-size: 1rem;
     color: white;
     padding: 5px;
     border-radius: 1rem;
@@ -203,7 +203,7 @@ border-color: #a5a147;}
     }
     .contributor-badge, .author-badge{
         display: inline-block;
-        font-size: small;
+        font-size: 1rem;
         color: white;
         padding: 2px;
         border-radius: 1rem;
