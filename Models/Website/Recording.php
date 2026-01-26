@@ -300,7 +300,7 @@ class Recording
 		foreach ($commentLines as $commentLine) {
 			$discordMessage .= '\n> ' . htmlspecialchars(trim($commentLine));
 		}
-		$discordMessage .= '\n\nView the comment at http://' . $_SERVER['SERVER_NAME'] . '/contents/npc/' . $this->npcId . '/comments/' . $this->id . '#c' . $commentId . '.';
+		$discordMessage .= '\n\nView the comment at https://' . $_SERVER['SERVER_NAME'] . '/contents/npc/' . $this->npcId . '/comments/' . $this->id . '#c' . $commentId . '.';
 
 		$webhookResult = $this->sendWebhookMessage($discordMessage, $comment->getName() . ' via voicesofwynn.com', $comment->getAvatar());
 
@@ -353,4 +353,3 @@ class Recording
 		return $db->executeQuery('UPDATE recording SET archived = TRUE, file = ? WHERE recording_id = ?;', array($this->file, $this->id));
 	}
 }
-
