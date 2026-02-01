@@ -1,31 +1,17 @@
-/* ==========================================================================
-   VOICES OF WYNN - MODERN HOMEPAGE STYLES
-   ========================================================================== */
-
-/* --------------------------------------------------------------------------
-   1. CSS CUSTOM PROPERTIES (Design Tokens)
-   -------------------------------------------------------------------------- */
+/* Homepage Styles */
 
 :root {
-  /* Primary gradient colors - gaming/Minecraft aesthetic */
   --gradient-purple: #7b1a9b;
   --gradient-violet: #a340c4;
   --gradient-pink: #ff6b9d;
   --gradient-cyan: #00d4ff;
   --gradient-green: #00ff87;
-
-  /* Card styling */
   --card-bg: rgba(255, 255, 255, 0.98);
   --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
   --card-shadow-hover: 0 16px 48px rgba(123, 26, 155, 0.2);
   --card-border-radius: 1rem;
-
-  /* Animation timings */
   --transition-fast: 0.2s;
   --transition-medium: 0.3s;
-  --transition-slow: 0.5s;
-
-  /* Spacing scale */
   --space-xs: 0.5rem;
   --space-sm: 1rem;
   --space-md: 1.5rem;
@@ -34,36 +20,19 @@
   --container-padding: 2rem;
 }
 
-/* --------------------------------------------------------------------------
-   2. HERO SECTION
-   -------------------------------------------------------------------------- */
-
+/* Hero Section */
 .hero-section {
   position: relative;
   padding: var(--space-xl) 0;
-  margin-top: 0;
-  margin-bottom: var(--space-lg);
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
-  background: linear-gradient(
-    135deg,
-    var(--gradient-purple),
-    var(--gradient-violet),
-    var(--gradient-pink)
-  );
-  border-radius: 0;
+  margin: 0 calc(50% - 50vw) var(--space-lg);
+  background: linear-gradient(135deg, var(--gradient-purple), var(--gradient-violet), var(--gradient-pink));
   overflow: hidden;
-  left: auto;
-  transform: none;
 }
 
 .hero-section::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background: url("../images/Website_background.webp") center/cover;
   opacity: 0.08;
   pointer-events: none;
@@ -77,7 +46,6 @@
   transform: translateX(-50%);
   width: 120%;
   height: 100px;
-  /* Curve effect hidden - incompatible with dark theme */
   display: none;
 }
 
@@ -123,10 +91,7 @@
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
 }
 
-/* --------------------------------------------------------------------------
-   3. CARDS GRID LAYOUT
-   -------------------------------------------------------------------------- */
-
+/* Cards Grid */
 .cards-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -134,17 +99,13 @@
   padding: var(--space-sm) 0;
 }
 
-/* --------------------------------------------------------------------------
-   4. CARD COMPONENT
-   -------------------------------------------------------------------------- */
-
+/* Card Component */
 .card {
   background: var(--card-bg);
   border-radius: var(--card-border-radius);
   padding: var(--space-lg);
   box-shadow: var(--card-shadow);
-  transition: transform var(--transition-medium) ease,
-    box-shadow var(--transition-medium) ease;
+  transition: transform var(--transition-medium) ease, box-shadow var(--transition-medium) ease;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -160,11 +121,7 @@
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(
-    90deg,
-    var(--gradient-purple),
-    var(--gradient-cyan)
-  );
+  background: linear-gradient(90deg, var(--gradient-purple), var(--gradient-cyan));
   transform: scaleX(0);
   transform-origin: left;
   transition: transform var(--transition-medium) ease;
@@ -200,63 +157,24 @@
   margin-top: auto;
 }
 
-/* Featured card - spans 2 columns */
 .card--featured {
   grid-column: span 2;
 }
 
-/* Full width card - spans all columns */
 .card--full-width {
   grid-column: 1 / -1;
 }
 
-/* --------------------------------------------------------------------------
-   5. CARD VARIANTS (Accent Colors)
-   -------------------------------------------------------------------------- */
+/* Card Variants */
+.card--credits::before { background: linear-gradient(90deg, #ab5dfc, #d08fff); }
+.card--faq::before { background: linear-gradient(90deg, rgb(47, 104, 0), rgb(100, 200, 50)); }
+.card--contents::before { background: linear-gradient(90deg, rgb(21, 220, 255), var(--gradient-green)); }
+.card--video::before { background: linear-gradient(90deg, var(--gradient-purple), var(--gradient-cyan)); }
+.card--login::before { background: linear-gradient(90deg, #ffd751, #ff9500); }
+.card--patreon::before { background: linear-gradient(90deg, #ffa599, var(--gradient-pink)); }
+.card--support::before { background: linear-gradient(90deg, #5865F2, var(--gradient-cyan)); }
 
-/* Credits Card - Purple theme */
-.card--credits::before {
-  background: linear-gradient(90deg, #ab5dfc, #d08fff);
-}
-
-/* FAQ Card - Green theme */
-.card--faq::before {
-  background: linear-gradient(90deg, rgb(47, 104, 0), rgb(100, 200, 50));
-}
-
-/* Contents Card - Cyan theme */
-.card--contents::before {
-  background: linear-gradient(90deg, rgb(21, 220, 255), var(--gradient-green));
-}
-
-/* Video Card - Purple/Cyan theme */
-.card--video::before {
-  background: linear-gradient(
-    90deg,
-    var(--gradient-purple),
-    var(--gradient-cyan)
-  );
-}
-
-/* Login Card - Gold theme */
-.card--login::before {
-  background: linear-gradient(90deg, #ffd751, #ff9500);
-}
-
-/* Patreon Card - Coral theme */
-.card--patreon::before {
-  background: linear-gradient(90deg, #ffa599, var(--gradient-pink));
-}
-
-/* Support Card - Discord Blue theme */
-.card--support::before {
-  background: linear-gradient(90deg, #5865F2, var(--gradient-cyan));
-}
-
-/* --------------------------------------------------------------------------
-   6. VIDEO SECTION STYLING
-   -------------------------------------------------------------------------- */
-
+/* Video Section */
 .video-wrapper {
   display: flex;
   justify-content: center;
@@ -273,8 +191,7 @@
   border-radius: 0.75rem;
   overflow: hidden;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  transition: transform var(--transition-medium) ease,
-    box-shadow var(--transition-medium) ease;
+  transition: transform var(--transition-medium) ease, box-shadow var(--transition-medium) ease;
 }
 
 .video-container:hover {
@@ -282,7 +199,6 @@
   box-shadow: 0 8px 30px rgba(123, 26, 155, 0.3);
 }
 
-.video-container:focus,
 .video-container:focus-visible {
   outline: 3px solid var(--gradient-purple);
   outline-offset: 3px;
@@ -309,11 +225,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: linear-gradient(
-    135deg,
-    var(--gradient-purple),
-    var(--gradient-pink)
-  );
+  background: linear-gradient(135deg, var(--gradient-purple), var(--gradient-pink));
   border-radius: 50%;
   width: 70px;
   height: 70px;
@@ -321,8 +233,7 @@
   justify-content: center;
   align-items: center;
   box-shadow: 0 4px 20px rgba(123, 26, 155, 0.4);
-  transition: transform var(--transition-fast) ease,
-    box-shadow var(--transition-fast) ease;
+  transition: transform var(--transition-fast) ease, box-shadow var(--transition-fast) ease;
 }
 
 .video-container:hover .play-button {
@@ -340,10 +251,7 @@
   margin-left: 5px;
 }
 
-/* --------------------------------------------------------------------------
-   7. LOGIN SECTION
-   -------------------------------------------------------------------------- */
-
+/* Login Section */
 .card--login .session-buttons {
   display: flex;
   flex-direction: row;
@@ -369,10 +277,7 @@
   height: 100%;
 }
 
-/* --------------------------------------------------------------------------
-   8. BUTTON ENHANCEMENTS
-   -------------------------------------------------------------------------- */
-
+/* Button Enhancements */
 .hero-btn,
 .card__actions button,
 .card--login button {
@@ -380,7 +285,6 @@
   overflow: hidden;
 }
 
-/* Shine effect on hover */
 .hero-btn::after,
 .card__actions button::after,
 .card--login button::after {
@@ -390,12 +294,7 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.35),
-    transparent
-  );
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
   transition: left 0.5s ease;
 }
 
@@ -405,7 +304,6 @@
   left: 100%;
 }
 
-/* Icon animations */
 .hero-btn .buttonicon,
 .card__actions .buttonicon {
   transition: transform var(--transition-fast) ease;
@@ -416,31 +314,17 @@
   transform: scale(1.15) rotate(-5deg);
 }
 
-/* --------------------------------------------------------------------------
-   9. SCROLL ANIMATIONS
-   -------------------------------------------------------------------------- */
-
+/* Scroll Animations */
 @keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-/* Initial state for animated elements */
 .animate-on-scroll {
   opacity: 0;
   transform: translateY(30px);
@@ -450,36 +334,19 @@
   animation: fadeInUp 0.6s ease forwards;
 }
 
-/* No-JS fallback for animate-on-scroll elements */
 .no-js .animate-on-scroll {
   opacity: 1;
   transform: none;
 }
 
-/* Stagger animations for grid items */
-.cards-grid .card:nth-child(1).is-visible {
-  animation-delay: 0s;
-}
-.cards-grid .card:nth-child(2).is-visible {
-  animation-delay: 0.1s;
-}
-.cards-grid .card:nth-child(3).is-visible {
-  animation-delay: 0.2s;
-}
-.cards-grid .card:nth-child(4).is-visible {
-  animation-delay: 0.1s;
-}
-.cards-grid .card:nth-child(5).is-visible {
-  animation-delay: 0.2s;
-}
-.cards-grid .card:nth-child(6).is-visible {
-  animation-delay: 0.1s;
-}
-.cards-grid .card:nth-child(7).is-visible {
-  animation-delay: 0.2s;
-}
+.cards-grid .card:nth-child(1).is-visible { animation-delay: 0s; }
+.cards-grid .card:nth-child(2).is-visible { animation-delay: 0.1s; }
+.cards-grid .card:nth-child(3).is-visible { animation-delay: 0.2s; }
+.cards-grid .card:nth-child(4).is-visible { animation-delay: 0.1s; }
+.cards-grid .card:nth-child(5).is-visible { animation-delay: 0.2s; }
+.cards-grid .card:nth-child(6).is-visible { animation-delay: 0.1s; }
+.cards-grid .card:nth-child(7).is-visible { animation-delay: 0.2s; }
 
-/* Hero animations */
 .animate-fade-in {
   animation: fadeIn 0.8s ease forwards;
 }
@@ -494,33 +361,25 @@
   opacity: 0;
 }
 
-/* --------------------------------------------------------------------------
-   10. RESPONSIVE DESIGN
-   -------------------------------------------------------------------------- */
-
+/* Responsive */
 @media (max-width: 62.5rem) {
   .cards-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: var(--space-md);
   }
-
   .card--featured {
     grid-column: span 2;
   }
-
   .card--full-width {
     grid-column: 1 / -1;
   }
-
   .hero-title {
     font-size: 2.5rem;
   }
-
   .hero-description {
     font-size: 1.05rem;
     padding: 0 var(--space-sm);
   }
-
   .video-container {
     max-width: 50%;
   }
@@ -531,49 +390,39 @@
     grid-template-columns: 1fr;
     gap: var(--space-md);
   }
-
   .card--featured,
   .card--full-width {
     grid-column: span 1;
   }
-
   .hero-section {
     padding: var(--space-lg) var(--space-sm);
     margin: 0 calc(-1 * var(--container-padding, 0px)) var(--space-md);
   }
-
   .hero-title {
     font-size: 2rem;
   }
-
   .hero-description {
     font-size: 1rem;
   }
-
   .hero-actions {
     flex-direction: column;
     align-items: center;
   }
-
   .hero-btn {
     width: 100%;
     max-width: 280px;
   }
-
   .video-wrapper {
     flex-direction: column;
     align-items: center;
   }
-
   .video-container {
     width: 100%;
     max-width: 100%;
   }
-
   .card {
     padding: var(--space-md);
   }
-
   .card--login .session-buttons > a {
     min-width: 80px;
     max-width: none;
@@ -581,35 +430,28 @@
   }
 }
 
-/* --------------------------------------------------------------------------
-   11. ACCESSIBILITY - Reduced Motion
-   -------------------------------------------------------------------------- */
-
+/* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
   .animate-on-scroll {
     opacity: 1;
     transform: none;
   }
-
   .animate-on-scroll.is-visible {
     animation: none;
   }
-
   .animate-fade-in,
   .animate-fade-in-delay,
   .animate-fade-in-delay-2 {
-    animation: none !important;
-    opacity: 1 !important;
+    animation: none;
+    opacity: 1;
   }
-
   .card,
   .video-container,
   .play-button,
   button,
   .buttonicon {
-    transition: none !important;
+    transition: none;
   }
-
   .hero-btn::after,
   .card__actions button::after,
   .card--login button::after {

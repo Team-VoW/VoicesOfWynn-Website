@@ -1,64 +1,37 @@
-/* ==========================================================================
-   VOICES OF WYNN - MODERN NPC PAGE STYLES
-   ========================================================================== */
-
-/* --------------------------------------------------------------------------
-   1. CSS CUSTOM PROPERTIES (Design Tokens)
-   -------------------------------------------------------------------------- */
+/* NPC Page Styles */
 
 :root {
-  /* Primary gradient colors */
   --npc-gradient-purple: #7b1a9b;
   --npc-gradient-violet: #a340c4;
   --npc-gradient-pink: #ff6b9d;
   --npc-gradient-cyan: #00d4ff;
   --npc-gradient-green: #00ff87;
-
-  /* Card styling */
   --npc-card-bg: rgba(255, 255, 255, 0.98);
   --npc-card-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
   --npc-card-shadow-hover: 0 16px 48px rgba(123, 26, 155, 0.2);
   --npc-card-border-radius: 1rem;
-
-  /* Animation timings */
   --npc-transition-fast: 0.2s;
   --npc-transition-medium: 0.3s;
-  --npc-transition-slow: 0.5s;
-
-  /* Spacing scale */
-  --npc-space-xs: 0.5rem;
   --npc-space-sm: 1rem;
   --npc-space-md: 1.5rem;
   --npc-space-lg: 2rem;
   --npc-space-xl: 3rem;
 }
 
-/* --------------------------------------------------------------------------
-   2. NPC HERO SECTION
-   -------------------------------------------------------------------------- */
-
+/* Hero Section */
 .npc-hero {
   position: relative;
   padding: var(--npc-space-xl) 0;
-  margin-top: 0;
-  margin-bottom: var(--npc-space-lg);
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
+  margin: 0 calc(50% - 50vw) var(--npc-space-lg);
   background: linear-gradient(135deg, var(--npc-gradient-purple), var(--npc-gradient-violet), var(--npc-gradient-pink));
-  border-radius: 0;
   overflow: hidden;
   text-align: center;
-  left: auto;
-  transform: none;
 }
 
 .npc-hero::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background: url('../images/Website_background.webp') center/cover;
   opacity: 0.08;
   pointer-events: none;
@@ -87,8 +60,7 @@
 
 .npc-hero-title {
   color: white;
-  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3),
-               0 0 40px rgba(123, 26, 155, 0.5);
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3), 0 0 40px rgba(123, 26, 155, 0.5);
   margin-bottom: var(--npc-space-md);
   font-size: 2.5rem;
 }
@@ -111,8 +83,7 @@
   margin: var(--npc-space-md) auto;
   display: block;
   object-fit: cover;
-  transition: transform var(--npc-transition-medium) ease,
-              box-shadow var(--npc-transition-medium) ease;
+  transition: transform var(--npc-transition-medium) ease, box-shadow var(--npc-transition-medium) ease;
 }
 
 .npc-avatar:hover {
@@ -120,10 +91,7 @@
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
 }
 
-/* --------------------------------------------------------------------------
-   3. VOICE ACTOR CARD
-   -------------------------------------------------------------------------- */
-
+/* Voice Actor Card */
 .voice-actor-card {
   background: var(--npc-card-bg);
   border-radius: var(--npc-card-border-radius);
@@ -133,8 +101,7 @@
   text-align: center;
   position: relative;
   overflow: hidden;
-  transition: transform var(--npc-transition-medium) ease,
-              box-shadow var(--npc-transition-medium) ease;
+  transition: transform var(--npc-transition-medium) ease, box-shadow var(--npc-transition-medium) ease;
 }
 
 .voice-actor-card::before {
@@ -186,8 +153,7 @@
   border: 3px solid var(--npc-gradient-purple);
   box-shadow: 0 4px 20px rgba(123, 26, 155, 0.2);
   margin-bottom: var(--npc-space-sm);
-  transition: border-color var(--npc-transition-fast) ease,
-              box-shadow var(--npc-transition-fast) ease;
+  transition: border-color var(--npc-transition-fast) ease, box-shadow var(--npc-transition-fast) ease;
 }
 
 .voice-actor-link:hover .voice-actor-avatar {
@@ -230,21 +196,16 @@
   border-radius: 0.5rem;
   font-weight: bold;
   cursor: pointer;
-  transition: transform var(--npc-transition-fast) ease,
-              box-shadow var(--npc-transition-fast) ease;
+  transition: transform var(--npc-transition-fast) ease, box-shadow var(--npc-transition-fast) ease;
 }
 
-#change-actor-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(255, 149, 0, 0.4);
-  border-color: transparent;
-}
-
-#change-actor-btn:focus,
+#change-actor-btn:hover,
 #change-actor-btn:focus-visible {
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(255, 149, 0, 0.4);
-  border-color: transparent;
+}
+
+#change-actor-btn:focus-visible {
   outline: 2px solid var(--npc-gradient-purple);
   outline-offset: 2px;
 }
@@ -257,23 +218,17 @@
   border-radius: 0.5rem;
   font-weight: bold;
   cursor: pointer;
-  transition: transform var(--npc-transition-fast) ease,
-              box-shadow var(--npc-transition-fast) ease;
+  transition: transform var(--npc-transition-fast) ease, box-shadow var(--npc-transition-fast) ease, background var(--npc-transition-fast) ease;
 }
 
-#archive-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(197, 16, 16, 0.4);
-  background: linear-gradient(135deg, #c53030, #9b2c2c);
-  border-color: transparent;
-}
-
-#archive-btn:focus,
+#archive-btn:hover,
 #archive-btn:focus-visible {
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(197, 16, 16, 0.4);
   background: linear-gradient(135deg, #c53030, #9b2c2c);
-  border-color: transparent;
+}
+
+#archive-btn:focus-visible {
   outline: 2px solid var(--npc-gradient-purple);
   outline-offset: 2px;
 }
@@ -296,7 +251,6 @@
   transition: border-color var(--npc-transition-fast) ease;
 }
 
-#voice-actor-form select:focus,
 #voice-actor-form select:focus-visible {
   border-color: var(--npc-gradient-purple);
   outline: 2px solid var(--npc-gradient-purple);
@@ -311,29 +265,21 @@
   border-radius: 0.5rem;
   font-weight: bold;
   cursor: pointer;
-  transition: transform var(--npc-transition-fast) ease,
-              box-shadow var(--npc-transition-fast) ease;
+  transition: transform var(--npc-transition-fast) ease, box-shadow var(--npc-transition-fast) ease;
 }
 
-#va-confirm-change:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(0, 255, 135, 0.4);
-  border-color: transparent;
-}
-
-#va-confirm-change:focus,
+#va-confirm-change:hover,
 #va-confirm-change:focus-visible {
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(0, 255, 135, 0.4);
-  border-color: transparent;
+}
+
+#va-confirm-change:focus-visible {
   outline: 2px solid var(--npc-gradient-purple);
   outline-offset: 2px;
 }
 
-/* --------------------------------------------------------------------------
-   4. RECORDINGS SECTION
-   -------------------------------------------------------------------------- */
-
+/* Recordings Section */
 .recordings-section {
   margin-bottom: var(--npc-space-lg);
 }
@@ -345,18 +291,14 @@
   color: #333;
 }
 
-/* --------------------------------------------------------------------------
-   5. QUEST CARD
-   -------------------------------------------------------------------------- */
-
+/* Quest Card */
 .quest-card {
   background: var(--npc-card-bg);
   border-radius: var(--npc-card-border-radius);
   box-shadow: var(--npc-card-shadow);
   margin-bottom: var(--npc-space-lg);
   overflow: hidden;
-  transition: transform var(--npc-transition-medium) ease,
-              box-shadow var(--npc-transition-medium) ease;
+  transition: box-shadow var(--npc-transition-medium) ease;
 }
 
 .quest-card:hover {
@@ -376,10 +318,7 @@
   padding: var(--npc-space-md);
 }
 
-/* --------------------------------------------------------------------------
-   6. RECORDING ROW
-   -------------------------------------------------------------------------- */
-
+/* Recording Row */
 .recording-row {
   display: flex;
   align-items: center;
@@ -389,7 +328,6 @@
   background: #fafafa;
   margin-bottom: var(--npc-space-sm);
   transition: background var(--npc-transition-fast) ease;
-  flex-wrap: nowrap;
 }
 
 .recording-row:hover {
@@ -408,7 +346,6 @@
   flex-shrink: 0;
 }
 
-/* Hide native audio player - using custom player everywhere */
 .recording-audio--native {
   display: none;
 }
@@ -417,14 +354,10 @@
   display: flex;
   gap: 0.35rem;
   align-items: center;
-  flex-wrap: nowrap;
   margin-left: auto;
 }
 
-/* --------------------------------------------------------------------------
-   7. VOTING BUTTONS (Matching Cast Page Style)
-   -------------------------------------------------------------------------- */
-
+/* Voting Buttons */
 .vote-btn,
 .comment-btn {
   display: inline-flex;
@@ -435,7 +368,7 @@
   border: 2px solid transparent;
   font-size: 1rem;
   cursor: pointer;
-  transition: all var(--transition-medium) ease;
+  transition: background var(--npc-transition-fast) ease, transform var(--npc-transition-fast) ease;
 }
 
 .vote-btn.upvote-btn {
@@ -490,7 +423,6 @@
 .comment-btn:hover {
   background: #bbdefb;
   transform: translateY(-2px);
-  color: #1565c0;
 }
 
 .comment-btn:focus-visible {
@@ -498,7 +430,6 @@
   outline-offset: 2px;
 }
 
-/* Ensure comment button link wrapper doesn't affect sizing */
 .recording-actions a {
   display: inline-flex;
   text-decoration: none;
@@ -508,10 +439,7 @@
   margin: 0;
 }
 
-/* --------------------------------------------------------------------------
-   8. DELETE & ADMIN BUTTONS
-   -------------------------------------------------------------------------- */
-
+/* Delete & Admin Buttons */
 .delete-recording-btn {
   width: 40px;
   height: 40px;
@@ -525,20 +453,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all var(--npc-transition-fast) ease;
+  transition: transform var(--npc-transition-fast) ease, box-shadow var(--npc-transition-fast) ease;
   padding: 0;
   line-height: 1;
 }
 
-.delete-recording-btn:hover {
+.delete-recording-btn:hover,
+.delete-recording-btn:focus-visible {
   transform: scale(1.1) rotate(90deg);
   box-shadow: 0 4px 15px rgba(244, 67, 54, 0.5);
 }
 
-.delete-recording-btn:focus,
 .delete-recording-btn:focus-visible {
-  transform: scale(1.1) rotate(90deg);
-  box-shadow: 0 4px 15px rgba(244, 67, 54, 0.5);
   outline: 2px solid var(--npc-gradient-purple);
   outline-offset: 2px;
 }
@@ -551,20 +477,16 @@
   border-radius: 0.5rem;
   font-weight: bold;
   cursor: pointer;
-  transition: all var(--npc-transition-fast) ease;
+  transition: transform var(--npc-transition-fast) ease, box-shadow var(--npc-transition-fast) ease;
 }
 
-.archive-all-recordings-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(244, 81, 30, 0.4);
-  border-color: transparent;
-}
-
-.archive-all-recordings-btn:focus,
+.archive-all-recordings-btn:hover,
 .archive-all-recordings-btn:focus-visible {
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(244, 81, 30, 0.4);
-  border-color: transparent;
+}
+
+.archive-all-recordings-btn:focus-visible {
   outline: 2px solid var(--npc-gradient-purple);
   outline-offset: 2px;
 }
@@ -577,20 +499,16 @@
   border-radius: 0.5rem;
   font-weight: bold;
   cursor: pointer;
-  transition: all var(--npc-transition-fast) ease;
+  transition: transform var(--npc-transition-fast) ease, box-shadow var(--npc-transition-fast) ease;
 }
 
-.uploadbtn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4);
-  border-color: transparent;
-}
-
-.uploadbtn:focus,
+.uploadbtn:hover,
 .uploadbtn:focus-visible {
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4);
-  border-color: transparent;
+}
+
+.uploadbtn:focus-visible {
   outline: 2px solid var(--npc-gradient-purple);
   outline-offset: 2px;
 }
@@ -604,10 +522,7 @@
   border-top: 1px solid #eee;
 }
 
-/* --------------------------------------------------------------------------
-   9. BACK BUTTON
-   -------------------------------------------------------------------------- */
-
+/* Back Button */
 .back-btn-container {
   text-align: center;
   margin-top: var(--npc-space-lg);
@@ -621,37 +536,25 @@
   border-radius: 0.5rem;
   font-weight: bold;
   cursor: pointer;
-  transition: all var(--npc-transition-fast) ease;
+  transition: background var(--npc-transition-fast) ease, transform var(--npc-transition-fast) ease, box-shadow var(--npc-transition-fast) ease;
 }
 
-.back-btn-container .backbtn:hover {
-  background: linear-gradient(135deg, #e0e0e0, #bdbdbd);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-}
-
-.back-btn-container .backbtn:focus,
+.back-btn-container .backbtn:hover,
 .back-btn-container .backbtn:focus-visible {
   background: linear-gradient(135deg, #e0e0e0, #bdbdbd);
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.back-btn-container .backbtn:focus-visible {
   outline: 2px solid var(--npc-gradient-purple);
   outline-offset: 2px;
 }
 
-/* --------------------------------------------------------------------------
-   10. SCROLL ANIMATIONS
-   -------------------------------------------------------------------------- */
-
+/* Scroll Animations */
 @keyframes npcFadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes npcFadeIn {
@@ -672,14 +575,12 @@
   animation: npcFadeInUp 0.6s ease forwards;
 }
 
-/* Stagger animations for quest cards */
 .quest-card:nth-child(1).is-visible { animation-delay: 0s; }
 .quest-card:nth-child(2).is-visible { animation-delay: 0.1s; }
 .quest-card:nth-child(3).is-visible { animation-delay: 0.2s; }
 .quest-card:nth-child(4).is-visible { animation-delay: 0.3s; }
 .quest-card:nth-child(5).is-visible { animation-delay: 0.4s; }
 
-/* Hero animations */
 .npc-animate-fade-in {
   animation: npcFadeIn 0.8s ease forwards;
 }
@@ -689,19 +590,14 @@
   opacity: 0;
 }
 
-/* --------------------------------------------------------------------------
-   11. RESPONSIVE DESIGN
-   -------------------------------------------------------------------------- */
-
+/* Responsive */
 @media (max-width: 62.5rem) {
   .npc-hero {
     padding: var(--npc-space-lg) var(--npc-space-sm);
   }
-
   .npc-hero-title {
     font-size: 2rem;
   }
-
   .npc-avatar {
     width: 150px;
     height: 150px;
@@ -713,96 +609,73 @@
     margin: 0 -1.5rem var(--npc-space-md);
     padding: var(--npc-space-md) var(--npc-space-sm);
   }
-
   .npc-hero-title {
     font-size: 1.5rem;
   }
-
   .npc-hero-title .outdated-tag {
     display: block;
     margin: 0.5rem auto 0;
   }
-
   .npc-avatar {
     width: 120px;
     height: 120px;
   }
-
   .voice-actor-card {
     padding: var(--npc-space-md);
   }
-
   .voice-actor-avatar {
     width: 100px;
     height: 100px;
   }
-
   .quest-card-header {
     padding: var(--npc-space-sm) var(--npc-space-md);
     font-size: 1.1rem;
   }
-
   .quest-card-body {
     padding: 0.5rem;
   }
-
-  /* Compact layout on mobile */
   .recording-row {
     gap: 0.4rem;
     padding: 0.5rem;
   }
-
   .recording-line-number {
     font-size: 0.85rem;
     min-width: 1.5rem;
   }
-
   .recording-actions {
     gap: 0.2rem;
   }
-
   .vote-btn,
   .comment-btn {
     padding: 0.4rem 0.6rem;
-    font-size: 1rem;
   }
-
   .delete-recording-btn {
     width: 28px;
     height: 28px;
     font-size: 1rem;
   }
-
   .admin-controls {
     flex-direction: column;
   }
-
   #change-actor-btn,
   #archive-btn {
     width: 100%;
   }
 }
 
-/* --------------------------------------------------------------------------
-   12. ACCESSIBILITY - Reduced Motion
-   -------------------------------------------------------------------------- */
-
+/* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
-  .npc-animate-on-scroll {
+  .npc-animate-on-scroll,
+  .npc-animate-on-scroll.animate-ready {
     opacity: 1;
     transform: none;
   }
-
-  .npc-animate-on-scroll.is-visible {
-    animation: none;
-  }
-
+  .npc-animate-on-scroll.is-visible,
   .npc-animate-fade-in,
   .npc-animate-fade-in-delay {
-    animation: none !important;
-    opacity: 1 !important;
+    animation: none;
+    opacity: 1;
   }
-
   .npc-avatar,
   .voice-actor-card,
   .voice-actor-link,
@@ -812,14 +685,11 @@
   .vote-btn,
   .delete-recording-btn,
   button {
-    transition: none !important;
+    transition: none;
   }
 }
 
-/* --------------------------------------------------------------------------
-   13. LEGACY SUPPORT (Upload form styles)
-   -------------------------------------------------------------------------- */
-
+/* Legacy Upload Form */
 #overwrite-checkbox {
   height: 1.25rem;
   width: 1.25rem;
