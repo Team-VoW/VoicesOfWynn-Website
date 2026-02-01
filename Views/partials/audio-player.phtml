@@ -10,8 +10,8 @@
 if (!isset($audioSrc) || empty($audioSrc) || !is_string($audioSrc)) {
     error_log(sprintf(
         'Audio player partial: Invalid $audioSrc provided (type: %s, value: %s)',
-        gettype($audioSrc ?? null),
-        var_export($audioSrc ?? null, true)
+        gettype(@$audioSrc),
+        var_export(@$audioSrc, true)
     ));
     // Fail silently - render nothing instead of breaking the page
     return;
