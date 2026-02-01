@@ -1,10 +1,4 @@
-/* ==========================================================================
-   VOICES OF WYNN - MODERN MOD CONTENTS PAGE STYLES
-   ========================================================================== */
-
-/* --------------------------------------------------------------------------
-   1. CSS CUSTOM PROPERTIES
-   -------------------------------------------------------------------------- */
+/* Mod Contents Page Styles */
 
 :root {
   --card-bg: rgba(255, 255, 255, 0.98);
@@ -19,10 +13,7 @@
   --gradient-pink: #ff6b9d;
 }
 
-/* --------------------------------------------------------------------------
-   2. PAGE HEADER
-   -------------------------------------------------------------------------- */
-
+/* Page Header */
 .contents-header {
   text-align: center;
   margin-bottom: 1.25rem;
@@ -39,10 +30,7 @@
   margin: 0 auto;
 }
 
-/* --------------------------------------------------------------------------
-   3. SEARCH INPUT
-   -------------------------------------------------------------------------- */
-
+/* Search Input */
 .search-container {
   display: flex;
   justify-content: center;
@@ -58,8 +46,7 @@
   border-radius: 2rem;
   background: white;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  transition: border-color var(--transition-medium) ease,
-              box-shadow var(--transition-medium) ease;
+  transition: border-color var(--transition-medium) ease, box-shadow var(--transition-medium) ease;
   outline: none;
 }
 
@@ -67,17 +54,13 @@
 .search-input:focus {
   border-color: var(--gradient-cyan);
   box-shadow: 0 4px 20px rgba(0, 212, 255, 0.15);
-  border-radius: 2rem;
 }
 
 .search-input::placeholder {
   color: #757575;
 }
 
-/* --------------------------------------------------------------------------
-   4. QUESTS GRID
-   -------------------------------------------------------------------------- */
-
+/* Quests Grid */
 .quests-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -85,17 +68,13 @@
   width: 100%;
 }
 
-/* --------------------------------------------------------------------------
-   5. QUEST CARD
-   -------------------------------------------------------------------------- */
-
+/* Quest Card */
 .quest-card {
   background: var(--card-bg);
   border-radius: 0.75rem;
   padding: 1rem 0.875rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  transition: transform var(--transition-medium) ease,
-              box-shadow var(--transition-medium) ease;
+  transition: transform var(--transition-medium) ease, box-shadow var(--transition-medium) ease;
   text-align: center;
   position: relative;
   overflow: hidden;
@@ -118,22 +97,18 @@
   transition: transform var(--transition-medium) ease;
 }
 
-.quest-card:hover {
+.quest-card:hover,
+.quest-card:focus {
   transform: translateY(-4px);
   box-shadow: 0 6px 20px rgba(0, 180, 200, 0.2);
 }
 
 .quest-card:focus {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 20px rgba(0, 180, 200, 0.2);
   outline: 2px solid var(--gradient-cyan);
   outline-offset: 2px;
 }
 
-.quest-card:hover .quest-card__accent {
-  transform: scaleX(1);
-}
-
+.quest-card:hover .quest-card__accent,
 .quest-card:focus .quest-card__accent {
   transform: scaleX(1);
 }
@@ -145,10 +120,8 @@
   color: #333;
   line-height: 1.3;
 }
-/* --------------------------------------------------------------------------
-   6. MODAL OVERLAY
-   -------------------------------------------------------------------------- */
 
+/* Modal Overlay */
 .modal-overlay {
   display: none;
   position: fixed;
@@ -175,14 +148,8 @@
 }
 
 @keyframes modalSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+  from { opacity: 0; transform: translateY(-20px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .modal__header {
@@ -207,8 +174,6 @@
 
 .modal__close:hover {
   background: rgba(0, 0, 0, 0.05);
-  box-shadow: none;
-  transform: none;
 }
 
 .modal__close:focus-visible {
@@ -232,10 +197,7 @@
   justify-items: center;
 }
 
-/* --------------------------------------------------------------------------
-   7. NPC ITEMS IN MODAL
-   -------------------------------------------------------------------------- */
-
+/* NPC Items in Modal */
 .npc {
   display: flex;
   flex-direction: column;
@@ -271,19 +233,10 @@
   text-decoration: underline;
 }
 
-/* --------------------------------------------------------------------------
-   8. SCROLL ANIMATIONS
-   -------------------------------------------------------------------------- */
-
+/* Scroll Animations */
 @keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .animate-on-scroll {
@@ -295,16 +248,12 @@
   animation: fadeInUp 0.5s ease forwards;
 }
 
-/* Staggered delays */
 .quests-grid .quest-card:nth-child(4n+1).is-visible { animation-delay: 0s; }
 .quests-grid .quest-card:nth-child(4n+2).is-visible { animation-delay: 0.05s; }
 .quests-grid .quest-card:nth-child(4n+3).is-visible { animation-delay: 0.1s; }
 .quests-grid .quest-card:nth-child(4n).is-visible { animation-delay: 0.15s; }
 
-/* --------------------------------------------------------------------------
-   9. RESPONSIVE DESIGN
-   -------------------------------------------------------------------------- */
-
+/* Responsive */
 @media (max-width: 1000px) {
   .quests-grid {
     grid-template-columns: repeat(3, 1fr);
@@ -324,35 +273,27 @@
     grid-template-columns: 1fr;
     gap: 0.5rem;
   }
-
   .quest-card {
     min-height: 60px;
     padding: 0.875rem 0.75rem;
   }
-
   .contents-header p {
     font-size: 1rem;
     padding: 0 0.5rem;
   }
-
   .search-input {
     max-width: 100%;
   }
-
   .modal {
     width: 95%;
     max-height: 90vh;
   }
-
   .modal__content {
     padding: 1rem 1.5rem 1.5rem;
   }
 }
 
-/* --------------------------------------------------------------------------
-   10. REDUCED MOTION
-   -------------------------------------------------------------------------- */
-
+/* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
   .quest-card,
   .quest-card__accent,
@@ -361,33 +302,25 @@
   .npc .name a {
     transition: none;
   }
-
   .quest-card:hover {
     transform: none;
   }
-
   .quest-card__accent {
     transform: scaleX(1);
   }
-
   .animate-on-scroll {
     opacity: 1;
     transform: none;
   }
-
   .animate-on-scroll.is-visible {
     animation: none;
   }
-
   .modal {
     animation: none;
   }
 }
 
-/* --------------------------------------------------------------------------
-   11. LEGACY COMPATIBILITY (for dynamic search results)
-   -------------------------------------------------------------------------- */
-
+/* Legacy Compatibility */
 #results_container .quest-card,
 #results_container .card.q-voice {
   background: var(--card-bg);
@@ -402,8 +335,7 @@
   text-align: center;
   position: relative;
   overflow: hidden;
-  transition: transform var(--transition-medium) ease,
-              box-shadow var(--transition-medium) ease;
+  transition: transform var(--transition-medium) ease, box-shadow var(--transition-medium) ease;
 }
 
 #results_container .quest-card:hover,
@@ -412,5 +344,4 @@
   box-shadow: 0 6px 20px rgba(0, 180, 200, 0.2);
 }
 
-/* Hide the old results display */
 #results { display: none; }
