@@ -5,6 +5,13 @@ $(function () {
     let $questBoxes = $(".quests-grid").find('.quest-card')
     let lastFocusedElement = null
 
+    // Helper to escape HTML special characters to prevent XSS
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
     // Helper to build NPC HTML with proper storage URLs
     async function buildNpcHtml(npcs) {
         const config = await VoWStorage.getConfig();
@@ -14,7 +21,7 @@ $(function () {
             html += `
                 <div class="npc">
                     <img class="image" src="${imgUrl}" alt="NPC avatar"/>
-                    <p class="name"><a href="contents/npc/${npc.id}">${npc.name}</a></p>
+                    <p class="name"><a href="contents/npc/${npc.id}">${escapeHtml(npc.name)}</a></p>
                 </div>
             `;
         });
