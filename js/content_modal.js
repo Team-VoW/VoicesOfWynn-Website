@@ -5,27 +5,36 @@ $(function () {
     let $questBoxes = $(".quests-grid").find('.quest-card')
     let lastFocusedElement = null
 
-    // Helper to escape HTML special characters to prevent XSS
-    function escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
-
-    // Helper to build NPC HTML with proper storage URLs
-    async function buildNpcHtml(npcs) {
+    // Build NPC elements using safe DOM manipulation (OWASP GUIDELINE #3)
+    // See: https://cheatsheetseries.owasp.org/cheatsheets/DOM_based_XSS_Prevention_Cheat_Sheet.html
+    // Uses createElement, textContent, and appendChild which are inherently safe against XSS
+    async function buildNpcElements(npcs) {
         const config = await VoWStorage.getConfig();
-        let html = '';
+        const fragment = document.createDocumentFragment();
+
         npcs.forEach(npc => {
-            const imgUrl = config.baseUrl + config.paths.npcs + npc.id + '.png';
-            html += `
-                <div class="npc">
-                    <img class="image" src="${imgUrl}" alt="NPC avatar"/>
-                    <p class="name"><a href="contents/npc/${npc.id}">${escapeHtml(npc.name)}</a></p>
-                </div>
-            `;
+            const div = document.createElement('div');
+            div.className = 'npc';
+
+            const img = document.createElement('img');
+            img.className = 'image';
+            img.src = config.baseUrl + config.paths.npcs + npc.id + '.png';
+            img.alt = 'NPC avatar';
+
+            const p = document.createElement('p');
+            p.className = 'name';
+
+            const a = document.createElement('a');
+            a.href = 'contents/npc/' + npc.id;
+            a.textContent = npc.name;  // textContent is safe - never executes code
+
+            p.appendChild(a);
+            div.appendChild(img);
+            div.appendChild(p);
+            fragment.appendChild(div);
         });
-        return html;
+
+        return fragment;
     }
 
     // Get all focusable elements within the modal
@@ -100,7 +109,7 @@ $(function () {
     $('#results_container').on('click', '.quest-card, .card.q-voice', function () {
         $.getJSON(`/api/content/quest-info?questId=${$(this).attr("data-q-id")}`, async function (data) {
             let npcs = data[0].npcs;
-            $content.html(await buildNpcHtml(npcs));
+            $content.empty().append(await buildNpcElements(npcs));
             openModal();
         }).fail(function(jqXHR, textStatus, errorThrown) {
             console.error('Failed to load quest info:', textStatus, errorThrown);
@@ -110,7 +119,7 @@ $(function () {
     $questBoxes.click(function () {
         $.getJSON(`/api/content/quest-info?questId=${$(this).attr("data-q-id")}`, async function (data) {
             let npcs = data[0].npcs;
-            $content.html(await buildNpcHtml(npcs));
+            $content.empty().append(await buildNpcElements(npcs));
             openModal();
         }).fail(function(jqXHR, textStatus, errorThrown) {
             console.error('Failed to load quest info:', textStatus, errorThrown);
