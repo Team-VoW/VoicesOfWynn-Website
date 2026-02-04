@@ -8,15 +8,15 @@ const SOCIAL_NAME = ['youtube' => 'YouTube', 'twitter' => 'Twitter', 'castingcal
 
 <header class="cast-header">
     <div class="cast-profile-card">
-        <img class="cast-avatar" src="<?= htmlspecialchars($voiceActor->getAvatarLink(), ENT_QUOTES, 'UTF-8') ?>"
-            onerror="this.onerror=null; this.src='<?= htmlspecialchars($voiceActor->getDefaultAvatarUrl(), ENT_QUOTES, 'UTF-8') ?>'"
-            alt="<?= htmlspecialchars($voiceActor->getName(), ENT_QUOTES, 'UTF-8') ?>'s avatar" />
-        <h1 class="cast-name"><?= htmlspecialchars($voiceActor->getName(), ENT_QUOTES, 'UTF-8'); ?></h1>
+        <img class="cast-avatar" src="<?= $voiceActor->getAvatarLink() ?>"
+            onerror="this.onerror=null; this.src='<?= $voiceActor->getDefaultAvatarUrl() ?>'"
+            alt="<?= $voiceActor->getName() ?>'s avatar" />
+        <h1 class="cast-name"><?= $voiceActor->getName() ?></h1>
         <div class="cast-roles">
             <?php foreach ($voiceActor->getRoles() as $role): ?>
                 <span class="cast-role-badge"
                     style="--role-color: #<?= preg_match('/^[0-9A-Fa-f]{6}$/', $role->color) ? $role->color : '000000' ?>;">
-                    <?= htmlspecialchars($role->name, ENT_QUOTES, 'UTF-8') ?>
+                    <?= $role->name ?>
                 </span>
             <?php endforeach ?>
         </div>
@@ -27,27 +27,27 @@ const SOCIAL_NAME = ['youtube' => 'YouTube', 'twitter' => 'Twitter', 'castingcal
     <?php if (!empty($voiceActor->getSocial('discord'))): ?>
         <div class="cast-discord">
             <img src="images/discord_icon.png" alt="Discord" class="social-icon" />
-            <span class="discord-tag"><?= htmlspecialchars($voiceActor->getSocial('discord'), ENT_QUOTES, 'UTF-8') ?></span>
+            <span class="discord-tag"><?= $voiceActor->getSocial('discord') ?></span>
         </div>
     <?php endif ?>
 
     <div class="cast-social-links">
         <?php foreach (SOCIALS as $social): ?>
             <?php if ($voiceActor->getSocial($social)): ?>
-                <a href="<?= htmlspecialchars(SOCIAL_PRE_LINK[$social] . $voiceActor->getSocial($social), ENT_QUOTES, 'UTF-8') ?>"
+                <a href="<?= SOCIAL_PRE_LINK[$social] . $voiceActor->getSocial($social) ?>"
                     target="_blank" rel="noopener noreferrer"
-                    class="cast-social-btn cast-social-<?= htmlspecialchars($social, ENT_QUOTES, 'UTF-8') ?>">
-                    <img src="<?= htmlspecialchars(SOCIAL_ICONS[$social], ENT_QUOTES, 'UTF-8') ?>" alt=""
+                    class="cast-social-btn cast-social-<?= $social ?>">
+                    <img src="<?= SOCIAL_ICONS[$social] ?>" alt=""
                         class="social-btn-icon" />
                     <span class="social-btn-label">
-                        <?= $social === 'youtube' ? htmlspecialchars(SOCIAL_NAME[$social], ENT_QUOTES, 'UTF-8') : htmlspecialchars($voiceActor->getSocial($social), ENT_QUOTES, 'UTF-8') ?>
+                        <?= $social === 'youtube' ? SOCIAL_NAME[$social] : $voiceActor->getSocial($social) ?>
                     </span>
                 </a>
             <?php endif; ?>
         <?php endforeach; ?>
 
         <?php if (!empty($voiceActor->getEmail()) && $voiceActor->hasPublicEmail()): ?>
-            <a href="mailto:<?= htmlspecialchars($voiceActor->getEmail(), ENT_QUOTES, 'UTF-8') ?>"
+            <a href="mailto:<?= $voiceActor->getEmail() ?>"
                 class="cast-social-btn cast-social-contact">
                 <span class="social-btn-icon-text">&#9993;</span>
                 <span class="social-btn-label">Contact</span>
@@ -88,10 +88,10 @@ const SOCIAL_NAME = ['youtube' => 'YouTube', 'twitter' => 'Twitter', 'castingcal
                 <h3 class="cast-quest-title">
                     <a href="/contents/npc/<?= urlencode($firstNpc->getId()) ?>" class="cast-npc-link">
                         <span
-                            class="cast-npc-name"><?= htmlspecialchars($firstNpc->getName(), ENT_QUOTES, 'UTF-8') ?></span>
+                            class="cast-npc-name"><?= $firstNpc->getName() ?></span>
                     </a>
                     <span class="cast-quest-separator">in</span>
-                    <span class="cast-quest-name"><?= htmlspecialchars($quest->getName(), ENT_QUOTES, 'UTF-8') ?></span>
+                    <span class="cast-quest-name"><?= $quest->getName() ?></span>
                     <?php if ($firstNpc->isArchived()): ?>
                         <span class="cast-archived-badge">outdated</span>
                     <?php endif ?>
@@ -103,7 +103,7 @@ const SOCIAL_NAME = ['youtube' => 'YouTube', 'twitter' => 'Twitter', 'castingcal
                 <?php foreach ($recordings as $recording): ?>
                     <div class="cast-recording-item voting-audio-box">
                         <div class="cast-recording-line">
-                            <span class="line-number"># <?= htmlspecialchars($recording->line, ENT_QUOTES, 'UTF-8') ?></span>
+                            <span class="line-number"># <?= $recording->line ?></span>
                         </div>
 
                         <div class="cast-recording-player">
@@ -114,27 +114,27 @@ const SOCIAL_NAME = ['youtube' => 'YouTube', 'twitter' => 'Twitter', 'castingcal
                         <div class="cast-recording-actions">
                             <button
                                 class="cast-vote-btn upvote<?php if (in_array($recording->id, ${basename(__FILE__, '.phtml') . '_upvoted'})): ?> clicked<?php endif ?>"
-                                data-recording-id="<?= htmlspecialchars($recording->id, ENT_QUOTES, 'UTF-8') ?>"
-                                data-npc-id="<?= htmlspecialchars($recording->npcId, ENT_QUOTES, 'UTF-8') ?>">
+                                data-recording-id="<?= $recording->id ?>"
+                                data-npc-id="<?= $recording->npcId ?>">
                                 <span class="vote-icon">&#128077;</span>
                                 <span
-                                    class="vote-count"><?= htmlspecialchars($recording->upvotes, ENT_QUOTES, 'UTF-8') ?></span>
+                                    class="vote-count"><?= $recording->upvotes ?></span>
                             </button>
 
                             <button
                                 class="cast-vote-btn downvote<?php if (in_array($recording->id, ${basename(__FILE__, '.phtml') . '_downvoted'})): ?> clicked<?php endif ?>"
-                                data-recording-id="<?= htmlspecialchars($recording->id, ENT_QUOTES, 'UTF-8') ?>"
-                                data-npc-id="<?= htmlspecialchars($recording->npcId, ENT_QUOTES, 'UTF-8') ?>">
+                                data-recording-id="<?= $recording->id ?>"
+                                data-npc-id="<?= $recording->npcId ?>">
                                 <span class="vote-icon">&#128078;</span>
                                 <span
-                                    class="vote-count"><?= htmlspecialchars($recording->downvotes, ENT_QUOTES, 'UTF-8') ?></span>
+                                    class="vote-count"><?= $recording->downvotes ?></span>
                             </button>
 
                             <a href="/contents/npc/<?= urlencode($recording->npcId) ?>/comments/<?= urlencode($recording->id) ?>"
                                 class="cast-comment-btn">
                                 <span class="vote-icon">&#128172;</span>
                                 <span
-                                    class="vote-count"><?= htmlspecialchars($recording->comments, ENT_QUOTES, 'UTF-8') ?></span>
+                                    class="vote-count"><?= $recording->comments ?></span>
                             </a>
                         </div>
                     </div>

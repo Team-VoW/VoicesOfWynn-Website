@@ -4,12 +4,12 @@
 <section class="npc-hero npc-animate-fade-in">
     <div class="npc-hero-content">
         <h1 class="npc-hero-title">
-            <?= htmlspecialchars(${basename(__FILE__, '.phtml').'_npc'}->getName(), ENT_QUOTES, 'UTF-8') ?>
+            <?= ${basename(__FILE__, '.phtml').'_npc'}->getName() ?>
             <?php if (${basename(__FILE__, '.phtml').'_npc'}->isArchived()) : ?>
                 <span class="outdated-tag">outdated</span>
             <?php endif ?>
         </h1>
-        <img class="npc-avatar" src="<?= htmlspecialchars(\VoicesOfWynn\storageUrl('npcs/' . ${basename(__FILE__, '.phtml').'_npc'}->getId() . '.png'), ENT_QUOTES, 'UTF-8') ?>" alt="NPC picture" />
+        <img class="npc-avatar" src="<?= \VoicesOfWynn\storageUrl('npcs/' . ${basename(__FILE__, '.phtml').'_npc'}->getId() . '.png') ?>" alt="NPC picture" />
     </div>
 </section>
 
@@ -19,14 +19,14 @@
 
     <?php if (${basename(__FILE__, '.phtml').'_voice_actor'} === null) : ?>
         <div class="voice-actor-info">
-            <img class="voice-actor-avatar" src="<?= htmlspecialchars(\VoicesOfWynn\storageUrl('avatars/nobody.png'), ENT_QUOTES, 'UTF-8') ?>" alt="Profile picture" />
+            <img class="voice-actor-avatar" src="<?= \VoicesOfWynn\storageUrl('avatars/nobody.png') ?>" alt="Profile picture" />
             <span class="voice-actor-name unassigned">Nobody</span>
         </div>
     <?php else : ?>
-        <a class="voice-actor-link" href="cast/<?= htmlspecialchars(${basename(__FILE__, '.phtml').'_voice_actor'}->getId(), ENT_QUOTES, 'UTF-8') ?>">
-            <img class="voice-actor-avatar" src="<?= htmlspecialchars(${basename(__FILE__, '.phtml').'_voice_actor'}->getAvatarLink(), ENT_QUOTES, 'UTF-8') ?>" onerror='this.onerror=null; this.src=<?= htmlspecialchars(json_encode(${basename(__FILE__, '.phtml').'_voice_actor'}->getDefaultAvatarUrl()), ENT_QUOTES, 'UTF-8') ?>' alt="Profile picture" />
+        <a class="voice-actor-link" href="cast/<?= ${basename(__FILE__, '.phtml').'_voice_actor'}->getId() ?>">
+            <img class="voice-actor-avatar" src="<?= ${basename(__FILE__, '.phtml').'_voice_actor'}->getAvatarLink() ?>" onerror='this.onerror=null; this.src=<?= json_encode(${basename(__FILE__, '.phtml').'_voice_actor'}->getDefaultAvatarUrl()) ?>' alt="Profile picture" />
 
-            <span class="voice-actor-name"><?= htmlspecialchars(${basename(__FILE__, '.phtml').'_voice_actor'}->getName(), ENT_QUOTES, 'UTF-8') ?></span>
+            <span class="voice-actor-name"><?= ${basename(__FILE__, '.phtml').'_voice_actor'}->getName() ?></span>
         </a>
     <?php endif ?>
 
@@ -42,9 +42,9 @@
                 <?php endif ?>
                 <?php foreach (${basename(__FILE__, '.phtml').'_voice_actors'} as $vactor) : ?>
                     <?php if (${basename(__FILE__, '.phtml').'_voice_actor'} !== null && ${basename(__FILE__, '.phtml').'_voice_actor'}->getId() === $vactor->getId()) : ?>
-                        <option selected value="<?= htmlspecialchars($vactor->getId(), ENT_QUOTES, 'UTF-8') ?>" data-avatar-link="<?= htmlspecialchars($vactor->getAvatarLink(), ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($vactor->getName(), ENT_QUOTES, 'UTF-8') ?></option>
+                        <option selected value="<?= $vactor->getId() ?>" data-avatar-link="<?= $vactor->getAvatarLink() ?>"><?= $vactor->getName() ?></option>
                     <?php else : ?>
-                        <option value="<?= htmlspecialchars($vactor->getId(), ENT_QUOTES, 'UTF-8') ?>" data-avatar-link="<?= htmlspecialchars($vactor->getAvatarLink(), ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($vactor->getName(), ENT_QUOTES, 'UTF-8') ?></option>
+                        <option value="<?= $vactor->getId() ?>" data-avatar-link="<?= $vactor->getAvatarLink() ?>"><?= $vactor->getName() ?></option>
                     <?php endif ?>
                 <?php endforeach ?>
             </select>
@@ -60,7 +60,7 @@
     <?php foreach (${basename(__FILE__, '.phtml').'_quest_recordings'} as $quest) : ?>
         <article class="quest-card npc-animate-on-scroll">
             <header class="quest-card-header">
-                <?= htmlspecialchars($quest->getName(), ENT_QUOTES, 'UTF-8') ?>
+                <?= $quest->getName() ?>
             </header>
             <div class="quest-card-body">
                 <?php
@@ -69,31 +69,31 @@
                 ?>
                 <?php foreach ($recordings as $recording) : ?>
                     <div class="recording-row">
-                        <span class="recording-line-number"><?= htmlspecialchars($recording->line, ENT_QUOTES, 'UTF-8') ?></span>
+                        <span class="recording-line-number"><?= $recording->line ?></span>
                         <!-- Native audio player (hidden, kept for fallback) -->
                         <div class="recording-audio recording-audio--native">
                             <audio controls preload="none">
-                                <source src="<?= htmlspecialchars(\VoicesOfWynn\storageUrl('recordings/' . $recording->file), ENT_QUOTES, 'UTF-8') ?>" type="audio/ogg">
+                                <source src="<?= \VoicesOfWynn\storageUrl('recordings/' . $recording->file) ?>" type="audio/ogg">
                             </audio>
                         </div>
                         <!-- Custom audio player component -->
-                        <?php $audioSrc = htmlspecialchars(\VoicesOfWynn\storageUrl('recordings/' . $recording->file), ENT_QUOTES, 'UTF-8'); ?>
+                        <?php $audioSrc = \VoicesOfWynn\storageUrl('recordings/' . $recording->file); ?>
                         <?php include 'Views/partials/audio-player.phtml'; ?>
                         <div class="recording-actions">
-                            <button class="vote-btn upvote-btn upvote<?php if (in_array($recording->id, ${basename(__FILE__, '.phtml').'_upvoted'})) : ?> clicked<?php endif ?>" data-recording-id="<?= htmlspecialchars($recording->id, ENT_QUOTES, 'UTF-8') ?>" data-npc-id="<?= htmlspecialchars($recording->npcId, ENT_QUOTES, 'UTF-8') ?>">
+                            <button class="vote-btn upvote-btn upvote<?php if (in_array($recording->id, ${basename(__FILE__, '.phtml').'_upvoted'})) : ?> clicked<?php endif ?>" data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>">
                                 <span class="vote-icon">👍</span>
-                                <span class="vote-count"><?= htmlspecialchars($recording->upvotes, ENT_QUOTES, 'UTF-8') ?></span>
+                                <span class="vote-count"><?= $recording->upvotes ?></span>
                             </button>
-                            <button class="vote-btn downvote-btn downvote<?php if (in_array($recording->id, ${basename(__FILE__, '.phtml').'_downvoted'})) : ?> clicked<?php endif ?>" data-recording-id="<?= htmlspecialchars($recording->id, ENT_QUOTES, 'UTF-8') ?>" data-npc-id="<?= htmlspecialchars($recording->npcId, ENT_QUOTES, 'UTF-8') ?>">
+                            <button class="vote-btn downvote-btn downvote<?php if (in_array($recording->id, ${basename(__FILE__, '.phtml').'_downvoted'})) : ?> clicked<?php endif ?>" data-recording-id="<?= $recording->id ?>" data-npc-id="<?= $recording->npcId ?>">
                                 <span class="vote-icon">👎</span>
-                                <span class="vote-count"><?= htmlspecialchars($recording->downvotes, ENT_QUOTES, 'UTF-8') ?></span>
+                                <span class="vote-count"><?= $recording->downvotes ?></span>
                             </button>
-                            <a href="contents/npc/<?= htmlspecialchars($recording->npcId, ENT_QUOTES, 'UTF-8') ?>/comments/<?= htmlspecialchars($recording->id, ENT_QUOTES, 'UTF-8') ?>" class="vote-btn comment-btn">
+                            <a href="contents/npc/<?= $recording->npcId ?>/comments/<?= $recording->id ?>" class="vote-btn comment-btn">
                                 <span class="vote-icon">💬</span>
-                                <span class="vote-count"><?= htmlspecialchars($recording->comments, ENT_QUOTES, 'UTF-8') ?></span>
+                                <span class="vote-count"><?= $recording->comments ?></span>
                             </a>
                             <?php if (${basename(__FILE__, '.phtml').'_admin'}) : ?>
-                                <button class="delete-recording-btn" data-recording-id="<?= htmlspecialchars($recording->id, ENT_QUOTES, 'UTF-8') ?>">×</button>
+                                <button class="delete-recording-btn" data-recording-id="<?= $recording->id ?>">×</button>
                             <?php endif ?>
                         </div>
                     </div>
@@ -101,8 +101,8 @@
             </div>
             <?php if (${basename(__FILE__, '.phtml').'_admin'}) : ?>
                 <div class="quest-admin-actions">
-                    <button class="archive-all-recordings-btn" data-quest-id="<?= htmlspecialchars($quest->getId(), ENT_QUOTES, 'UTF-8') ?>">Archive all recordings</button>
-                    <a href="/administration/upload?questId=<?= htmlspecialchars($quest->getId(), ENT_QUOTES, 'UTF-8') ?>&amp;npcId=<?= htmlspecialchars(${basename(__FILE__, '.phtml').'_npc'}->getId(), ENT_QUOTES, 'UTF-8') ?>" class="uploadbtn">Add new recordings</a>
+                    <button class="archive-all-recordings-btn" data-quest-id="<?= $quest->getId() ?>">Archive all recordings</button>
+                    <a href="/administration/upload?questId=<?= $quest->getId() ?>&amp;npcId=<?= ${basename(__FILE__, '.phtml').'_npc'}->getId() ?>" class="uploadbtn">Add new recordings</a>
                 </div>
             <?php endif ?>
         </article>

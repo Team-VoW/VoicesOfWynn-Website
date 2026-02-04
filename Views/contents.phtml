@@ -11,9 +11,9 @@
 
 <div class="quests-grid">
     <?php foreach (${basename(__FILE__, '.phtml').'_quests'} as $index => $quest) : ?>
-        <div class="quest-card animate-on-scroll" data-q-id="<?= htmlspecialchars($quest->getId(), ENT_QUOTES, 'UTF-8') ?>">
+        <div class="quest-card animate-on-scroll" data-q-id="<?= $quest->getId() ?>">
             <div class="quest-card__accent"></div>
-            <h3 class="quest-card__name"><?= htmlspecialchars($quest->getName(), ENT_QUOTES, 'UTF-8'); ?></h3>
+            <h3 class="quest-card__name"><?= $quest->getName() ?></h3>
         </div>
     <?php endforeach ?>
 </div>
