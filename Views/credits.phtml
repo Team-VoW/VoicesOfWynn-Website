@@ -20,22 +20,22 @@ foreach (${basename(__FILE__, '.phtml') . '_contributors'} as $contributor):
         $currentRole = $topRole->weight;
         ?>
         <section class="role-section">
-            <h2 class="role-title" style="color: #<?= htmlspecialchars($topRole->color, ENT_QUOTES, 'UTF-8') ?>;">
+            <h2 class="role-title" style="color: #<?= $topRole->color ?>;">
                 <?php // Simple pluralization works for current roles; review if adding new ones ?>
-                <?= htmlspecialchars($topRole->name, ENT_QUOTES, 'UTF-8') ?>
+                <?= $topRole->name ?>
                 <?php if ($topRole->name !== 'Owner'): ?>s<?php endif ?>
             </h2>
             <div class="contributors-grid">
             <?php endif; ?>
-            <a class="contributor-card" href="/cast/<?= htmlspecialchars($contributor->getId(), ENT_QUOTES, 'UTF-8'); ?>">
+            <a class="contributor-card" href="/cast/<?= $contributor->getId() ?>">
                 <img class="contributor-avatar"
-                    src="<?= htmlspecialchars($contributor->getAvatarLink(), ENT_QUOTES, 'UTF-8'); ?>"
+                    src="<?= $contributor->getAvatarLink() ?>"
                     onerror="this.onerror=null; this.src=<?= json_encode($contributor->getDefaultAvatarUrl(), JSON_HEX_APOS|JSON_HEX_QUOT|JSON_HEX_TAG|JSON_HEX_AMP) ?>"
-                    alt="<?= htmlspecialchars($contributor->getName(), ENT_QUOTES, 'UTF-8'); ?>'s profile picture"
+                    alt="<?= $contributor->getName() ?>'s profile picture"
                     loading="lazy" />
-                <p class="contributor-name"><?= htmlspecialchars($contributor->getName(), ENT_QUOTES, 'UTF-8'); ?></p>
+                <p class="contributor-name"><?= $contributor->getName() ?></p>
                 <?php if (!empty($contributor->getLore())): ?>
-                    <p class="contributor-lore"><?= htmlspecialchars($contributor->getLore(), ENT_QUOTES, 'UTF-8'); ?></p>
+                    <p class="contributor-lore"><?= $contributor->getLore() ?></p>
                 <?php endif ?>
             </a>
 
