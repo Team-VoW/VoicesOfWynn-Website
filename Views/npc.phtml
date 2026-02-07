@@ -3,12 +3,7 @@
 <!-- Hero Section -->
 <section class="npc-hero npc-animate-fade-in">
     <div class="npc-hero-content">
-        <h1 class="npc-hero-title">
-            <?= ${basename(__FILE__, '.phtml').'_npc'}->getName() ?>
-            <?php if (${basename(__FILE__, '.phtml').'_npc'}->isArchived()) : ?>
-                <span class="outdated-tag">outdated</span>
-            <?php endif ?>
-        </h1>
+        <h1 class="npc-hero-title"><?= ${basename(__FILE__, '.phtml').'_npc'}->getName() ?><?php if (${basename(__FILE__, '.phtml').'_npc'}->isArchived()) : ?> <span class="outdated-tag">outdated</span><?php endif ?></h1>
         <img class="npc-avatar" src="<?= \VoicesOfWynn\storageUrl('npcs/' . ${basename(__FILE__, '.phtml').'_npc'}->getId() . '.png') ?>" alt="NPC picture" />
     </div>
 </section>

@@ -86,10 +86,7 @@ const SOCIAL_NAME = ['youtube' => 'YouTube', 'twitter' => 'Twitter', 'castingcal
         <div class="cast-quest-card">
             <div class="cast-quest-header">
                 <h3 class="cast-quest-title">
-                    <a href="/contents/npc/<?= urlencode($firstNpc->getId()) ?>" class="cast-npc-link">
-                        <span
-                            class="cast-npc-name"><?= $firstNpc->getName() ?></span>
-                    </a>
+                    <a href="/contents/npc/<?= urlencode($firstNpc->getId()) ?>" class="cast-npc-link"><span class="cast-npc-name"><?= $firstNpc->getName() ?></span></a>
                     <span class="cast-quest-separator">in</span>
                     <span class="cast-quest-name"><?= $quest->getName() ?></span>
                     <?php if ($firstNpc->isArchived()): ?>

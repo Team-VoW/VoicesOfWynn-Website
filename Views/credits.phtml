@@ -22,8 +22,7 @@ foreach (${basename(__FILE__, '.phtml') . '_contributors'} as $contributor):
         <section class="role-section">
             <h2 class="role-title" style="color: #<?= $topRole->color ?>;">
                 <?php // Simple pluralization works for current roles; review if adding new ones ?>
-                <?= $topRole->name ?>
-                <?php if ($topRole->name !== 'Owner'): ?>s<?php endif ?>
+                <?= $topRole->name ?><?php if ($topRole->name !== 'Owner'): ?>s<?php endif ?>
             </h2>
             <div class="contributors-grid">
             <?php endif; ?>
