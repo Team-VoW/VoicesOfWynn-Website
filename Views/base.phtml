@@ -26,7 +26,7 @@
 
     <!-- Stylesheets -->
     <?php foreach (self::$cssFiles as $cssFile): ?>
-        <link rel="stylesheet" type="text/css" href="css/<?= $cssFile ?>.css">
+        <link rel="stylesheet" type="text/css" href="css/<?= $cssFile ?>.css?v=<?= file_exists("css/$cssFile.css") ? filemtime("css/$cssFile.css") : '' ?>">
     <?php endforeach ?>
 </head>
 
@@ -105,7 +105,7 @@
     </script>
     <!-- JavaScript -->
     <?php foreach (self::$jsFiles as $jsFile): ?>
-        <script type="text/javascript" src="js/<?= $jsFile ?>.js"></script>
+        <script type="text/javascript" src="js/<?= $jsFile ?>.js?v=<?= file_exists("js/$jsFile.js") ? filemtime("js/$jsFile.js") : '' ?>"></script>
     <?php endforeach ?>
 </body>
 
