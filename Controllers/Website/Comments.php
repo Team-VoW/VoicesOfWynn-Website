@@ -50,7 +50,19 @@ class Comments extends WebpageController
             //Recording of the chosen ID was not found
             return 404;
         }
-		self::$data['comments_voice_actor_id'] = $cnm->getNpc(self::$data['comments_recording']->npcId)->getVoiceActor()->getId();
+		$npc = $cnm->getNpc(self::$data['comments_recording']->npcId);
+		if ($npc === null || $npc === false) {
+			//NPC associated with this recording was not found
+			return 404;
+		}
+
+		$voiceActor = $npc->getVoiceActor();
+		if ($voiceActor === null || $voiceActor === false) {
+			//Voice actor for this NPC was not found
+			return 404;
+		}
+
+		self::$data['comments_voice_actor_id'] = $voiceActor->getId();
 		self::$data['comments_recording_title'] = $cnm->getRecordingTitle(self::$data['comments_recording']);
 		self::$data['comments_comments'] = $cnm->getComments($recordingId);
 		self::$data['comments_owned_comments'] = $cnm->getOwnedComments($recordingId);
@@ -58,8 +70,10 @@ class Comments extends WebpageController
 		$_SESSION['antispam'] = $color;
 		self::$data['comments_antispam_color'] = $color;
 		self::$data['comments_antispam_color_code'] = Recording::IDEAL_COLORS[$color];
-		
+
+		self::$cssFiles[] = 'audio-player';
 		self::$cssFiles[] = 'comments';
+		self::$jsFiles[] = 'audio-player';
 		self::$jsFiles[] = 'comments';
 		self::$jsFiles[] = 'md5';
 		self::$views[] = 'comments';
