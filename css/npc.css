@@ -606,7 +606,7 @@
 
 @media (max-width: 40rem) {
   .npc-hero {
-    margin: 0 -1.5rem var(--npc-space-md);
+    margin: 0 calc(-1 * var(--container-padding)) var(--npc-space-md);
     padding: var(--npc-space-md) var(--npc-space-sm);
   }
   .npc-hero-title {
