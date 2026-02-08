@@ -6,126 +6,113 @@
     var userAvatar = "<?= @${basename(__FILE__, '.phtml').'_user_avatar'} ?>";
 </script>
 
+<!-- Hero Section -->
+<div class="comments-hero">
+    <div class="comments-hero-content">
+        <h1 class="comments-hero-title">Comment Section</h1>
+        <h3 class="comments-hero-subtitle"><?= ${basename(__FILE__, '.phtml').'_recording_title'} ?></h3>
 
-<h1>Comment Section</h1>
-<h3 class="txt-c"><?= ${basename(__FILE__, '.phtml').'_recording_title'} ?></h3>
-
-<p class="txt-c mb-m">
-    <audio controls>
-        <source src="<?= \VoicesOfWynn\storageUrl('recordings/' . ${basename(__FILE__, '.phtml').'_recording'}->file) ?>" type="audio/ogg">
-        Oops! Your browser doesnt support the OGG format :(
-    </audio>
-</p>
-
-<p class="txt-c">
-    <button id="new-comment-button">Post new Comment</button>
-</p>
-
-<hr class="hr-f">
-
-<p class="txt-c">
-    <button id="hide-form-button">Hide the form</button>
-</p>
-
-<form method="post" data-recording-id="<?= ${basename(__FILE__, '.phtml').'_recording'}->id ?>">
-<fieldset class="comment-writing-form">
-
-<?php if (${basename(__FILE__, '.phtml').'_logged_in'}) : ?>
-<div>
-    <div id="contributor-option" class="comment-tab selected as-contributor">Post as a contributor</div>
-    <div id="guest-option" class="comment-tab as-guest">Post as a guest</div>
+        <?php $audioSrc = \VoicesOfWynn\storageUrl('recordings/' . ${basename(__FILE__, '.phtml').'_recording'}->file); ?>
+        <?php include 'Views/partials/audio-player.phtml'; ?>
+    </div>
 </div>
-<div id="contributor-form" class="comment-form-wrapper">
-    <fieldset class="default-bg comment-field mb-m">
-        <label for="content-contributor" class="lb-a">Comment: </label>
-        <textarea id="content-contributor" placeholder="You can praise the voice actor, suggest what could be improved or just say how much you like this quest. Just please, keep bad words out of that 😉"></textarea>
-    </fieldset>
-    <input type="submit" value="Send" />
-    <small class="comment-disclaimer">
-        Name and contents of the comment will be publicly visible.<br>
-        The comment will be linked to your account and you'll be able to delete it anytime.
-    </small>
+
+<!-- Action Buttons -->
+<div class="comments-action-buttons">
+    <button id="new-comment-button" class="comments-toggle-btn">Post new Comment</button>
+    <button id="hide-form-button" class="comments-toggle-btn">Hide the form</button>
 </div>
-<?php endif ?>
 
-<div id="guest-form" <?php if (${basename(__FILE__, '.phtml').'_logged_in'}) : ?>class="display-none"<?php endif ?>>
-	<?php if (!${basename(__FILE__, '.phtml').'_logged_in'}) : ?>
-        <span class="comment-disclaimer">Are you a contributor? You can post a verified comment after <a href="login">logging in</a>.</span>
-	<?php endif ?>
-    <fieldset class="comment-field">
-        <label for="name">Name: </label><input id="name" type="text" placeholder="Anonymous" class="mb-l"/>
-        <label for="email">E-mail: </label><input id="email" type="text" placeholder="Used to get Gravatar; not required" class="mb-l" />
-        <label for="content-guest" class="mb-l">Comment: </label>
-        <textarea id="content-guest" placeholder="You can praise the voice actor, suggest what could be improved or just say how much you like this quest. Just please, keep bad words out of that 😉"></textarea>
-    </fieldset>
-    <label for="antispam" class="mb-l">Not a robot? Then you can select some shade of <strong style="color:<?= ${basename(__FILE__, '.phtml').'_antispam_color_code'} ?>;"><?= ${basename(__FILE__, '.phtml').'_antispam_color'} ?></strong>, right?</label>
-    <input id="antispam" type="color" required />
-    <input type="submit" value="Send" class="mt-d"/>
-    <small class="comment-disclaimer">
-        Name and contents of the comment will be publicly visible.<br>
-        You will be able to delete this comment only from this IP.<br>
-        Your IP and e-mail addresses and will be stored, but will never be publicly visible.
-    </small>
+<!-- Comment Form -->
+<div class="comments-form-card">
+    <form method="post" data-recording-id="<?= ${basename(__FILE__, '.phtml').'_recording'}->id ?>">
+        <fieldset class="comment-writing-form">
+
+            <?php if (${basename(__FILE__, '.phtml').'_logged_in'}) : ?>
+            <div class="comment-tabs">
+                <div id="contributor-option" class="comment-tab selected as-contributor">Post as a contributor</div>
+                <div id="guest-option" class="comment-tab as-guest">Post as a guest</div>
+            </div>
+
+            <div id="contributor-form" class="comment-form-wrapper">
+                <fieldset class="comment-field">
+                    <label for="content-contributor" class="comment-label">Comment:</label>
+                    <textarea id="content-contributor" class="comment-textarea" placeholder="You can praise the voice actor, suggest what could be improved or just say how much you like this quest. Just please, keep bad words out of that 😉"></textarea>
+                </fieldset>
+                <input type="submit" class="comment-submit-btn" value="Send" />
+                <small class="comment-disclaimer">
+                    Name and contents of the comment will be publicly visible.<br>
+                    The comment will be linked to your account and you'll be able to delete it anytime.
+                </small>
+            </div>
+            <?php endif ?>
+
+            <div id="guest-form" <?php if (${basename(__FILE__, '.phtml').'_logged_in'}) : ?>class="display-none"<?php endif ?>>
+                <?php if (!${basename(__FILE__, '.phtml').'_logged_in'}) : ?>
+                    <span class="comment-disclaimer">Are you a contributor? You can post a verified comment after <a href="login">logging in</a>.</span>
+                <?php endif ?>
+                <fieldset class="comment-field">
+                    <label for="name" class="comment-label">Name:</label>
+                    <input id="name" type="text" class="comment-input" placeholder="Anonymous" />
+
+                    <label for="email" class="comment-label">E-mail:</label>
+                    <input id="email" type="text" class="comment-input" placeholder="Used to get Gravatar; not required" />
+
+                    <label for="content-guest" class="comment-label">Comment:</label>
+                    <textarea id="content-guest" class="comment-textarea" placeholder="You can praise the voice actor, suggest what could be improved or just say how much you like this quest. Just please, keep bad words out of that 😉"></textarea>
+                </fieldset>
+
+                <label for="antispam" class="comment-label antispam-label">Not a robot? Then you can select some shade of <strong style="color:<?= ${basename(__FILE__, '.phtml').'_antispam_color_code'} ?>;"><?= ${basename(__FILE__, '.phtml').'_antispam_color'} ?></strong>, right?</label>
+                <input id="antispam" type="color" class="comment-antispam" required />
+
+                <input type="submit" class="comment-submit-btn" value="Send" />
+                <small class="comment-disclaimer">
+                    Name and contents of the comment will be publicly visible.<br>
+                    You will be able to delete this comment only from this IP.<br>
+                    Your IP and e-mail addresses and will be stored, but will never be publicly visible.
+                </small>
+            </div>
+
+        </fieldset>
+    </form>
 </div>
-</fieldset>
-</form>
 
-<div id="comments" class="m-a">
-<?php foreach (${basename(__FILE__, '.phtml').'_comments'} as $comment) : ?>
-<div class="comment mt-m" id="c<?= $comment->id ?>">
-    <table class="comment-box">
-
-        <tbody>
-
-        <tr>
-
-            <td rowspan="0" class="comment-picture">
-                <img src="<?= $comment->getAvatar() ?>" alt="Avatar" class="comment-avatar" width="80px" height="80px"/>
-            </td>
-
-                <td class="comment-main-column user-username pt-s">
-                    <strong>
-                        <?php if ($comment->verified) : ?>
-                            <a href="cast/<?= $comment->userId ?>"><?= $comment->getName() ?></a>
-                        <?php else : ?>
-                            <p class="pt-m"><?= $comment->getName() ?></p>
-                        <?php endif ?>
-                    </strong>
+<!-- Comments List -->
+<div id="comments" class="comments-list">
+    <?php foreach (${basename(__FILE__, '.phtml').'_comments'} as $comment) : ?>
+    <div class="comment-card" id="c<?= $comment->id ?>">
+        <div class="comment-header">
+            <img src="<?= $comment->getAvatar() ?>" alt="Avatar" class="comment-avatar"/>
+            <div class="comment-author-info">
+                <div class="comment-author-name">
+                    <?php if ($comment->verified) : ?>
+                        <a href="cast/<?= $comment->userId ?>"><?= $comment->getName() ?></a>
+                    <?php else : ?>
+                        <?= $comment->getName() ?>
+                    <?php endif ?>
+                </div>
+                <div class="comment-badges">
                     <?php if ($comment->verified) : ?>
                         <?php if ($comment->userId === ${basename(__FILE__, '.phtml').'_voice_actor_id'}) : ?>
-                            <div class="author-badge" title="This user is the author of this recording.">Author</div>
+                            <span class="author-badge" title="This user is the author of this recording.">Author</span>
                         <?php endif ?>
-                        <div class="contributor-badge" title="This user contributed to this project.">Contributor</div>
+                        <span class="contributor-badge" title="This user contributed to this project.">Contributor</span>
                     <?php endif ?>
-                </td>
-
-                <td class="comment-deletion">
-                    <?php if (${basename(__FILE__, '.phtml').'_admin'} || in_array($comment->id, ${basename(__FILE__, '.phtml').'_owned_comments'})) : ?>
-                        <button data-comment-id="<?= $comment->id ?>" class="delete-comment-button">×</button>
-                    <?php endif ?>
-                </td>
-            </tr>
-
-            <tr>
-                <td colspan="2" class="comment-content-separator"></td>
-            <tr>
-
-                <td class="no-m no-p comment-main-content" colspan="2">
-
-                    <div class="comment-content">
-                        <p class="no-m max-width"><?= $comment->content ?></p>
-                    </div>
-
-                </td>
-            </tr>
-
-        </tbody>
-
-    </table>
-</div>
-<?php endforeach ?>
-
+                </div>
+            </div>
+            <?php if (${basename(__FILE__, '.phtml').'_admin'} || in_array($comment->id, ${basename(__FILE__, '.phtml').'_owned_comments'})) : ?>
+                <button data-comment-id="<?= $comment->id ?>" class="delete-comment-button" title="Delete comment">×</button>
+            <?php endif ?>
+        </div>
+        <hr class="comment-separator">
+        <div class="comment-content">
+            <p><?= $comment->content ?></p>
+        </div>
+    </div>
+    <?php endforeach ?>
 </div>
 
-<br>
-<button class="backbtn" onclick="history.go(-1)">< Go Back</button>
+<!-- Back Button -->
+<div class="back-btn-container">
+    <button class="backbtn" onclick="history.go(-1)">< Go Back</button>
+</div>
