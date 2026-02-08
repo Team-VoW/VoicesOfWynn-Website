@@ -5,50 +5,33 @@
 //var userAvatar; - filled by PHP in the view
 
 var commentItemHTML = `
-<div class="comment mt-m">
-<table>
-
-    <tr>
-
-        <td rowspan="0" class="comment-picture">
-            <img src="{gravatar}" alt="Avatar" class="comment-avatar"/>
-        </td>
-
-        <td class="comment-main-column pt-s go-to-the-fucking-image-pls">
-            <strong>
+<div class="comment-card">
+    <div class="comment-header">
+        <img src="{gravatar}" alt="Avatar" class="comment-avatar"/>
+        <div class="comment-author-info">
+            <div class="comment-author-name">
                 {name}
-            </strong>
-        </td>
-
-        <td class="comment-deletion">
-            <button data-comment-id="{id}" class="delete-comment-button">×</button>
-        </td>
-
-    </tr>
-
-    <tr>
-
-        <td class="no-m no-p comment-main-column">
-
-            <div class="comment-content">
-                <hr class="mt-s mb-m hr-f">
-                <p class="no-m max-width">{comment}</p>
             </div>
-
-        </td>
-    </tr>
-
-</table>
+            <div class="comment-badges">
+                {badges}
+            </div>
+        </div>
+        <button data-comment-id="{id}" class="delete-comment-button" title="Delete comment">×</button>
+    </div>
+    <hr class="comment-separator">
+    <div class="comment-content">
+        <p>{comment}</p>
+    </div>
 </div>
 `;
 
 $("#new-comment-button").on('click', function () {
-    $("form").slideDown(1500);
+    $(".comments-form-card").slideDown(1500);
     $("#new-comment-button").hide();
     $("#hide-form-button").show();
 })
 $("#hide-form-button").on('click', function () {
-    $("form").slideUp(1500);
+    $(".comments-form-card").slideUp(1500);
     $("#hide-form-button").hide();
     $("#new-comment-button").show();
 })
@@ -99,9 +82,9 @@ $("form").on('submit', function (event) {
                 name = "<a href='cast/" + userId + "'>" + userName + "</a>";
                 gravatar = userAvatar;
                 if (userId == voiceActorId) {
-                    badges = "<div class=\"author-badge\" title=\"This user is the author of this recording.\">Author</div>";
+                    badges = "<span class=\"author-badge\" title=\"This user is the author of this recording.\">Author</span>";
                 }
-                badges += "\n<div class=\"contributor-badge\" title=\"This user contributed to this project.\">Contributor</div>";
+                badges += "\n<span class=\"contributor-badge\" title=\"This user contributed to this project.\">Contributor</span>";
                 content = $("#content-contributor").val().replace(/\n/g, '<br>');
             }
             else {
@@ -121,10 +104,11 @@ $("form").on('submit', function (event) {
             comment = comment.replace('{id}', result); //Response from the server is just the number representing the ID of the new comment
             comment = comment.replace('{comment}', content);
             $comment = $(comment);
-            $comment.find('.delete-comment-button').on('click', deleteComment)
+            $comment.find('.delete-comment-button').on('click', deleteComment);
+            $comment.hide();
             $("#comments").prepend($comment);
+            $comment.fadeIn(800);
             $("#hide-form-button").click();
-            $("#comments :first-child").fadeIn(3500);
             $("#content-contributor").val("");
             $("#content-guest").val("");
 
@@ -143,7 +127,7 @@ function deleteComment(event) {
         return;
     }
 
-    $deletingComment = $(event.target).closest('.comment');
+    $deletingComment = $(event.target).closest('.comment-card');
 
     $.ajax({
         url: "contents/npc/" + npcId + "/comments/" + $("form").attr('data-recording-id') + "/delete/" + $(event.target).attr('data-comment-id'),
