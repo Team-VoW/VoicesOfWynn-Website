@@ -57,12 +57,7 @@ class Comments extends WebpageController
 		}
 
 		$voiceActor = $npc->getVoiceActor();
-		if ($voiceActor === null || $voiceActor === false) {
-			//Voice actor for this NPC was not found
-			return 404;
-		}
-
-		self::$data['comments_voice_actor_id'] = $voiceActor->getId();
+		self::$data['comments_voice_actor_id'] = $voiceActor ? $voiceActor->getId() : 0;
 		self::$data['comments_recording_title'] = $cnm->getRecordingTitle(self::$data['comments_recording']);
 		self::$data['comments_comments'] = $cnm->getComments($recordingId);
 		self::$data['comments_owned_comments'] = $cnm->getOwnedComments($recordingId);
