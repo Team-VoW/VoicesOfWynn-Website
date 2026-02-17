@@ -15,6 +15,18 @@ jobs:
         with:
           ref: ${{ github.ref }}
 
+      - name: Minify CSS
+        run: npx clean-css-cli --batch --batch-suffix "" css/*.css
+
+      - name: Minify JS
+        run: |
+          for f in js/*.js; do
+            case "$f" in
+              js/jquery.js|js/md5.js) continue ;;
+            esac
+            npx terser "$f" -o "$f" -c -m
+          done
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
