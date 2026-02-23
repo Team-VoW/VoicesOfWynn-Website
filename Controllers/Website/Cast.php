@@ -46,13 +46,9 @@ class Cast extends WebpageController
 		}
 		self::$data['cast_npc_groups'] = array_values($npcGroups);
 
-		self::$data['cast_upvoted'] = $cnm->getVotes('+');
-		self::$data['cast_downvoted'] = $cnm->getVotes('-');
-
 		self::$cssFiles[] = 'cast';
 		self::$cssFiles[] = 'article-css-reset';
 		self::$cssFiles[] = 'audio-player';
-		self::$jsFiles[] = 'voting';
 		self::$jsFiles[] = 'audio-player';
 		self::$jsFiles[] = 'cast-accordion';
 		self::$views[] = 'cast';
