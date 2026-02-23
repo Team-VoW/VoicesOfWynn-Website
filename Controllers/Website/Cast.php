@@ -25,7 +25,26 @@ class Cast extends WebpageController
 		self::$data['base_keywords'] = 'Minecraft,Wynncraft,Mod,Voice,Cast,Actor,Bio,Bios,List';
 
 		self::$data['cast_voice_actor'] = $voiceActor;
-		self::$data['cast_quest_recordings'] = $cnm->getVoiceActorRecordings($voiceActorId);
+
+		$questRecordings = $cnm->getVoiceActorRecordings($voiceActorId);
+		$npcGroups = [];
+		foreach ($questRecordings as $quest) {
+			foreach ($quest->getNpcs() as $npc) {
+				$npcId = $npc->getId();
+				if (!isset($npcGroups[$npcId])) {
+					$npcGroups[$npcId] = [
+						'npc' => $npc,
+						'recordings' => [],
+						'questNames' => [],
+					];
+				}
+				foreach ($npc->getRecordings() as $recording) {
+					$npcGroups[$npcId]['recordings'][] = $recording;
+				}
+				$npcGroups[$npcId]['questNames'][$quest->getId()] = $quest->getName();
+			}
+		}
+		self::$data['cast_npc_groups'] = array_values($npcGroups);
 
 		self::$data['cast_upvoted'] = $cnm->getVotes('+');
 		self::$data['cast_downvoted'] = $cnm->getVotes('-');
@@ -35,6 +54,7 @@ class Cast extends WebpageController
 		self::$cssFiles[] = 'audio-player';
 		self::$jsFiles[] = 'voting';
 		self::$jsFiles[] = 'audio-player';
+		self::$jsFiles[] = 'cast-accordion';
 		self::$views[] = 'cast';
 		return 200;
 	}
