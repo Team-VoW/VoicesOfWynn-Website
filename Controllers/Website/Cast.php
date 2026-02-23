@@ -36,10 +36,12 @@ class Cast extends WebpageController
 						'npc' => $npc,
 						'recordings' => [],
 						'questNames' => [],
+						'recordingsByQuest' => [],
 					];
 				}
 				foreach ($npc->getRecordings() as $recording) {
 					$npcGroups[$npcId]['recordings'][] = $recording;
+					$npcGroups[$npcId]['recordingsByQuest'][$quest->getId()][] = $recording;
 				}
 				$npcGroups[$npcId]['questNames'][$quest->getId()] = $quest->getName();
 			}

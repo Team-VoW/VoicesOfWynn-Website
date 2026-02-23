@@ -6,13 +6,6 @@ $(document).ready(function () {
 
         $block.toggleClass('is-open', !isOpen);
         $(this).attr('aria-expanded', String(!isOpen));
-
-        if (isOpen) {
-            $recordings.slideUp(250, function () {
-                $(this).css('display', 'none');
-            });
-        } else {
-            $recordings.css('display', 'grid').hide().slideDown(250);
-        }
+        $recordings.slideToggle(250);
     });
 });
