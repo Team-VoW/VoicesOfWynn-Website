@@ -98,7 +98,7 @@ const SOCIAL_NAME = ['youtube' => 'YouTube', 'twitter' => 'Twitter', 'castingcal
                             <?php endif ?>
                         </span>
                         <span class="cast-npc-meta">
-                            in <?= implode(', ', $questNames) ?>
+                            in <?= implode(', ', array_map(function($name) { return html_entity_decode($name, ENT_QUOTES | ENT_HTML5, 'UTF-8'); }, $questNames)) ?>
                             &bull; <?= count($recordings) ?> recording<?= count($recordings) !== 1 ? 's' : '' ?>
                         </span>
                     </div>
@@ -109,41 +109,17 @@ const SOCIAL_NAME = ['youtube' => 'YouTube', 'twitter' => 'Twitter', 'castingcal
 
                 <div class="cast-npc-recordings">
                     <?php foreach ($recordings as $recording): ?>
-                        <div class="cast-recording-item voting-audio-box">
+                        <div class="cast-recording-item">
                             <div class="cast-recording-line">
                                 <span class="line-number"># <?= $recording->line ?></span>
                                 <?php if (count($questNames) > 1 && isset($questNames[$recording->questId])): ?>
-                                    <span class="cast-recording-quest"><?= $questNames[$recording->questId] ?></span>
+                                    <span class="cast-recording-quest"><?= html_entity_decode($questNames[$recording->questId], ENT_QUOTES | ENT_HTML5, 'UTF-8') ?></span>
                                 <?php endif ?>
                             </div>
 
                             <div class="cast-recording-player">
                                 <?php $audioSrc = \VoicesOfWynn\storageUrl('recordings/' . $recording->file); ?>
                                 <?php include 'Views/partials/audio-player.phtml'; ?>
-                            </div>
-
-                            <div class="cast-recording-actions">
-                                <button
-                                    class="cast-vote-btn upvote<?php if (in_array($recording->id, ${basename(__FILE__, '.phtml') . '_upvoted'})): ?> clicked<?php endif ?>"
-                                    data-recording-id="<?= $recording->id ?>"
-                                    data-npc-id="<?= $recording->npcId ?>">
-                                    <span class="vote-icon">&#128077;</span>
-                                    <span class="vote-count"><?= $recording->upvotes ?></span>
-                                </button>
-
-                                <button
-                                    class="cast-vote-btn downvote<?php if (in_array($recording->id, ${basename(__FILE__, '.phtml') . '_downvoted'})): ?> clicked<?php endif ?>"
-                                    data-recording-id="<?= $recording->id ?>"
-                                    data-npc-id="<?= $recording->npcId ?>">
-                                    <span class="vote-icon">&#128078;</span>
-                                    <span class="vote-count"><?= $recording->downvotes ?></span>
-                                </button>
-
-                                <a href="/contents/npc/<?= urlencode($recording->npcId) ?>/comments/<?= urlencode($recording->id) ?>"
-                                    class="cast-comment-btn">
-                                    <span class="vote-icon">&#128172;</span>
-                                    <span class="vote-count"><?= $recording->comments ?></span>
-                                </a>
                             </div>
                         </div>
                     <?php endforeach ?>
