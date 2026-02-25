@@ -94,11 +94,11 @@ const SOCIAL_NAME = ['youtube' => 'YouTube', 'twitter' => 'Twitter', 'castingcal
                         <span class="cast-npc-block-name">
                             <?= $npc->getName() ?>
                             <?php if ($npc->isArchived()): ?>
-                                <span class="cast-archived-badge">outdated</span>
+                                <span class="cast-archived-badge">Outdated</span>
                             <?php endif ?>
                         </span>
                         <span class="cast-npc-meta">
-                            in <?= implode(', ', array_map(function($name) { return html_entity_decode($name, ENT_QUOTES | ENT_HTML5, 'UTF-8'); }, $questNames)) ?>
+                            in <?= implode(', ', $questNames) ?>
                             &bull; <?= count($recordings) ?> recording<?= count($recordings) !== 1 ? 's' : '' ?>
                         </span>
                     </div>
@@ -125,7 +125,7 @@ const SOCIAL_NAME = ['youtube' => 'YouTube', 'twitter' => 'Twitter', 'castingcal
                     <?php else: ?>
                         <?php foreach ($recordingsByQuest as $questId => $questRecordings): ?>
                             <div class="cast-quest-section">
-                                <h4 class="cast-quest-label"><?= html_entity_decode($questNames[$questId], ENT_QUOTES | ENT_HTML5, 'UTF-8') ?></h4>
+                                <h4 class="cast-quest-label"><?= $questNames[$questId] ?></h4>
                                 <div class="cast-quest-grid">
                                     <?php foreach ($questRecordings as $recording): ?>
                                         <div class="cast-recording-item">
