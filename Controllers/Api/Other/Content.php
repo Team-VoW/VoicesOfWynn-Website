@@ -3,6 +3,7 @@
 namespace VoicesOfWynn\Controllers\Api\Other;
 
 use VoicesOfWynn\Controllers\Api\ApiController;
+use VoicesOfWynn\Controllers\Api\ApiErrorCode;
 use VoicesOfWynn\Models\Website\ContentManager;
 
 class Content extends ApiController 
@@ -13,7 +14,7 @@ class Content extends ApiController
             case 'quests':
                 return $this->getQuest();
             default:
-                return 400;
+                return $this->sendBadRequestError(ApiErrorCode::UNKNOWN_ACTION, 'The requested action is not recognized');
         }
     }
     private function getQuest(): int
@@ -22,17 +23,23 @@ class Content extends ApiController
             return 405;
         }
 
-        if($_GET['questId'] === null || $_GET['questId'] === ''){
-            return 404;
+        if(!isset($_GET['questId']) || $_GET['questId'] === null || $_GET['questId'] === ''){
+            return $this->sendBadRequestError(ApiErrorCode::MISSING_QUEST_ID, 'The \'questId\' parameter is required');
         }
-        
-        $cnm = new ContentManager();
-		$questId = $_GET['questId'];
-		if (!is_numeric($questId)) {
-			return 406;
-		}
-        $quest = $cnm->getQuests($questId);
-        echo json_encode($quest);
-        return 200;
+
+        $questId = $_GET['questId'];
+        if (!is_numeric($questId)) {
+            return $this->sendBadRequestError(ApiErrorCode::INVALID_QUEST_ID, 'The \'questId\' parameter must be a numeric value');
+        }
+
+        try {
+            $cnm = new ContentManager();
+            $quest = $cnm->getQuests($questId);
+            echo json_encode($quest);
+            return 200;
+        } catch (\Exception $e) {
+            error_log('Content::getQuest error: ' . $e->getMessage());
+            return 500;
+        }
     }
 }
