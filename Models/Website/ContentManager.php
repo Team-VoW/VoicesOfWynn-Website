@@ -235,37 +235,14 @@ class ContentManager
 		$quests[] = $currentQuest;
 		return $quests;
 	}
-
-    /**
-     * Gets data about a single recording for the comment section
-     * @param $recordingId int ID of the recording
-     * @return false|Recording The Recording object containing all the data, or FALSE, if the recording doesn't exist in the database
-     */
-	public function getRecording($recordingId)
-	{
-		$result = (new Db('Website/DbInfo.ini'))->fetchQuery('SELECT * FROM recording WHERE recording_id = ?', array($recordingId));
-        if ($result === false) {
-            return false;
-        }
-        return new Recording(array(
-			'id' => $recordingId,
-			'npc_id' => $result['npc_id'],
-			'quest_id' => $result['quest_id'],
-			'line' => $result['line'],
-			'file' => $result['file'],
-			'upvotes' => $result['upvotes'],
-			'downvotes' => $result['downvotes'],
-            'archived' => $result['archived']
-		));
-	}
 	
-	public function getComments($recordingId): array
+	public function getComments($npcId): array
 	{
 		$result = (new Db('Website/DbInfo.ini'))->fetchQuery('
-			SELECT comment_id,verified,user_id,ip,name,email,content,recording_id,
+			SELECT comment_id,verified,user_id,uuid,name,email,content,npc_id,
 			CONCAT("https://www.gravatar.com/avatar/",MD5(email),"?d=identicon") AS gravatar
-			FROM comment WHERE recording_id = ? ORDER BY comment_id DESC;
-		', array($recordingId), true);
+			FROM comment WHERE npc_id = ? ORDER BY comment_id DESC;
+		', array($npcId), true);
 		if (empty($result)) {
 			return array();
 		}
@@ -277,20 +254,20 @@ class ContentManager
 	}
 	
   /**
-	 * Returns list of comments IDs on the current recording that were posted by the current user or current IP
-	 * @param int $recordingId
+	 * Returns list of comments IDs on the current NPC that were posted by the current user or currently saved UUID
+	 * @param int $npcId
 	 * @return array
 	 */
-	public function getOwnedComments(int $recordingId): array
+	public function getOwnedComments(int $npcId): array
 	{
 		$userId = 0;    //No comment in the database should have 0 as value in the "user_id" column
-		$ip = $_SERVER['REMOTE_ADDR'];
+		$uuid = $_REQUEST['uuid'];
 		if (isset($_SESSION['user'])) {
 			$userId = $_SESSION['user']->getId();
 		}
 		
-		$result = (new Db('Website/DbInfo.ini'))->fetchQuery('SELECT comment_id FROM comment WHERE ip = ? OR user_id = ?',
-			array(inet_pton($ip), $userId), true);
+		$result = (new Db('Website/DbInfo.ini'))->fetchQuery('SELECT comment_id FROM comment WHERE uuid = ? OR user_id = ?',
+			array($uuid, $userId), true);
 		
 		$ids = array();
 		if ($result !== false) {
@@ -301,59 +278,23 @@ class ContentManager
 		return $ids;
 	}
   
-/**
- * Returns list of recordings' IDs for which a vote of the specified type was casted from the current IP address
- * @param string $type Either "+" for upvotes or "-" for downvotes
- * @return array Array of recordings' IDs, or empty array if the current IP has no active votes
- * @throws \Exception
- */
-  public function getVotes(string $type) {
-      $result = (new Db('Website/DbInfo.ini'))->fetchQuery('SELECT recording_id FROM vote WHERE ip = ? AND type = ?;', array(inet_pton($_SERVER['REMOTE_ADDR']), $type), true);
-      if (empty($result)) {
-          return array();
+    /**
+     * Returns list of NPCs' IDs for which a vote of the specified type was casted from the currently saved UUID
+     * @param string $type Either "+" for upvotes or "-" for downvotes
+     * @return array Array of NPCs' IDs, or empty array if the currently saved UUID has no active votes
+     * @throws \Exception
+     */
+      public function getVotes(string $type)
+      {
+          $result = (new Db('Website/DbInfo.ini'))->fetchQuery('SELECT npc_id FROM vote WHERE uuid = ? AND type = ?;', array($_REQUEST['uuid'], $type), true);
+          if (empty($result)) {
+              return array();
+          }
+          $votes = array();
+          foreach ($result as $row) {
+              $votes[] = $row['npc_id'];
+          }
+          return $votes;
       }
-      $votes = array();
-      foreach ($result as $row) {
-          $votes[] = $row['recording_id'];
-      }
-      return $votes;
-  }
-  
-	public function getRecordingTitle(Recording $recording): string
-	{
-        $db = new Db('Website/DbInfo.ini');
-
-		if (empty($recording->npc_id)) {
-			$npcName = $db->fetchQuery('SELECT name FROM npc WHERE npc_id = (SELECT npc_id FROM recording WHERE recording_id = ?);',
-				array($recording->id))['name'];
-		} else {
-			$npcName = $db->fetchQuery('SELECT name FROM npc WHERE npc_id = ?', array($recording->npc_id))['name'];
-		}
-		
-		if (empty($recording->quest_id)) {
-			$questName = $db->fetchQuery('SELECT name FROM quest WHERE quest_id = (SELECT quest_id FROM recording WHERE recording_id = ?);',
-				array($recording->id))['name'];
-		} else {
-			$questName = $db->fetchQuery('SELECT name FROM quest WHERE quest_id = ?',
-				array($recording->quest_id))['name'];
-		}
-		
-		if (empty($recording->line)) {
-			$lineNumber = $db->fetchQuery('SELECT line FROM recording WHERE recording_id = ?;',
-				array($recording->id))['line'];
-		} else {
-			$lineNumber = $recording->line;
-		}
-
-        if (empty($recording->archived)) {
-            $isArchived = $db->fetchQuery('SELECT archived FROM recording WHERE recording_id = ?;',
-                array($recording->id))['archived'];
-        } else {
-            $isArchived = $recording->archived;
-        }
-
-		//<NPC name> in <quest name>, line n. <line number> [(outdated)]
-		return ($npcName.' in '.$questName.', line n. '.$lineNumber.(($isArchived) ? ' (outdated)' : ''));
-	}
 }
 

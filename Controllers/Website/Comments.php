@@ -4,7 +4,7 @@ namespace VoicesOfWynn\Controllers\Website;
 
 use VoicesOfWynn\Models\Db;
 use VoicesOfWynn\Models\Website\ContentManager;
-use VoicesOfWynn\Models\Website\Recording;
+use VoicesOfWynn\Models\Website\Npc;
 
 class Comments extends WebpageController
 {
@@ -43,28 +43,23 @@ class Comments extends WebpageController
 	        self::$data['comments_user_avatar'] = $_SESSION['user']->getAvatarLink();
         }
 		
-		$recordingId = array_shift($args);
+		$npcId = array_shift($args);
 		$cnm = new ContentManager();
-		self::$data['comments_recording'] = $cnm->getRecording($recordingId);
-        if (self::$data['comments_recording'] === false) {
-            //Recording of the chosen ID was not found
+        $npc = $cnm->getNpc($npcId);
+		self::$data['comments_npc'] = $npc;
+        if (self::$data['comments_npc'] === false) {
+            //NPC of the chosen ID was not found
             return 404;
         }
-		$npc = $cnm->getNpc(self::$data['comments_recording']->npcId);
-		if ($npc === null || $npc === false) {
-			//NPC associated with this recording was not found
-			return 404;
-		}
 
 		$voiceActor = $npc->getVoiceActor();
 		self::$data['comments_voice_actor_id'] = $voiceActor ? $voiceActor->getId() : 0;
-		self::$data['comments_recording_title'] = $cnm->getRecordingTitle(self::$data['comments_recording']);
-		self::$data['comments_comments'] = $cnm->getComments($recordingId);
-		self::$data['comments_owned_comments'] = $cnm->getOwnedComments($recordingId);
+		self::$data['comments_comments'] = $cnm->getComments($npcId);
+		self::$data['comments_owned_comments'] = $cnm->getOwnedComments($npcId);
 		$color = ['red', 'yellow', 'green', 'blue', 'purple'][rand(0, 4)];
 		$_SESSION['antispam'] = $color;
 		self::$data['comments_antispam_color'] = $color;
-		self::$data['comments_antispam_color_code'] = Recording::IDEAL_COLORS[$color];
+		self::$data['comments_antispam_color_code'] = Npc::IDEAL_COLORS[$color];
 
 		self::$cssFiles[] = 'audio-player';
 		self::$cssFiles[] = 'comments';
@@ -86,17 +81,17 @@ class Comments extends WebpageController
         $db = new Db('Website/DbInfo.ini');
 
 		$commentId = array_shift( $args);
-		$commentData = $db->fetchQuery('SELECT user_id,ip FROM comment WHERE comment_id = ?', array($commentId));
+		$commentData = $db->fetchQuery('SELECT user_id,uuid FROM comment WHERE comment_id = ?', array($commentId));
 		if ($commentData === false) {
 			return 404; //No comment with this ID exists
 		}
 		$commentAuthorId = $commentData['user_id'];
-		$commentAuthorIp = $commentData['ip'];
+		$commentAuthorUUID = $commentData['uuid'];
 		
 		if (
 			(!isset($_SESSION['user']) || !$_SESSION['user']->isSysAdmin()) && //Admin not logged in
 			(!isset($_SESSION['user']) || $_SESSION['user']->getId() !== $commentAuthorId) && //Comment author not logged in
-			(inet_pton($_SERVER['REMOTE_ADDR']) !== $commentAuthorIp) //Client not accessing system from the same IP as from which the comment was posted
+			(inet_pton($_REQUEST['uuid']) !== $commentAuthorUUID) //Client (by UUID) not the author of the comment
 		) {
 			//No user is logged in or the logged user is not system admin
 			return 401;
