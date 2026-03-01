@@ -9,7 +9,7 @@ class Comment
 	private int $id = 0;
     private bool $verified = false;
     private $userId = 0;
-	private $ip = '0.0.0.0';
+	private $uuid = '00000000-0000-0000-0000-000000000000';
 	private $name = '';
 	private $email = '';
 	private string $content = '';
@@ -40,11 +40,9 @@ class Comment
                 case 'account':
                     $this->userId = $value;
                     break;
-				case 'ip':
-				case 'ip_address':
-				case 'ipAddress':
-				case 'ip_addr':
-					$this->ip = $value;
+				case 'uuid':
+				case 'UUID':
+					$this->uuid = $value;
 				case 'name':
 				case 'username':
 				case 'author':
