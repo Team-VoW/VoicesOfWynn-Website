@@ -120,6 +120,7 @@ class ReportReader
         try {
             $result = (new Db('Api/LineReporting/DbInfo.ini'))->fetchQuery($query, $npcNames, true);
         } catch (PDOException $e) {
+            error_log('getLastPositionsByNpcNames DB error: ' . $e->getMessage());
             return [];
         }
         if ($result === false) {
