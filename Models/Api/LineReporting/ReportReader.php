@@ -107,14 +107,14 @@ class ReportReader
             SELECT r.npc_name, r.pos_x, r.pos_y, r.pos_z
             FROM report r
             INNER JOIN (
-                SELECT npc_name, MAX(report_id) AS max_id
+                SELECT npc_name, MAX(time_submitted) AS latest_time
                 FROM report
                 WHERE npc_name IN (' . $placeholders . ')
                   AND pos_x IS NOT NULL
                   AND pos_y IS NOT NULL
                   AND pos_z IS NOT NULL
                 GROUP BY npc_name
-            ) latest ON r.report_id = latest.max_id;
+            ) latest ON r.npc_name = latest.npc_name AND r.time_submitted = latest.latest_time;
         ';
 
         try {
