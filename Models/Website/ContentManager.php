@@ -319,6 +319,13 @@ class ContentManager
       return $votes;
   }
   
+	public function searchNpcs(string $query): array
+	{
+		$sql = 'SELECT npc_id, name, degenerated_name FROM npc WHERE name LIKE ? AND archived = 0 ORDER BY name LIMIT 100;';
+		$results = (new Db('Website/DbInfo.ini'))->fetchQuery($sql, ['%' . $query . '%'], true);
+		return $results === false ? [] : $results;
+	}
+
 	public function getRecordingTitle(Recording $recording): string
 	{
         $db = new Db('Website/DbInfo.ini');
