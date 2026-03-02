@@ -17,7 +17,7 @@ class NpcSearch extends ApiController
         parameters: [
             new OA\Parameter(name: "q", in: "query", required: true, schema: new OA\Schema(type: "string"), description: "Search term (substring match)"),
             new OA\Parameter(name: "limit", in: "query", required: false, schema: new OA\Schema(type: "integer", minimum: 1, maximum: 500, default: 100), description: "Maximum number of results to return (1–500, default 100)"),
-            new OA\Parameter(name: "no_picture", in: "query", required: false, schema: new OA\Schema(type: "string", enum: ["0", "1", "true", "false", "yes", "no"]), description: "When truthy (1/true/yes), only return NPCs whose picture file is missing or under 500 bytes")
+            new OA\Parameter(name: "no_picture", in: "query", required: false, schema: new OA\Schema(type: "boolean"), description: "When present, only return NPCs whose picture file is missing or under 500 bytes")
         ],
         responses: [
             new OA\Response(
@@ -61,7 +61,7 @@ class NpcSearch extends ApiController
         $limit = (int)($_GET['limit'] ?? 100);
         $limit = max(1, min(500, $limit));
 
-        $noPicture = in_array($_GET['no_picture'] ?? '', ['1', 'true', 'yes'], true);
+        $noPicture = isset($_GET['no_picture']);
 
         $npcs = (new ContentManager())->searchNpcs($query, $limit);
 
