@@ -144,6 +144,18 @@ class AzureBlobStorage implements StorageInterface {
         return $this->baseUrl;
     }
 
+    public function getFileSize(string $path): ?int {
+        try {
+            $properties = $this->client->getBlobProperties($this->containerName, $path);
+            return $properties->getProperties()->getContentLength();
+        } catch (ServiceException $e) {
+            if ($e->getCode() === 404) {
+                return null;
+            }
+            throw new StorageException("Azure getFileSize failed: " . $e->getMessage(), 'getFileSize', $path, $e);
+        }
+    }
+
     /**
      * Waits for an asynchronous blob copy operation to complete.
      * Polls the blob properties until the copy status is 'success' or fails.

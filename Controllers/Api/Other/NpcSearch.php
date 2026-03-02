@@ -4,6 +4,7 @@ namespace VoicesOfWynn\Controllers\Api\Other;
 
 use VoicesOfWynn\Controllers\Api\ApiController;
 use VoicesOfWynn\Models\Api\LineReporting\ReportReader;
+use VoicesOfWynn\Models\Storage\Storage;
 use VoicesOfWynn\Models\Website\ContentManager;
 use OpenApi\Attributes as OA;
 
@@ -14,12 +15,14 @@ class NpcSearch extends ApiController
         summary: "Search NPCs by name",
         tags: ["NPC"],
         parameters: [
-            new OA\Parameter(name: "q", in: "query", required: true, schema: new OA\Schema(type: "string"), description: "Search term (substring match)")
+            new OA\Parameter(name: "q", in: "query", required: true, schema: new OA\Schema(type: "string"), description: "Search term (substring match)"),
+            new OA\Parameter(name: "limit", in: "query", required: false, schema: new OA\Schema(type: "integer", minimum: 1, maximum: 500, default: 100), description: "Maximum number of results to return (1–500, default 100)"),
+            new OA\Parameter(name: "no_picture", in: "query", required: false, schema: new OA\Schema(type: "string", enum: ["0", "1", "true", "false", "yes", "no"]), description: "When truthy (1/true/yes), only return NPCs whose picture file is missing or under 500 bytes")
         ],
         responses: [
             new OA\Response(
                 response: 200,
-                description: "List of matching NPCs (max 100)",
+                description: "List of matching NPCs",
                 content: new OA\JsonContent(
                     type: "array",
                     items: new OA\Items(
@@ -55,7 +58,21 @@ class NpcSearch extends ApiController
             return 200;
         }
 
-        $npcs = (new ContentManager())->searchNpcs($query);
+        $limit = (int)($_GET['limit'] ?? 100);
+        $limit = max(1, min(500, $limit));
+
+        $noPicture = in_array($_GET['no_picture'] ?? '', ['1', 'true', 'yes'], true);
+
+        $npcs = (new ContentManager())->searchNpcs($query, $limit);
+
+        if ($noPicture) {
+            $storage = Storage::get();
+            $npcs = array_values(array_filter($npcs, function (array $npc) use ($storage): bool {
+                $size = $storage->getFileSize('npcs/' . $npc['npc_id'] . '.png');
+                return $size === null || $size < 500;
+            }));
+        }
+
         $positions = (new ReportReader())->getLastPositionsByNpcNames(array_column($npcs, 'degenerated_name'));
 
         $results = [];

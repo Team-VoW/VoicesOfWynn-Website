@@ -319,10 +319,10 @@ class ContentManager
       return $votes;
   }
   
-	public function searchNpcs(string $query): array
+	public function searchNpcs(string $query, int $limit = 100): array
 	{
-		$sql = 'SELECT npc_id, name, degenerated_name FROM npc WHERE name LIKE ? AND archived = 0 ORDER BY name LIMIT 100;';
-		$results = (new Db('Website/DbInfo.ini'))->fetchQuery($sql, ['%' . $query . '%'], true);
+		$sql = 'SELECT npc_id, name, degenerated_name FROM npc WHERE name LIKE ? AND archived = 0 ORDER BY name LIMIT ?;';
+		$results = (new Db('Website/DbInfo.ini'))->fetchQuery($sql, ['%' . $query . '%', $limit], true);
 		return $results === false ? [] : $results;
 	}
 

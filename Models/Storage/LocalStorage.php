@@ -61,4 +61,12 @@ class LocalStorage implements StorageInterface {
     public function getBaseUrl(): string {
         return $this->basePath;
     }
+
+    public function getFileSize(string $path): ?int {
+        $fullPath = $this->basePath . $path;
+        if (!file_exists($fullPath)) {
+            return null;
+        }
+        return filesize($fullPath);
+    }
 }
