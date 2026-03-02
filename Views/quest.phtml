@@ -1,0 +1,53 @@
+<section class="txt-c">
+    <h1 class="txt-c"><?= ${basename(__FILE__, '.phtml').'_quest'}->getName() ?></h1>
+    <h4 class="txt-c" style="font-variant: all-small-caps">cast</h4>
+    <table class="table-npc-management">
+        <tr>
+            <th colspan="2">Role</th><th>Pick</th><th colspan="2">Voiced by</th><th>Rate</th><th>Comment</th>
+        </tr>
+        <?php foreach (${basename(__FILE__, '.phtml').'_quest'}->getNpcs() as $npc) : ?>
+            <tr data-npc-id="<?= $npc->getId() ?>">
+                <td>
+                    <img class="avatar" src="
+                        <?= \VoicesOfWynn\storageUrl('npcs/' . $npc->getId() . '.png') ?>"
+                         alt="NPC picture" loading="lazy" />
+                </td>
+                <td class="width-150"><a href="contents/npc/<?= $npc->getId() ?>" class="npc-name"><?= $npc->getName() ?></a></td>
+                <td>
+                    <!-- Native audio player (hidden, kept for fallback) -->
+                    <div class="recording-audio recording-audio--native">
+                        <audio controls preload="none">
+                            <source src="<?= \VoicesOfWynn\storageUrl('recordings/' . $npc->getSampleRecording(${basename(__FILE__, '.phtml').'_quest'})->file) ?>" type="audio/ogg">
+                        </audio>
+                    </div>
+                    <!-- Custom audio player component -->
+                    <?php $audioSrc = \VoicesOfWynn\storageUrl('recordings/' . $npc->getSampleRecording(${basename(__FILE__, '.phtml').'_quest'})->file); ?>
+                    <?php include 'Views/partials/audio-player.phtml'; ?>
+                </td>
+                <?php if ($npc->getVoiceActor() === null) : ?>
+                    <td><img class="voice-actor-avatar" src="<?= \VoicesOfWynn\storageUrl('avatars/nobody.png') ?>" alt="Profile picture" /></td>
+                    <td class="width-150"><i>Nobody</i></td>
+                <?php else : ?>
+                    <td><img class="voice-actor-avatar" src="<?= \VoicesOfWynn\storageUrl('avatars/' . $npc->getVoiceActor()->getAvatar()) ?>" alt="Profile picture" /></td>
+                    <td class="width-150"><a href="cast/<?= $npc->getVoiceActor()->getId() ?>" class="va-name"><?= $npc->getVoiceActor()->getName() ?></a></td>
+                <?php endif ?>
+                <td class="recording-actions">
+                    <button class="vote-btn upvote-btn upvote<?php if (in_array($npc->getId(), ${basename(__FILE__, '.phtml').'_upvoted'})) : ?> clicked<?php endif ?>" data-npc-id="<?= $npc->getId() ?>">
+                        <span class="vote-icon">👍</span>
+                        <span class="vote-count"><?= $npc->getUpvotes() ?></span>
+                    </button>
+                    <button class="vote-btn downvote-btn downvote<?php if (in_array($npc->getId(), ${basename(__FILE__, '.phtml').'_downvoted'})) : ?> clicked<?php endif ?>" data-npc-id="<?= $npc->getId() ?>">
+                        <span class="vote-icon">👎</span>
+                        <span class="vote-count"><?= $npc->getDownvotes() ?></span>
+                    </button>
+                </td>
+                <td class="recording-actions">
+                    <a href="contents/npc/<?= $npc->getId() ?>/comments" class="vote-btn comment-btn">
+                        <span class="vote-icon">💬</span>
+                        <span class="vote-count"><?= $npc->getCommentsCount() ?></span>
+                    </a>
+                </td>
+            </tr>
+        <?php endforeach ?>
+    </table><hr class="hr-f">
+</section>

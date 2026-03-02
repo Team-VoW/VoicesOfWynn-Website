@@ -5,6 +5,7 @@ namespace VoicesOfWynn\Models\Website;
 use \JsonSerializable;
 use VoicesOfWynn\Models\Db;
 use VoicesOfWynn\Models\Storage\Storage;
+use function VoicesOfWynn\storageUrl;
 
 class Npc implements JsonSerializable
 {
@@ -27,7 +28,7 @@ class Npc implements JsonSerializable
     private int $downvotes = 0;
     private int $comments = 0;
 
-	private array $recordings = array();
+	private array $recordings;
 
     private int $recordingsCount = 0;
 
@@ -58,6 +59,12 @@ class Npc implements JsonSerializable
                     break;
                 case 'recordings_count':
                     $this->recordingsCount = $value;
+                    break;
+                case 'upvotes':
+                    $this->upvotes = $value;
+                    break;
+                case 'downvotes':
+                    $this->downvotes = $value;
                     break;
 			}
 		}
@@ -120,7 +127,7 @@ class Npc implements JsonSerializable
         } else {
             //Add upvote
             (new Db('Website/DbInfo.ini'))->executeQuery(
-                'INSERT INTO vote(recording_id, uuid, type) VALUES (?,?,"+");',
+                'INSERT INTO vote(npc_id, uuid, type) VALUES (?,?,"+");',
                 array($this->id, $_REQUEST['uuid'])
             );
         }
@@ -179,6 +186,16 @@ class Npc implements JsonSerializable
             downvotes = (SELECT COUNT(*) FROM vote WHERE npc_id = ? AND type = "-")
             WHERE npc_id = ?;
             ', array($this->id, $this->id, $this->id));
+    }
+
+    public function getUpvotes() : int
+    {
+        return $this->upvotes;
+    }
+
+    public function getDownvotes() : int
+    {
+        return $this->downvotes;
     }
 
     /**
@@ -329,6 +346,11 @@ class Npc implements JsonSerializable
         return $result;
     }
 
+    public function getCommentsCount() : int
+    {
+        return $this->comments;
+    }
+
     /**
      * Method archiving this whole NPC by unlinking it from all quests, archiving all its recordings and replacing
      * its position in quests with a newly created NPC with the same name and profile picture.
@@ -465,14 +487,37 @@ class Npc implements JsonSerializable
 		$this->recordings[] = $recording;
 	}
 
-	/**
-	 * Recordings getter
-	 * @return array
-	 */
-	public function getRecordings() : array
+    /**
+     * Recordings getter
+     * @param Quest|null $quest Quest to filter by
+     * @return array
+     */
+	public function getRecordings(Quest $quest = null) : array
 	{
-		return $this->recordings;
+        if (!isset($this->recordings)) {
+            $this->loadRecordings();
+        }
+        return (is_null($quest)) ? $this->recordings : array_filter($this->recordings, function ($recording) use ($quest) { return $recording->questId === $quest->getId(); });;
 	}
+
+    private function loadRecordings() : bool
+    {
+        $result = (new Db('Website/DbInfo.ini'))->fetchQuery('
+            SELECT recording_id,npc_id,quest_id,line,file,archived
+            FROM recording
+            WHERE npc_id = ?
+            ORDER BY line;
+        ', array($this->id), true);
+
+        $this->recordings = [];
+        if ($result === false) {
+            return false; //NPC with 0 recordings is not normal (in cases when NPC just didn't have its recordings uploaded yet, the return value shouldn't cause any problems anyway
+        }
+        foreach ($result as $dbRow) {
+            $this->recordings[] = new Recording($dbRow);
+        }
+        return true;
+    }
 
     /**
      * Recordings count getter
@@ -481,6 +526,29 @@ class Npc implements JsonSerializable
     public function getRecordingsCount(): int
     {
         return $this->recordingsCount;
+    }
+
+    /**
+     * Gets a suitable "pick" from this NPCs' recordings in a single quest.
+     * This pick is the first recording larger than 35 kB.
+     * If no such recording exists, return the largest one.
+     * @param Quest $quest Quest to filter by
+     * @return Recording
+     */
+    public function getSampleRecording(Quest $quest): Recording
+    {
+        $maxsize = 0;
+        $maxsizeRecording = null;
+        foreach ($this->getRecordings($quest) as $recording) {
+            $filesize = filesize(storageUrl('recordings/' . $recording->filename));
+            if ($filesize > 35840) {
+                return $recording;
+            } else if ($filesize > $maxsize) {
+                $maxsize = $filesize;
+                $maxsizeRecording = $recording;
+            }
+        }
+        return $maxsizeRecording;
     }
 }
 
