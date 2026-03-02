@@ -51,7 +51,7 @@ $("#guest-option").on('click', function () {
 
 $("form").on('submit', function (event) {
     event.preventDefault();
-    let recordingId = $(event.target).attr('data-recording-id');
+    let npcId = $(event.target).attr('data-npc-id');
     let name, email, content, antispam, verified;
     if ($("#contributor-option").length === 1 && $("#contributor-option").hasClass('selected')) {
         //Posting as a contributor
@@ -67,7 +67,7 @@ $("form").on('submit', function (event) {
     }
 
     $.ajax({
-        url: "contents/npc/" + npcId + "/comments/" + recordingId + "/new",
+        url: "contents/npc/" + npcId + "/comments/new",
         type: 'POST',
         data: {
             'verified': verified,
@@ -82,7 +82,7 @@ $("form").on('submit', function (event) {
                 name = "<a href='cast/" + userId + "'>" + userName + "</a>";
                 gravatar = userAvatar;
                 if (userId == voiceActorId) {
-                    badges = "<span class=\"author-badge\" title=\"This user is the author of this recording.\">Author</span>";
+                    badges = "<span class=\"author-badge\" title=\"This user is voicing this NPC.\">Author</span>";
                 }
                 badges += "\n<span class=\"contributor-badge\" title=\"This user contributed to this project.\">Contributor</span>";
                 content = $("#content-contributor").val().replace(/\n/g, '<br>');
@@ -130,7 +130,7 @@ function deleteComment(event) {
     $deletingComment = $(event.target).closest('.comment-card');
 
     $.ajax({
-        url: "contents/npc/" + npcId + "/comments/" + $("form").attr('data-recording-id') + "/delete/" + $(event.target).attr('data-comment-id'),
+        url: "contents/npc/" + npcId + "/comments/delete/" + $(event.target).attr('data-comment-id'),
         type: 'DELETE',
         success: function (result, message) {
             $deletingComment.slideUp(500);

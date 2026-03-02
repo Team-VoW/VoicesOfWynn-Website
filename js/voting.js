@@ -17,11 +17,10 @@ $(".upvote").on('click', function (event) {
         voteType = "add";
     }
 
-    let recordingId = $clickedRating.attr('data-recording-id');
     let npcId = $clickedRating.attr('data-npc-id');
 
     $.ajax({
-        url: "contents/npc/" + npcId + "/upvote/" + recordingId,
+        url: "contents/npc/" + npcId + "/upvote",
         type: 'POST',
         success: function (result, message) {
             $clickedRating.find('span').text(voteCount);
@@ -59,10 +58,9 @@ $(".downvote").on('click', function (event) {
         voteType = "add";
     }
 
-    let recordingId = $clickedRating.attr('data-recording-id');
     let npcId = $clickedRating.attr('data-npc-id');
     $.ajax({
-        url: "contents/npc/" + npcId + "/downvote/" + recordingId,
+        url: "contents/npc/" + npcId + "/downvote",
         type: 'POST',
         success: function (result, message) {
             $clickedRating.find('span').text(voteCount);
