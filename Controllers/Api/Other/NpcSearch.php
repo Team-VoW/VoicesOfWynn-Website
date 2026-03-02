@@ -68,8 +68,12 @@ class NpcSearch extends ApiController
         if ($noPicture) {
             $storage = Storage::get();
             $npcs = array_values(array_filter($npcs, function (array $npc) use ($storage): bool {
-                $size = $storage->getFileSize('npcs/' . $npc['npc_id'] . '.png');
-                return $size === null || $size < 500;
+                try {
+                    $size = $storage->getFileSize('npcs/' . $npc['npc_id'] . '.png');
+                    return $size === null || $size < 500;
+                } catch (\Throwable $e) {
+                    return false;
+                }
             }));
         }
 

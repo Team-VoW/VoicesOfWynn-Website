@@ -117,14 +117,22 @@ class ReportReader
             ) latest ON r.report_id = latest.max_id;
         ';
 
-        $result = (new Db('Api/LineReporting/DbInfo.ini'))->fetchQuery($query, $npcNames, true);
+        try {
+            $result = (new Db('Api/LineReporting/DbInfo.ini'))->fetchQuery($query, $npcNames, true);
+        } catch (PDOException $e) {
+            return [];
+        }
         if ($result === false) {
             return [];
         }
 
         $positions = [];
         foreach ($result as $row) {
-            $positions[$row['npc_name']] = ['x' => $row['pos_x'], 'y' => $row['pos_y'], 'z' => $row['pos_z']];
+            $positions[$row['npc_name']] = [
+                'x' => (int)$row['pos_x'],
+                'y' => (int)$row['pos_y'],
+                'z' => (int)$row['pos_z'],
+            ];
         }
         return $positions;
     }
