@@ -540,7 +540,7 @@ class Npc implements JsonSerializable
         $maxsize = 0;
         $maxsizeRecording = null;
         foreach ($this->getRecordings($quest) as $recording) {
-            $filesize = filesize(storageUrl('recordings/' . $recording->filename));
+            $filesize = filesize(storageUrl('recordings/' . $recording->file));
             if ($filesize > 35840) {
                 return $recording;
             } else if ($filesize > $maxsize) {
