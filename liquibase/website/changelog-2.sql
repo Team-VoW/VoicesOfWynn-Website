@@ -33,7 +33,7 @@ TRUNCATE TABLE `vote`;
 
 ALTER TABLE `vote`
     ADD `npc_id` int(11) NULL AFTER `recording_id`,
-    CHANGE `ip` `uuid` varchar(36) COLLATE 'ascii_general_ci' NOT NULL AFTER `npc_id`,
+    CHANGE `ip` `voter` varchar(64) COLLATE 'ascii_general_ci' NOT NULL AFTER `npc_id`,
     ADD FOREIGN KEY (`npc_id`) REFERENCES `npc` (`npc_id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 ALTER TABLE `vote`
