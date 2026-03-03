@@ -12,7 +12,7 @@
                         <?= \VoicesOfWynn\storageUrl('npcs/' . $npc->getId() . '.png') ?>"
                          alt="NPC picture" loading="lazy" />
                 </td>
-                <td class="width-150"><a href="contents/npc/<?= $npc->getId() ?>" class="npc-name"><?= $npc->getName() ?></a></td>
+                <td><a href="contents/npc/<?= $npc->getId() ?>" class="npc-name"><?= $npc->getName() ?></a></td>
                 <td>
                     <!-- Native audio player (hidden, kept for fallback) -->
                     <div class="recording-audio recording-audio--native">
@@ -26,10 +26,10 @@
                 </td>
                 <?php if ($npc->getVoiceActor() === null) : ?>
                     <td><img class="voice-actor-avatar" src="<?= \VoicesOfWynn\storageUrl('avatars/nobody.png') ?>" alt="Profile picture" /></td>
-                    <td class="width-150"><i>Nobody</i></td>
+                    <td><i>Nobody</i></td>
                 <?php else : ?>
                     <td><img class="voice-actor-avatar" src="<?= \VoicesOfWynn\storageUrl('avatars/' . $npc->getVoiceActor()->getAvatar()) ?>" alt="Profile picture" /></td>
-                    <td class="width-150"><a href="cast/<?= $npc->getVoiceActor()->getId() ?>" class="va-name"><?= $npc->getVoiceActor()->getName() ?></a></td>
+                    <td><a href="cast/<?= $npc->getVoiceActor()->getId() ?>" class="va-name"><?= $npc->getVoiceActor()->getName() ?></a></td>
                 <?php endif ?>
                 <td class="recording-actions">
                     <button class="vote-btn upvote-btn upvote<?php if (in_array($npc->getId(), ${basename(__FILE__, '.phtml').'_upvoted'})) : ?> clicked<?php endif ?>" data-npc-id="<?= $npc->getId() ?>">
@@ -41,7 +41,7 @@
                         <span class="vote-count"><?= $npc->getDownvotes() ?></span>
                     </button>
                 </td>
-                <td class="recording-actions">
+                <td>
                     <a href="contents/npc/<?= $npc->getId() ?>/comments" class="vote-btn comment-btn">
                         <span class="vote-icon">💬</span>
                         <span class="vote-count"><?= $npc->getCommentsCount() ?></span>

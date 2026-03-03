@@ -46,7 +46,7 @@ class Quest extends WebpageController
             return 404;
         }
 
-        $this->quest->getNpcs();   //Also load and save NPCs themselves into attribute
+        $this->quest->getNpcs(true);   //Also load and save NPCs themselves into attribute
 
         self::$data['quest_quest'] = $this->quest;
 
@@ -58,6 +58,7 @@ class Quest extends WebpageController
 
         self::$views[] = 'quest';
         self::$cssFiles[] = 'quest';
+        self::$cssFiles[] = 'npc';
         self::$cssFiles[] = 'voting';
         self::$cssFiles[] = 'audio-player';
         self::$jsFiles[] = 'voting';
