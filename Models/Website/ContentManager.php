@@ -13,7 +13,7 @@ class ContentManager
 	 */
 	public function getQuestList(): array
 	{
-		$query = 'SELECT quest_id, name AS "qname" FROM quest ORDER BY quest_id;';
+		$query = 'SELECT quest_id, name, degenerated_name FROM quest ORDER BY quest_id;';
 		$result = (new Db('Website/DbInfo.ini'))->fetchQuery($query, array(), true);
 
 		$quests = array();

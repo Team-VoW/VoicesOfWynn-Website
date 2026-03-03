@@ -121,118 +121,6 @@
   line-height: 1.3;
 }
 
-/* Modal Overlay */
-.modal-overlay {
-  display: none;
-  position: fixed;
-  z-index: 100;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(4px);
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal {
-  width: 90%;
-  max-width: 700px;
-  max-height: 85vh;
-  background: white;
-  border-radius: var(--card-radius);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  animation: modalSlideIn var(--transition-medium) ease;
-}
-
-@keyframes modalSlideIn {
-  from { opacity: 0; transform: translateY(-20px) scale(0.95); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-.modal__header {
-  display: flex;
-  justify-content: flex-end;
-  padding: 0.75rem 1rem 0;
-}
-
-.modal__close {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  padding: 0;
-  border: none;
-  background: transparent;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: background-color var(--transition-fast) ease;
-}
-
-.modal__close:hover {
-  background: rgba(0, 0, 0, 0.05);
-}
-
-.modal__close:focus-visible {
-  background: rgba(0, 0, 0, 0.05);
-  outline: 2px solid var(--gradient-cyan);
-  outline-offset: 2px;
-}
-
-.modal__close svg {
-  width: 24px;
-  height: 24px;
-  color: #666;
-}
-
-.modal__content {
-  overflow-y: auto;
-  padding: 1rem 2rem 2rem;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 1.5rem;
-  justify-items: center;
-}
-
-/* NPC Items in Modal */
-.npc {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.npc .image {
-  width: 120px;
-  height: 120px;
-  border-radius: 8px;
-  object-fit: cover;
-  border: 3px solid transparent;
-  background: linear-gradient(white, white) padding-box,
-              linear-gradient(135deg, var(--gradient-cyan), var(--gradient-green)) border-box;
-  margin-bottom: 0.5rem;
-}
-
-.npc .name {
-  font-size: 1.1rem;
-  margin: 0;
-}
-
-.npc .name a {
-  color: var(--gradient-cyan);
-  text-decoration: none;
-  font-weight: 600;
-  transition: color var(--transition-fast) ease;
-}
-
-.npc .name a:hover {
-  color: var(--gradient-green);
-  text-decoration: underline;
-}
-
 /* Scroll Animations */
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(30px); }
@@ -284,21 +172,12 @@
   .search-input {
     max-width: 100%;
   }
-  .modal {
-    width: 95%;
-    max-height: 90vh;
-  }
-  .modal__content {
-    padding: 1rem 1.5rem 1.5rem;
-  }
-}
 
 /* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
   .quest-card,
   .quest-card__accent,
   .search-input,
-  .modal__close,
   .npc .name a {
     transition: none;
   }
@@ -313,9 +192,6 @@
     transform: none;
   }
   .animate-on-scroll.is-visible {
-    animation: none;
-  }
-  .modal {
     animation: none;
   }
 }

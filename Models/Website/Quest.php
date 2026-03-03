@@ -102,17 +102,18 @@ class Quest implements JsonSerializable
     {
         return $this->degeneratedName;
     }
-	
-	/**
-	 * Npcs getter
-	 * @return array Array of NPC objects that were added to this quest
-	 */
-	public function getNpcs(): array
+
+    /**
+     * Npcs getter
+     * @param bool $loadIfNotLoaded Should the list of NPCs be loaded from the database if it is unset at the time this method is called?
+     * @return ?array Array of NPC objects that were added to this quest or NULL if the list wasn't set or loaded yet
+     */
+	public function getNpcs(bool $loadIfNotLoaded = false): ?array
 	{
-        if (!isset($this->npcs)) {
+        if (!isset($this->npcs) && $loadIfNotLoaded) {
             $this->loadNpcs();
         }
-		return $this->npcs;
+		return $this->npcs ?? null;
 	}
 
     private function loadNpcs() : bool
