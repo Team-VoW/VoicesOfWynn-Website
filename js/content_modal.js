@@ -20,6 +20,7 @@ $(function () {
             img.className = 'image';
             img.src = config.baseUrl + config.paths.npcs + npc.id + '.png';
             img.alt = 'NPC avatar';
+            img.onerror = function() { this.onerror = null; this.src = config.baseUrl + config.paths.npcs + 'default.png'; };
 
             const p = document.createElement('p');
             p.className = 'name';

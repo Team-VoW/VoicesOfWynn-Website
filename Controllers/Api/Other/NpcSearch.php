@@ -17,7 +17,7 @@ class NpcSearch extends ApiController
         parameters: [
             new OA\Parameter(name: "q", in: "query", required: true, schema: new OA\Schema(type: "string"), description: "Search term (substring match)"),
             new OA\Parameter(name: "limit", in: "query", required: false, schema: new OA\Schema(type: "integer", minimum: 1, maximum: 500, default: 100), description: "Maximum number of results to return (1–500, default 100)"),
-            new OA\Parameter(name: "no_picture", in: "query", required: false, schema: new OA\Schema(type: "boolean"), description: "When present, only return NPCs whose picture file is missing or under 500 bytes")
+            new OA\Parameter(name: "no_picture", in: "query", required: false, schema: new OA\Schema(type: "boolean"), description: "When present, only return NPCs whose picture file is missing")
         ],
         responses: [
             new OA\Response(
@@ -68,12 +68,7 @@ class NpcSearch extends ApiController
         if ($noPicture) {
             $storage = Storage::get();
             $npcs = array_values(array_filter($npcs, function (array $npc) use ($storage): bool {
-                try {
-                    $size = $storage->getFileSize('npcs/' . $npc['npc_id'] . '.png');
-                    return $size === null || $size < 500;
-                } catch (\Throwable $e) {
-                    return false;
-                }
+                return !$storage->exists('npcs/' . $npc['npc_id'] . '.png');
             }));
         }
 
