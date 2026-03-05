@@ -123,20 +123,11 @@ class Npc implements JsonSerializable
      */
     public function upvote($voterId): bool
     {
-        if ($this->wasVotedFor($voterId, "-")) {
-            //Convert downvote to upvote
-            (new Db('Website/DbInfo.ini'))->executeQuery(
-                'UPDATE vote SET type = "+" WHERE npc_id = ? AND voter = ?;',
-                array($this->id, $voterId)
-            );
-        } else {
-            //Add upvote
-            error_log($voterId);
-            (new Db('Website/DbInfo.ini'))->executeQuery(
-                'INSERT INTO vote(npc_id, voter, type) VALUES (?,?,"+");',
-                array($this->id, $voterId)
-            );
-        }
+        //Either convert downvote to upvote or insert new upvote
+        (new Db('Website/DbInfo.ini'))->executeQuery(
+            'INSERT INTO vote(npc_id, voter, type) VALUES (?,?,"+") ON DUPLICATE KEY UPDATE type = "+";',
+            array($this->id, $voterId)
+        );
 
         return $this->updateVotesCounts();
     }
@@ -149,19 +140,11 @@ class Npc implements JsonSerializable
      */
     public function downvote($voterId): bool
     {
-        if ($this->wasVotedFor($voterId, "+")) {
-            //Convert upvote to downvote
-            (new Db('Website/DbInfo.ini'))->executeQuery(
-                'UPDATE vote SET type = "-" WHERE npc_id = ? AND voter = ?;',
-                array($this->id, $voterId)
-            );
-        } else {
-            //Add downvote
-            (new Db('Website/DbInfo.ini'))->executeQuery(
-                'INSERT INTO vote(npc_id, voter, type) VALUES (?,?,"-");',
-                array($this->id, $voterId)
-            );
-        }
+        //Either convert upvote to downvote or insert new downvote
+        (new Db('Website/DbInfo.ini'))->executeQuery(
+            'INSERT INTO vote(npc_id, voter, type) VALUES (?,?,"-") ON DUPLICATE KEY UPDATE type = "-";',
+            array($this->id, $voterId)
+        );
 
         return $this->updateVotesCounts();
     }

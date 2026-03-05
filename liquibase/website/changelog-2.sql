@@ -37,6 +37,9 @@ ALTER TABLE `vote`
     ADD FOREIGN KEY (`npc_id`) REFERENCES `npc` (`npc_id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 ALTER TABLE `vote`
+    ADD UNIQUE `npc_id_voter` (`npc_id`, `voter`);
+
+ALTER TABLE `vote`
     DROP FOREIGN KEY `vote_ibfk_1`;
 
 ALTER TABLE `vote`
