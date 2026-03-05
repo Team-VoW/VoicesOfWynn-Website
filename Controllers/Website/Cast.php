@@ -47,8 +47,9 @@ class Cast extends WebpageController
 			}
 		}
 		self::$data['cast_npc_groups'] = array_values($npcGroups);
-		self::$data['cast_upvoted'] = $cnm->getVotes(hash('sha256', $_REQUEST['uuid'] ?? $_SERVER['REMOTE_ADDR']), '+', null, $voiceActor);
-		self::$data['cast_downvoted'] = $cnm->getVotes(hash('sha256', $_REQUEST['uuid'] ?? $_SERVER['REMOTE_ADDR']), '-', null, $voiceActor);
+        $uuid = (empty($_REQUEST['uuid'])) ? null : str_replace('-', '', $_REQUEST['uuid']);
+		self::$data['cast_upvoted'] = $cnm->getVotes(hash('sha256', $uuid ?? $_SERVER['REMOTE_ADDR']), '+', null, $voiceActor);
+		self::$data['cast_downvoted'] = $cnm->getVotes(hash('sha256', $uuid ?? $_SERVER['REMOTE_ADDR']), '-', null, $voiceActor);
 
 		self::$cssFiles[] = 'cast';
 		self::$cssFiles[] = 'article-css-reset';

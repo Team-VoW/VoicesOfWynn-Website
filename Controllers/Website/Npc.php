@@ -75,9 +75,10 @@ class Npc extends WebpageController
 		if (!$this->disallowAdministration && !isset(self::$data['npc_uploadErrors'])) {
 			self::$data['npc_uploadErrors'] = array();
 		}
-		
-        self::$data['npc_was_upvoted'] = $npc->wasVotedFor(hash('sha256', $_REQUEST['uuid'] ?? $_SERVER['REMOTE_ADDR']), "+");
-        self::$data['npc_was_downvoted'] = $npc->wasVotedFor(hash('sha256', $_REQUEST['uuid'] ?? $_SERVER['REMOTE_ADDR']), "-");
+
+        $uuid = (empty($_REQUEST['uuid'])) ? null : str_replace('-', '', $_REQUEST['uuid']);
+        self::$data['npc_was_upvoted'] = $npc->wasVotedFor(hash('sha256', $uuid ?? $_SERVER['REMOTE_ADDR']), "+");
+        self::$data['npc_was_downvoted'] = $npc->wasVotedFor(hash('sha256', $uuid ?? $_SERVER['REMOTE_ADDR']), "-");
 
 		self::$views[] = 'npc';
 		self::$cssFiles[] = 'npc';

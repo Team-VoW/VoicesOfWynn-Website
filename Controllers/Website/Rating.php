@@ -22,7 +22,8 @@ class Rating extends WebpageController
                 if (isset($_REQUEST['uuid']) && !$this->verifyUuid($_REQUEST['uuid'])) {
                     return 400;
                 }
-                $voterId = hash('sha256', $_REQUEST['uuid'] ?? $_SERVER['REMOTE_ADDR']);
+                $uuid = (empty($_REQUEST['uuid'])) ? null : str_replace('-', '', $_REQUEST['uuid']);
+                $voterId = hash('sha256', $uuid ?? $_SERVER['REMOTE_ADDR']);
 				if ($npc->wasVotedFor($voterId, '+')) {
                     $npc->resetVote($voterId);
                     return 204;
@@ -33,7 +34,8 @@ class Rating extends WebpageController
                 if (isset($_REQUEST['uuid']) && !$this->verifyUuid($_REQUEST['uuid'])) {
                     return 400;
                 }
-                $voterId = hash('sha256', $_REQUEST['uuid'] ?? $_SERVER['REMOTE_ADDR']);
+                $uuid = (empty($_REQUEST['uuid'])) ? null : str_replace('-', '', $_REQUEST['uuid']);
+                $voterId = hash('sha256', $uuid ?? $_SERVER['REMOTE_ADDR']);
                 if ($npc->wasVotedFor($voterId, '-')) {
                     $npc->resetVote($voterId);
                     return 204;
