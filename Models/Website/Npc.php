@@ -66,6 +66,9 @@ class Npc implements JsonSerializable
                 case 'downvotes':
                     $this->downvotes = $value;
                     break;
+                case 'comments':
+                    $this->comments = $value;
+                    break;
 			}
 		}
 	}
@@ -99,36 +102,39 @@ class Npc implements JsonSerializable
 
 
     /**
-     * Checks if this NPC has been voted for by the client identifying itself with a given UUID in $_REQUEST
+     * Checks if this NPC has been voted for by certain client
+     * @param string $voterId SHA256 hash of either Minecraft user UUID or IP address of the user whose voting we're checking
      * @param string $type Either "+" to check for upvotes or "-" to check for downvotes
      * @return bool TRUE if it was, FALSE if it wasn't
      */
-    public function wasVotedFor(string $type): bool
+    public function wasVotedFor(string $voterId, string $type): bool
     {
         $result = (new Db('Website/DbInfo.ini'))->fetchQuery('
-            SELECT COUNT(*) as "cnt" FROM vote WHERE npc_id = ? AND uuid = ? AND type = ?
-        ', array($this->id, $_REQUEST['uuid'], $type));
+            SELECT COUNT(*) as "cnt" FROM vote WHERE npc_id = ? AND voter = ? AND type = ?
+        ', array($this->id, $voterId, $type));
         return !(($result['cnt'] === 0));
     }
 
     /**
      * Upvotes this NPC
+     * @param string $voterId SHA256 hash of either Minecraft user UUID or IP address of the user whose vote we're saving
      * @return bool
      * @throws \Exception
      */
-    public function upvote(): bool
+    public function upvote($voterId): bool
     {
-        if ($this->wasVotedFor("-")) {
+        if ($this->wasVotedFor($voterId, "-")) {
             //Convert downvote to upvote
             (new Db('Website/DbInfo.ini'))->executeQuery(
-                'UPDATE vote SET type = "+" WHERE npc_id = ? AND uuid = ?;',
-                array($this->id, $_REQUEST['uuid'])
+                'UPDATE vote SET type = "+" WHERE npc_id = ? AND voter = ?;',
+                array($this->id, $voterId)
             );
         } else {
             //Add upvote
+            error_log($voterId);
             (new Db('Website/DbInfo.ini'))->executeQuery(
-                'INSERT INTO vote(npc_id, uuid, type) VALUES (?,?,"+");',
-                array($this->id, $_REQUEST['uuid'])
+                'INSERT INTO vote(npc_id, voter, type) VALUES (?,?,"+");',
+                array($this->id, $voterId)
             );
         }
 
@@ -137,22 +143,23 @@ class Npc implements JsonSerializable
 
     /**
      * Downvotes this NPC
+     * @param string $voterId SHA256 hash of either Minecraft user UUID or IP address of the user whose vote we're saving
      * @return bool
      * @throws \Exception
      */
-    public function downvote(): bool
+    public function downvote($voterId): bool
     {
-        if ($this->wasVotedFor("+")) {
+        if ($this->wasVotedFor($voterId, "+")) {
             //Convert upvote to downvote
             (new Db('Website/DbInfo.ini'))->executeQuery(
-                'UPDATE vote SET type = "-" WHERE npc_id = ? AND uuid = ?;',
-                array($this->id, $_REQUEST['uuid'])
+                'UPDATE vote SET type = "-" WHERE npc_id = ? AND voter = ?;',
+                array($this->id, $voterId)
             );
         } else {
             //Add downvote
             (new Db('Website/DbInfo.ini'))->executeQuery(
-                'INSERT INTO vote(npc_id, uuid, type) VALUES (?,?,"-");',
-                array($this->id, $_REQUEST['uuid'])
+                'INSERT INTO vote(npc_id, voter, type) VALUES (?,?,"-");',
+                array($this->id, $voterId)
             );
         }
 
@@ -161,14 +168,15 @@ class Npc implements JsonSerializable
 
     /**
      * Removes any upvote or downvote on this NPC left by the client identified by UUID in $_REQUEST
+     * @param string $voterId SHA256 hash of either Minecraft user UUID or IP address of the user whose vote we're resetting
      * @return bool
      * @throws \Exception
      */
-    public function resetVote(): bool
+    public function resetVote($voterId): bool
     {
         (new Db('Website/DbInfo.ini'))->executeQuery(
-            'DELETE FROM vote WHERE npc_id = ? AND uuid = ?',
-            array($this->id, $_REQUEST['uuid'])
+            'DELETE FROM vote WHERE npc_id = ? AND voter = ?',
+            array($this->id, $voterId)
         );
         return $this->updateVotesCounts();
     }

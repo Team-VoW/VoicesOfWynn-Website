@@ -9,11 +9,11 @@ $(".upvote").on('click', function (event) {
     }
     if ($clickedRating.hasClass("clicked")) {
         //Removing upvote
-        voteCount = (Number)($clickedRating.find('span').text());
+        voteCount = (Number)($clickedRating.find('.vote-count').text())// - 1; //Is removed in the callback (from all .clicked buttons)
         voteType = "remove";
     }
     else {
-        voteCount = (Number)($clickedRating.find('span').text()) + 1;
+        voteCount = (Number)($clickedRating.find('.vote-count').text()) + 1;
         voteType = "add";
     }
 
@@ -23,10 +23,10 @@ $(".upvote").on('click', function (event) {
         url: "contents/npc/" + npcId + "/upvote",
         type: 'POST',
         success: function (result, message) {
-            $clickedRating.find('span').text(voteCount);
-            const $box = $clickedRating.closest('.voting-audio-box');
+            $clickedRating.find('.vote-count').text(voteCount);
+            const $box = $clickedRating.closest('.recording-actions');
             const $clickedButtons = $box.find('button.upvote.clicked,button.downvote.clicked');
-            $clickedButtons.find('span').text(Number($clickedButtons.find('span').text()) - 1);
+            $clickedButtons.find('.vote-count').text(Number($clickedButtons.find('.vote-count').text()) - 1);
             $box.find('button.upvote,button.downvote').removeClass('clicked');
             if (voteType === "add")
                 $box.find('button.upvote').addClass('clicked');
@@ -50,11 +50,11 @@ $(".downvote").on('click', function (event) {
     }
     if ($clickedRating.hasClass("clicked")) {
         //Removing downvote
-        voteCount = (Number)($clickedRating.find('span').text());
+        voteCount = (Number)($clickedRating.find('.vote-count').text())// - 1; //Is removed in the callback (from all .clicked buttons)
         voteType = "remove";
     }
     else {
-        voteCount = (Number)($clickedRating.find('span').text()) + 1;
+        voteCount = (Number)($clickedRating.find('.vote-count').text()) + 1;
         voteType = "add";
     }
 
@@ -62,11 +62,12 @@ $(".downvote").on('click', function (event) {
     $.ajax({
         url: "contents/npc/" + npcId + "/downvote",
         type: 'POST',
+        //data: "uuid=",
         success: function (result, message) {
-            $clickedRating.find('span').text(voteCount);
-            const $box = $clickedRating.closest('.voting-audio-box');
+            $clickedRating.find('.vote-count').text(voteCount);
+            const $box = $clickedRating.closest('.recording-actions');
             const $clickedButtons = $box.find('button.upvote.clicked,button.downvote.clicked');
-            $clickedButtons.find('span').text(Number($clickedButtons.find('span').text()) - 1);
+            $clickedButtons.find('.vote-count').text(Number($clickedButtons.find('.vote-count').text()) - 1);
             $box.find('button.upvote,button.downvote').removeClass('clicked');
             if (voteType === "add")
                 $box.find('button.downvote').addClass('clicked');

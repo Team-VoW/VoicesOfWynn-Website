@@ -279,14 +279,15 @@ class ContentManager
 	}
   
     /**
-     * Returns list of NPCs' IDs for which a vote of the specified type was casted from the currently saved UUID
+     * Returns list of NPCs' IDs for which a vote of the specified type was cast from the currently saved UUID
+     * @param string $voterId SHA256 hash of either Minecraft user UUID or IP address of the user whose votes we're getting
      * @param string $type Either "+" for upvotes or "-" for downvotes
      * @return array Array of NPCs' IDs, or empty array if the currently saved UUID has no active votes
      * @throws \Exception
      */
-      public function getVotes(string $type)
+      public function getVotes(string $voterId, string $type)
       {
-          $result = (new Db('Website/DbInfo.ini'))->fetchQuery('SELECT npc_id FROM vote WHERE uuid = ? AND type = ?;', array($_REQUEST['uuid'], $type), true);
+          $result = (new Db('Website/DbInfo.ini'))->fetchQuery('SELECT npc_id FROM vote WHERE voter = ? AND type = ?;', array($voterId, $type), true);
           if (empty($result)) {
               return array();
           }
