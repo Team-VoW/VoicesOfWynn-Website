@@ -81,17 +81,17 @@ class Comments extends WebpageController
         $db = new Db('Website/DbInfo.ini');
 
 		$commentId = array_shift( $args);
-		$commentData = $db->fetchQuery('SELECT user_id,uuid FROM comment WHERE comment_id = ?', array($commentId));
+		$commentData = $db->fetchQuery('SELECT user_id,ip FROM comment WHERE comment_id = ?', array($commentId));
 		if ($commentData === false) {
 			return 404; //No comment with this ID exists
 		}
 		$commentAuthorId = $commentData['user_id'];
-		$commentAuthorUUID = $commentData['uuid'];
+		$commentAuthorIp = $commentData['ip'];
 		
 		if (
 			(!isset($_SESSION['user']) || !$_SESSION['user']->isSysAdmin()) && //Admin not logged in
 			(!isset($_SESSION['user']) || $_SESSION['user']->getId() !== $commentAuthorId) && //Comment author not logged in
-			(inet_pton($_REQUEST['uuid']) !== $commentAuthorUUID) //Client (by UUID) not the author of the comment
+			(inet_pton($_SERVER['ip']) !== $commentAuthorIp) //Client (by IP) not the author of the comment
 		) {
 			//No user is logged in or the logged user is not system admin
 			return 401;

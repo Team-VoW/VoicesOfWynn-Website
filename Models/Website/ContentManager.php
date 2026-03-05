@@ -239,7 +239,7 @@ class ContentManager
 	public function getComments($npcId): array
 	{
 		$result = (new Db('Website/DbInfo.ini'))->fetchQuery('
-			SELECT comment_id,verified,user_id,uuid,name,email,content,npc_id,
+			SELECT comment_id,verified,user_id,ip,name,email,content,npc_id,
 			CONCAT("https://www.gravatar.com/avatar/",MD5(email),"?d=identicon") AS gravatar
 			FROM comment WHERE npc_id = ? ORDER BY comment_id DESC;
 		', array($npcId), true);
@@ -261,13 +261,13 @@ class ContentManager
 	public function getOwnedComments(int $npcId): array
 	{
 		$userId = 0;    //No comment in the database should have 0 as value in the "user_id" column
-		$uuid = $_REQUEST['uuid'];
+		$ip = $_SERVER['REMOTE_ADDR'];
 		if (isset($_SESSION['user'])) {
 			$userId = $_SESSION['user']->getId();
 		}
 		
-		$result = (new Db('Website/DbInfo.ini'))->fetchQuery('SELECT comment_id FROM comment WHERE uuid = ? OR user_id = ?',
-			array($uuid, $userId), true);
+		$result = (new Db('Website/DbInfo.ini'))->fetchQuery('SELECT comment_id FROM comment WHERE (ip = ? OR user_id = ?)'. (empty($npcId)) ? ';' : ' AND npc_id = ?;',
+            (empty($npcId) ? [inet_pton($ip), $userId] : [inet_pton($ip), $userId, $npcId]), true);
 		
 		$ids = array();
 		if ($result !== false) {
