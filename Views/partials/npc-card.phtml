@@ -13,8 +13,8 @@ $cardIsOpen = $cardIsOpen ?? false;
 $cardAdmin = $cardAdmin ?? false;
 ?>
 <div class="cast-npc-block recording-actions<?= $cardIsOpen ? ' is-open' : '' ?>">
-    <div class="cast-npc-header">
-        <button class="cast-npc-toggle" aria-expanded="<?= $cardIsOpen ? 'true' : 'false' ?>">
+    <div class="cast-npc-header" role="button" tabindex="0" aria-expanded="<?= $cardIsOpen ? 'true' : 'false' ?>">
+        <div class="cast-npc-toggle">
             <img
                 class="cast-npc-pic"
                 src="<?= \VoicesOfWynn\storageUrl('npcs/' . $cardNpc->getId() . '.png') ?>"
@@ -33,7 +33,7 @@ $cardAdmin = $cardAdmin ?? false;
                     &bull; <?= count($cardAllRecordings) ?> recording<?= count($cardAllRecordings) !== 1 ? 's' : '' ?>
                 </span>
             </div>
-        </button>
+        </div>
         <div class="cast-npc-actions">
             <button class="vote-btn upvote-btn upvote<?= $cardIsUpvoted ? ' clicked' : '' ?>" data-npc-id="<?= $cardNpcId ?>">
                 <span class="vote-icon">👍</span>
