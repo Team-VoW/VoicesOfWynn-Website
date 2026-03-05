@@ -8,8 +8,8 @@ use VoicesOfWynn\Models\Db;
 class Quest implements JsonSerializable
 {
 	private int $id;
-	private string $name;
-    private string $degeneratedName;
+	private ?string $name = null;
+    private ?string $degeneratedName = null;
 	private array $npcs;
 	
 	/**

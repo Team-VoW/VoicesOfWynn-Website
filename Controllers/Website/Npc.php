@@ -76,8 +76,8 @@ class Npc extends WebpageController
 			self::$data['npc_uploadErrors'] = array();
 		}
 		
-        self::$data['npc_upvoted'] = $cnm->getVotes('+');
-        self::$data['npc_downvoted'] = $cnm->getVotes('-');
+        self::$data['npc_upvoted'] = $cnm->getVotes(hash('sha256', $_REQUEST['uuid'] ?? $_SERVER['REMOTE_ADDR']), '+');
+        self::$data['npc_downvoted'] = $cnm->getVotes(hash('sha256', $_REQUEST['uuid'] ?? $_SERVER['REMOTE_ADDR']), '-');
 
 		self::$views[] = 'npc';
 		self::$cssFiles[] = 'npc';

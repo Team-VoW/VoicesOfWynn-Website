@@ -147,7 +147,7 @@ class ContentManager
 	public function getVoiceActorRecordings($id): array
 	{
 		$query = '
-		SELECT recording.recording_id, recording.quest_id, recording.line, recording.file, recording.upvotes, recording.downvotes, (SELECT COUNT(*) FROM comment WHERE comment.recording_id = recording.recording_id) AS "comments", recording.archived AS "recarchived", npc.npc_id AS `npc`, npc.name AS `nname`, npc.archived, quest.name as `qname`
+		SELECT recording.recording_id, recording.quest_id, recording.line, recording.file, recording.archived AS "recarchived", npc.npc_id AS `npc`, npc.name AS `nname`, npc.archived, npc.upvotes, npc.downvotes, quest.name as `qname`
 		FROM recording
 		JOIN quest USING(quest_id)
 		JOIN npc USING(npc_id)
@@ -170,7 +170,7 @@ class ContentManager
 					$quests[] = $currentQuest;
 				}
 				$currentQuest = new Quest($recording);
-				$currentNpc = new Npc(array('id' => $recording['npc'], 'name' => $recording['nname'], 'archived' => $recording['archived'])); //"npc" is a key for NPC's ID
+				$currentNpc = new Npc(array('id' => $recording['npc'], 'name' => $recording['nname'], 'archived' => $recording['archived'], 'upvotes' => $recording['upvotes'], 'downvotes' => $recording['downvotes'])); //"npc" is a key for NPC's ID
 			}
 			
 			$recordingObj = new Recording($recording);
@@ -186,7 +186,7 @@ class ContentManager
         $db = new Db('Website/DbInfo.ini');
 
 		$query = '
-		SELECT recording.recording_id, recording.quest_id, recording.line, recording.file, recording.upvotes, recording.downvotes, (SELECT COUNT(*) FROM comment WHERE comment.recording_id = recording.recording_id) AS "comments", quest.name
+		SELECT recording.recording_id, recording.quest_id, recording.line, recording.file, quest.name
 		FROM recording
 		JOIN quest ON quest.quest_id = recording.quest_id
 		JOIN npc ON recording.npc_id = npc.npc_id
@@ -287,6 +287,7 @@ class ContentManager
      */
       public function getVotes(string $voterId, string $type)
       {
+          //TODO add parameters to limit by quest or voice actor
           $result = (new Db('Website/DbInfo.ini'))->fetchQuery('SELECT npc_id FROM vote WHERE voter = ? AND type = ?;', array($voterId, $type), true);
           if (empty($result)) {
               return array();
