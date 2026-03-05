@@ -22,6 +22,7 @@ $(".upvote").on('click', function (event) {
     $.ajax({
         url: "contents/npc/" + npcId + "/upvote",
         type: 'POST',
+        data: uuid ? "uuid=" + uuid : {},
         success: function (result, message) {
             $clickedRating.find('.vote-count').text(voteCount);
             const $box = $clickedRating.closest('.recording-actions');
@@ -62,7 +63,7 @@ $(".downvote").on('click', function (event) {
     $.ajax({
         url: "contents/npc/" + npcId + "/downvote",
         type: 'POST',
-        //data: "uuid=",
+        data: uuid ? "uuid=" + uuid : {},
         success: function (result, message) {
             $clickedRating.find('.vote-count').text(voteCount);
             const $box = $clickedRating.closest('.recording-actions');

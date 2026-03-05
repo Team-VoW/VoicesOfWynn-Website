@@ -66,7 +66,7 @@ class Rating extends WebpageController
         $ch = curl_init(self::MOJANG_API_USER_PROFILE_ENDPOINT . $uuid);
 
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_NOBODY, true);
+        //curl_setopt($ch, CURLOPT_NOBODY, true); Mojang API returns 405 for HEAD request
 
         curl_exec($ch);
 

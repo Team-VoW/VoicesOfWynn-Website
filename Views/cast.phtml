@@ -4,7 +4,9 @@ const SOCIALS = ['twitter', 'youtube', 'castingcallclub'];
 const SOCIAL_PRE_LINK = ['youtube' => '', 'twitter' => 'https://twitter.com/', 'castingcallclub' => 'https://castingcall.club/'];
 const SOCIAL_ICONS = ['youtube' => 'images/youtube_icon.png', 'twitter' => 'images/twitter_icon.png', 'castingcallclub' => 'images/castingcallclub_icon.png'];
 const SOCIAL_NAME = ['youtube' => 'YouTube', 'twitter' => 'Twitter', 'castingcallclub' => 'Casting Call Club'];
-?>
+?><script>
+    var uuid = <?= '"'.${basename(__FILE__, '.phtml').'_uuid'}.'"' ?? 'undefined' ?>;
+</script>
 
 <header class="cast-header">
     <div class="cast-profile-card">

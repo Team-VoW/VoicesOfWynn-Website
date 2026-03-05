@@ -242,5 +242,22 @@ abstract class WebpageController extends Controller
         $viewName = str_replace('-', '', $viewName);
         return ${$viewName.'_'.$variableName};
     }
+
+    /**
+     * Method loading the Minecraft account UUID from $_REQUEST['uuid'], stripping it off dashes, saving it to $_SESSION['uuid'] and returning it.
+     * If $_REQUEST['uuid'] is empty, value from $_SESSION['uuid'] is returned.
+     * This is useful for controllers of all webpages that contain the NPC voting feature (upvote/downvote).
+     * @return string|null UUID of the client (can be invalid or forged) or NULL if it isn't neither provided in $_REQUEST or saved in $_SESSION
+     */
+    protected static function loadUUID() : ?string
+    {
+        $uuid = (empty($_REQUEST['uuid'])) ? null : str_replace('-', '', $_REQUEST['uuid']); //Rewrite UUID in session
+        if (is_null($uuid) && isset($_SESSION['uuid'])) {
+            //Refresh UUID from session
+            $uuid = $_SESSION['uuid'];
+        }
+        $_SESSION['uuid'] = $uuid;
+        return $uuid;
+    }
 }
 

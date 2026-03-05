@@ -76,7 +76,8 @@ class Npc extends WebpageController
 			self::$data['npc_uploadErrors'] = array();
 		}
 
-        $uuid = (empty($_REQUEST['uuid'])) ? null : str_replace('-', '', $_REQUEST['uuid']);
+        $uuid = $this->loadUUID(); //Also saves UUID in $_SESSION
+        self::$data['npc_uuid'] = $uuid;
         self::$data['npc_was_upvoted'] = $npc->wasVotedFor(hash('sha256', $uuid ?? $_SERVER['REMOTE_ADDR']), "+");
         self::$data['npc_was_downvoted'] = $npc->wasVotedFor(hash('sha256', $uuid ?? $_SERVER['REMOTE_ADDR']), "-");
 

@@ -1,3 +1,6 @@
+<script>
+    var uuid = <?= '"'.${basename(__FILE__, '.phtml').'_uuid'}.'"' ?? 'undefined' ?>;
+</script>
 <section class="txt-c">
     <h1 class="txt-c"><?= ${basename(__FILE__, '.phtml').'_quest'}->getName() ?></h1>
     <h4 class="txt-c" style="font-variant: all-small-caps">cast</h4>

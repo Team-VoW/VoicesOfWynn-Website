@@ -1,4 +1,7 @@
-<script>var npcId = <?= json_encode(${basename(__FILE__, '.phtml').'_npc'}->getId()) ?>;</script>
+<script>
+    var npcId = <?= json_encode(${basename(__FILE__, '.phtml').'_npc'}->getId()) ?>;
+    var uuid = <?= '"'.${basename(__FILE__, '.phtml').'_uuid'}.'"' ?? 'undefined' ?>;
+</script>
 
 <!-- Hero Section -->
 <section class="npc-hero npc-animate-fade-in">

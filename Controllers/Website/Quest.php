@@ -53,7 +53,8 @@ class Quest extends WebpageController
         self::$data['base_title'] .= $this->quest->getName();
         self::$data['base_keywords'] .= $this->quest->getName();
 
-        $uuid = (empty($_REQUEST['uuid'])) ? null : str_replace('-', '', $_REQUEST['uuid']);
+        $uuid = $this->loadUUID(); //Also saves UUID in $_SESSION
+        self::$data['quest_uuid'] = $uuid;
         self::$data['quest_upvoted'] = $cnm->getVotes(hash('sha256', $uuid ?? $_SERVER['REMOTE_ADDR']), '+', $this->quest);
         self::$data['quest_downvoted'] = $cnm->getVotes(hash('sha256', $uuid ?? $_SERVER['REMOTE_ADDR']), '-', $this->quest);
 
