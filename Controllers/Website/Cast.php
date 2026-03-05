@@ -58,9 +58,13 @@ class Cast extends WebpageController
 		self::$cssFiles[] = 'article-css-reset';
 		self::$cssFiles[] = 'audio-player';
 		self::$cssFiles[] = 'voting';
+		self::$cssFiles[] = 'comments';
+		self::$cssFiles[] = 'comments-dialog';
 		self::$jsFiles[] = 'audio-player';
 		self::$jsFiles[] = 'cast-accordion';
 		self::$jsFiles[] = 'voting';
+		self::$jsFiles[] = 'md5';
+		self::$jsFiles[] = 'comments-dialog';
 		self::$views[] = 'cast';
 		return 200;
 	}

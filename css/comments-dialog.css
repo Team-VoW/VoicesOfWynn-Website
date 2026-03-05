@@ -1,0 +1,117 @@
+/* Comments Dialog Modal */
+
+.comments-dialog-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.comments-dialog-overlay[hidden] {
+    display: none;
+}
+
+.comments-dialog-modal {
+    background: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    max-width: 680px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+/* base.css forces `body > div > div { position: fixed !important; ... }` which rips the modal
+   out of the overlay's flex layout. Override using a higher-specificity selector. */
+#comments-dialog-overlay .comments-dialog-modal {
+    position: relative !important;
+    height: auto !important;
+    left: auto !important;
+    top: auto !important;
+}
+
+.comments-dialog-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 0.75rem;
+}
+
+.comments-dialog-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #333;
+    margin: 0;
+}
+
+.comments-dialog-close {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #f5f5f5;
+    border: none;
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
+    color: #555;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease, color 0.2s ease;
+    flex-shrink: 0;
+}
+
+.comments-dialog-close:hover,
+.comments-dialog-close:focus-visible {
+    background: #ff5252;
+    color: #fff;
+}
+
+.comments-dialog-close:focus-visible {
+    outline: 2px solid #7b1a9b;
+    outline-offset: 2px;
+}
+
+.comments-dialog-body {
+    flex: 1;
+}
+
+/* Ensure form card inside dialog is hidden by default (comments.css hides .comments-form-card globally) */
+.comments-dialog-body .comments-form-card {
+    display: none;
+}
+
+#comments-dialog-hide-btn {
+    display: none;
+}
+
+/* Responsive: full-screen on mobile */
+@media (max-width: 40rem) {
+    .comments-dialog-overlay {
+        padding: 0;
+        align-items: flex-end;
+    }
+
+    .comments-dialog-modal {
+        max-width: 100%;
+        max-height: 95vh;
+        border-radius: 1rem 1rem 0 0;
+    }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .comments-dialog-close {
+        transition: none;
+    }
+}

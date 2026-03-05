@@ -266,7 +266,7 @@ class ContentManager
 			$userId = $_SESSION['user']->getId();
 		}
 		
-		$result = (new Db('Website/DbInfo.ini'))->fetchQuery('SELECT comment_id FROM comment WHERE (ip = ? OR user_id = ?)'. (empty($npcId)) ? ';' : ' AND npc_id = ?;',
+		$result = (new Db('Website/DbInfo.ini'))->fetchQuery('SELECT comment_id FROM comment WHERE (ip = ? OR user_id = ?)'. ((empty($npcId)) ? ';' : ' AND npc_id = ?;'),
             (empty($npcId) ? [inet_pton($ip), $userId] : [inet_pton($ip), $userId, $npcId]), true);
 		
 		$ids = array();

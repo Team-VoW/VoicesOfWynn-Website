@@ -31,6 +31,10 @@ class Comments extends WebpageController
 	 */
 	private function get($args)
 	{
+		if (($args[1] ?? null) === 'dialog') {
+			return $this->getDialogFragment($args[0]);
+		}
+
 		self::$data['base_title'] = 'Comments';
 		self::$data['base_description'] = 'Read all the comments posted on this recording or post a new one. Praise the voice actor for their performance or suggest what could be improved.';
 		self::$data['base_keywords'] = 'Minecraft,Wynncraft,Mod,Voice,Contents,Content,Recording,Comments,Feedback';
@@ -70,6 +74,41 @@ class Comments extends WebpageController
 		return true;
 	}
 	
+	/**
+	 * Returns a lightweight HTML fragment (no base layout) containing the comments form and list for use in the modal dialog
+	 * @param int $npcId
+	 * @return int HTTP status code
+	 */
+	private function getDialogFragment($npcId): int
+	{
+		self::$data['comments_dialog_admin'] = (isset($_SESSION['user']) && $_SESSION['user']->isSysAdmin());
+		self::$data['comments_dialog_logged_in'] = isset($_SESSION['user']);
+		if (isset($_SESSION['user'])) {
+			self::$data['comments_dialog_user_id'] = $_SESSION['user']->getId();
+			self::$data['comments_dialog_user_name'] = $_SESSION['user']->getName();
+			self::$data['comments_dialog_user_avatar'] = $_SESSION['user']->getAvatarLink();
+		}
+
+		$cnm = new ContentManager();
+		$npc = $cnm->getNpc($npcId);
+		if ($npc === false) {
+			return 404;
+		}
+
+		$voiceActor = $npc->getVoiceActor();
+		self::$data['comments_dialog_npcId'] = $npcId;
+		self::$data['comments_dialog_voice_actor_id'] = $voiceActor ? $voiceActor->getId() : 0;
+		self::$data['comments_dialog_comments'] = $cnm->getComments($npcId);
+		self::$data['comments_dialog_owned_comments'] = $cnm->getOwnedComments($npcId);
+		$color = ['red', 'yellow', 'green', 'blue', 'purple'][rand(0, 4)];
+		$_SESSION['antispam'] = $color;
+		self::$data['comments_dialog_antispam_color'] = $color;
+		self::$data['comments_dialog_antispam_color_code'] = Npc::IDEAL_COLORS[$color];
+
+		self::$views = ['comments_dialog'];
+		return 200;
+	}
+
 	/**
 	 * Processing method for DELETE requests to this controller (a comment is being deleted by a system admin or the author)
 	 * Verification is done before affecting database

@@ -91,6 +91,19 @@
                 rel="noopener">TD3V</a> and <a href="https://github.com/kmaxii" target="_blank" rel="noopener">kmaxi</a></span>
         <span>DevOps by <a href="https://github.com/kmaxii" target="_blank" rel="noopener">kmaxi</a></span>
     </footer>
+    <!-- Comments Dialog Modal -->
+    <div id="comments-dialog-overlay" class="comments-dialog-overlay" hidden>
+        <div class="comments-dialog-modal" role="dialog" aria-modal="true" aria-labelledby="comments-dialog-title">
+            <div class="comments-dialog-header">
+                <h2 class="comments-dialog-title" id="comments-dialog-title">Comments</h2>
+                <button class="comments-dialog-close" aria-label="Close comments">&times;</button>
+            </div>
+            <div class="comments-dialog-body">
+                <!-- AJAX-loaded content -->
+            </div>
+        </div>
+    </div>
+
     <!-- Storage Configuration -->
     <script>
         window.STORAGE_CONFIG = {
