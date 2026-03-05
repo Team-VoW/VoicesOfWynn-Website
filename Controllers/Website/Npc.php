@@ -82,11 +82,13 @@ class Npc extends WebpageController
         self::$data['npc_was_downvoted'] = $npc->wasVotedFor(hash('sha256', $uuid ?? $_SERVER['REMOTE_ADDR']), "-");
 
 		self::$views[] = 'npc';
+		self::$cssFiles[] = 'npc-card';
 		self::$cssFiles[] = 'npc';
 		self::$cssFiles[] = 'voting';
 		self::$cssFiles[] = 'audio-player';
 		self::$jsFiles[] = 'voting';
 		self::$jsFiles[] = 'audio-player';
+		self::$jsFiles[] = 'cast-accordion';
 		self::$jsFiles[] = 'npc'; //Scroll animations + admin functions (admin UI not rendered for non-admins, so handlers attach to nothing)
 
 		return true;
