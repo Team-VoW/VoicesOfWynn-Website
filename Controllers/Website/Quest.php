@@ -53,8 +53,8 @@ class Quest extends WebpageController
         self::$data['base_title'] .= $this->quest->getName();
         self::$data['base_keywords'] .= $this->quest->getName();
 
-        self::$data['quest_upvoted'] = $cnm->getVotes(hash('sha256', $_REQUEST['uuid'] ?? $_SERVER['REMOTE_ADDR']), '+');
-        self::$data['quest_downvoted'] = $cnm->getVotes(hash('sha256', $_REQUEST['uuid'] ?? $_SERVER['REMOTE_ADDR']), '-');
+        self::$data['quest_upvoted'] = $cnm->getVotes(hash('sha256', $_REQUEST['uuid'] ?? $_SERVER['REMOTE_ADDR']), '+', $this->quest);
+        self::$data['quest_downvoted'] = $cnm->getVotes(hash('sha256', $_REQUEST['uuid'] ?? $_SERVER['REMOTE_ADDR']), '-', $this->quest);
 
         self::$views[] = 'quest';
         self::$cssFiles[] = 'quest';

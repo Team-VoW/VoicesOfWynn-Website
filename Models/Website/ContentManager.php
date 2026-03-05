@@ -285,10 +285,20 @@ class ContentManager
      * @return array Array of NPCs' IDs, or empty array if the currently saved UUID has no active votes
      * @throws \Exception
      */
-      public function getVotes(string $voterId, string $type)
+      public function getVotes(string $voterId, string $type, Quest $questToFilterBy = null, User $voiceActorToFilterBy = null)
       {
-          //TODO add parameters to limit by quest or voice actor
-          $result = (new Db('Website/DbInfo.ini'))->fetchQuery('SELECT npc_id FROM vote WHERE voter = ? AND type = ?;', array($voterId, $type), true);
+          $query = 'SELECT npc_id FROM vote WHERE voter = ? AND type = ?';
+          $parameters = [$voterId, $type];
+          if (!empty($questToFilterBy)) {
+              $query .= ' AND npc_id IN (SELECT npc_id FROM npc_quest WHERE quest_id = ?)';
+              $parameters[] = $questToFilterBy->getId();
+          } else if (!empty($voiceActorToFilterBy)) {
+              $query .= ' AND npc_id IN (SELECT npc_id FROM npc WHERE voice_actor_id = ?)';
+              $parameters[] = $voiceActorToFilterBy->getId();
+          }
+          $query .= ';';
+
+          $result = (new Db('Website/DbInfo.ini'))->fetchQuery($query, $parameters, true);
           if (empty($result)) {
               return array();
           }
