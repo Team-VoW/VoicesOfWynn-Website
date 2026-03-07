@@ -4,9 +4,12 @@ $_p = basename(__FILE__, '.phtml') . '_'; // 'comments_dialog_'
 <script>
     var dialogNpcId = <?= ${$_p.'npcId'} ?>;
     var dialogVoiceActorId = <?= ${$_p.'voice_actor_id'} ?>;
-    var dialogUserId = "<?= @${$_p.'user_id'} ?>";
-    var dialogUserName = "<?= @${$_p.'user_name'} ?>";
-    var dialogUserAvatar = "<?= @${$_p.'user_avatar'} ?>";
+    // json_encode produces correctly quoted JS values for any input. HTML-escaped
+    // strings (htmlspecialchars) are wrong in JS context — &quot; stays literal
+    // in a <script> block, corrupting the value instead of safely encoding it.
+    var dialogUserId = <?= json_encode(${$_p.'user_id'} ?? '') ?>;
+    var dialogUserName = <?= json_encode(${$_p.'user_name'} ?? '') ?>;
+    var dialogUserAvatar = <?= json_encode(${$_p.'user_avatar'} ?? '') ?>;
 </script>
 
 <!-- Action Buttons -->

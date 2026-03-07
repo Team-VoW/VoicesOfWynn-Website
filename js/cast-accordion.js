@@ -21,6 +21,9 @@ $(document).ready(function () {
     });
 
     $('.cast-npc-header').on('keydown', function (e) {
+        // Without this guard, Space/Enter on the vote/comment action buttons bubble
+        // up to .cast-npc-header and incorrectly toggle the accordion as well
+        if (e.target !== this) return;
         if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
             toggleAccordion($(this));
