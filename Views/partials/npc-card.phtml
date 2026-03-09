@@ -55,9 +55,14 @@ $cardAdmin = $cardAdmin ?? false;
     </div>
 
     <div class="cast-npc-recordings">
-        <?php if (count($cardQuestNames) === 1): ?>
+        <?php $multipleQuests = count($cardQuestNames) > 1; ?>
+        <?php foreach ($cardRecordingsByQuest as $questId => $questRecordings): ?>
+            <?php if ($multipleQuests): ?>
+                <div class="cast-quest-section">
+                    <h4 class="cast-quest-label"><?= $cardQuestNames[$questId] ?></h4>
+            <?php endif ?>
             <div class="cast-quest-grid">
-                <?php foreach ($cardAllRecordings as $recording): ?>
+                <?php foreach ($questRecordings as $recording): ?>
                     <div class="cast-recording-item">
                         <div class="cast-recording-line">
                             <span class="line-number"># <?= $recording->line ?></span>
@@ -73,40 +78,14 @@ $cardAdmin = $cardAdmin ?? false;
                 <?php endforeach ?>
             </div>
             <?php if ($cardAdmin): ?>
-                <?php $questId = array_key_first($cardQuestNames); ?>
                 <div class="quest-admin-actions">
                     <button class="archive-all-recordings-btn" data-quest-id="<?= $questId ?>">Archive all recordings</button>
                     <a href="/administration/upload?questId=<?= $questId ?>&amp;npcId=<?= $cardNpcId ?>" class="uploadbtn">Add new recordings</a>
                 </div>
             <?php endif ?>
-        <?php else: ?>
-            <?php foreach ($cardRecordingsByQuest as $questId => $questRecordings): ?>
-                <div class="cast-quest-section">
-                    <h4 class="cast-quest-label"><?= $cardQuestNames[$questId] ?></h4>
-                    <div class="cast-quest-grid">
-                        <?php foreach ($questRecordings as $recording): ?>
-                            <div class="cast-recording-item">
-                                <div class="cast-recording-line">
-                                    <span class="line-number"># <?= $recording->line ?></span>
-                                </div>
-                                <div class="cast-recording-player">
-                                    <?php $audioSrc = \VoicesOfWynn\storageUrl('recordings/' . $recording->file); ?>
-                                    <?php include 'Views/partials/audio-player.phtml'; ?>
-                                </div>
-                                <?php if ($cardAdmin): ?>
-                                    <button class="delete-recording-btn" data-recording-id="<?= $recording->id ?>">×</button>
-                                <?php endif ?>
-                            </div>
-                        <?php endforeach ?>
-                    </div>
-                    <?php if ($cardAdmin): ?>
-                        <div class="quest-admin-actions">
-                            <button class="archive-all-recordings-btn" data-quest-id="<?= $questId ?>">Archive all recordings</button>
-                            <a href="/administration/upload?questId=<?= $questId ?>&amp;npcId=<?= $cardNpcId ?>" class="uploadbtn">Add new recordings</a>
-                        </div>
-                    <?php endif ?>
+            <?php if ($multipleQuests): ?>
                 </div>
-            <?php endforeach ?>
-        <?php endif ?>
+            <?php endif ?>
+        <?php endforeach ?>
     </div>
 </div>
