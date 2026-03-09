@@ -18,6 +18,7 @@ $cardAdmin = $cardAdmin ?? false;
             <img
                 class="cast-npc-pic"
                 src="<?= \VoicesOfWynn\storageUrl('npcs/' . $cardNpc->getId() . '.png') ?>"
+                onerror="this.onerror=null; this.src='<?= \VoicesOfWynn\storageUrl('npcs/default.png') ?>'"
                 alt="<?= htmlspecialchars($cardNpc->getName()) ?>"
                 loading="lazy"
             />
