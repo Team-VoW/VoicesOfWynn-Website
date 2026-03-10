@@ -2,7 +2,6 @@
 
 :root {
   --npc-gradient-purple: #7b1a9b;
-  --npc-gradient-violet: #a340c4;
   --npc-gradient-pink: #ff6b9d;
   --npc-gradient-cyan: #00d4ff;
   --npc-gradient-green: #00ff87;
@@ -23,7 +22,7 @@
   position: relative;
   padding: var(--npc-space-xl) 0;
   margin: 0 calc(50% - 50vw) var(--npc-space-lg);
-  background: linear-gradient(135deg, var(--npc-gradient-purple), var(--npc-gradient-violet), var(--npc-gradient-pink));
+  background: linear-gradient(135deg, var(--npc-gradient-purple), #a340c4, var(--npc-gradient-pink));
   overflow: hidden;
   text-align: center;
 }
@@ -91,6 +90,15 @@
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
 }
 
+.npc-animate-fade-in {
+  animation: npcFadeIn 0.8s ease forwards;
+}
+
+@keyframes npcFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 /* Voice Actor Card */
 .voice-actor-card {
   background: var(--npc-card-bg);
@@ -144,6 +152,12 @@
 
 .voice-actor-link:hover {
   transform: scale(1.02);
+}
+
+.voice-actor-info {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .voice-actor-avatar {
@@ -279,167 +293,6 @@
   outline-offset: 2px;
 }
 
-/* Recordings Section */
-.recordings-section {
-  margin-bottom: var(--npc-space-lg);
-}
-
-.recordings-section-title {
-  text-align: center;
-  font-size: 1.75rem;
-  margin-bottom: var(--npc-space-lg);
-  color: #333;
-}
-
-/* Quest Card */
-.quest-card {
-  background: var(--npc-card-bg);
-  border-radius: var(--npc-card-border-radius);
-  box-shadow: var(--npc-card-shadow);
-  margin-bottom: var(--npc-space-lg);
-  overflow: hidden;
-  transition: box-shadow var(--npc-transition-medium) ease;
-}
-
-.quest-card:hover {
-  box-shadow: var(--npc-card-shadow-hover);
-}
-
-.quest-card-header {
-  background: linear-gradient(135deg, var(--npc-gradient-purple), var(--npc-gradient-violet));
-  color: white;
-  padding: var(--npc-space-md) var(--npc-space-lg);
-  font-size: 1.25rem;
-  font-weight: bold;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
-}
-
-.quest-card-body {
-  padding: var(--npc-space-md);
-}
-
-/* Recording Row */
-.recording-row {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  border-radius: 0.75rem;
-  background: #fafafa;
-  margin-bottom: var(--npc-space-sm);
-  transition: background var(--npc-transition-fast) ease;
-}
-
-.recording-row:hover {
-  background: #f0f0f0;
-}
-
-.recording-row:last-child {
-  margin-bottom: 0;
-}
-
-.recording-line-number {
-  font-weight: bold;
-  color: var(--npc-gradient-purple);
-  min-width: 2rem;
-  font-size: 1rem;
-  flex-shrink: 0;
-}
-
-.recording-audio--native {
-  display: none;
-}
-
-.recording-actions {
-  display: flex;
-  gap: 0.35rem;
-  align-items: center;
-  margin-left: auto;
-}
-
-/* Delete & Admin Buttons */
-.delete-recording-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #ff5252, #f44336);
-  color: white;
-  border: none;
-  font-size: 1.5rem;
-  font-weight: bold;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform var(--npc-transition-fast) ease, box-shadow var(--npc-transition-fast) ease;
-  padding: 0;
-  line-height: 1;
-}
-
-.delete-recording-btn:hover,
-.delete-recording-btn:focus-visible {
-  transform: scale(1.1) rotate(90deg);
-  box-shadow: 0 4px 15px rgba(244, 67, 54, 0.5);
-}
-
-.delete-recording-btn:focus-visible {
-  outline: 2px solid var(--npc-gradient-purple);
-  outline-offset: 2px;
-}
-
-.archive-all-recordings-btn {
-  background: linear-gradient(135deg, #ff7043, #f4511e);
-  color: white;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: transform var(--npc-transition-fast) ease, box-shadow var(--npc-transition-fast) ease;
-}
-
-.archive-all-recordings-btn:hover,
-.archive-all-recordings-btn:focus-visible {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(244, 81, 30, 0.4);
-}
-
-.archive-all-recordings-btn:focus-visible {
-  outline: 2px solid var(--npc-gradient-purple);
-  outline-offset: 2px;
-}
-
-.uploadbtn {
-  background: linear-gradient(135deg, var(--npc-gradient-cyan), var(--npc-gradient-green));
-  color: #333;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: transform var(--npc-transition-fast) ease, box-shadow var(--npc-transition-fast) ease;
-}
-
-.uploadbtn:hover,
-.uploadbtn:focus-visible {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4);
-}
-
-.uploadbtn:focus-visible {
-  outline: 2px solid var(--npc-gradient-purple);
-  outline-offset: 2px;
-}
-
-.quest-admin-actions {
-  display: flex;
-  gap: var(--npc-space-sm);
-  justify-content: center;
-  flex-wrap: wrap;
-  padding: var(--npc-space-md);
-  border-top: 1px solid #eee;
-}
-
 /* Back Button */
 .back-btn-container {
   text-align: center;
@@ -475,11 +328,6 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes npcFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
 .npc-animate-on-scroll {
   opacity: 1;
 }
@@ -491,21 +339,6 @@
 
 .npc-animate-on-scroll.is-visible {
   animation: npcFadeInUp 0.6s ease forwards;
-}
-
-.quest-card:nth-child(1).is-visible { animation-delay: 0s; }
-.quest-card:nth-child(2).is-visible { animation-delay: 0.1s; }
-.quest-card:nth-child(3).is-visible { animation-delay: 0.2s; }
-.quest-card:nth-child(4).is-visible { animation-delay: 0.3s; }
-.quest-card:nth-child(5).is-visible { animation-delay: 0.4s; }
-
-.npc-animate-fade-in {
-  animation: npcFadeIn 0.8s ease forwards;
-}
-
-.npc-animate-fade-in-delay {
-  animation: npcFadeIn 0.8s ease 0.2s forwards;
-  opacity: 0;
 }
 
 /* Responsive */
@@ -545,33 +378,6 @@
     width: 100px;
     height: 100px;
   }
-  .quest-card-header {
-    padding: var(--npc-space-sm) var(--npc-space-md);
-    font-size: 1.1rem;
-  }
-  .quest-card-body {
-    padding: 0.5rem;
-  }
-  .recording-row {
-    gap: 0.4rem;
-    padding: 0.5rem;
-  }
-  .recording-line-number {
-    font-size: 0.85rem;
-    min-width: 1.5rem;
-  }
-  .recording-actions {
-    gap: 0.2rem;
-  }
-  .vote-btn,
-  .comment-btn {
-    padding: 0.4rem 0.6rem;
-  }
-  .delete-recording-btn {
-    width: 28px;
-    height: 28px;
-    font-size: 1rem;
-  }
   .admin-controls {
     flex-direction: column;
   }
@@ -588,9 +394,11 @@
     opacity: 1;
     transform: none;
   }
-  .npc-animate-on-scroll.is-visible,
-  .npc-animate-fade-in,
-  .npc-animate-fade-in-delay {
+  .npc-animate-on-scroll.is-visible {
+    animation: none;
+    opacity: 1;
+  }
+  .npc-animate-fade-in {
     animation: none;
     opacity: 1;
   }
@@ -598,11 +406,10 @@
   .voice-actor-card,
   .voice-actor-link,
   .voice-actor-avatar,
-  .quest-card,
-  .recording-row,
-  .vote-btn,
-  .delete-recording-btn,
-  button {
+  #change-actor-btn,
+  #archive-btn,
+  #va-confirm-change,
+  .back-btn-container .backbtn {
     transition: none;
   }
 }

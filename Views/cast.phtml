@@ -83,82 +83,20 @@ const SOCIAL_NAME = ['youtube' => 'YouTube', 'twitter' => 'Twitter', 'castingcal
 
     <div class="cast-npc-accordion">
         <?php foreach ($npcGroups as $group): ?>
-            <?php $npc = $group['npc']; $recordings = $group['recordings']; $questNames = $group['questNames']; $recordingsByQuest = $group['recordingsByQuest']; ?>
-            <div class="cast-npc-block recording-actions">
-                <button class="cast-npc-toggle" aria-expanded="false">
-                    <img
-                        class="cast-npc-pic"
-                        src="<?= \VoicesOfWynn\storageUrl('npcs/' . $npc->getId() . '.png') ?>"
-                        alt="<?= htmlspecialchars($npc->getName()) ?>"
-                        loading="lazy"
-                    />
-                    <div class="cast-npc-info">
-                        <span class="cast-npc-block-name">
-                            <?= $npc->getName() ?>
-                            <?php if ($npc->isArchived()): ?>
-                                <span class="cast-archived-badge">Outdated</span>
-                            <?php endif ?>
-                        </span>
-                        <span class="cast-npc-meta">
-                            in <?= implode(', ', $questNames) ?>
-                            &bull; <?= count($recordings) ?> recording<?= count($recordings) !== 1 ? 's' : '' ?>
-                        </span>
-                    </div>
-                    <button class="vote-btn upvote-btn upvote<?php if (in_array($npc->getId(), ${basename(__FILE__, '.phtml').'_upvoted'})) : ?> clicked<?php endif ?>" data-npc-id="<?= $npc->getId() ?>">
-                        <span class="vote-icon">👍</span>
-                        <span class="vote-count"><?= $npc->getUpvotes() ?></span>
-                    </button>
-                    <button class="vote-btn downvote-btn downvote<?php if (in_array($npc->getId(), ${basename(__FILE__, '.phtml').'_downvoted'})) : ?> clicked<?php endif ?>" data-npc-id="<?= $npc->getId() ?>">
-                        <span class="vote-icon">👎</span>
-                        <span class="vote-count"><?= $npc->getDownvotes() ?></span>
-                    </button>
-                    <a href="contents/npc/<?= $npc->getId() ?>/comments" class="vote-btn comment-btn">
-                        <span class="vote-icon">💬</span>
-                        <span class="vote-count"><?= $npc->getCommentsCount() ?></span>
-                    </a>
-                    <svg class="cast-npc-chevron" aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </button>
-
-                <div class="cast-npc-recordings">
-                    <?php if (count($questNames) === 1): ?>
-                        <div class="cast-quest-grid">
-                            <?php foreach ($recordings as $recording): ?>
-                                <div class="cast-recording-item">
-                                    <div class="cast-recording-line">
-                                        <span class="line-number"># <?= $recording->line ?></span>
-                                    </div>
-                                    <div class="cast-recording-player">
-                                        <?php $audioSrc = \VoicesOfWynn\storageUrl('recordings/' . $recording->file); ?>
-                                        <?php include 'Views/partials/audio-player.phtml'; ?>
-                                    </div>
-                                </div>
-                            <?php endforeach ?>
-                        </div>
-                    <?php else: ?>
-                        <?php foreach ($recordingsByQuest as $questId => $questRecordings): ?>
-                            <div class="cast-quest-section">
-                                <h4 class="cast-quest-label"><?= $questNames[$questId] ?></h4>
-                                <div class="cast-quest-grid">
-                                    <?php foreach ($questRecordings as $recording): ?>
-                                        <div class="cast-recording-item">
-                                            <div class="cast-recording-line">
-                                                <span class="line-number"># <?= $recording->line ?></span>
-                                            </div>
-                                            <div class="cast-recording-player">
-                                                <?php $audioSrc = \VoicesOfWynn\storageUrl('recordings/' . $recording->file); ?>
-                                                <?php include 'Views/partials/audio-player.phtml'; ?>
-                                            </div>
-                                        </div>
-                                    <?php endforeach ?>
-                                </div>
-                            </div>
-                        <?php endforeach ?>
-                    <?php endif ?>
-                </div>
-            </div>
+            <?php
+            $cardNpc = $group['npc'];
+            $cardQuestNames = $group['questNames'];
+            $cardRecordingsByQuest = $group['recordingsByQuest'];
+            $cardAllRecordings = $group['recordings'];
+            $cardIsUpvoted = in_array($cardNpc->getId(), ${basename(__FILE__, '.phtml').'_upvoted'});
+            $cardIsDownvoted = in_array($cardNpc->getId(), ${basename(__FILE__, '.phtml').'_downvoted'});
+            $cardIsOpen = false;
+            $cardAdmin = false;
+            $cardNpcId = $cardNpc->getId();
+            ?>
+            <?php include 'Views/partials/npc-card.phtml'; ?>
         <?php endforeach ?>
+        <?php include 'Views/partials/comments-dialog.phtml'; ?>
     </div>
 </section>
 

@@ -53,13 +53,18 @@ class Cast extends WebpageController
 		self::$data['cast_upvoted'] = $cnm->getVotes(hash('sha256', $uuid ?? $_SERVER['REMOTE_ADDR']), '+', null, $voiceActor);
 		self::$data['cast_downvoted'] = $cnm->getVotes(hash('sha256', $uuid ?? $_SERVER['REMOTE_ADDR']), '-', null, $voiceActor);
 
+		self::$cssFiles[] = 'npc-card';
 		self::$cssFiles[] = 'cast';
 		self::$cssFiles[] = 'article-css-reset';
 		self::$cssFiles[] = 'audio-player';
 		self::$cssFiles[] = 'voting';
+		self::$cssFiles[] = 'comments';
+		self::$cssFiles[] = 'comments-dialog';
 		self::$jsFiles[] = 'audio-player';
 		self::$jsFiles[] = 'cast-accordion';
 		self::$jsFiles[] = 'voting';
+		self::$jsFiles[] = 'md5';
+		self::$jsFiles[] = 'comments-dialog';
 		self::$views[] = 'cast';
 		return 200;
 	}

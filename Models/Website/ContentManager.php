@@ -64,7 +64,8 @@ class ContentManager
 	public function getNpc($id)
 	{
 		$query = '
-		SELECT npc.npc_id, npc.name, user.user_id, user.display_name, user.picture, npc.archived
+		SELECT npc.npc_id, npc.name, user.user_id, user.display_name, user.picture, npc.archived, npc.upvotes, npc.downvotes,
+		(SELECT COUNT(*) FROM comment WHERE comment.npc_id = npc.npc_id) AS comments
 		FROM npc
 		LEFT JOIN user ON npc.voice_actor_id = user.user_id
 		WHERE npc_id = ?;';
@@ -147,7 +148,8 @@ class ContentManager
 	public function getVoiceActorRecordings($id): array
 	{
 		$query = '
-		SELECT recording.recording_id, recording.quest_id, recording.line, recording.file, recording.archived AS "recarchived", npc.npc_id AS `npc`, npc.name AS `nname`, npc.archived, npc.upvotes, npc.downvotes, quest.name as `qname`
+		SELECT recording.recording_id, recording.quest_id, recording.line, recording.file, recording.archived AS "recarchived", npc.npc_id AS `npc`, npc.name AS `nname`, npc.archived, npc.upvotes, npc.downvotes, quest.name as `qname`,
+		(SELECT COUNT(*) FROM comment WHERE comment.npc_id = npc.npc_id) AS comments
 		FROM recording
 		JOIN quest USING(quest_id)
 		JOIN npc USING(npc_id)
@@ -170,7 +172,7 @@ class ContentManager
 					$quests[] = $currentQuest;
 				}
 				$currentQuest = new Quest($recording);
-				$currentNpc = new Npc(array('id' => $recording['npc'], 'name' => $recording['nname'], 'archived' => $recording['archived'], 'upvotes' => $recording['upvotes'], 'downvotes' => $recording['downvotes'])); //"npc" is a key for NPC's ID
+				$currentNpc = new Npc(array('id' => $recording['npc'], 'name' => $recording['nname'], 'archived' => $recording['archived'], 'upvotes' => $recording['upvotes'], 'downvotes' => $recording['downvotes'], 'comments' => $recording['comments'])); //"npc" is a key for NPC's ID
 			}
 			
 			$recordingObj = new Recording($recording);
@@ -266,7 +268,7 @@ class ContentManager
 			$userId = $_SESSION['user']->getId();
 		}
 		
-		$result = (new Db('Website/DbInfo.ini'))->fetchQuery('SELECT comment_id FROM comment WHERE (ip = ? OR user_id = ?)'. (empty($npcId)) ? ';' : ' AND npc_id = ?;',
+		$result = (new Db('Website/DbInfo.ini'))->fetchQuery('SELECT comment_id FROM comment WHERE (ip = ? OR user_id = ?)'. ((empty($npcId)) ? ';' : ' AND npc_id = ?;'),
             (empty($npcId) ? [inet_pton($ip), $userId] : [inet_pton($ip), $userId, $npcId]), true);
 		
 		$ids = array();
