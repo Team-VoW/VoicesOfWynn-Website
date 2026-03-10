@@ -521,25 +521,14 @@ class Npc implements JsonSerializable
 
     /**
      * Gets a suitable "pick" from this NPCs' recordings in a single quest.
-     * This pick is the first recording larger than 35 kB.
-     * If no such recording exists, return the largest one.
+     * Returns the first recording ordered by line number.
      * @param Quest $quest Quest to filter by
-     * @return Recording
+     * @return Recording|null
      */
-    public function getSampleRecording(Quest $quest): Recording
+    public function getSampleRecording(Quest $quest): ?Recording
     {
-        $maxsize = 0;
-        $maxsizeRecording = null;
-        foreach ($this->getRecordings($quest) as $recording) {
-            $filesize = filesize(storageUrl('recordings/' . $recording->file));
-            if ($filesize > 35840) {
-                return $recording;
-            } else if ($filesize > $maxsize) {
-                $maxsize = $filesize;
-                $maxsizeRecording = $recording;
-            }
-        }
-        return $maxsizeRecording;
+        $recordings = array_values($this->getRecordings($quest));
+        return $recordings[0] ?? null;
     }
 }
 

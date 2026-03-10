@@ -110,6 +110,11 @@
   flex-shrink: 0;
 }
 
+.cast-npc-link--pic {
+  display: block;
+  flex-shrink: 0;
+}
+
 .cast-npc-pic {
   width: 64px;
   height: 64px;
@@ -121,6 +126,22 @@
     linear-gradient(white, white) padding-box,
     linear-gradient(135deg, var(--gradient-purple), var(--gradient-pink))
       border-box;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cast-npc-link--pic:hover .cast-npc-pic {
+  transform: scale(1.08);
+  box-shadow: 0 4px 12px rgba(123, 26, 155, 0.3);
+}
+
+.cast-npc-link--name {
+  text-decoration: none;
+  transition: color 0.2s ease;
+  width: fit-content;
+}
+
+.cast-npc-link--name:hover {
+  color: var(--gradient-purple);
 }
 
 .cast-npc-info {

@@ -15,20 +15,22 @@ $cardAdmin = $cardAdmin ?? false;
 <div class="cast-npc-block recording-actions<?= $cardIsOpen ? ' is-open' : '' ?>">
     <div class="cast-npc-header" role="button" tabindex="0" aria-expanded="<?= $cardIsOpen ? 'true' : 'false' ?>">
         <div class="cast-npc-toggle">
-            <img
-                class="cast-npc-pic"
-                src="<?= \VoicesOfWynn\storageUrl('npcs/' . $cardNpc->getId() . '.png') ?>"
-                onerror="this.onerror=null; this.src='<?= \VoicesOfWynn\storageUrl('npcs/default.png') ?>'"
-                alt="<?= htmlspecialchars($cardNpc->getName()) ?>"
-                loading="lazy"
-            />
+            <a href="contents/npc/<?= $cardNpc->getId() ?>" class="cast-npc-link cast-npc-link--pic">
+                <img
+                    class="cast-npc-pic"
+                    src="<?= \VoicesOfWynn\storageUrl('npcs/' . $cardNpc->getId() . '.png') ?>"
+                    onerror="this.onerror=null; this.src='<?= \VoicesOfWynn\storageUrl('npcs/default.png') ?>'"
+                    alt="<?= htmlspecialchars($cardNpc->getName()) ?>"
+                    loading="lazy"
+                />
+            </a>
             <div class="cast-npc-info">
-                <span class="cast-npc-block-name">
+                <a href="contents/npc/<?= $cardNpc->getId() ?>" class="cast-npc-link cast-npc-link--name cast-npc-block-name">
                     <?= $cardNpc->getName() ?>
                     <?php if ($cardNpc->isArchived()): ?>
                         <span class="cast-archived-badge">Outdated</span>
                     <?php endif ?>
-                </span>
+                </a>
                 <span class="cast-npc-meta">
                     in <?= implode(', ', $cardQuestNames) ?>
                     &bull; <?= count($cardAllRecordings) ?> recording<?= count($cardAllRecordings) !== 1 ? 's' : '' ?>

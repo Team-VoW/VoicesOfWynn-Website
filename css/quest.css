@@ -1,0 +1,170 @@
+/* Quest Section Title */
+.quest-section-title {
+  font-variant: all-small-caps;
+  margin-bottom: 1rem;
+}
+
+/* Cast Card List */
+.quest-cast-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  margin-bottom: 2rem;
+}
+
+.quest-cast-card {
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.875rem 1.25rem;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.quest-cast-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #7b1a9b, #ff6b9d);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.quest-cast-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(123, 26, 155, 0.15);
+}
+
+.quest-cast-card:hover::before {
+  transform: scaleX(1);
+}
+
+/* NPC column */
+.quest-cast-npc {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.375rem;
+  min-width: 80px;
+  text-align: center;
+}
+
+.quest-cast-npc-link--pic {
+  display: block;
+}
+
+.quest-cast-npc-link--pic .cast-npc-pic {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.quest-cast-npc-link--pic:hover .cast-npc-pic {
+  transform: scale(1.08);
+  box-shadow: 0 4px 12px rgba(123, 26, 155, 0.3);
+}
+
+.quest-cast-npc-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333;
+  text-decoration: none;
+}
+
+.quest-cast-npc-name:hover {
+  color: #7b1a9b;
+}
+
+/* Audio player column */
+.quest-cast-audio {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Voice actor column */
+.quest-cast-va {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.375rem;
+  min-width: 90px;
+  text-align: center;
+}
+
+.quest-cast-va-link--pic {
+  display: block;
+}
+
+.quest-cast-va-link--pic .quest-va-avatar {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.quest-cast-va-link--pic:hover .quest-va-avatar {
+  transform: scale(1.08);
+  box-shadow: 0 4px 12px rgba(123, 26, 155, 0.3);
+}
+
+.quest-va-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid #7b1a9b;
+  object-fit: cover;
+}
+
+.quest-va-name {
+  font-size: 0.85rem;
+  color: #7b1a9b;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+a.quest-va-name:hover {
+  color: #ff6b9d;
+}
+
+/* Actions column */
+.quest-cast-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+/* Responsive: stack on small screens */
+@media (max-width: 600px) {
+  .quest-cast-card {
+    flex-wrap: wrap;
+  }
+
+  .quest-cast-audio {
+    flex: 0 0 100%;
+    order: 3;
+  }
+
+  .quest-cast-actions {
+    order: 4;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .quest-cast-card,
+  .quest-cast-card::before,
+  .quest-cast-npc-link--pic .cast-npc-pic,
+  .quest-cast-va-link--pic .quest-va-avatar {
+    transition: none;
+  }
+
+  .quest-cast-card:hover,
+  .quest-cast-npc-link--pic:hover .cast-npc-pic,
+  .quest-cast-va-link--pic:hover .quest-va-avatar {
+    transform: none;
+  }
+}
