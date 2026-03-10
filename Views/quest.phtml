@@ -13,67 +13,22 @@
 
 <section>
     <h2 class="txt-c quest-section-title">Cast</h2>
-    <div class="quest-cast-list">
-        <?php foreach ($quest->getNpcs() as $npc) : ?>
-            <div class="quest-cast-card" data-npc-id="<?= $npc->getId() ?>">
-                <div class="quest-cast-npc">
-                    <a href="contents/npc/<?= $npc->getId() ?>" class="quest-cast-npc-link--pic">
-                        <img class="cast-npc-pic" src="<?= \VoicesOfWynn\storageUrl('npcs/' . $npc->getId() . '.png') ?>" alt="NPC picture" loading="lazy" onerror="this.onerror=null; this.src='<?= \VoicesOfWynn\storageUrl('npcs/default.png') ?>'" />
-                    </a>
-                    <a href="contents/npc/<?= $npc->getId() ?>" class="quest-cast-npc-name"><?= $npc->getName() ?></a>
-                </div>
-                <div class="quest-cast-audio">
-                    <?php $sampleRecording = $npc->getSampleRecording($quest); ?>
-                    <?php if ($sampleRecording !== null): ?>
-                        <?php $audioSrc = \VoicesOfWynn\storageUrl('recordings/' . $sampleRecording->file); ?>
-                        <?php include 'Views/partials/audio-player.phtml'; ?>
-                    <?php endif ?>
-                </div>
-                <div class="quest-cast-va">
-                    <?php if ($npc->getVoiceActor() === null) : ?>
-                        <img class="quest-va-avatar" src="<?= \VoicesOfWynn\storageUrl('avatars/nobody.png') ?>" alt="Profile picture" />
-                        <i class="quest-va-name">Nobody</i>
-                    <?php else : ?>
-                        <a href="cast/<?= $npc->getVoiceActor()->getId() ?>" class="quest-cast-va-link--pic">
-                            <img class="quest-va-avatar" src="<?= \VoicesOfWynn\storageUrl('avatars/' . $npc->getVoiceActor()->getAvatar()) ?>" alt="Profile picture" />
-                        </a>
-                        <a href="cast/<?= $npc->getVoiceActor()->getId() ?>" class="quest-va-name"><?= $npc->getVoiceActor()->getName() ?></a>
-                    <?php endif ?>
-                </div>
-                <div class="quest-cast-actions">
-                    <button class="vote-btn upvote-btn upvote<?php if (in_array($npc->getId(), $quest_upvoted)) : ?> clicked<?php endif ?>" data-npc-id="<?= $npc->getId() ?>">
-                        <span class="vote-icon">👍</span>
-                        <span class="vote-count"><?= $npc->getUpvotes() ?></span>
-                    </button>
-                    <button class="vote-btn downvote-btn downvote<?php if (in_array($npc->getId(), $quest_downvoted)) : ?> clicked<?php endif ?>" data-npc-id="<?= $npc->getId() ?>">
-                        <span class="vote-icon">👎</span>
-                        <span class="vote-count"><?= $npc->getDownvotes() ?></span>
-                    </button>
-                    <button class="vote-btn comment-btn comment" data-npc-id="<?= $npc->getId() ?>">
-                        <span class="vote-icon">💬</span>
-                        <span class="vote-count"><?= $npc->getCommentsCount() ?></span>
-                    </button>
-                </div>
-            </div>
-        <?php endforeach ?>
-    </div>
-    <hr class="hr-f">
-</section>
-
-<section>
-    <h2 class="txt-c quest-section-title">Full Recordings</h2>
     <div class="cast-npc-accordion">
         <?php foreach ($quest->getNpcs() as $npc): ?>
             <?php
-            $cardNpc               = $npc;
-            $cardQuestNames        = [$quest->getId() => $quest->getName()];
-            $cardRecordingsByQuest = [$quest->getId() => array_values($npc->getRecordings($quest))];
-            $cardAllRecordings     = array_values($npc->getRecordings($quest));
-            $cardIsUpvoted         = in_array($npc->getId(), $quest_upvoted);
-            $cardIsDownvoted       = in_array($npc->getId(), $quest_downvoted);
-            $cardIsOpen            = false;
-            $cardAdmin             = false;
-            $cardNpcId             = $npc->getId();
+            $cardNpc                      = $npc;
+            $cardQuestNames               = [$quest->getId() => $quest->getName()];
+            $cardQuestDegeneratedNames    = [$quest->getId() => $quest->getDegeneratedName()];
+            $cardRecordingsByQuest        = [$quest->getId() => array_values($npc->getRecordings($quest))];
+            $cardAllRecordings            = array_values($npc->getRecordings($quest));
+            $cardIsUpvoted                = in_array($npc->getId(), $quest_upvoted);
+            $cardIsDownvoted              = in_array($npc->getId(), $quest_downvoted);
+            $cardIsOpen                   = false;
+            $cardAdmin                    = false;
+            $cardNpcId                    = $npc->getId();
+            $cardShowFeaturedRecording    = true;
+            $cardShowQuestNames           = false;
+            $cardShowVoiceActor           = true;
             ?>
             <?php include 'Views/partials/npc-card.phtml'; ?>
         <?php endforeach ?>

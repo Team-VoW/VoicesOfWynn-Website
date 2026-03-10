@@ -73,16 +73,19 @@ class Npc extends WebpageController
 		
 		$questRecordings = $cnm->getNpcRecordings($this->npc->getId());
 		$cardQuestNames = [];
+		$cardQuestDegeneratedNames = [];
 		$cardRecordingsByQuest = [];
 		$cardAllRecordings = [];
 		foreach ($questRecordings as $quest) {
 			$npcs = $quest->getNpcs();
 			$recs = !empty($npcs) ? $npcs[0]->getRecordings() : [];
 			$cardQuestNames[$quest->getId()] = $quest->getName();
+			$cardQuestDegeneratedNames[$quest->getId()] = $quest->getDegeneratedName();
 			$cardRecordingsByQuest[$quest->getId()] = $recs;
 			$cardAllRecordings = array_merge($cardAllRecordings, $recs);
 		}
-		self::$data['npc_card_quest_names']         = $cardQuestNames;
+		self::$data['npc_card_quest_names']              = $cardQuestNames;
+		self::$data['npc_card_quest_degenerated_names']  = $cardQuestDegeneratedNames;
 		self::$data['npc_card_recordings_by_quest'] = $cardRecordingsByQuest;
 		self::$data['npc_card_all_recordings']      = $cardAllRecordings;
 		if (!$this->disallowAdministration && !isset(self::$data['npc_uploadErrors'])) {

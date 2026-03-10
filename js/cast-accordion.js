@@ -16,7 +16,7 @@ $(document).ready(function () {
     }
 
     $('.cast-npc-header').on('click', function (e) {
-        if ($(e.target).closest('.cast-npc-actions').length) return;
+        if ($(e.target).closest('.vote-btn, .cast-npc-link, .cast-quest-link, .custom-audio-player, .cast-npc-featured-va').length) return;
         toggleAccordion($(this));
     });
 
