@@ -36,6 +36,7 @@ class Cast extends WebpageController
 						'npc' => $npc,
 						'recordings' => [],
 						'questNames' => [],
+						'questDegeneratedNames' => [],
 						'recordingsByQuest' => [],
 					];
 				}
@@ -44,6 +45,7 @@ class Cast extends WebpageController
 					$npcGroups[$npcId]['recordingsByQuest'][$quest->getId()][] = $recording;
 				}
 				$npcGroups[$npcId]['questNames'][$quest->getId()] = $quest->getName();
+				$npcGroups[$npcId]['questDegeneratedNames'][$quest->getId()] = $quest->getDegeneratedName();
 			}
 		}
 		self::$data['cast_npc_groups'] = array_values($npcGroups);

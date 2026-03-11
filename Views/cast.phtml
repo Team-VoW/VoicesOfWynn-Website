@@ -86,6 +86,7 @@ const SOCIAL_NAME = ['youtube' => 'YouTube', 'twitter' => 'Twitter', 'castingcal
             <?php
             $cardNpc = $group['npc'];
             $cardQuestNames = $group['questNames'];
+            $cardQuestDegeneratedNames = $group['questDegeneratedNames'];
             $cardRecordingsByQuest = $group['recordingsByQuest'];
             $cardAllRecordings = $group['recordings'];
             $cardIsUpvoted = in_array($cardNpc->getId(), ${basename(__FILE__, '.phtml').'_upvoted'});

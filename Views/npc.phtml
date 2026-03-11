@@ -7,7 +7,7 @@
 <section class="npc-hero npc-animate-fade-in">
     <div class="npc-hero-content">
         <h1 class="npc-hero-title"><?= ${basename(__FILE__, '.phtml').'_npc'}->getName() ?><?php if (${basename(__FILE__, '.phtml').'_npc'}->isArchived()) : ?> <span class="outdated-tag">outdated</span><?php endif ?></h1>
-        <img class="npc-avatar" src="<?= \VoicesOfWynn\storageUrl('npcs/' . ${basename(__FILE__, '.phtml').'_npc'}->getId() . '.png') ?>" alt="NPC picture" />
+        <img class="npc-avatar" src="<?= \VoicesOfWynn\storageUrl('npcs/' . ${basename(__FILE__, '.phtml').'_npc'}->getId() . '.png') ?>" alt="NPC picture" onerror="this.onerror=null; this.src='<?= \VoicesOfWynn\storageUrl('npcs/default.png') ?>'" />
     </div>
 </section>
 
@@ -54,7 +54,8 @@
 <!-- NPC Card (expanded) -->
 <?php
 $prefix = basename(__FILE__, '.phtml') . '_';
-$cardQuestNames        = ${$prefix . 'card_quest_names'};
+$cardQuestNames              = ${$prefix . 'card_quest_names'};
+$cardQuestDegeneratedNames   = ${$prefix . 'card_quest_degenerated_names'};
 $cardRecordingsByQuest = ${$prefix . 'card_recordings_by_quest'};
 $cardAllRecordings     = ${$prefix . 'card_all_recordings'};
 $cardNpc               = ${$prefix . 'npc'};

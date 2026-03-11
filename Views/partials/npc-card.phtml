@@ -2,6 +2,7 @@
 // Variables expected from the including file:
 // $cardNpc            - NPC object
 // $cardQuestNames     - array($questId => $questName)
+// $cardQuestDegeneratedNames - array($questId => $degeneratedName)
 // $cardRecordingsByQuest - array($questId => $recordings[])
 // $cardAllRecordings  - flat array of all recordings
 // $cardIsUpvoted      - bool
@@ -11,30 +12,60 @@
 // $cardNpcId          - int
 $cardIsOpen = $cardIsOpen ?? false;
 $cardAdmin = $cardAdmin ?? false;
+$cardShowFeaturedRecording = $cardShowFeaturedRecording ?? false;
+$cardShowQuestNames        = $cardShowQuestNames        ?? true;
+$cardShowVoiceActor        = $cardShowVoiceActor        ?? true;
 ?>
 <div class="cast-npc-block recording-actions<?= $cardIsOpen ? ' is-open' : '' ?>">
     <div class="cast-npc-header" role="button" tabindex="0" aria-expanded="<?= $cardIsOpen ? 'true' : 'false' ?>">
         <div class="cast-npc-toggle">
-            <img
-                class="cast-npc-pic"
-                src="<?= \VoicesOfWynn\storageUrl('npcs/' . $cardNpc->getId() . '.png') ?>"
-                onerror="this.onerror=null; this.src='<?= \VoicesOfWynn\storageUrl('npcs/default.png') ?>'"
-                alt="<?= htmlspecialchars($cardNpc->getName()) ?>"
-                loading="lazy"
-            />
+            <a href="contents/npc/<?= $cardNpc->getId() ?>" class="cast-npc-link cast-npc-link--pic">
+                <img
+                    class="cast-npc-pic"
+                    src="<?= \VoicesOfWynn\storageUrl('npcs/' . $cardNpc->getId() . '.png') ?>"
+                    onerror="this.onerror=null; this.src='<?= \VoicesOfWynn\storageUrl('npcs/default.png') ?>'"
+                    alt="<?= htmlspecialchars($cardNpc->getName()) ?>"
+                    loading="lazy"
+                />
+            </a>
             <div class="cast-npc-info">
-                <span class="cast-npc-block-name">
+                <a href="contents/npc/<?= $cardNpc->getId() ?>" class="cast-npc-link cast-npc-link--name cast-npc-block-name">
                     <?= $cardNpc->getName() ?>
                     <?php if ($cardNpc->isArchived()): ?>
                         <span class="cast-archived-badge">Outdated</span>
                     <?php endif ?>
-                </span>
+                </a>
+                <?php if ($cardShowQuestNames): ?>
                 <span class="cast-npc-meta">
-                    in <?= implode(', ', $cardQuestNames) ?>
+                    in <?= implode(', ', array_map(fn($id, $name) => '<a href="contents/' . ($cardQuestDegeneratedNames[$id] ?? $id) . '" class="cast-quest-link">' . $name . '</a>', array_keys($cardQuestNames), $cardQuestNames)) ?>
                     &bull; <?= count($cardAllRecordings) ?> recording<?= count($cardAllRecordings) !== 1 ? 's' : '' ?>
                 </span>
+                <?php endif ?>
             </div>
         </div>
+        <?php if ($cardShowFeaturedRecording): ?>
+            <div class="cast-npc-featured-audio">
+                <?php $featuredRecording = $cardAllRecordings[0] ?? null; ?>
+                <?php if ($featuredRecording !== null): ?>
+                    <?php $audioSrc = \VoicesOfWynn\storageUrl('recordings/' . $featuredRecording->file); ?>
+                    <?php include 'Views/partials/audio-player.phtml'; ?>
+                <?php endif ?>
+            </div>
+            <?php if ($cardShowVoiceActor): ?>
+            <div class="cast-npc-featured-va">
+                <?php $va = $cardNpc->getVoiceActor(); ?>
+                <?php if ($va === null): ?>
+                    <img class="cast-npc-va-avatar" src="<?= \VoicesOfWynn\storageUrl('avatars/nobody.png') ?>" alt="Profile picture" />
+                    <i class="cast-npc-va-name">Nobody</i>
+                <?php else: ?>
+                    <a href="cast/<?= $va->getId() ?>" class="cast-npc-va-link--pic">
+                        <img class="cast-npc-va-avatar" src="<?= \VoicesOfWynn\storageUrl('avatars/' . $va->getAvatar()) ?>" alt="Profile picture" />
+                    </a>
+                    <a href="cast/<?= $va->getId() ?>" class="cast-npc-va-name"><?= $va->getName() ?></a>
+                <?php endif ?>
+            </div>
+            <?php endif ?>
+        <?php endif ?>
         <div class="cast-npc-actions">
             <button class="vote-btn upvote-btn upvote<?= $cardIsUpvoted ? ' clicked' : '' ?>" data-npc-id="<?= $cardNpcId ?>">
                 <span class="vote-icon">👍</span>
@@ -59,7 +90,7 @@ $cardAdmin = $cardAdmin ?? false;
         <?php foreach ($cardRecordingsByQuest as $questId => $questRecordings): ?>
             <?php if ($multipleQuests): ?>
                 <div class="cast-quest-section">
-                    <h4 class="cast-quest-label"><?= $cardQuestNames[$questId] ?></h4>
+                    <h4 class="cast-quest-label"><a href="contents/<?= $cardQuestDegeneratedNames[$questId] ?>" class="cast-quest-link"><?= $cardQuestNames[$questId] ?></a></h4>
             <?php endif ?>
             <div class="cast-quest-grid">
                 <?php foreach ($questRecordings as $recording): ?>

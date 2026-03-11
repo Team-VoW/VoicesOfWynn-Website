@@ -63,9 +63,15 @@ class Quest extends WebpageController
         self::$cssFiles[] = 'npc';
         self::$cssFiles[] = 'voting';
         self::$cssFiles[] = 'audio-player';
+        self::$cssFiles[] = 'npc-card';
+        self::$cssFiles[] = 'comments-dialog';
+        self::$cssFiles[] = 'comments';
         self::$jsFiles[] = 'voting';
         self::$jsFiles[] = 'audio-player';
         self::$jsFiles[] = 'quest';
+        self::$jsFiles[] = 'cast-accordion';
+        self::$jsFiles[] = 'comments-dialog';
+        self::$jsFiles[] = 'md5';
 
         return true;
     }

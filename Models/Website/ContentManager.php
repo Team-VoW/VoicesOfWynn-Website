@@ -148,7 +148,7 @@ class ContentManager
 	public function getVoiceActorRecordings($id): array
 	{
 		$query = '
-		SELECT recording.recording_id, recording.quest_id, recording.line, recording.file, recording.archived AS "recarchived", npc.npc_id AS `npc`, npc.name AS `nname`, npc.archived, npc.upvotes, npc.downvotes, quest.name as `qname`,
+		SELECT recording.recording_id, recording.quest_id, recording.line, recording.file, recording.archived AS "recarchived", npc.npc_id AS `npc`, npc.name AS `nname`, npc.archived, npc.upvotes, npc.downvotes, quest.name as `qname`, quest.degenerated_name AS `dname`,
 		(SELECT COUNT(*) FROM comment WHERE comment.npc_id = npc.npc_id) AS comments
 		FROM recording
 		JOIN quest USING(quest_id)
@@ -188,7 +188,7 @@ class ContentManager
         $db = new Db('Website/DbInfo.ini');
 
 		$query = '
-		SELECT recording.recording_id, recording.quest_id, recording.line, recording.file, quest.name
+		SELECT recording.recording_id, recording.quest_id, recording.line, recording.file, quest.name, quest.degenerated_name
 		FROM recording
 		JOIN quest ON quest.quest_id = recording.quest_id
 		JOIN npc ON recording.npc_id = npc.npc_id
@@ -200,7 +200,7 @@ class ContentManager
 		if (gettype($result) !== 'array') {
 			//No recordings yet
 			$query = '
-			SELECT quest_id,name
+			SELECT quest_id,name,degenerated_name
 			FROM quest
 		    JOIN npc_quest USING(quest_id)
 			WHERE npc_id = ?;';
