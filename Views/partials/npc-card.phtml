@@ -29,12 +29,14 @@ $cardShowVoiceActor        = $cardShowVoiceActor        ?? true;
                 />
             </a>
             <div class="cast-npc-info">
-                <a href="contents/npc/<?= $cardNpc->getId() ?>" class="cast-npc-link cast-npc-link--name cast-npc-block-name">
-                    <?= $cardNpc->getName() ?>
-                    <?php if ($cardNpc->isArchived()): ?>
-                        <span class="cast-archived-badge">Outdated</span>
-                    <?php endif ?>
-                </a>
+                <div>
+                    <a href="contents/npc/<?= $cardNpc->getId() ?>" class="cast-npc-link cast-npc-link--name cast-npc-block-name">
+                        <?= $cardNpc->getName() ?>
+                        <?php if ($cardNpc->isArchived()): ?>
+                            <span class="cast-archived-badge">Outdated</span>
+                        <?php endif ?>
+                    </a>
+                </div>
                 <?php if ($cardShowQuestNames): ?>
                 <span class="cast-npc-meta">
                     in <?= implode(', ', array_map(fn($id, $name) => '<a href="contents/' . ($cardQuestDegeneratedNames[$id] ?? $id) . '" class="cast-quest-link">' . $name . '</a>', array_keys($cardQuestNames), $cardQuestNames)) ?>

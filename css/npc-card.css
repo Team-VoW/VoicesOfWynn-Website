@@ -83,7 +83,7 @@
   grid-template-areas: "toggle actions";
   grid-template-columns: 1fr auto;
   align-items: center;
-  cursor: pointer;
+  cursor: default;
 }
 
 .cast-npc-header:has(.cast-npc-featured-audio) {
@@ -115,6 +115,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0 1.25rem 0 0.5rem;
+  cursor: pointer;
 }
 
 .cast-npc-link--pic {
@@ -144,7 +145,6 @@
 .cast-npc-link--name {
   text-decoration: none;
   transition: color 0.2s ease;
-  width: fit-content;
 }
 
 .cast-npc-link--name:hover {
@@ -163,10 +163,11 @@
   font-size: 1.05rem;
   font-weight: 600;
   color: var(--text-primary);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
+  display: inline;
+}
+
+.cast-npc-block-name .cast-archived-badge {
+  vertical-align: middle;
 }
 
 .cast-npc-meta {
@@ -458,11 +459,17 @@ a.cast-npc-va-name:hover { color: var(--gradient-pink); }
 
   .cast-npc-header:has(.cast-npc-featured-audio) {
     grid-template-areas:
-      "toggle  va     "
-      "audio   audio  "
-      "actions actions";
+      "toggle  toggle "
+      "va      va     "
+      "audio   actions";
     grid-template-columns: 1fr auto;
   }
+
+  .cast-npc-featured-audio .audio-waveform {
+    display: none;
+  }
+
+
 
   .cast-npc-toggle {
     padding: 0.75rem 1rem 0.5rem;
@@ -478,15 +485,16 @@ a.cast-npc-va-name:hover { color: var(--gradient-pink); }
   }
 
   .cast-npc-featured-va {
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    justify-content: center;
-    gap: 0.25rem;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    padding: 0 1rem 0.25rem;
   }
 
   .cast-npc-actions {
     justify-content: flex-end;
-    padding: 0 1.25rem 0.75rem;
+    padding: 0 1rem 0.75rem 0.25rem;
   }
 }
 
