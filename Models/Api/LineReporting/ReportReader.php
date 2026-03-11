@@ -91,6 +91,54 @@ class ReportReader
     }
 
     /**
+     * Returns the last known coordinates for each of the given NPC names (matched via npc_name column).
+     * Only considers reports where all three coordinates are non-null.
+     * @param array $npcNames List of degenerated NPC names to look up
+     * @return array Map of npc_name => ['x' => int, 'y' => int, 'z' => int]
+     */
+    public function getLastPositionsByNpcNames(array $npcNames): array
+    {
+        if (empty($npcNames)) {
+            return [];
+        }
+
+        $placeholders = implode(',', array_fill(0, count($npcNames), '?'));
+        $query = '
+            SELECT r.npc_name, r.pos_x, r.pos_y, r.pos_z
+            FROM report r
+            INNER JOIN (
+                SELECT npc_name, MAX(time_submitted) AS latest_time
+                FROM report
+                WHERE npc_name IN (' . $placeholders . ')
+                  AND pos_x IS NOT NULL
+                  AND pos_y IS NOT NULL
+                  AND pos_z IS NOT NULL
+                GROUP BY npc_name
+            ) latest ON r.npc_name = latest.npc_name AND r.time_submitted = latest.latest_time;
+        ';
+
+        try {
+            $result = (new Db('Api/LineReporting/DbInfo.ini'))->fetchQuery($query, $npcNames, true);
+        } catch (PDOException $e) {
+            error_log('getLastPositionsByNpcNames DB error: ' . $e->getMessage());
+            return [];
+        }
+        if ($result === false) {
+            return [];
+        }
+
+        $positions = [];
+        foreach ($result as $row) {
+            $positions[$row['npc_name']] = [
+                'x' => (int)$row['pos_x'],
+                'y' => (int)$row['pos_y'],
+                'z' => (int)$row['pos_z'],
+            ];
+        }
+        return $positions;
+    }
+
+    /**
      * Processing method for a GET request used to list all records of a certain status
      * @param string|null $npcName Name of the NPC, whose lines should be returned
      * @return int HTTP response code
