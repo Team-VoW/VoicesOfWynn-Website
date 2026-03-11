@@ -303,10 +303,11 @@ class AccountDataValidator
 		
 		$purifier = new HTMLPurifier($config);
 		$result = $purifier->purify($bio);
-		
+		/* //Stopped reporting this because it displayed almost every time, caused confusion and pretty much no benefit.
 		if (str_replace(' ', '', $result) !== str_replace(' ', '', $bio)) { //HTMLpurifier sometimes removes spaces in the "style" atribute
 			$this->warnings[] = 'It seems like your bio contains disallowed HTML code. If you used only the tools provided in the toolbar and see unwanted changes, ping shady_medic on Discord please.';
 		}
+		*/
 		return $result;
   }
 }

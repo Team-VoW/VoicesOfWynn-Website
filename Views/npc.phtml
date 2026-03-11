@@ -1,13 +1,13 @@
 <script>
-    var npcId = <?= json_encode(${basename(__FILE__, '.phtml').'_npc'}->getId()) ?>;
-    var uuid = <?= '"'.${basename(__FILE__, '.phtml').'_uuid'}.'"' ?? 'undefined' ?>;
+    var npcId = <?= json_encode(${basename(__FILE__, '.phtml') . '_npc'}->getId()) ?>;
+    var uuid = <?= '"' . ${basename(__FILE__, '.phtml') . '_uuid'} . '"' ?? 'undefined' ?>;
 </script>
 
 <!-- Hero Section -->
 <section class="npc-hero npc-animate-fade-in">
     <div class="npc-hero-content">
-        <h1 class="npc-hero-title"><?= ${basename(__FILE__, '.phtml').'_npc'}->getName() ?><?php if (${basename(__FILE__, '.phtml').'_npc'}->isArchived()) : ?> <span class="outdated-tag">outdated</span><?php endif ?></h1>
-        <img class="npc-avatar" src="<?= \VoicesOfWynn\storageUrl('npcs/' . ${basename(__FILE__, '.phtml').'_npc'}->getId() . '.png') ?>" alt="NPC picture" onerror="this.onerror=null; this.src='<?= \VoicesOfWynn\storageUrl('npcs/default.png') ?>'" />
+        <h1 class="npc-hero-title"><?= ${basename(__FILE__, '.phtml') . '_npc'}->getName() ?><?php if (${basename(__FILE__, '.phtml') . '_npc'}->isArchived()) : ?> <span class="outdated-tag">outdated</span><?php endif ?></h1>
+        <img class="npc-avatar" src="<?= \VoicesOfWynn\storageUrl('npcs/' . ${basename(__FILE__, '.phtml') . '_npc'}->getId() . '.png') ?>" onerror="this.onerror=null; this.src='<?= \VoicesOfWynn\storageUrl('npcs/default.png') ?>'" alt="NPC picture" />
     </div>
 </section>
 
@@ -15,38 +15,38 @@
 <section class="voice-actor-card npc-animate-on-scroll">
     <h3>Voice Actor</h3>
 
-    <?php if (${basename(__FILE__, '.phtml').'_voice_actor'} === null) : ?>
+    <?php if (${basename(__FILE__, '.phtml') . '_voice_actor'} === null) : ?>
         <div class="voice-actor-info">
             <img class="voice-actor-avatar" src="<?= \VoicesOfWynn\storageUrl('avatars/nobody.png') ?>" alt="Profile picture" />
             <span class="voice-actor-name unassigned">Nobody</span>
         </div>
     <?php else : ?>
-        <a class="voice-actor-link" href="cast/<?= ${basename(__FILE__, '.phtml').'_voice_actor'}->getId() ?>">
-            <img class="voice-actor-avatar" src="<?= ${basename(__FILE__, '.phtml').'_voice_actor'}->getAvatarLink() ?>" onerror='this.onerror=null; this.src=<?= json_encode(${basename(__FILE__, '.phtml').'_voice_actor'}->getDefaultAvatarUrl()) ?>' alt="Profile picture" />
+        <a class="voice-actor-link" href="cast/<?= ${basename(__FILE__, '.phtml') . '_voice_actor'}->getId() ?>">
+            <img class="voice-actor-avatar" src="<?= ${basename(__FILE__, '.phtml') . '_voice_actor'}->getAvatarLink() ?>" onerror='this.onerror=null; this.src=<?= json_encode(${basename(__FILE__, '.phtml') . '_voice_actor'}->getDefaultAvatarUrl()) ?>' alt="Profile picture" />
 
-            <span class="voice-actor-name"><?= ${basename(__FILE__, '.phtml').'_voice_actor'}->getName() ?></span>
+            <span class="voice-actor-name"><?= ${basename(__FILE__, '.phtml') . '_voice_actor'}->getName() ?></span>
         </a>
     <?php endif ?>
 
-    <?php if (${basename(__FILE__, '.phtml').'_admin'}) : ?>
+    <?php if (${basename(__FILE__, '.phtml') . '_admin'}) : ?>
         <div class="admin-controls">
             <button id="change-actor-btn">Change</button>
             <button id="archive-btn">Archive NPC</button>
         </div>
         <form id="voice-actor-form">
             <select name="actor">
-                <?php if (${basename(__FILE__, '.phtml').'_voice_actor'} === null) : ?>
+                <?php if (${basename(__FILE__, '.phtml') . '_voice_actor'} === null) : ?>
                     <option selected disabled hidden></option>
                 <?php endif ?>
-                <?php foreach (${basename(__FILE__, '.phtml').'_voice_actors'} as $vactor) : ?>
-                    <?php if (${basename(__FILE__, '.phtml').'_voice_actor'} !== null && ${basename(__FILE__, '.phtml').'_voice_actor'}->getId() === $vactor->getId()) : ?>
+                <?php foreach (${basename(__FILE__, '.phtml') . '_voice_actors'} as $vactor) : ?>
+                    <?php if (${basename(__FILE__, '.phtml') . '_voice_actor'} !== null && ${basename(__FILE__, '.phtml') . '_voice_actor'}->getId() === $vactor->getId()) : ?>
                         <option selected value="<?= $vactor->getId() ?>" data-avatar-link="<?= $vactor->getAvatarLink() ?>"><?= $vactor->getName() ?></option>
                     <?php else : ?>
                         <option value="<?= $vactor->getId() ?>" data-avatar-link="<?= $vactor->getAvatarLink() ?>"><?= $vactor->getName() ?></option>
                     <?php endif ?>
                 <?php endforeach ?>
             </select>
-            <input type="submit" value="Confirm" id="va-confirm-change"/>
+            <input type="submit" value="Confirm" id="va-confirm-change" />
         </form>
     <?php endif ?>
 </section>

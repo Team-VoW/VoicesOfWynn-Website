@@ -303,14 +303,14 @@ class User implements JsonSerializable
     public function update($email, string $password, string $displayName, string $avatarLink, $bio, $discord, $youtube, $twitter, $castingcallclub, bool $publicEmail): bool
     {
         if (empty($password)) {
-            $parameters = array($email, $displayName, $avatarLink, $bio, $discord, $youtube, $twitter, $castingcallclub, $publicEmail, $this->id);
+            $parameters = array($email, $displayName, $avatarLink, $bio, $discord, $youtube, $twitter, $castingcallclub, (int)$publicEmail, $this->id);
             $query = 'UPDATE user SET email = ?, display_name = ?, picture = ?, bio = ?, discord = ?, youtube = ?, twitter = ?, castingcallclub = ?, public_email = ? WHERE user_id = ?';
         } else {
             $hash = password_hash($password, PASSWORD_DEFAULT);
-            $parameters = array($email, $hash, $displayName, $avatarLink, $bio, $discord, $youtube, $twitter, $castingcallclub, $publicEmail, $this->id);
+            $parameters = array($email, $hash, $displayName, $avatarLink, $bio, $discord, $youtube, $twitter, $castingcallclub, (int)$publicEmail, $this->id);
             $query = 'UPDATE user SET email = ?, password = ?, display_name = ?, picture = ?, bio = ?, discord = ?, youtube = ?, twitter = ?, castingcallclub = ?, public_email = ? WHERE user_id = ?';
         }
-        
+
         try {
             $result = (new Db('Website/DbInfo.ini'))->executeQuery($query, $parameters);
         } catch (PDOException $e) {

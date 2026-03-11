@@ -32,12 +32,12 @@ class ContentManager
         JOIN npc ON npc.npc_id = npc_quest.npc_id
         LEFT JOIN recording ON recording.npc_id = npc.npc_id AND recording.quest_id = quest.quest_id
         LEFT JOIN user ON npc.voice_actor_id = user.user_id
-        '.(is_null($questId) ? '' : 'WHERE quest.quest_id = ?').'
+        ' . (is_null($questId) ? '' : 'WHERE quest.quest_id = ?') . '
         GROUP BY quest.quest_id, npc.npc_id, npc_quest.sorting_order
         ORDER BY quest.quest_id, npc_quest.sorting_order;
 		';
 		$result = (new Db('Website/DbInfo.ini'))->fetchQuery($query, (is_null($questId) ? array() : array($questId)), true);
-		
+
 		$quests = array();
 		$currentQuest = null;
 		foreach ($result as $npc) {
@@ -49,7 +49,7 @@ class ContentManager
 				$currentQuest = new Quest($npc);
 			}
 			$npcObj = new Npc($npc);
-            if ($npc['user_id'] !== null) {
+			if ($npc['user_id'] !== null) {
 				$voiceActor = new User();
 				$voiceActor->setData($npc);
 				$npcObj->setVoiceActor($voiceActor);
@@ -57,10 +57,10 @@ class ContentManager
 			$currentQuest->addNpc($npcObj);
 		}
 		$quests[] = $currentQuest;
-		
+
 		return $quests;
 	}
-	
+
 	public function getNpc($id)
 	{
 		$query = '
@@ -70,7 +70,7 @@ class ContentManager
 		LEFT JOIN user ON npc.voice_actor_id = user.user_id
 		WHERE npc_id = ?;';
 		$result = (new Db('Website/DbInfo.ini'))->fetchQuery($query, array($id));
-		
+
 		if ($result === false) {
 			return false;
 		}
@@ -83,24 +83,24 @@ class ContentManager
 		return $npc;
 	}
 
-    /**
-     * @param $id int ID of the voice actor
-     * @return User|false The User object containing all the data, or FALSE, if the user with this ID doesn't exist in the database
-     */
+	/**
+	 * @param $id int ID of the voice actor
+	 * @return User|false The User object containing all the data, or FALSE, if the user with this ID doesn't exist in the database
+	 */
 	public function getVoiceActor($id)
 	{
 		$query = 'SELECT * FROM user WHERE user_id = ?;';
 		$result = (new Db('Website/DbInfo.ini'))->fetchQuery($query, array($id));
 		if ($result === false) {
-            //Voice actor with this ID doesn't exist
-            return false;
-        }
+			//Voice actor with this ID doesn't exist
+			return false;
+		}
 
 		$voiceActor = new User();
 		$voiceActor->setData($result);
 		return $voiceActor;
 	}
-	
+
 	public function getContributors(): array
 	{
 		$query = '
@@ -120,7 +120,7 @@ class ContentManager
 		ORDER BY `roles_weight` DESC;
 		';
 		$result = (new Db('Website/DbInfo.ini'))->fetchQuery($query, array(), true);
-		
+
 		$users = array();
 		foreach ($result as $userData) {
 			$roleNames = explode(',', $userData['roles']);
@@ -130,7 +130,7 @@ class ContentManager
 			for ($i = 0; $i < count($roleNames); $i++) {
 				$roles[] = new DiscordRole($roleNames[$i], $roleColors[$i], $roleWeights[$i]);
 			}
-			
+
 			$user = new User();
 			$user->setData(array(
 				'id' => $userData['user_id'],
@@ -138,13 +138,13 @@ class ContentManager
 				'avatar' => $userData['picture'],
 				'lore' => $userData['lore']
 			));
-			
+
 			$user->setRoles($roles);
 			$users[] = $user;
 		}
 		return $users;
 	}
-	
+
 	public function getVoiceActorRecordings($id): array
 	{
 		$query = '
@@ -156,11 +156,11 @@ class ContentManager
 		WHERE npc.voice_actor_id = ? AND (recording.archived = FALSE OR npc.archived = TRUE)
 		ORDER BY quest_id, line;';
 		$result = (new Db('Website/DbInfo.ini'))->fetchQuery($query, array($id), true);
-		
+
 		if ($result === false) {
 			return array();
 		}
-		
+
 		$currentQuest = null;
 		$currentNpc = null;
 		foreach ($result as $recording) {
@@ -174,7 +174,7 @@ class ContentManager
 				$currentQuest = new Quest($recording);
 				$currentNpc = new Npc(array('id' => $recording['npc'], 'name' => $recording['nname'], 'archived' => $recording['archived'], 'upvotes' => $recording['upvotes'], 'downvotes' => $recording['downvotes'], 'comments' => $recording['comments'])); //"npc" is a key for NPC's ID
 			}
-			
+
 			$recordingObj = new Recording($recording);
 			$currentNpc->addRecording($recordingObj);
 		}
@@ -182,10 +182,10 @@ class ContentManager
 		$quests[] = $currentQuest;
 		return $quests;
 	}
-	
+
 	public function getNpcRecordings($id): array
 	{
-        $db = new Db('Website/DbInfo.ini');
+		$db = new Db('Website/DbInfo.ini');
 
 		$query = '
 		SELECT recording.recording_id, recording.quest_id, recording.line, recording.file, quest.name, quest.degenerated_name
@@ -195,7 +195,7 @@ class ContentManager
 		WHERE recording.npc_id = ? AND (recording.archived = FALSE OR npc.archived = TRUE)
 		ORDER BY quest_id, line;';
 		$result = $db->fetchQuery($query, array($id), true);
-		
+
 		$quests = array();
 		if (gettype($result) !== 'array') {
 			//No recordings yet
@@ -206,8 +206,8 @@ class ContentManager
 			WHERE npc_id = ?;';
 			$result = $db->fetchQuery($query, array($id), true);
 			if (empty($result)) {
-                $result = array();
-            }
+				$result = array();
+			}
 
 			foreach ($result as $quest) {
 				$currentQuest = new Quest($quest);
@@ -216,7 +216,7 @@ class ContentManager
 			}
 			return $quests;
 		}
-		
+
 		$currentQuest = null;
 		$currentNpc = null;
 		foreach ($result as $recording) {
@@ -229,7 +229,7 @@ class ContentManager
 				$currentQuest = new Quest($recording);
 				$currentNpc = new Npc(array('id' => $id));
 			}
-			
+
 			$recordingObj = new Recording($recording);
 			$currentNpc->addRecording($recordingObj);
 		}
@@ -237,7 +237,7 @@ class ContentManager
 		$quests[] = $currentQuest;
 		return $quests;
 	}
-	
+
 	public function getComments($npcId): array
 	{
 		$result = (new Db('Website/DbInfo.ini'))->fetchQuery('
@@ -254,8 +254,8 @@ class ContentManager
 		}
 		return $comments;
 	}
-	
-  /**
+
+	/**
 	 * Returns list of comments IDs on the current NPC that were posted by the current user or currently saved UUID
 	 * @param int $npcId
 	 * @return array
@@ -267,10 +267,13 @@ class ContentManager
 		if (isset($_SESSION['user'])) {
 			$userId = $_SESSION['user']->getId();
 		}
-		
-		$result = (new Db('Website/DbInfo.ini'))->fetchQuery('SELECT comment_id FROM comment WHERE (ip = ? OR user_id = ?)'. ((empty($npcId)) ? ';' : ' AND npc_id = ?;'),
-            (empty($npcId) ? [inet_pton($ip), $userId] : [inet_pton($ip), $userId, $npcId]), true);
-		
+
+		$result = (new Db('Website/DbInfo.ini'))->fetchQuery(
+			'SELECT comment_id FROM comment WHERE (ip = ? OR user_id = ?)' . ((empty($npcId)) ? ';' : ' AND npc_id = ?;'),
+			(empty($npcId) ? [inet_pton($ip), $userId] : [inet_pton($ip), $userId, $npcId]),
+			true
+		);
+
 		$ids = array();
 		if ($result !== false) {
 			foreach ($result as $commentId) {
@@ -279,36 +282,89 @@ class ContentManager
 		}
 		return $ids;
 	}
-  
-    /**
-     * Returns list of NPCs' IDs for which a vote of the specified type was cast from the currently saved UUID
-     * @param string $voterId SHA256 hash of either Minecraft user UUID or IP address of the user whose votes we're getting
-     * @param string $type Either "+" for upvotes or "-" for downvotes
-     * @return array Array of NPCs' IDs, or empty array if the currently saved UUID has no active votes
-     * @throws \Exception
-     */
-      public function getVotes(string $voterId, string $type, Quest $questToFilterBy = null, User $voiceActorToFilterBy = null)
-      {
-          $query = 'SELECT npc_id FROM vote WHERE voter = ? AND type = ?';
-          $parameters = [$voterId, $type];
-          if (!empty($questToFilterBy)) {
-              $query .= ' AND npc_id IN (SELECT npc_id FROM npc_quest WHERE quest_id = ?)';
-              $parameters[] = $questToFilterBy->getId();
-          } else if (!empty($voiceActorToFilterBy)) {
-              $query .= ' AND npc_id IN (SELECT npc_id FROM npc WHERE voice_actor_id = ?)';
-              $parameters[] = $voiceActorToFilterBy->getId();
-          }
-          $query .= ';';
 
-          $result = (new Db('Website/DbInfo.ini'))->fetchQuery($query, $parameters, true);
-          if (empty($result)) {
-              return array();
-          }
-          $votes = array();
-          foreach ($result as $row) {
-              $votes[] = $row['npc_id'];
-          }
-          return $votes;
-      }
+	/**
+	 * Returns list of NPCs' IDs for which a vote of the specified type was cast from the currently saved UUID
+	 * @param string $voterId SHA256 hash of either Minecraft user UUID or IP address of the user whose votes we're getting
+	 * @param string $type Either "+" for upvotes or "-" for downvotes
+	 * @return array Array of NPCs' IDs, or empty array if the currently saved UUID has no active votes
+	 * @throws \Exception
+	 */
+	public function getVotes(string $voterId, string $type, Quest $questToFilterBy = null, User $voiceActorToFilterBy = null)
+	{
+		$query = 'SELECT npc_id FROM vote WHERE voter = ? AND type = ?';
+		$parameters = [$voterId, $type];
+		if (!empty($questToFilterBy)) {
+			$query .= ' AND npc_id IN (SELECT npc_id FROM npc_quest WHERE quest_id = ?)';
+			$parameters[] = $questToFilterBy->getId();
+		} else if (!empty($voiceActorToFilterBy)) {
+			$query .= ' AND npc_id IN (SELECT npc_id FROM npc WHERE voice_actor_id = ?)';
+			$parameters[] = $voiceActorToFilterBy->getId();
+		}
+		$query .= ';';
+
+		$result = (new Db('Website/DbInfo.ini'))->fetchQuery($query, $parameters, true);
+		if (empty($result)) {
+			return array();
+		}
+		$votes = array();
+		foreach ($result as $row) {
+			$votes[] = $row['npc_id'];
+		}
+		return $votes;
+	}
+
+	public function searchNpcs(string $query, int $limit = 100): array
+	{
+		$sql = 'SELECT npc_id, name, degenerated_name FROM npc WHERE name LIKE ? AND archived = 0 ORDER BY name LIMIT ?;';
+		$results = (new Db('Website/DbInfo.ini'))->fetchQuery($sql, ['%' . $query . '%', $limit], true);
+		return $results === false ? [] : $results;
+	}
+
+	public function getRecordingTitle(Recording $recording): string
+	{
+		$db = new Db('Website/DbInfo.ini');
+
+		if (empty($recording->npc_id)) {
+			$npcName = $db->fetchQuery(
+				'SELECT name FROM npc WHERE npc_id = (SELECT npc_id FROM recording WHERE recording_id = ?);',
+				array($recording->id)
+			)['name'];
+		} else {
+			$npcName = $db->fetchQuery('SELECT name FROM npc WHERE npc_id = ?', array($recording->npc_id))['name'];
+		}
+
+		if (empty($recording->quest_id)) {
+			$questName = $db->fetchQuery(
+				'SELECT name FROM quest WHERE quest_id = (SELECT quest_id FROM recording WHERE recording_id = ?);',
+				array($recording->id)
+			)['name'];
+		} else {
+			$questName = $db->fetchQuery(
+				'SELECT name FROM quest WHERE quest_id = ?',
+				array($recording->quest_id)
+			)['name'];
+		}
+
+		if (empty($recording->line)) {
+			$lineNumber = $db->fetchQuery(
+				'SELECT line FROM recording WHERE recording_id = ?;',
+				array($recording->id)
+			)['line'];
+		} else {
+			$lineNumber = $recording->line;
+		}
+
+		if (empty($recording->archived)) {
+			$isArchived = $db->fetchQuery(
+				'SELECT archived FROM recording WHERE recording_id = ?;',
+				array($recording->id)
+			)['archived'];
+		} else {
+			$isArchived = $recording->archived;
+		}
+
+		//<NPC name> in <quest name>, line n. <line number> [(outdated)]
+		return ($npcName . ' in ' . $questName . ', line n. ' . $lineNumber . (($isArchived) ? ' (outdated)' : ''));
+	}
 }
-

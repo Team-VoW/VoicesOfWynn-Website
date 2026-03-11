@@ -67,4 +67,9 @@ interface StorageInterface {
      * @return string Base URL (e.g., 'dynamic/' or 'https://vowstorage.blob.core.windows.net/vow-dynamic/')
      */
     public function getBaseUrl(): string;
+
+    /**
+     * Get file size in bytes, or null if the file does not exist.
+     */
+    public function getFileSize(string $path): ?int;
 }
