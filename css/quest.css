@@ -3,3 +3,10 @@
   font-variant: all-small-caps;
   margin-bottom: 1rem;
 }
+
+/* Cap NPC card width on the quest page */
+.cast-npc-accordion {
+  max-width: 960px;
+  margin-left: auto;
+  margin-right: auto;
+}
