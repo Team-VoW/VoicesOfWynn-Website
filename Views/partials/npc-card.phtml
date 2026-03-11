@@ -55,13 +55,13 @@ $cardShowVoiceActor        = $cardShowVoiceActor        ?? true;
             <div class="cast-npc-featured-va">
                 <?php $va = $cardNpc->getVoiceActor(); ?>
                 <?php if ($va === null): ?>
-                    <img class="cast-npc-va-avatar" src="<?= \VoicesOfWynn\storageUrl('avatars/nobody.png') ?>" alt="Profile picture" />
                     <i class="cast-npc-va-name">Nobody</i>
+                    <img class="cast-npc-va-avatar" src="<?= \VoicesOfWynn\storageUrl('avatars/nobody.png') ?>" alt="Profile picture" />
                 <?php else: ?>
+                    <a href="cast/<?= $va->getId() ?>" class="cast-npc-va-name"><?= $va->getName() ?></a>
                     <a href="cast/<?= $va->getId() ?>" class="cast-npc-va-link--pic">
                         <img class="cast-npc-va-avatar" src="<?= \VoicesOfWynn\storageUrl('avatars/' . $va->getAvatar()) ?>" alt="Profile picture" />
                     </a>
-                    <a href="cast/<?= $va->getId() ?>" class="cast-npc-va-name"><?= $va->getName() ?></a>
                 <?php endif ?>
             </div>
             <?php endif ?>
