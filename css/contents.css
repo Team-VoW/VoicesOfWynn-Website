@@ -53,6 +53,7 @@
 .search-input:hover,
 .search-input:focus {
   border-color: var(--gradient-cyan);
+  border-radius: 2rem;
   box-shadow: 0 4px 20px rgba(0, 212, 255, 0.15);
 }
 
