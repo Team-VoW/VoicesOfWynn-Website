@@ -293,7 +293,7 @@ class Npc implements JsonSerializable
         //Forward to the webhook
         $this->loadName(); //Load name for use in the message
         $commentLines = preg_split("/\r\n|\n|\r/", $content); //Copied from https://stackoverflow.com/a/11165332/14011077
-        $discordMessage = 'New comment has been posted on the following NPC: `' . $this->name . ' (ID #' . $this->id . ')`\n';
+        $discordMessage = 'New comment has been posted on the following NPC: `' . $this->name . ' (ID #' . $this->id . ')`';
         foreach ($commentLines as $commentLine) {
             $discordMessage .= "\n> " . htmlspecialchars(trim($commentLine));
         }
