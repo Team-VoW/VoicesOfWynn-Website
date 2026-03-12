@@ -63,10 +63,18 @@ class Rating extends WebpageController
     private function verifyUuid(string $uuid) {
         $uuid = str_replace('-', '', $uuid); //trim UUID
 
+        if (!preg_match('/^[0-9a-f]{32}$/', $uuid)) { //validate UUID
+            return false;
+        }
+
         $ch = curl_init(self::MOJANG_API_USER_PROFILE_ENDPOINT . $uuid);
 
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        //curl_setopt($ch, CURLOPT_NOBODY, true); Mojang API returns 405 for HEAD request
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CONNECTTIMEOUT => 3,
+            CURLOPT_TIMEOUT => 5,
+            //CURLOPT_NOBODY => true,   //Mojang API returns 405 for HEAD request
+        ]);
 
         curl_exec($ch);
 
