@@ -17,7 +17,6 @@ class Npc implements JsonSerializable
         'purple' => '#CC33CC'
     );
     private const ANTISPAM_TOLLERANCE = 20; //In % out of 256
-    private const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1123272683380031539/[TOKEN-REDACTED]';
 
 	private int $id = 0;
 	private string $name = '';
@@ -320,8 +319,7 @@ class Npc implements JsonSerializable
      */
     private function sendWebhookMessage(string $message, ?string $username = null, ?string $avatar = null)
     {
-        $curl = curl_init(self::DISCORD_WEBHOOK_URL);
-        curl_setopt($curl, CURLOPT_URL, self::DISCORD_WEBHOOK_URL);
+        $curl = curl_init(getenv('DISCORD_COMMENTS_WEBHOOK_URL'));
         curl_setopt($curl, CURLOPT_POST, true);
 
         $headers = array(
