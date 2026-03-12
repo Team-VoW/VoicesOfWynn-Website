@@ -16,7 +16,7 @@ ALTER TABLE `comment`
 
 -- merge comments from individual recordings to NPCs
 UPDATE comment
-    SET npc_id = (SELECT npc_id FROM recording WHERE recording.recording_id = comment.comment_id);
+    SET npc_id = (SELECT npc_id FROM recording WHERE recording.recording_id = comment.recording_id);
 
 -- delete now duplicated comments (manual pick from production database)
 DELETE FROM `comment`
