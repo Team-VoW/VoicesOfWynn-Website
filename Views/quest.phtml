@@ -1,5 +1,5 @@
 <script>
-    var uuid = <?= '"'.${basename(__FILE__, '.phtml').'_uuid'}.'"' ?? 'undefined' ?>;
+    var uuid = <?= is_null(${basename(__FILE__, '.phtml').'_uuid'}) ? 'undefined' : '"'.${basename(__FILE__, '.phtml').'_uuid'}.'"' ?>;
 </script>
 <?php $quest = ${basename(__FILE__, '.phtml').'_quest'} ?>
 <?php $quest_upvoted = ${basename(__FILE__, '.phtml').'_upvoted'} ?>

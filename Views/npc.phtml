@@ -1,6 +1,6 @@
 <script>
     var npcId = <?= json_encode(${basename(__FILE__, '.phtml') . '_npc'}->getId()) ?>;
-    var uuid = <?= '"' . ${basename(__FILE__, '.phtml') . '_uuid'} . '"' ?? 'undefined' ?>;
+    var uuid = <?= (${basename(__FILE__, '.phtml') . '_uuid'}) ? ('"' . ${basename(__FILE__, '.phtml') . '_uuid'} . '"') : 'undefined' ?>;
 </script>
 
 <!-- Hero Section -->

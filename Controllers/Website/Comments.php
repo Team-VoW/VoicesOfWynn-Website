@@ -98,7 +98,7 @@ class Comments extends WebpageController
 		if (
 			(!isset($_SESSION['user']) || !$_SESSION['user']->isSysAdmin()) && //Admin not logged in
 			(!isset($_SESSION['user']) || $_SESSION['user']->getId() !== $commentAuthorId) && //Comment author not logged in
-			(inet_pton($_SERVER['ip']) !== $commentAuthorIp) //Client (by IP) not the author of the comment
+			(inet_pton($_SERVER['REMOTE_ADDR']) !== $commentAuthorIp) //Client (by IP) not the author of the comment
 		) {
 			//No user is logged in or the logged user is not system admin
 			return 401;

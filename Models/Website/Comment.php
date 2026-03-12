@@ -43,6 +43,7 @@ class Comment
 				case 'ip':
 				case 'IP':
 					$this->ip = $value;
+					break;
 				case 'name':
 				case 'username':
 				case 'author':
