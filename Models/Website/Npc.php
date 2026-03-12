@@ -298,12 +298,13 @@ class Npc implements JsonSerializable
         }
 
         //Forward to the webhook
+        $this->loadName(); //Load name for use in the message
         $commentLines = preg_split("/\r\n|\n|\r/", $content); //Copied from https://stackoverflow.com/a/11165332/14011077
         $discordMessage = 'New comment has been posted on the following NPC: `' . $this->name . ' (ID #' . $this->id . ')`\n';
         foreach ($commentLines as $commentLine) {
-            $discordMessage .= '\n> ' . htmlspecialchars(trim($commentLine));
+            $discordMessage .= "\n> " . htmlspecialchars(trim($commentLine));
         }
-        $discordMessage .= '\n\nView the comment at https://' . $_SERVER['SERVER_NAME'] . '/contents/npc/' . $this->id . '/comments' . '#c' . $commentId . '.';
+        $discordMessage .= "\n\n".'View the comment at https://' . $_SERVER['SERVER_NAME'] . '/contents/npc/' . $this->id . '/comments' . '#c' . $commentId . '.';
 
         $webhookResult = $this->sendWebhookMessage($discordMessage, $comment->getName() . ' via voicesofwynn.com', $comment->getAvatar());
 
@@ -328,7 +329,11 @@ class Npc implements JsonSerializable
         );
         curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
 
-        $data = '{"content":"' . $message . '","username":"' . $username . '","avatar_url":"' . $avatar . '"}';
+        $data = json_encode([
+            'content' => $message,
+            'username' => $username,
+            'avatar_url' => $avatar
+        ], JSON_UNESCAPED_SLASHES);
 
         curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
 

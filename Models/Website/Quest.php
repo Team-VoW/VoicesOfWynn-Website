@@ -119,7 +119,7 @@ class Quest implements JsonSerializable
     private function loadNpcs() : bool
     {
         $result = (new Db('Website/DbInfo.ini'))->fetchQuery('
-            SELECT npc_id,npc.name,degenerated_name,voice_actor_id,user.display_name,user.picture,archived,upvotes,downvotes,sorting_order
+            SELECT npc_id,npc.name,degenerated_name,voice_actor_id,user.display_name,user.picture,archived,upvotes,downvotes,(SELECT COUNT(*) FROM comment WHERE npc_id = npc.npc_id) AS comments,sorting_order
             FROM npc
             JOIN npc_quest USING (npc_id)
             JOIN user ON user.user_id = npc.voice_actor_id
