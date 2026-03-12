@@ -144,8 +144,9 @@ abstract class WebpageController extends Controller
                 else if ($value instanceof Quest) {
                     $id = $this->sanitize($value->getId());
                     $name = $this->sanitize($value->getName());
-                    $quest = new Quest(array('id' => $id, 'name' => $name));
-                    foreach ($value->getNpcs() as $npc) {
+                    $degeneratedName = $this->sanitize($value->getDegeneratedName());
+                    $quest = new Quest(array('id' => $id, 'name' => $name, 'degenerated_name' => $degeneratedName));
+                    foreach ($value->getNpcs() ?? [] as $npc) {
                         $quest->addNpc($this->sanitize($npc));
                     }
                     $return = $quest;
@@ -156,6 +157,9 @@ abstract class WebpageController extends Controller
                     $attr['name'] = $this->sanitize($value->getName());
                     $attr['archived'] = $this->sanitize($value->isArchived());
                     $attr['recordings_count'] = $this->sanitize($value->getRecordingsCount());
+                    $attr['upvotes'] = $this->sanitize($value->getUpvotes());
+                    $attr['downvotes'] = $this->sanitize($value->getDownvotes());
+                    $attr['comments'] = $this->sanitize($value->getCommentsCount());
                     $voiceActor = $this->sanitize($value->getVoiceActor());
                     $npc = new Npc($attr);
                     if ($voiceActor !== null) {
@@ -237,6 +241,23 @@ abstract class WebpageController extends Controller
         $viewName = basename(__FILE__, '.phtml');
         $viewName = str_replace('-', '', $viewName);
         return ${$viewName.'_'.$variableName};
+    }
+
+    /**
+     * Method loading the Minecraft account UUID from $_REQUEST['uuid'], stripping it off dashes, saving it to $_SESSION['uuid'] and returning it.
+     * If $_REQUEST['uuid'] is empty, value from $_SESSION['uuid'] is returned.
+     * This is useful for controllers of all webpages that contain the NPC voting feature (upvote/downvote).
+     * @return string|null UUID of the client (can be invalid or forged) or NULL if it isn't neither provided in $_REQUEST or saved in $_SESSION
+     */
+    protected static function loadUUID() : ?string
+    {
+        $uuid = (empty($_REQUEST['uuid'])) ? null : str_replace('-', '', $_REQUEST['uuid']); //Rewrite UUID in session
+        if (is_null($uuid) && isset($_SESSION['uuid'])) {
+            //Refresh UUID from session
+            $uuid = $_SESSION['uuid'];
+        }
+        $_SESSION['uuid'] = $uuid;
+        return $uuid;
     }
 }
 

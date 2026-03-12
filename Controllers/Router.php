@@ -22,27 +22,32 @@ class Router extends Controller
 	 */
 	public function process(array $args): int
 	{
-		$requestedUrl = strtok($args[0], '?'); //Remove the query string
+		$requestedUrl = strtok($args[0], '?');          //Remove the query string
+        $requestedUrl = trim($requestedUrl, '/');   //Remove starting and trailing slash
 		
 		//Separate variables from the URL
-		$urlArguments = explode('/', $requestedUrl);
-		$variableslessUrl = '';
-		$variables = array();
-		foreach ($urlArguments as $urlArgument) {
-			if (!is_numeric($urlArgument)) {
-				$variableslessUrl .= $urlArgument.'/';
-			} else {
-				$variableslessUrl .= '<'.count($variables).'>/';
-				$variables[] = $urlArgument;
-			}
-		}
+        $ini = parse_ini_file('routes.ini', true);
+        $routes = $ini['Routes'];
+        $keywords = array_keys($ini['Keywords']);
+
+		$urlArguments = empty($requestedUrl) ? [] : explode('/', $requestedUrl);
+        $variables = array_diff($urlArguments, $keywords);
+        $urlVariablesPositions = array_keys($variables);
+        $urlVariablesValues = array_values($variables);
+
+        for ($i = 0, $j = 0; $i < count($urlArguments); $i++) {
+            if (in_array($i, $urlVariablesPositions)) {
+                $urlArguments[$i] = '<'.$j.'>';
+                $j++; //Variable number
+            }
+        }
+        $variableslessUrl = '/'.implode('/', $urlArguments);
 		$variableslessUrl = rtrim($variableslessUrl, '/'); //Remove trailing slash
 		if (strlen($variableslessUrl) === 0) {
 			$variableslessUrl = '/'; //Set to index if nothing was left
 		}
 		
 		//Find out which controller to call
-		$routes = parse_ini_file('routes.ini');
 		if (!isset($routes[$variableslessUrl])) {
 			return 404;
 		}
@@ -53,7 +58,7 @@ class Router extends Controller
 		for ($i = 0; $i < count($arguments); $i++) { //Index in $arguments
 			if (preg_match('/^<\d>$/', $arguments[$i])) {
 				$argNum = (int)substr($arguments[$i], 1, strlen($arguments[$i]) - 2);
-				$arguments[$i] = $variables[$argNum];
+				$arguments[$i] = $urlVariablesValues[$argNum];
 			}
 		}
 		

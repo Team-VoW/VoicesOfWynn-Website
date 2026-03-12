@@ -1,0 +1,108 @@
+<?php
+$_p = basename(__FILE__, '.phtml') . '_'; // 'comments_dialog_'
+?>
+<script>
+    var dialogNpcId = <?= ${$_p.'npcId'} ?>;
+    var dialogVoiceActorId = <?= ${$_p.'voice_actor_id'} ?>;
+    // json_encode produces correctly quoted JS values for any input. HTML-escaped
+    // strings (htmlspecialchars) are wrong in JS context — &quot; stays literal
+    // in a <script> block, corrupting the value instead of safely encoding it.
+    var dialogUserId = <?= json_encode(${$_p.'user_id'} ?? '') ?>;
+    var dialogUserName = <?= json_encode(${$_p.'user_name'} ?? '') ?>;
+    var dialogUserAvatar = <?= json_encode(${$_p.'user_avatar'} ?? '') ?>;
+</script>
+
+<!-- Action Buttons -->
+<div class="comments-action-buttons">
+    <button id="comments-dialog-new-btn" class="comments-toggle-btn">Post new Comment</button>
+    <button id="comments-dialog-hide-btn" class="comments-toggle-btn">Hide the form</button>
+</div>
+
+<!-- Comment Form -->
+<div class="comments-form-card" id="comments-dialog-form-card">
+    <form data-npc-id="<?= ${$_p.'npcId'} ?>">
+        <fieldset class="comment-writing-form">
+
+            <?php if (${$_p.'logged_in'}) : ?>
+            <div class="comment-tabs">
+                <div id="comments-dialog-contributor-tab" class="comment-tab selected as-contributor">Post as a contributor</div>
+                <div id="comments-dialog-guest-tab" class="comment-tab as-guest">Post as a guest</div>
+            </div>
+
+            <div id="comments-dialog-contributor-form" class="comment-form-wrapper">
+                <fieldset class="comment-field">
+                    <label for="comments-dialog-content-contributor" class="comment-label">Comment:</label>
+                    <textarea id="comments-dialog-content-contributor" class="comment-textarea" placeholder="You can praise the voice actor, suggest what could be improved or just say how much you like this quest. Just please, keep bad words out of that 😉"></textarea>
+                </fieldset>
+                <input type="submit" class="comment-submit-btn" value="Send" />
+                <small class="comment-disclaimer">
+                    Name and contents of the comment will be publicly visible.<br>
+                    The comment will be linked to your account and you'll be able to delete it anytime.
+                </small>
+            </div>
+            <?php endif ?>
+
+            <div id="comments-dialog-guest-form" <?php if (${$_p.'logged_in'}) : ?>class="display-none"<?php endif ?>>
+                <?php if (!${$_p.'logged_in'}) : ?>
+                    <span class="comment-disclaimer">Are you a contributor? You can post a verified comment after <a href="login">logging in</a>.</span>
+                <?php endif ?>
+                <fieldset class="comment-field">
+                    <label for="comments-dialog-name" class="comment-label">Name:</label>
+                    <input id="comments-dialog-name" type="text" class="comment-input" placeholder="Anonymous" />
+
+                    <label for="comments-dialog-email" class="comment-label">E-mail:</label>
+                    <input id="comments-dialog-email" type="text" class="comment-input" placeholder="Used to get Gravatar; not required" />
+
+                    <label for="comments-dialog-content-guest" class="comment-label">Comment:</label>
+                    <textarea id="comments-dialog-content-guest" class="comment-textarea" placeholder="You can praise the voice actor, suggest what could be improved or just say how much you like this quest. Just please, keep bad words out of that 😉"></textarea>
+                </fieldset>
+
+                <label for="comments-dialog-antispam" class="comment-label antispam-label">Not a robot? Then you can select some shade of <strong style="color:<?= ${$_p.'antispam_color_code'} ?>;"><?= ${$_p.'antispam_color'} ?></strong>, right?</label>
+                <input id="comments-dialog-antispam" type="color" class="comment-antispam" required />
+
+                <input type="submit" class="comment-submit-btn" value="Send" />
+                <small class="comment-disclaimer">
+                    Name and contents of the comment will be publicly visible.<br>
+                    You will be able to delete this comment only from this IP.<br>
+                    Your IP and e-mail address will be stored, but will never be publicly visible.
+                </small>
+            </div>
+
+        </fieldset>
+    </form>
+</div>
+
+<!-- Comments List -->
+<div id="comments-dialog-list" class="comments-list">
+    <?php foreach (${$_p.'comments'} as $comment) : ?>
+    <div class="comment-card" id="cd<?= $comment->id ?>">
+        <div class="comment-header">
+            <img src="<?= $comment->getAvatar() ?>" alt="Avatar" class="comment-avatar"/>
+            <div class="comment-author-info">
+                <div class="comment-author-name">
+                    <?php if ($comment->verified) : ?>
+                        <a href="cast/<?= $comment->userId ?>"><?= $comment->getName() ?></a>
+                    <?php else : ?>
+                        <?= $comment->getName() ?>
+                    <?php endif ?>
+                </div>
+                <div class="comment-badges">
+                    <?php if ($comment->verified) : ?>
+                        <?php if ($comment->userId === ${$_p.'voice_actor_id'}) : ?>
+                            <span class="author-badge" title="This user is the author of this recording.">Author</span>
+                        <?php endif ?>
+                        <span class="contributor-badge" title="This user contributed to this project.">Contributor</span>
+                    <?php endif ?>
+                </div>
+            </div>
+            <?php if (${$_p.'admin'} || in_array($comment->id, ${$_p.'owned_comments'})) : ?>
+                <button data-comment-id="<?= $comment->id ?>" class="delete-comment-button" title="Delete comment">×</button>
+            <?php endif ?>
+        </div>
+        <hr class="comment-separator">
+        <div class="comment-content">
+            <p><?= $comment->content ?></p>
+        </div>
+    </div>
+    <?php endforeach ?>
+</div>

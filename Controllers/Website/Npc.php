@@ -71,21 +71,45 @@ class Npc extends WebpageController
 			self::$data['base_keywords'] .= $npc->getName();
 		}
 		
-		self::$data['npc_quest_recordings'] = $cnm->getNpcRecordings($this->npc->getId());
+		$questRecordings = $cnm->getNpcRecordings($this->npc->getId());
+		$cardQuestNames = [];
+		$cardQuestDegeneratedNames = [];
+		$cardRecordingsByQuest = [];
+		$cardAllRecordings = [];
+		foreach ($questRecordings as $quest) {
+			$npcs = $quest->getNpcs();
+			$recs = !empty($npcs) ? $npcs[0]->getRecordings() : [];
+			$cardQuestNames[$quest->getId()] = $quest->getName();
+			$cardQuestDegeneratedNames[$quest->getId()] = $quest->getDegeneratedName();
+			$cardRecordingsByQuest[$quest->getId()] = $recs;
+			$cardAllRecordings = array_merge($cardAllRecordings, $recs);
+		}
+		self::$data['npc_card_quest_names']              = $cardQuestNames;
+		self::$data['npc_card_quest_degenerated_names']  = $cardQuestDegeneratedNames;
+		self::$data['npc_card_recordings_by_quest'] = $cardRecordingsByQuest;
+		self::$data['npc_card_all_recordings']      = $cardAllRecordings;
 		if (!$this->disallowAdministration && !isset(self::$data['npc_uploadErrors'])) {
 			self::$data['npc_uploadErrors'] = array();
 		}
-		
-        self::$data['npc_upvoted'] = $cnm->getVotes('+');
-        self::$data['npc_downvoted'] = $cnm->getVotes('-');
+
+        $uuid = $this->loadUUID(); //Also saves UUID in $_SESSION
+        self::$data['npc_uuid'] = $uuid;
+        self::$data['npc_was_upvoted'] = $npc->wasVotedFor(hash('sha256', $uuid ?? $_SERVER['REMOTE_ADDR']), "+");
+        self::$data['npc_was_downvoted'] = $npc->wasVotedFor(hash('sha256', $uuid ?? $_SERVER['REMOTE_ADDR']), "-");
 
 		self::$views[] = 'npc';
+		self::$cssFiles[] = 'npc-card';
 		self::$cssFiles[] = 'npc';
 		self::$cssFiles[] = 'voting';
 		self::$cssFiles[] = 'audio-player';
+		self::$cssFiles[] = 'comments';
+		self::$cssFiles[] = 'comments-dialog';
 		self::$jsFiles[] = 'voting';
 		self::$jsFiles[] = 'audio-player';
+		self::$jsFiles[] = 'cast-accordion';
 		self::$jsFiles[] = 'npc'; //Scroll animations + admin functions (admin UI not rendered for non-admins, so handlers attach to nothing)
+		self::$jsFiles[] = 'md5';
+		self::$jsFiles[] = 'comments-dialog';
 
 		return true;
 	}

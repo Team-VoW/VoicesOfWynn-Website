@@ -1,0 +1,37 @@
+<script>
+    var uuid = <?= is_null(${basename(__FILE__, '.phtml').'_uuid'}) ? 'undefined' : '"'.${basename(__FILE__, '.phtml').'_uuid'}.'"' ?>;
+</script>
+<?php $quest = ${basename(__FILE__, '.phtml').'_quest'} ?>
+<?php $quest_upvoted = ${basename(__FILE__, '.phtml').'_upvoted'} ?>
+<?php $quest_downvoted = ${basename(__FILE__, '.phtml').'_downvoted'} ?>
+
+<section class="npc-hero npc-animate-fade-in">
+    <div class="npc-hero-content">
+        <h1 class="npc-hero-title"><?= $quest->getName() ?></h1>
+    </div>
+</section>
+
+<section>
+    <h2 class="txt-c quest-section-title">Cast</h2>
+    <div class="cast-npc-accordion">
+        <?php foreach ($quest->getNpcs() as $npc): ?>
+            <?php
+            $cardNpc                      = $npc;
+            $cardQuestNames               = [$quest->getId() => $quest->getName()];
+            $cardQuestDegeneratedNames    = [$quest->getId() => $quest->getDegeneratedName()];
+            $cardRecordingsByQuest        = [$quest->getId() => array_values($npc->getRecordings($quest))];
+            $cardAllRecordings            = array_values($npc->getRecordings($quest));
+            $cardIsUpvoted                = in_array($npc->getId(), $quest_upvoted);
+            $cardIsDownvoted              = in_array($npc->getId(), $quest_downvoted);
+            $cardIsOpen                   = false;
+            $cardAdmin                    = false;
+            $cardNpcId                    = $npc->getId();
+            $cardShowFeaturedRecording    = true;
+            $cardShowQuestNames           = false;
+            $cardShowVoiceActor           = true;
+            ?>
+            <?php include 'Views/partials/npc-card.phtml'; ?>
+        <?php endforeach ?>
+    </div>
+</section>
+<?php include 'Views/partials/comments-dialog.phtml'; ?>
