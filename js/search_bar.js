@@ -24,9 +24,10 @@ document.addEventListener("DOMContentLoaded", function () {
             allQuestCards.forEach(function (card) {
                 var questName = card.querySelector(".quest-card__name");
                 if (questName && questName.textContent.toLowerCase().match(searchRegex)) {
-                    var clone = card.cloneNode(true);
+                    var wrapper = card.parentElement; // <a> tag containing the card
+                    var clone = wrapper.cloneNode(true);
                     // Ensure cloned cards are visible (bypass scroll animation)
-                    clone.classList.add('is-visible');
+                    clone.querySelector('.quest-card').classList.add('is-visible');
                     results.push(clone);
                 }
             });

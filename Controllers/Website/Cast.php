@@ -36,6 +36,7 @@ class Cast extends WebpageController
 						'npc' => $npc,
 						'recordings' => [],
 						'questNames' => [],
+						'questDegeneratedNames' => [],
 						'recordingsByQuest' => [],
 					];
 				}
@@ -44,15 +45,28 @@ class Cast extends WebpageController
 					$npcGroups[$npcId]['recordingsByQuest'][$quest->getId()][] = $recording;
 				}
 				$npcGroups[$npcId]['questNames'][$quest->getId()] = $quest->getName();
+				$npcGroups[$npcId]['questDegeneratedNames'][$quest->getId()] = $quest->getDegeneratedName();
 			}
 		}
 		self::$data['cast_npc_groups'] = array_values($npcGroups);
 
+        $uuid = $this->loadUUID(); //Also saves UUID in $_SESSION
+        self::$data['cast_uuid'] = $uuid;
+		self::$data['cast_upvoted'] = $cnm->getVotes(hash('sha256', $uuid ?? $_SERVER['REMOTE_ADDR']), '+', null, $voiceActor);
+		self::$data['cast_downvoted'] = $cnm->getVotes(hash('sha256', $uuid ?? $_SERVER['REMOTE_ADDR']), '-', null, $voiceActor);
+
+		self::$cssFiles[] = 'npc-card';
 		self::$cssFiles[] = 'cast';
 		self::$cssFiles[] = 'article-css-reset';
 		self::$cssFiles[] = 'audio-player';
+		self::$cssFiles[] = 'voting';
+		self::$cssFiles[] = 'comments';
+		self::$cssFiles[] = 'comments-dialog';
 		self::$jsFiles[] = 'audio-player';
 		self::$jsFiles[] = 'cast-accordion';
+		self::$jsFiles[] = 'voting';
+		self::$jsFiles[] = 'md5';
+		self::$jsFiles[] = 'comments-dialog';
 		self::$views[] = 'cast';
 		return 200;
 	}

@@ -13,7 +13,7 @@ class Comment
 	private $name = '';
 	private $email = '';
 	private string $content = '';
-	private int $recordingId = 0;
+	private int $npcId = 0;
 	
 	private $gravatar = ''; //NULL for verified comments
 	
@@ -41,10 +41,9 @@ class Comment
                     $this->userId = $value;
                     break;
 				case 'ip':
-				case 'ip_address':
-				case 'ipAddress':
-				case 'ip_addr':
+				case 'IP':
 					$this->ip = $value;
+					break;
 				case 'name':
 				case 'username':
 				case 'author':
@@ -63,11 +62,11 @@ class Comment
 				case 'message':
 					$this->content = $value;
 					break;
-				case 'recording_id':
-				case 'recordingId':
-				case 'recording':
+				case 'npc_id':
+				case 'npcId':
+				case 'npc':
 				case 'object':
-					$this->recordingId = $value;
+					$this->npcId = $value;
 					break;
 				case 'gravatar':
 				case 'gravatar_link':

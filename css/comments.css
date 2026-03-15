@@ -12,7 +12,7 @@
   --comments-card-border-radius: 1rem;
   --comments-transition-fast: 0.2s;
   --comments-transition-medium: 0.3s;
-  --comments-space-sm: 1rem;
+  --comments-space-sm: 0.2rem;
   --comments-space-md: 1.5rem;
   --comments-space-lg: 2rem;
   --comments-space-xl: 3rem;
@@ -352,7 +352,7 @@
 /* Comment Header */
 .comment-header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: var(--comments-space-sm);
   margin-bottom: var(--comments-space-sm);
 }
@@ -373,6 +373,7 @@
 .comment-author-info {
   flex: 1;
   min-width: 0;
+  margin-left: 8px;
 }
 
 .comment-author-name {
@@ -463,12 +464,12 @@
 /* Comment Content */
 .comment-content {
   color: #555;
-  line-height: 1.6;
 }
 
 .comment-content p {
   margin: 0;
   word-wrap: break-word;
+  line-height: 0.5rem;
 }
 
 /* Back Button */

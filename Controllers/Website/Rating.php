@@ -2,42 +2,53 @@
 
 namespace VoicesOfWynn\Controllers\Website;
 
-use VoicesOfWynn\Models\Website\Recording;
 use VoicesOfWynn\Models\Website\UserException;
+use VoicesOfWynn\Models\Website\Npc;
 
 class Rating extends WebpageController
 {
+    private const MOJANG_API_USER_PROFILE_ENDPOINT = 'https://api.mojang.com/user/profile/';
 	
 	/**
 	 * @inheritDoc
 	 */
 	public function process(array $args): int
 	{
-		$recording = new Recording(array('id' => array_shift($args)));
+		$npc = new Npc(['id' => array_shift($args)]);
 		$action = array_shift($args);
 		
 		switch ($action) {
 			case '+':
-				if ($recording->wasVotedFor('+')) {
-                    $recording->resetVote();
+                if (isset($_REQUEST['uuid']) && !$this->verifyUuid($_REQUEST['uuid'])) {
+                    return 400;
+                }
+                $uuid = (empty($_REQUEST['uuid'])) ? null : str_replace('-', '', $_REQUEST['uuid']);
+                $voterId = hash('sha256', $uuid ?? $_SERVER['REMOTE_ADDR']);
+				if ($npc->wasVotedFor($voterId, '+')) {
+                    $npc->resetVote($voterId);
                     return 204;
 				}
-				$recording->upvote();
+                $npc->upvote($voterId);
 				return 204;
 			case '-':
-                if ($recording->wasVotedFor('-')) {
-                    $recording->resetVote();
+                if (isset($_REQUEST['uuid']) && !$this->verifyUuid($_REQUEST['uuid'])) {
+                    return 400;
+                }
+                $uuid = (empty($_REQUEST['uuid'])) ? null : str_replace('-', '', $_REQUEST['uuid']);
+                $voterId = hash('sha256', $uuid ?? $_SERVER['REMOTE_ADDR']);
+                if ($npc->wasVotedFor($voterId, '-')) {
+                    $npc->resetVote($voterId);
                     return 204;
 				}
-				$recording->downvote();
+                $npc->downvote($voterId);
 				return 204;
 			case 'c':
 				try {
                     if (isset($_POST['verified']) && $_POST['verified'] === "true") { //HTTP turns JavaScript "true" into string
-                        $commentId = $recording->comment(true, null, null, null, $_POST['content'], null, null);
+                        $commentId = $npc->comment(true, null, null, null, $_POST['content'], null, null);
                     }
                     else {
-	                    $commentId = $recording->comment(false, $_SERVER['REMOTE_ADDR'], $_POST['name'], $_POST['email'], $_POST['content'], $_SESSION['antispam'], $_POST['antispam']);
+	                    $commentId = $npc->comment(false, $_SERVER['REMOTE_ADDR'], $_POST['name'], $_POST['email'], $_POST['content'], $_SESSION['antispam'], $_POST['antispam']);
                     }
 					exit($commentId); //TODO Not ideal
 				} catch (UserException $e) {
@@ -48,5 +59,31 @@ class Rating extends WebpageController
 				return 400;
 		}
 	}
+
+    private function verifyUuid(string $uuid) {
+        $uuid = str_replace('-', '', $uuid); //trim UUID
+
+        if (!preg_match('/^[0-9a-f]{32}$/', $uuid)) { //validate UUID
+            return false;
+        }
+
+        $ch = curl_init(self::MOJANG_API_USER_PROFILE_ENDPOINT . $uuid);
+
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CONNECTTIMEOUT => 3,
+            CURLOPT_TIMEOUT => 5,
+            //CURLOPT_NOBODY => true,   //Mojang API returns 405 for HEAD request
+        ]);
+
+        curl_exec($ch);
+
+        if(curl_error($ch)) {
+            error_log('cURL for verifying Mojang user profile failed with error: ' . curl_error($ch));
+            return false;
+        }
+
+        return curl_getinfo($ch, CURLINFO_HTTP_CODE) === 200;
+    }
 }
 
