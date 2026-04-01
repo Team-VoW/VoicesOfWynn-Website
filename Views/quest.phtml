@@ -12,6 +12,7 @@
 </section>
 
 <section>
+    <span>Script by <a href="/cast/<?= $quest->getScriptAuthor()->getId() ?>"><?= $quest->getScriptAuthor()->getName() ?></a></span><!-- TODO @kmaxi integrate this into the frontend -->
     <h2 class="txt-c quest-section-title">Cast</h2>
     <div class="cast-npc-accordion">
         <?php foreach ($quest->getNpcs() as $npc): ?>

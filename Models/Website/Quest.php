@@ -10,6 +10,7 @@ class Quest implements JsonSerializable
 	private int $id;
 	private ?string $name = null;
     private ?string $degeneratedName = null;
+    private User $scriptAuthor;
 	private array $npcs;
 	
 	/**
@@ -33,6 +34,17 @@ class Quest implements JsonSerializable
                 case 'degenerated_name':
                     $this->degeneratedName = $value;
                     break;
+                case 'writer':
+                case 'scriptAuthor':
+                case 'script_author':
+                    if (gettype($value) === 'integer') {
+                        $writer = new User();
+                        $writer->setData(['id' => $value]);
+                    } else {
+                        $writer = $value;
+                    }
+                    $this->scriptAuthor = $writer;
+                    break;
 			}
 		}
 	}
@@ -53,7 +65,7 @@ class Quest implements JsonSerializable
         }
 
         $result = (new Db('Website/DbInfo.ini'))->fetchQuery('
-            SELECT quest_id, name
+            SELECT quest_id, name, writer
             FROM quest
             WHERE degenerated_name = ?;
         ', array($this->degeneratedName));
@@ -63,6 +75,9 @@ class Quest implements JsonSerializable
         }
         $this->id = $result['quest_id'];
         $this->name = $result['name'];
+        $writer = new User();
+        $writer->setData(['id' => $result['writer']]);
+        $this->scriptAuthor = $writer;
 
         return true;
     }
@@ -101,6 +116,15 @@ class Quest implements JsonSerializable
     public function getDegeneratedName() : ?string
     {
         return $this->degeneratedName;
+    }
+
+    /**
+     * Script author getter
+     * @return User|null User who is the writer of the script for this quest
+     */
+    public function getScriptAuthor() : ?User
+    {
+        return $this->scriptAuthor;
     }
 
     /**

@@ -145,7 +145,8 @@ abstract class WebpageController extends Controller
                     $id = $this->sanitize($value->getId());
                     $name = $this->sanitize($value->getName());
                     $degeneratedName = $this->sanitize($value->getDegeneratedName());
-                    $quest = new Quest(array('id' => $id, 'name' => $name, 'degenerated_name' => $degeneratedName));
+                    $scriptAuthor = $this->sanitize($value->getScriptAuthor());
+                    $quest = new Quest(array('id' => $id, 'name' => $name, 'degenerated_name' => $degeneratedName, 'writer' => $scriptAuthor));
                     foreach ($value->getNpcs() ?? [] as $npc) {
                         $quest->addNpc($this->sanitize($npc));
                     }

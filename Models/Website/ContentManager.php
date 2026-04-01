@@ -183,6 +183,22 @@ class ContentManager
 		return $quests;
 	}
 
+    public function getWritersQuests(int $writerId)
+    {
+        $query = '
+		SELECT quest.quest_id, quest.name, quest.degenerated_name, quest.writer
+		FROM quest
+		WHERE quest.writer = ?
+		ORDER BY quest_id;';
+        $result = (new Db('Website/DbInfo.ini'))->fetchQuery($query, array($writerId), true);
+
+        if ($result === false) {
+            return array();
+        }
+
+        return array_map(function($record) { return new Quest($record); }, $result);
+    }
+
 	public function getNpcRecordings($id): array
 	{
 		$db = new Db('Website/DbInfo.ini');

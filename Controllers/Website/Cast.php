@@ -49,6 +49,7 @@ class Cast extends WebpageController
 			}
 		}
 		self::$data['cast_npc_groups'] = array_values($npcGroups);
+		self::$data['cast_scripted_quests'] = $cnm->getWritersQuests($voiceActorId);
 
         $uuid = $this->loadUUID(); //Also saves UUID in $_SESSION
         self::$data['cast_uuid'] = $uuid;
