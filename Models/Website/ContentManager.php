@@ -6,6 +6,14 @@ use VoicesOfWynn\Models\Db;
 
 class ContentManager
 {
+    public function getFaqs(): array
+    {
+        $query = 'SELECT * FROM faq WHERE visible = 1 ORDER BY sorting_order;';
+        $result = (new Db('Website/DbInfo.ini'))->fetchQuery($query, [], true);
+
+        return array_map(function ($dbRecord) { return new FaqItem($dbRecord); }, $result );
+    }
+
 	/**
 	 * Gets a lightweight list of quests with only ID and name (no NPC data).
 	 * Used for the contents page initial load.

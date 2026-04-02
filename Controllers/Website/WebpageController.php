@@ -8,6 +8,7 @@ use VoicesOfWynn\Controllers\Controller;
 use VoicesOfWynn\Models\Api\MessageBroadcast\BroadcastLoader;
 use VoicesOfWynn\Models\Website\Comment;
 use VoicesOfWynn\Models\Website\DiscordRole;
+use VoicesOfWynn\Models\Website\FaqItem;
 use VoicesOfWynn\Models\Website\ModDownload;
 use VoicesOfWynn\Models\Website\Npc;
 use VoicesOfWynn\Models\Website\Quest;
@@ -111,14 +112,12 @@ abstract class WebpageController extends Controller
                 if ($value instanceof DateTime) {
                     //According to https://stackoverflow.com/a/64624314/14011077, DateTime is safe in terms of XSS
                     $return = $value;
-                }
-                else if ($value instanceof DiscordRole) {
+                } else if ($value instanceof DiscordRole) {
                     $return = new DiscordRole("TempName");
                     $return->name = $this->sanitize($value->name);
                     $return->color = $this->sanitize($value->color);
                     $return->weight = $this->sanitize($value->weight);
-                }
-                else if ($value instanceof User) {
+                } else if ($value instanceof User) {
                     $id = $this->sanitize($value->getId());
                     $discordId = $this->sanitize($value->getDiscordId());
                     $email = $this->sanitize($value->getEmail());
@@ -140,8 +139,7 @@ abstract class WebpageController extends Controller
                     $value->setRoles($roles);
 
                     $return = $value;
-                }
-                else if ($value instanceof Quest) {
+                } else if ($value instanceof Quest) {
                     $id = $this->sanitize($value->getId());
                     $name = $this->sanitize($value->getName());
                     $degeneratedName = $this->sanitize($value->getDegeneratedName());
@@ -150,8 +148,7 @@ abstract class WebpageController extends Controller
                         $quest->addNpc($this->sanitize($npc));
                     }
                     $return = $quest;
-                }
-                else if ($value instanceof Npc) {
+                } else if ($value instanceof Npc) {
                     $attr = array();
                     $attr['id'] = $this->sanitize($value->getId());
                     $attr['name'] = $this->sanitize($value->getName());
@@ -169,8 +166,7 @@ abstract class WebpageController extends Controller
                         $npc->addRecording($this->sanitize($recording));
                     }
                     $return = $npc;
-                }
-                else if ($value instanceof Recording) {
+                } else if ($value instanceof Recording) {
                     $return = $value;
                     $attr = array();
                     $attr['id'] = $this->sanitize($value->id);
@@ -183,8 +179,7 @@ abstract class WebpageController extends Controller
                     $attr['comments'] = $this->sanitize($value->comments);
                     $attr['archived'] = $this->sanitize($value->archived);
                     $return = new Recording($attr);
-                }
-                else if ($value instanceof Comment) {
+                } else if ($value instanceof Comment) {
                     $attr = array();
                     $attr['id'] = $this->sanitize($value->id);
                     $attr['verified'] = $this->sanitize($value->verified);
@@ -196,8 +191,7 @@ abstract class WebpageController extends Controller
                     $attr['recording_id'] = $this->sanitize($value->recordingId);
                     $attr['gravatar'] = $this->sanitize($value->gravatar);
                     $return = new Comment($attr);
-                }
-                else if ($value instanceof ModDownload) {
+                } else if ($value instanceof ModDownload) {
                     $attr = array();
                     $attr['id'] = $this->sanitize($value->id);
                     $attr['releaseType'] = $this->sanitize($value->releaseType);
@@ -210,6 +204,14 @@ abstract class WebpageController extends Controller
                     $attr['size'] = $this->sanitize($value->size);
                     $attr['downloadedTimes'] = $this->sanitize($value->downloadedTimes);
                     $return = new ModDownload($attr);
+                } else if ($value instanceof FaqItem) {
+                    $return = new FaqItem([
+                        'id' => $this->sanitize($value->getId()),
+                        'sorting_order' => $this->sanitize($value->getOrder()),
+                        'visible' => $this->sanitize($value->isVisible()),
+                        'question' => $this->sanitize($value->getQuestion()),
+                        'answer' => $value->getAnswer() // Don't sanitize, uses HTML for styling, can be set only directly within DB
+                    ]);
                 }
                 else {
                     throw new Exception('Object variable of class '.get_class($value).' couldn\'t be sanitized');
