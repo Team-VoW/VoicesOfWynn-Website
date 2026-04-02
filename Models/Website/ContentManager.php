@@ -172,7 +172,7 @@ class ContentManager
 					$quests[] = $currentQuest;
 				}
 				$currentQuest = new Quest($recording);
-				$currentNpc = new Npc(array('id' => $recording['npc'], 'name' => $recording['nname'], 'archived' => $recording['archived'], 'upvotes' => $recording['upvotes'], 'downvotes' => $recording['downvotes'], 'comments' => $recording['comments'])); //"npc" is a key for NPC's ID
+				$currentNpc = new Npc(array('id' => $recording['npc'], 'name' => $recording['nname'], 'archived' => $recording['archived'], 'upvotes' => $recording['upvotes'], 'downvotes' => $recording['downvotes'], 'comments' => $recording['comments'], 'voice_actor' => $id)); //"npc" is a key for NPC's ID
 			}
 
 			$recordingObj = new Recording($recording);
@@ -197,6 +197,31 @@ class ContentManager
         }
 
         return array_map(function($record) { return new Quest($record); }, $result);
+    }
+
+    public function getEditorsNpcsByQuests(int $editorId) : array
+    {
+        $query = '
+		SELECT
+		    quest.quest_id, quest.name AS "qname", quest.degenerated_name AS "dname",
+		    npc.npc_id, npc.name AS "nname"
+		FROM quest
+		JOIN npc_quest ON npc_quest.quest_id = quest.quest_id
+		JOIN npc ON npc.npc_id = npc_quest.npc_id
+		WHERE npc_quest.editor = ?
+		ORDER BY npc_id;';
+        $result = (new Db('Website/DbInfo.ini'))->fetchQuery($query, array($editorId), true);
+
+        if ($result === false) {
+            return array();
+        }
+
+        $npcsByQuest = [];
+        foreach ($result as $dbRow) {
+            $npcsByQuest[] = ['quest' => new Quest($dbRow), 'npc' => new Npc($dbRow)];
+        }
+
+        return $npcsByQuest;
     }
 
 	public function getNpcRecordings($id): array

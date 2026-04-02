@@ -12,7 +12,6 @@
 </section>
 
 <section>
-    <span>Script by <a href="/cast/<?= $quest->getScriptAuthor()->getId() ?>"><?= $quest->getScriptAuthor()->getName() ?></a></span><!-- TODO @kmaxi integrate this into the frontend -->
     <h2 class="txt-c quest-section-title">Cast</h2>
     <div class="cast-npc-accordion">
         <?php foreach ($quest->getNpcs() as $npc): ?>
@@ -32,6 +31,15 @@
             $cardShowVoiceActor           = true;
             ?>
             <?php include 'Views/partials/npc-card.phtml'; ?>
+        <?php endforeach ?>
+    </div>
+
+    <h2>Processing</h2>
+    <div>Script by <a href="/cast/<?= $quest->getScriptAuthor()->getId() ?>"><?= $quest->getScriptAuthor()->getName() ?></a></div><!-- TODO @kmaxi integrate this into the frontend -->
+    <div>
+        Sound editing by<br><!-- TODO @kmaxi integrate this into frontend -->
+        <?php foreach ($quest->getNpcs() as $npc) : ?>
+            <a href="/cast/<?= $npc->getSoundEditor($quest)->getId() ?>"><?= $npc->getSoundEditor($quest)->getName() ?></a> (<a href="/npc/<?= $npc->getId() ?>"><?= $npc->getName() ?></a>)<br>
         <?php endforeach ?>
     </div>
 </section>

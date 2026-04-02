@@ -568,6 +568,12 @@ class User implements JsonSerializable
                 case 'user_id':
                 case 'voice_actor':
                 case 'voice_actor_id':
+                case 've':
+                case 've_id':
+                case 'sound_editor':
+                case 'sound_editor_id':
+                case 'se':
+                case 'se_id':
                     $this->id = $value;
                     break;
                 case 'discordId':
@@ -589,15 +595,21 @@ class User implements JsonSerializable
                 case 'display_name':
                 case 'name':
                 case 'uname':
-                case 'vaname':
                 case 'user_name':
+                case 'vaname':
+                case 'va_name':
                 case 'voice_actor_name':
+                case 'sename':
+                case 'se_name':
+                case 'sound_editor_name':
                     $this->displayName = $value;
                     break;
                 case 'avatarlink':
                 case 'avatar_link':
                 case 'avatar':
                 case 'picture':
+                case 'va_picture':
+                case 'se_picture':
                     $this->avatarLink = $value;
                     break;
                 case 'bio':

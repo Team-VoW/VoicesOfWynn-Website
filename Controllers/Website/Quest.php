@@ -46,7 +46,7 @@ class Quest extends WebpageController
             return 404;
         }
 
-        $this->quest->getNpcs(true);   //Also load and save NPCs themselves into attribute
+        $this->quest->getNpcs(true);   //Also load and save NPCs themselves into attribute, also loads voice actors and sound editors
 
         self::$data['quest_quest'] = $this->quest;
 

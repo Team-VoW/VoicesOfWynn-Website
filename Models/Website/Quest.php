@@ -11,7 +11,9 @@ class Quest implements JsonSerializable
 	private ?string $name = null;
     private ?string $degeneratedName = null;
     private User $scriptAuthor;
-	private array $npcs;
+
+    private array $npcs;
+
 	
 	/**
 	 * @param array $data Data returned from database, invalid items are skipped, multiple key names are supported for
@@ -37,12 +39,12 @@ class Quest implements JsonSerializable
                 case 'writer':
                 case 'scriptAuthor':
                 case 'script_author':
-                    if (gettype($value) === 'integer') {
-                        $writer = new User();
-                        $writer->setData(['id' => $value]);
-                    } else {
-                        $writer = $value;
+                    if ($value instanceof User) {
+                        $this->scriptAuthor = $value;
+                        break;
                     }
+                    $writer = new User();
+                    $writer->setData(['id' => $value]);
                     $this->scriptAuthor = $writer;
                     break;
 			}
@@ -124,7 +126,7 @@ class Quest implements JsonSerializable
      */
     public function getScriptAuthor() : ?User
     {
-        return $this->scriptAuthor;
+        return isset($this->scriptAuthor) ? $this->scriptAuthor : null;
     }
 
     /**
@@ -143,12 +145,26 @@ class Quest implements JsonSerializable
     private function loadNpcs() : bool
     {
         $result = (new Db('Website/DbInfo.ini'))->fetchQuery('
-            SELECT npc_id,npc.name,degenerated_name,voice_actor_id,user.display_name,user.picture,archived,upvotes,downvotes,(SELECT COUNT(*) FROM comment WHERE npc_id = npc.npc_id) AS comments,sorting_order
+            SELECT 
+                npc_id,
+                npc.name,
+                degenerated_name,
+                voice_actor_id AS "va_id",
+                voice_actor.display_name AS "va_name",
+                voice_actor.picture AS "va_picture",
+                npc_quest.editor AS "se_id",
+                sound_editor.display_name AS "se_name",
+                sound_editor.picture AS "se_picture",
+                archived,
+                upvotes,
+                downvotes,
+                (SELECT COUNT(*) FROM comment WHERE npc_id = npc.npc_id) AS comments
             FROM npc
             JOIN npc_quest USING (npc_id)
-            JOIN user ON user.user_id = npc.voice_actor_id
+            JOIN user voice_actor ON voice_actor.user_id = npc.voice_actor_id
+            JOIN user sound_editor ON sound_editor.user_id = npc_quest.editor
             WHERE quest_id = ?
-            ORDER BY sorting_order;
+            ORDER BY npc_quest.sorting_order;
         ', array($this->id), true);
 
         $this->npcs = [];
@@ -158,8 +174,11 @@ class Quest implements JsonSerializable
         foreach ($result as $dbRow) {
             $npc = new Npc($dbRow);
             $va = new User();
-            $va->setData($dbRow);
+            $va->setData(['id' => $dbRow['va_id'], 'name' => $dbRow['va_name'], 'avatar' => $dbRow['va_picture']]);
             $npc->setVoiceActor($va);
+            $se = new User();
+            $se->setData(['id' => $dbRow['se_id'], 'name' => $dbRow['se_name'], 'avatar' => $dbRow['se_picture']]);
+            $npc->setSoundEditor($this, $se);
             $this->npcs[] = $npc;
         }
         return true;
