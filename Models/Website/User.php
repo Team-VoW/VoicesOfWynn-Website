@@ -568,8 +568,8 @@ class User implements JsonSerializable
                 case 'user_id':
                 case 'voice_actor':
                 case 'voice_actor_id':
-                case 've':
-                case 've_id':
+                case 'va':
+                case 'va_id':
                 case 'sound_editor':
                 case 'sound_editor_id':
                 case 'se':

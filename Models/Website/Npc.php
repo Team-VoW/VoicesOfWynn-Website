@@ -491,7 +491,7 @@ class Npc implements JsonSerializable
      */
     public function getSoundEditor(?Quest $quest = null) : User|array|null
     {
-        return is_null($quest) ? $this->soundEditors ?? null : $this->soundEditors[$quest->getId()];
+        return is_null($quest) ? ($this->soundEditors ?? null) : ($this->soundEditors[$quest->getId()] ?? null);
     }
 
     public function isArchived() : bool

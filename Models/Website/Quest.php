@@ -42,6 +42,8 @@ class Quest implements JsonSerializable
                     if ($value instanceof User) {
                         $this->scriptAuthor = $value;
                         break;
+                    } else if (is_null($value)) {
+                        break;
                     }
                     $writer = new User();
                     $writer->setData(['id' => $value]);
@@ -77,10 +79,13 @@ class Quest implements JsonSerializable
         }
         $this->id = $result['quest_id'];
         $this->name = $result['name'];
-        $writer = new User();
-        $writer->setData(['id' => $result['writer']]);
-        $this->scriptAuthor = $writer;
-
+        if (is_null($result['writer'])) {
+            $this->scriptAuthor = null;
+        } else {
+            $writer = new User();
+            $writer->setData(['id' => $result['writer']]);
+            $this->scriptAuthor = $writer;
+        }
         return true;
     }
 	
@@ -161,8 +166,8 @@ class Quest implements JsonSerializable
                 (SELECT COUNT(*) FROM comment WHERE npc_id = npc.npc_id) AS comments
             FROM npc
             JOIN npc_quest USING (npc_id)
-            JOIN user voice_actor ON voice_actor.user_id = npc.voice_actor_id
-            JOIN user sound_editor ON sound_editor.user_id = npc_quest.editor
+            LEFT JOIN user voice_actor ON voice_actor.user_id = npc.voice_actor_id
+            LEFT JOIN user sound_editor ON sound_editor.user_id = npc_quest.editor
             WHERE quest_id = ?
             ORDER BY npc_quest.sorting_order;
         ', array($this->id), true);
@@ -173,12 +178,16 @@ class Quest implements JsonSerializable
         }
         foreach ($result as $dbRow) {
             $npc = new Npc($dbRow);
-            $va = new User();
-            $va->setData(['id' => $dbRow['va_id'], 'name' => $dbRow['va_name'], 'avatar' => $dbRow['va_picture']]);
-            $npc->setVoiceActor($va);
-            $se = new User();
-            $se->setData(['id' => $dbRow['se_id'], 'name' => $dbRow['se_name'], 'avatar' => $dbRow['se_picture']]);
-            $npc->setSoundEditor($this, $se);
+            if (!is_null($dbRow['va_id'])) {
+                $va = new User();
+                $va->setData(['id' => $dbRow['va_id'], 'name' => $dbRow['va_name'], 'avatar' => $dbRow['va_picture']]);
+                $npc->setVoiceActor($va);
+            }
+            if (!is_null($dbRow['se_id'])) {
+                $se = new User();
+                $se->setData(['id' => $dbRow['se_id'], 'name' => $dbRow['se_name'], 'avatar' => $dbRow['se_picture']]);
+                $npc->setSoundEditor($this, $se);
+            }
             $this->npcs[] = $npc;
         }
         return true;

@@ -183,7 +183,7 @@ class ContentManager
 		return $quests;
 	}
 
-    public function getWritersQuests(int $writerId)
+    public function getWritersQuests(int $writerId) : array
     {
         $query = '
 		SELECT quest.quest_id, quest.name, quest.degenerated_name, quest.writer
@@ -193,7 +193,7 @@ class ContentManager
         $result = (new Db('Website/DbInfo.ini'))->fetchQuery($query, array($writerId), true);
 
         if ($result === false) {
-            return array();
+            return [];
         }
 
         return array_map(function($record) { return new Quest($record); }, $result);

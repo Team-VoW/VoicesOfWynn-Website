@@ -35,10 +35,13 @@
     </div>
 
     <h2>Processing</h2>
-    <div>Script by <a href="/cast/<?= $quest->getScriptAuthor()->getId() ?>"><?= $quest->getScriptAuthor()->getName() ?></a></div><!-- TODO @kmaxi integrate this into the frontend -->
+    <?php if (!is_null($quest->getScriptAuthor())) : ?>
+        <div>Script by <a href="/cast/<?= $quest->getScriptAuthor()->getId() ?>"><?= $quest->getScriptAuthor()->getName() ?></a></div><!-- TODO @kmaxi integrate this into the frontend -->
+    <?php endif ?>
     <div>
         Sound editing by<br><!-- TODO @kmaxi integrate this into frontend -->
         <?php foreach ($quest->getNpcs() as $npc) : ?>
+            <?php if (is_null($npc->getSoundEditor($quest))) { continue; } ?>
             <a href="/cast/<?= $npc->getSoundEditor($quest)->getId() ?>"><?= $npc->getSoundEditor($quest)->getName() ?></a> (<a href="/npc/<?= $npc->getId() ?>"><?= $npc->getName() ?></a>)<br>
         <?php endforeach ?>
     </div>
