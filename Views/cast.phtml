@@ -70,36 +70,60 @@ const SOCIAL_NAME = ['youtube' => 'YouTube', 'twitter' => 'Twitter', 'castingcal
     </section>
 <?php endif ?>
 
-<section class="cast-recordings-section">
-    <h2 class="cast-section-title">Voicing</h2>
+<?php $npcGroups = ${basename(__FILE__, '.phtml') . '_npc_groups'}; ?>
+<?php if (count($npcGroups) > 0): ?>
+    <section class="cast-recordings-section">
+        <h2 class="cast-section-title">Voicing</h2>
 
-    <?php $npcGroups = ${basename(__FILE__, '.phtml') . '_npc_groups'}; ?>
+        <div class="cast-npc-accordion">
+            <?php foreach ($npcGroups as $group): ?>
+                <?php
+                $cardNpc = $group['npc'];
+                $cardQuestNames = $group['questNames'];
+                $cardQuestDegeneratedNames = $group['questDegeneratedNames'];
+                $cardRecordingsByQuest = $group['recordingsByQuest'];
+                $cardAllRecordings = $group['recordings'];
+                $cardIsUpvoted = in_array($cardNpc->getId(), ${basename(__FILE__, '.phtml').'_upvoted'});
+                $cardIsDownvoted = in_array($cardNpc->getId(), ${basename(__FILE__, '.phtml').'_downvoted'});
+                $cardIsOpen = false;
+                $cardAdmin = false;
+                $cardNpcId = $cardNpc->getId();
+                ?>
+                <?php include 'Views/partials/npc-card.phtml'; ?>
+            <?php endforeach ?>
+            <?php include 'Views/partials/comments-dialog.phtml'; ?>
+        </div>
+    </section>
+<?php endif ?>
 
-    <?php if (count($npcGroups) === 0): ?>
-        <p class="cast-no-recordings">
-            <em>This contributor hasn't submitted any recordings yet.</em>
-        </p>
-    <?php endif ?>
+<?php $scriptedQuests = ${basename(__FILE__, '.phtml') . '_scripted_quests'}; ?>
+<?php if (count($scriptedQuests) > 0): ?>
+    <section class="cast-scripts-section">
+        <h2 class="cast-section-title">Scriptwriting</h2>
 
-    <div class="cast-npc-accordion">
-        <?php foreach ($npcGroups as $group): ?>
-            <?php
-            $cardNpc = $group['npc'];
-            $cardQuestNames = $group['questNames'];
-            $cardQuestDegeneratedNames = $group['questDegeneratedNames'];
-            $cardRecordingsByQuest = $group['recordingsByQuest'];
-            $cardAllRecordings = $group['recordings'];
-            $cardIsUpvoted = in_array($cardNpc->getId(), ${basename(__FILE__, '.phtml').'_upvoted'});
-            $cardIsDownvoted = in_array($cardNpc->getId(), ${basename(__FILE__, '.phtml').'_downvoted'});
-            $cardIsOpen = false;
-            $cardAdmin = false;
-            $cardNpcId = $cardNpc->getId();
-            ?>
-            <?php include 'Views/partials/npc-card.phtml'; ?>
+        <?php foreach ($scriptedQuests as $scriptedQuest) : ?>
+            <div><!-- TODO @kmaxi integrate this into the frontend, create the scripts folder on the blob -->
+                <a href="/contents/<?= $scriptedQuest->getDegeneratedName() ?>"><?= $scriptedQuest->getName() ?></a> –
+                <a href="<?= \VoicesOfWynn\storageUrl('scripts/' . $scriptedQuest->getDegeneratedName() . '.txt') ?>">Script file</a>
+            </div>
         <?php endforeach ?>
-        <?php include 'Views/partials/comments-dialog.phtml'; ?>
-    </div>
-</section>
+    </section>
+<?php endif ?>
+
+<?php $editedNpcs = ${basename(__FILE__, '.phtml') . '_edited_npcs'}; ?>
+<?php if (count($editedNpcs) > 0): ?>
+    <section class="cast-edits-section">
+        <h2 class="cast-section-title">Sound Editing</h2>
+
+        <?php foreach ($editedNpcs as $qnPair) : ?>
+            <div><!-- TODO @kmaxi integrate this into the frontend -->
+                <a href="/npc/<?= $qnPair['npc']->getId() ?>"><?= $qnPair['npc']->getName() ?></a>
+                in
+                <a href="/contents/<?= $qnPair['quest']->getDegeneratedName() ?>"><?= $qnPair['quest']->getName() ?></a>
+            </div>
+        <?php endforeach ?>
+    </section>
+<?php endif ?>
 
 <div class="cast-back-wrapper">
     <button class="cast-back-btn" onclick="history.go(-1)">

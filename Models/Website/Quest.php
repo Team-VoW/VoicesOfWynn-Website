@@ -10,7 +10,10 @@ class Quest implements JsonSerializable
 	private int $id;
 	private ?string $name = null;
     private ?string $degeneratedName = null;
-	private array $npcs;
+    private User $scriptAuthor;
+
+    private array $npcs;
+
 	
 	/**
 	 * @param array $data Data returned from database, invalid items are skipped, multiple key names are supported for
@@ -33,6 +36,19 @@ class Quest implements JsonSerializable
                 case 'degenerated_name':
                     $this->degeneratedName = $value;
                     break;
+                case 'writer':
+                case 'scriptAuthor':
+                case 'script_author':
+                    if ($value instanceof User) {
+                        $this->scriptAuthor = $value;
+                        break;
+                    } else if (is_null($value)) {
+                        break;
+                    }
+                    $writer = new User();
+                    $writer->setData(['id' => $value]);
+                    $this->scriptAuthor = $writer;
+                    break;
 			}
 		}
 	}
@@ -53,7 +69,7 @@ class Quest implements JsonSerializable
         }
 
         $result = (new Db('Website/DbInfo.ini'))->fetchQuery('
-            SELECT quest_id, name
+            SELECT quest_id, name, writer
             FROM quest
             WHERE degenerated_name = ?;
         ', array($this->degeneratedName));
@@ -63,7 +79,13 @@ class Quest implements JsonSerializable
         }
         $this->id = $result['quest_id'];
         $this->name = $result['name'];
-
+        if (is_null($result['writer'])) {
+            $this->scriptAuthor = null;
+        } else {
+            $writer = new User();
+            $writer->setData(['id' => $result['writer']]);
+            $this->scriptAuthor = $writer;
+        }
         return true;
     }
 	
@@ -104,6 +126,15 @@ class Quest implements JsonSerializable
     }
 
     /**
+     * Script author getter
+     * @return User|null User who is the writer of the script for this quest
+     */
+    public function getScriptAuthor() : ?User
+    {
+        return isset($this->scriptAuthor) ? $this->scriptAuthor : null;
+    }
+
+    /**
      * Npcs getter
      * @param bool $loadIfNotLoaded Should the list of NPCs be loaded from the database if it is unset at the time this method is called?
      * @return ?array Array of NPC objects that were added to this quest or NULL if the list wasn't set or loaded yet
@@ -119,12 +150,26 @@ class Quest implements JsonSerializable
     private function loadNpcs() : bool
     {
         $result = (new Db('Website/DbInfo.ini'))->fetchQuery('
-            SELECT npc_id,npc.name,degenerated_name,voice_actor_id,user.display_name,user.picture,archived,upvotes,downvotes,(SELECT COUNT(*) FROM comment WHERE npc_id = npc.npc_id) AS comments,sorting_order
+            SELECT 
+                npc_id,
+                npc.name,
+                degenerated_name,
+                voice_actor_id AS "va_id",
+                voice_actor.display_name AS "va_name",
+                voice_actor.picture AS "va_picture",
+                npc_quest.editor AS "se_id",
+                sound_editor.display_name AS "se_name",
+                sound_editor.picture AS "se_picture",
+                archived,
+                upvotes,
+                downvotes,
+                (SELECT COUNT(*) FROM comment WHERE npc_id = npc.npc_id) AS comments
             FROM npc
             JOIN npc_quest USING (npc_id)
-            JOIN user ON user.user_id = npc.voice_actor_id
+            LEFT JOIN user voice_actor ON voice_actor.user_id = npc.voice_actor_id
+            LEFT JOIN user sound_editor ON sound_editor.user_id = npc_quest.editor
             WHERE quest_id = ?
-            ORDER BY sorting_order;
+            ORDER BY npc_quest.sorting_order;
         ', array($this->id), true);
 
         $this->npcs = [];
@@ -133,9 +178,16 @@ class Quest implements JsonSerializable
         }
         foreach ($result as $dbRow) {
             $npc = new Npc($dbRow);
-            $va = new User();
-            $va->setData($dbRow);
-            $npc->setVoiceActor($va);
+            if (!is_null($dbRow['va_id'])) {
+                $va = new User();
+                $va->setData(['id' => $dbRow['va_id'], 'name' => $dbRow['va_name'], 'avatar' => $dbRow['va_picture']]);
+                $npc->setVoiceActor($va);
+            }
+            if (!is_null($dbRow['se_id'])) {
+                $se = new User();
+                $se->setData(['id' => $dbRow['se_id'], 'name' => $dbRow['se_name'], 'avatar' => $dbRow['se_picture']]);
+                $npc->setSoundEditor($this, $se);
+            }
             $this->npcs[] = $npc;
         }
         return true;
