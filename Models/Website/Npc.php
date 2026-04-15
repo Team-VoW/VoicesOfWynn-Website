@@ -363,7 +363,7 @@ class Npc implements JsonSerializable
         unset($replacementId);
 
         //Copy profile picture
-        Storage::get()->copy('npcs/'.$this->id.'.png', 'npcs/'.$replacementNpc->getId().'.png');
+        Storage::get()->copy('npcs/'.$this->id.'.webp', 'npcs/'.$replacementNpc->getId().'.webp');
 
         //Unlink this NPC from all quests and link the new one
         $inString = trim(str_repeat('?,', count($questIds)), ',');
