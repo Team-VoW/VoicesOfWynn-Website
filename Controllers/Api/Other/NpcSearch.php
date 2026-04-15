@@ -68,7 +68,7 @@ class NpcSearch extends ApiController
         if ($noPicture) {
             $storage = Storage::get();
             $npcs = array_values(array_filter($npcs, function (array $npc) use ($storage): bool {
-                return !$storage->exists('npcs/' . $npc['npc_id'] . '.png');
+                return !$storage->exists('npcs/' . $npc['npc_id'] . '.webp');
             }));
         }
 
