@@ -1,6 +1,7 @@
 --liquibase formatted sql
 
 -- changeset shady:1
+-- validCheckSum: 9:c000fdd7e2e8c2967114bb519a29d57a
 
 ALTER TABLE `npc`
     ADD `upvotes` int(11) NOT NULL DEFAULT 0,
@@ -12,7 +13,7 @@ ALTER TABLE `recording`
 
 ALTER TABLE `comment`
     ADD `npc_id` int(11) NULL,
-    ADD FOREIGN KEY (`npc_id`) REFERENCES `npc` (`npc_id`) ON DELETE SET NULL ON UPDATE CASCADE;
+    ADD CONSTRAINT `comment_ibfk_3` FOREIGN KEY (`npc_id`) REFERENCES `npc` (`npc_id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- merge comments from individual recordings to NPCs
 UPDATE comment

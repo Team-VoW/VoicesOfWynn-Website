@@ -21,7 +21,8 @@ class Npc implements JsonSerializable
 	private int $id = 0;
 	private string $name = '';
     private string $degeneratedName = '';
-	private $voiceActor;
+	private User $voiceActor;
+    private array $soundEditors;
     private bool $archived = false;
     private int $upvotes = 0;
     private int $downvotes = 0;
@@ -68,6 +69,15 @@ class Npc implements JsonSerializable
                 case 'comments':
                     $this->comments = $value;
                     break;
+                case 'voice_actor':
+                    if ($value instanceof User) {
+                        $this->voiceActor = $value;
+                        break;
+                    }
+                    $va = new User();
+                    $va->setData(['id' => $value]);
+                    $this->voiceActor = $va;
+                    break;
 			}
 		}
 	}
@@ -85,6 +95,19 @@ class Npc implements JsonSerializable
 	{
 		$this->voiceActor = $voiceActor;
 	}
+
+    /**
+     * SoundEditor setter
+     * @param Quest $quest Quest in which voicing of this NPC was edited by the given editor
+     * @param User $editor User who is responsible for editing this NPC's recordings in the given quest
+     */
+    public function setSoundEditor(Quest $quest, User $editor) : void
+    {
+        if (!isset($this->soundEditors)) {
+            $this->soundEditors = [];
+        }
+        $this->soundEditors[$quest->getId()] = $editor;
+    }
 
     /**
      * Method setting a new voice actor and updating the database
@@ -363,7 +386,7 @@ class Npc implements JsonSerializable
         unset($replacementId);
 
         //Copy profile picture
-        Storage::get()->copy('npcs/'.$this->id.'.png', 'npcs/'.$replacementNpc->getId().'.png');
+        Storage::get()->copy('npcs/'.$this->id.'.webp', 'npcs/'.$replacementNpc->getId().'.webp');
 
         //Unlink this NPC from all quests and link the new one
         $inString = trim(str_repeat('?,', count($questIds)), ',');
@@ -458,8 +481,18 @@ class Npc implements JsonSerializable
 	 */
 	public function getVoiceActor() : ?User
 	{
-		return $this->voiceActor;
+		return isset($this->voiceActor) ? $this->voiceActor : null;
 	}
+
+    /**
+     * SoundEditor getter
+     * @param ?Quest $quest Quest in which this NPC has recordings that the sound editor we're interested in edited or NULL if all editors should be returned.
+     * @return User|array|null Object representing the user responsible for editing recordings of this NPC in the given quest, an array of all editors if no parameter was supplied or NULL if it wasn't set
+     */
+    public function getSoundEditor(?Quest $quest = null) : User|array|null
+    {
+        return is_null($quest) ? ($this->soundEditors ?? null) : ($this->soundEditors[$quest->getId()] ?? null);
+    }
 
     public function isArchived() : bool
     {
