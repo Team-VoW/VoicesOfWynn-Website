@@ -63,13 +63,14 @@ class ContentManager
 
 	public function getNpc($id)
 	{
+		$db = new Db('Website/DbInfo.ini');
 		$query = '
 		SELECT npc.npc_id, npc.name, user.user_id, user.display_name, user.picture, npc.archived, npc.upvotes, npc.downvotes,
 		(SELECT COUNT(*) FROM comment WHERE comment.npc_id = npc.npc_id) AS comments
 		FROM npc
 		LEFT JOIN user ON npc.voice_actor_id = user.user_id
 		WHERE npc_id = ?;';
-		$result = (new Db('Website/DbInfo.ini'))->fetchQuery($query, array($id));
+		$result = $db->fetchQuery($query, array($id));
 
 		if ($result === false) {
 			return false;
@@ -80,6 +81,20 @@ class ContentManager
 			$voiceActor->setData($result);
 			$npc->setVoiceActor($voiceActor);
 		}
+
+		$seResult = $db->fetchQuery('
+		SELECT npc_quest.quest_id, user.user_id AS se_id, user.display_name AS se_name, user.picture AS se_picture
+		FROM npc_quest
+		JOIN user ON user.user_id = npc_quest.editor
+		WHERE npc_quest.npc_id = ?;', array($id), true);
+		if (is_array($seResult)) {
+			foreach ($seResult as $seRow) {
+				$se = new User();
+				$se->setData(['id' => $seRow['se_id'], 'name' => $seRow['se_name'], 'avatar' => $seRow['se_picture']]);
+				$npc->setSoundEditor(new Quest(['quest_id' => $seRow['quest_id']]), $se);
+			}
+		}
+
 		return $npc;
 	}
 

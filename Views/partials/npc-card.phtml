@@ -15,6 +15,8 @@ $cardAdmin = $cardAdmin ?? false;
 $cardShowFeaturedRecording = $cardShowFeaturedRecording ?? false;
 $cardShowQuestNames        = $cardShowQuestNames        ?? true;
 $cardShowVoiceActor        = $cardShowVoiceActor        ?? true;
+$cardShowSoundEditor       = $cardShowSoundEditor       ?? false;
+$cardQuestForSoundEditor   = $cardQuestForSoundEditor   ?? null;
 ?>
 <div class="cast-npc-block recording-actions<?= $cardIsOpen ? ' is-open' : '' ?>">
     <div class="cast-npc-header" role="button" tabindex="0" aria-expanded="<?= $cardIsOpen ? 'true' : 'false' ?>">
@@ -116,7 +118,42 @@ $cardShowVoiceActor        = $cardShowVoiceActor        ?? true;
                     <a href="/administration/upload?questId=<?= $questId ?>&amp;npcId=<?= $cardNpcId ?>" class="uploadbtn">Add new recordings</a>
                 </div>
             <?php endif ?>
-            <?php if ($multipleQuests): ?>
+            <?php if (!$multipleQuests && $cardShowSoundEditor):
+                  $allSe = $cardNpc->getSoundEditor();
+                  $se = $cardQuestForSoundEditor !== null
+                      ? $cardNpc->getSoundEditor($cardQuestForSoundEditor)
+                      : (is_array($allSe) ? reset($allSe) : $allSe);
+                  if ($se !== null): ?>
+            <div class="cast-npc-se-row">
+                <span class="cast-npc-se-label">Edited by</span>
+                <a href="/cast/<?= $se->getId() ?>" class="cast-npc-se-link--pic">
+                    <img class="cast-npc-se-avatar"
+                         src="<?= \VoicesOfWynn\storageUrl('avatars/' . $se->getAvatar()) ?>"
+                         onerror="this.onerror=null; this.src='<?= \VoicesOfWynn\storageUrl('avatars/default.png') ?>'"
+                         alt="Profile picture" loading="lazy" />
+                </a>
+                <a href="/cast/<?= $se->getId() ?>" class="cast-npc-se-name">
+                    <?= htmlspecialchars($se->getName()) ?>
+                </a>
+            </div>
+            <?php endif; endif ?>
+            <?php if ($multipleQuests):
+                  $allSoundEditors = $cardNpc->getSoundEditor();
+                  $se = $cardShowSoundEditor && is_array($allSoundEditors) ? ($allSoundEditors[$questId] ?? null) : null;
+                  if ($se !== null): ?>
+                <div class="cast-npc-se-row">
+                    <span class="cast-npc-se-label">Edited by</span>
+                    <a href="/cast/<?= $se->getId() ?>" class="cast-npc-se-link--pic">
+                        <img class="cast-npc-se-avatar"
+                             src="<?= \VoicesOfWynn\storageUrl('avatars/' . $se->getAvatar()) ?>"
+                             onerror="this.onerror=null; this.src='<?= \VoicesOfWynn\storageUrl('avatars/default.png') ?>'"
+                             alt="Profile picture" loading="lazy" />
+                    </a>
+                    <a href="/cast/<?= $se->getId() ?>" class="cast-npc-se-name">
+                        <?= htmlspecialchars($se->getName()) ?>
+                    </a>
+                </div>
+                <?php endif ?>
                 </div>
             <?php endif ?>
         <?php endforeach ?>
