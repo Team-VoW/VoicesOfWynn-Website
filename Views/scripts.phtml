@@ -110,11 +110,11 @@ $totalPages  = ${basename(__FILE__, '.phtml') . '_total_pages'};
 <?php if ($totalPages > 1): ?>
 <div style="text-align:center; margin-top:1rem;">
     <?php if ($currentPage > 1): ?>
-        <a href="?page=<?= $currentPage - 1 ?>">&larr; Previous</a>
+        <a href="/administration/scripts?page=<?= $currentPage - 1 ?>">&larr; Previous</a>
     <?php endif ?>
     &nbsp; Page <?= $currentPage ?> of <?= $totalPages ?> &nbsp;
     <?php if ($currentPage < $totalPages): ?>
-        <a href="?page=<?= $currentPage + 1 ?>">Next &rarr;</a>
+        <a href="/administration/scripts?page=<?= $currentPage + 1 ?>">Next &rarr;</a>
     <?php endif ?>
 </div>
 <?php endif ?>

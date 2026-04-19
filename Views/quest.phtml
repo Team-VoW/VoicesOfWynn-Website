@@ -38,10 +38,14 @@
     $hasScriptAuthor = !is_null($quest->getScriptAuthor());
     $soundEditors = array_filter($quest->getNpcs(), fn($npc) => !is_null($npc->getSoundEditor($quest)));
     ?>
-    <?php if ($hasScriptAuthor || !empty($soundEditors)): ?>
+    <?php $quest_script_url = ${basename(__FILE__, '.phtml').'_script_url'} ?>
+    <?php if ($hasScriptAuthor || !empty($soundEditors) || !is_null($quest_script_url)): ?>
     <h2>Processing</h2>
     <?php if ($hasScriptAuthor): ?>
         <div>Script by <a href="/cast/<?= $quest->getScriptAuthor()->getId() ?>"><?= htmlspecialchars($quest->getScriptAuthor()->getName()) ?></a></div>
+    <?php endif ?>
+    <?php if (!is_null($quest_script_url)): ?>
+        <div><a href="<?= htmlspecialchars($quest_script_url) ?>" download>Download script</a></div>
     <?php endif ?>
     <?php if (!empty($soundEditors)): ?>
         <div>
