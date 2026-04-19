@@ -22,8 +22,8 @@ $cardShowVoiceActor        = $cardShowVoiceActor        ?? true;
             <a href="contents/npc/<?= $cardNpc->getId() ?>" class="cast-npc-link cast-npc-link--pic">
                 <img
                     class="cast-npc-pic"
-                    src="<?= \VoicesOfWynn\storageUrl('npcs/' . $cardNpc->getId() . '.png') ?>"
-                    onerror="this.onerror=null; this.src='<?= \VoicesOfWynn\storageUrl('npcs/default.png') ?>'"
+                    src="<?= \VoicesOfWynn\storageUrl('npcs/' . $cardNpc->getId() . '.webp') ?>"
+                    onerror="this.onerror=null; this.src='<?= \VoicesOfWynn\storageUrl('npcs/default.webp') ?>'"
                     alt="<?= htmlspecialchars($cardNpc->getName()) ?>"
                     loading="lazy"
                 />
