@@ -34,16 +34,24 @@
         <?php endforeach ?>
     </div>
 
+    <?php
+    $hasScriptAuthor = !is_null($quest->getScriptAuthor());
+    $soundEditors = array_filter($quest->getNpcs(), fn($npc) => !is_null($npc->getSoundEditor($quest)));
+    ?>
+    <?php if ($hasScriptAuthor || !empty($soundEditors)): ?>
     <h2>Processing</h2>
-    <?php if (!is_null($quest->getScriptAuthor())) : ?>
-        <div>Script by <a href="/cast/<?= $quest->getScriptAuthor()->getId() ?>"><?= $quest->getScriptAuthor()->getName() ?></a></div><!-- TODO @kmaxi integrate this into the frontend -->
+    <?php if ($hasScriptAuthor): ?>
+        <div>Script by <a href="/cast/<?= $quest->getScriptAuthor()->getId() ?>"><?= htmlspecialchars($quest->getScriptAuthor()->getName()) ?></a></div>
     <?php endif ?>
-    <div>
-        Sound editing by<br><!-- TODO @kmaxi integrate this into frontend -->
-        <?php foreach ($quest->getNpcs() as $npc) : ?>
-            <?php if (is_null($npc->getSoundEditor($quest))) { continue; } ?>
-            <a href="/cast/<?= $npc->getSoundEditor($quest)->getId() ?>"><?= $npc->getSoundEditor($quest)->getName() ?></a> (<a href="/npc/<?= $npc->getId() ?>"><?= $npc->getName() ?></a>)<br>
-        <?php endforeach ?>
-    </div>
+    <?php if (!empty($soundEditors)): ?>
+        <div>
+            Sound editing by<br>
+            <?php foreach ($soundEditors as $npc): ?>
+                <a href="/cast/<?= $npc->getSoundEditor($quest)->getId() ?>"><?= htmlspecialchars($npc->getSoundEditor($quest)->getName()) ?></a>
+                (<a href="/contents/npc/<?= $npc->getId() ?>"><?= htmlspecialchars($npc->getName()) ?></a>)<br>
+            <?php endforeach ?>
+        </div>
+    <?php endif ?>
+    <?php endif ?>
 </section>
 <?php include 'Views/partials/comments-dialog.phtml'; ?>
