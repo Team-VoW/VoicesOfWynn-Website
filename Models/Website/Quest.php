@@ -10,7 +10,7 @@ class Quest implements JsonSerializable
 	private int $id;
 	private ?string $name = null;
     private ?string $degeneratedName = null;
-    private User $scriptAuthor;
+    private ?User $scriptAuthor = null;
 
     private array $npcs;
 
