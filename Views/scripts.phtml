@@ -1,0 +1,151 @@
+<?php
+$quests      = ${basename(__FILE__, '.phtml') . '_quests'};
+$users       = ${basename(__FILE__, '.phtml') . '_users'};
+$message     = ${basename(__FILE__, '.phtml') . '_message'};
+$error       = ${basename(__FILE__, '.phtml') . '_error'};
+$currentPage = ${basename(__FILE__, '.phtml') . '_current_page'};
+$totalPages  = ${basename(__FILE__, '.phtml') . '_total_pages'};
+?>
+
+<h2 class="txt-c">Script Credits &amp; Sound Editors</h2>
+
+<?php if ($message): ?>
+    <p class="success"><?= htmlspecialchars($message) ?></p>
+<?php endif ?>
+<?php if ($error): ?>
+    <p class="error"><?= htmlspecialchars($error) ?></p>
+<?php endif ?>
+
+<p class="txt-c">
+    <input type="text" id="quest-filter" placeholder="Filter quests by name…" oninput="filterQuests(this.value)"
+        style="width:20rem; padding:4px 8px;">
+</p>
+
+<div id="quest-list">
+<?php foreach ($quests as $quest): ?>
+    <details class="box" data-quest-name="<?= strtolower(htmlspecialchars($quest['name'])) ?>">
+        <summary style="font-weight:bold; cursor:pointer;">
+            <?= htmlspecialchars($quest['name']) ?>
+            <?php if ($quest['writer_name']): ?>
+                <span class="va-name"> — script by <?= htmlspecialchars($quest['writer_name']) ?></span>
+            <?php endif ?>
+            <?php if ($quest['has_script']): ?>
+                <span style="color:green;"> ✓ script file</span>
+            <?php endif ?>
+        </summary>
+
+        <form method="post" action="/administration/scripts" enctype="multipart/form-data">
+            <input type="hidden" name="action" value="save-quest">
+            <input type="hidden" name="quest_id" value="<?= (int)$quest['id'] ?>">
+            <input type="hidden" name="degenerated_name" value="<?= htmlspecialchars($quest['degenerated_name']) ?>">
+
+            <table style="margin:8px 0; border-spacing:6px 4px;">
+                <tr>
+                    <td><strong>Writer:</strong></td>
+                    <td>
+                        <?php if ($quest['writer_name']): ?>
+                            <a href="/cast/<?= (int)$quest['writer_id'] ?>"><?= htmlspecialchars($quest['writer_name']) ?></a>
+                        <?php else: ?>
+                            <em>None</em>
+                        <?php endif ?>
+                    </td>
+                    <td>
+                        <select name="writer_id" class="user-select" data-selected="<?= (int)$quest['writer_id'] ?>">
+                            <option value="">— None —</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Script file:</strong></td>
+                    <td>
+                        <?php if ($quest['has_script']): ?>
+                            <a href="<?= htmlspecialchars($quest['script_url']) ?>" target="_blank">View current</a>
+                        <?php else: ?>
+                            <em>Not uploaded</em>
+                        <?php endif ?>
+                    </td>
+                    <td>
+                        <input type="file" name="script_file" accept="text/plain,.txt">
+                    </td>
+                </tr>
+            </table>
+
+            <?php if (!empty($quest['npcs'])): ?>
+                <strong>Sound editors by NPC:</strong>
+                <table style="border-spacing:6px 3px;">
+                    <tr>
+                        <th style="text-align:left;">NPC</th>
+                        <th style="text-align:left;">Current editor</th>
+                        <th></th>
+                    </tr>
+                    <?php foreach ($quest['npcs'] as $npc): ?>
+                        <tr>
+                            <td class="npc-name"><?= htmlspecialchars($npc['name']) ?></td>
+                            <td>
+                                <?php if ($npc['editor_name']): ?>
+                                    <a href="/cast/<?= (int)$npc['editor_id'] ?>"><?= htmlspecialchars($npc['editor_name']) ?></a>
+                                <?php else: ?>
+                                    <em>None</em>
+                                <?php endif ?>
+                            </td>
+                            <td>
+                                <select name="npc_editors[<?= (int)$npc['id'] ?>]" class="user-select"
+                                    data-selected="<?= (int)$npc['editor_id'] ?>">
+                                    <option value="">— None —</option>
+                                </select>
+                            </td>
+                        </tr>
+                    <?php endforeach ?>
+                </table>
+            <?php endif ?>
+
+            <div style="margin-top:8px;">
+                <button type="submit">Save all changes</button>
+            </div>
+        </form>
+    </details>
+<?php endforeach ?>
+</div>
+
+<?php if ($totalPages > 1): ?>
+<div style="text-align:center; margin-top:1rem;">
+    <?php if ($currentPage > 1): ?>
+        <a href="?page=<?= $currentPage - 1 ?>">&larr; Previous</a>
+    <?php endif ?>
+    &nbsp; Page <?= $currentPage ?> of <?= $totalPages ?> &nbsp;
+    <?php if ($currentPage < $totalPages): ?>
+        <a href="?page=<?= $currentPage + 1 ?>">Next &rarr;</a>
+    <?php endif ?>
+</div>
+<?php endif ?>
+
+<script>
+var USERS = <?= json_encode(array_map(fn($u) => ['id' => (int)$u['user_id'], 'name' => $u['display_name']], $users)) ?>;
+
+function populateSelects(details) {
+    details.querySelectorAll('select.user-select:not([data-populated])').forEach(function(sel) {
+        var selected = parseInt(sel.dataset.selected) || 0;
+        USERS.forEach(function(u) {
+            var opt = document.createElement('option');
+            opt.value = u.id;
+            opt.textContent = u.name;
+            if (u.id === selected) opt.selected = true;
+            sel.appendChild(opt);
+        });
+        sel.dataset.populated = '1';
+    });
+}
+
+document.querySelectorAll('#quest-list details').forEach(function(details) {
+    details.addEventListener('toggle', function() {
+        if (details.open) populateSelects(details);
+    });
+});
+
+function filterQuests(query) {
+    query = query.toLowerCase();
+    document.querySelectorAll('#quest-list details').forEach(function(el) {
+        el.style.display = el.dataset.questName.includes(query) ? '' : 'none';
+    });
+}
+</script>

@@ -102,9 +102,9 @@ const SOCIAL_NAME = ['youtube' => 'YouTube', 'twitter' => 'Twitter', 'castingcal
         <h2 class="cast-section-title">Scriptwriting</h2>
 
         <?php foreach ($scriptedQuests as $scriptedQuest) : ?>
-            <div><!-- TODO @kmaxi integrate this into the frontend, create the scripts folder on the blob -->
-                <a href="/contents/<?= $scriptedQuest->getDegeneratedName() ?>"><?= $scriptedQuest->getName() ?></a> –
-                <a href="<?= \VoicesOfWynn\storageUrl('scripts/' . $scriptedQuest->getDegeneratedName() . '.txt') ?>">Script file</a>
+            <div>
+                <a href="/contents/<?= $scriptedQuest->getDegeneratedName() ?>"><?= $scriptedQuest->getName() ?></a>
+                – <a href="<?= \VoicesOfWynn\storageUrl('scripts/' . $scriptedQuest->getDegeneratedName() . '.txt') ?>">Script file</a>
             </div>
         <?php endforeach ?>
     </section>
@@ -116,8 +116,8 @@ const SOCIAL_NAME = ['youtube' => 'YouTube', 'twitter' => 'Twitter', 'castingcal
         <h2 class="cast-section-title">Sound Editing</h2>
 
         <?php foreach ($editedNpcs as $qnPair) : ?>
-            <div><!-- TODO @kmaxi integrate this into the frontend -->
-                <a href="/npc/<?= $qnPair['npc']->getId() ?>"><?= $qnPair['npc']->getName() ?></a>
+            <div>
+                <a href="/contents/npc/<?= $qnPair['npc']->getId() ?>"><?= $qnPair['npc']->getName() ?></a>
                 in
                 <a href="/contents/<?= $qnPair['quest']->getDegeneratedName() ?>"><?= $qnPair['quest']->getName() ?></a>
             </div>

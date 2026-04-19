@@ -199,6 +199,96 @@ class ContentManager
         return array_map(function($record) { return new Quest($record); }, $result);
     }
 
+    public function getUsersForDropdown(): array
+    {
+        $result = (new Db('Website/DbInfo.ini'))->fetchQuery(
+            'SELECT user_id, display_name FROM user ORDER BY display_name;',
+            [], true
+        );
+        return $result === false ? [] : $result;
+    }
+
+    public function countQuests(): int
+    {
+        $result = (new Db('Website/DbInfo.ini'))->fetchQuery(
+            'SELECT COUNT(*) AS cnt FROM quest;', []
+        );
+        return (int)($result['cnt'] ?? 0);
+    }
+
+    public function getQuestsWithCredits(int $page = 1, int $perPage = 25): array
+    {
+        $offset = ($page - 1) * $perPage;
+
+        $idRows = (new Db('Website/DbInfo.ini'))->fetchQuery(
+            'SELECT quest_id FROM quest ORDER BY quest_id LIMIT ? OFFSET ?;',
+            [$perPage, $offset], true
+        );
+        if (empty($idRows) || $idRows === false) {
+            return [];
+        }
+
+        $ids = array_column($idRows, 'quest_id');
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+
+        $result = (new Db('Website/DbInfo.ini'))->fetchQuery("
+            SELECT
+                quest.quest_id, quest.name AS \"qname\", quest.degenerated_name,
+                writer.user_id AS \"writer_id\", writer.display_name AS \"writer_name\",
+                npc.npc_id, npc.name AS \"nname\",
+                editor.user_id AS \"editor_id\", editor.display_name AS \"editor_name\"
+            FROM quest
+            LEFT JOIN user writer ON writer.user_id = quest.writer
+            JOIN npc_quest ON npc_quest.quest_id = quest.quest_id
+            JOIN npc ON npc.npc_id = npc_quest.npc_id
+            LEFT JOIN user editor ON editor.user_id = npc_quest.editor
+            WHERE quest.quest_id IN ($placeholders)
+            ORDER BY quest.quest_id, npc_quest.sorting_order;
+        ", $ids, true);
+
+        if ($result === false) {
+            return [];
+        }
+
+        $quests = [];
+        foreach ($result as $row) {
+            $questId = $row['quest_id'];
+            if (!isset($quests[$questId])) {
+                $quests[$questId] = [
+                    'id' => $questId,
+                    'name' => $row['qname'],
+                    'degenerated_name' => $row['degenerated_name'],
+                    'writer_id' => $row['writer_id'],
+                    'writer_name' => $row['writer_name'],
+                    'npcs' => [],
+                ];
+            }
+            $quests[$questId]['npcs'][] = [
+                'id' => $row['npc_id'],
+                'name' => $row['nname'],
+                'editor_id' => $row['editor_id'],
+                'editor_name' => $row['editor_name'],
+            ];
+        }
+        return array_values($quests);
+    }
+
+    public function setQuestWriter(int $questId, ?int $writerId): bool
+    {
+        return (new Db('Website/DbInfo.ini'))->executeQuery(
+            'UPDATE quest SET writer = ? WHERE quest_id = ?;',
+            [$writerId, $questId]
+        );
+    }
+
+    public function setNpcEditor(int $questId, int $npcId, ?int $editorId): bool
+    {
+        return (new Db('Website/DbInfo.ini'))->executeQuery(
+            'UPDATE npc_quest SET editor = ? WHERE quest_id = ? AND npc_id = ?;',
+            [$editorId, $questId, $npcId]
+        );
+    }
+
     public function getEditorsNpcsByQuests(int $editorId) : array
     {
         $query = '
