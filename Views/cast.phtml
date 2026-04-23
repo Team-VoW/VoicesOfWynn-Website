@@ -97,6 +97,7 @@ const SOCIAL_NAME = ['youtube' => 'YouTube', 'twitter' => 'Twitter', 'castingcal
 <?php endif ?>
 
 <?php $scriptedQuests = ${basename(__FILE__, '.phtml') . '_scripted_quests'}; ?>
+<?php $scriptUrls = ${basename(__FILE__, '.phtml') . '_script_urls'}; ?>
 <?php if (count($scriptedQuests) > 0): ?>
     <section class="cast-scripts-section">
         <h2 class="cast-section-title">Scriptwriting</h2>
@@ -104,7 +105,9 @@ const SOCIAL_NAME = ['youtube' => 'YouTube', 'twitter' => 'Twitter', 'castingcal
         <?php foreach ($scriptedQuests as $scriptedQuest) : ?>
             <div>
                 <a href="/contents/<?= $scriptedQuest->getDegeneratedName() ?>"><?= $scriptedQuest->getName() ?></a>
-                – <a href="<?= \VoicesOfWynn\storageUrl('scripts/' . $scriptedQuest->getDegeneratedName() . '.txt') ?>">Script file</a>
+                <?php if (!empty($scriptUrls[$scriptedQuest->getId()])): ?>
+                    – <a href="<?= htmlspecialchars($scriptUrls[$scriptedQuest->getId()]) ?>">Script file</a>
+                <?php endif ?>
             </div>
         <?php endforeach ?>
     </section>

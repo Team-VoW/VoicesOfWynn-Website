@@ -2,6 +2,7 @@
 
 namespace VoicesOfWynn\Controllers\Website;
 
+use VoicesOfWynn\Models\Storage\Storage;
 use VoicesOfWynn\Models\Website\ContentManager;
 
 class Cast extends WebpageController
@@ -49,7 +50,15 @@ class Cast extends WebpageController
 			}
 		}
 		self::$data['cast_npc_groups'] = array_values($npcGroups);
-		self::$data['cast_scripted_quests'] = $cnm->getWritersQuests($contributorId);
+		$scriptedQuests = $cnm->getWritersQuests($contributorId);
+		$storage = Storage::get();
+		$scriptUrls = [];
+		foreach ($scriptedQuests as $q) {
+			$key = 'scripts/' . $q->getDegeneratedName() . '.txt';
+			$scriptUrls[$q->getId()] = $storage->exists($key) ? $storage->getUrl($key) : null;
+		}
+		self::$data['cast_scripted_quests'] = $scriptedQuests;
+		self::$data['cast_script_urls'] = $scriptUrls;
 		self::$data['cast_edited_npcs'] = $cnm->getEditorsNpcsByQuests($contributorId);
 
         $uuid = $this->loadUUID(); //Also saves UUID in $_SESSION

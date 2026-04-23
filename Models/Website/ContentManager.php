@@ -223,6 +223,15 @@ class ContentManager
         return $result === false ? [] : $result;
     }
 
+    public function getQuestDegeneratedName(int $questId): ?string
+    {
+        $result = (new Db('Website/DbInfo.ini'))->fetchQuery(
+            'SELECT degenerated_name FROM quest WHERE quest_id = ?;',
+            [$questId]
+        );
+        return $result['degenerated_name'] ?? null;
+    }
+
     public function countQuests(): int
     {
         $result = (new Db('Website/DbInfo.ini'))->fetchQuery(
@@ -254,8 +263,8 @@ class ContentManager
                 editor.user_id AS \"editor_id\", editor.display_name AS \"editor_name\"
             FROM quest
             LEFT JOIN user writer ON writer.user_id = quest.writer
-            JOIN npc_quest ON npc_quest.quest_id = quest.quest_id
-            JOIN npc ON npc.npc_id = npc_quest.npc_id
+            LEFT JOIN npc_quest ON npc_quest.quest_id = quest.quest_id
+            LEFT JOIN npc ON npc.npc_id = npc_quest.npc_id
             LEFT JOIN user editor ON editor.user_id = npc_quest.editor
             WHERE quest.quest_id IN ($placeholders)
             ORDER BY quest.quest_id, npc_quest.sorting_order;
@@ -278,12 +287,14 @@ class ContentManager
                     'npcs' => [],
                 ];
             }
-            $quests[$questId]['npcs'][] = [
-                'id' => $row['npc_id'],
-                'name' => $row['nname'],
-                'editor_id' => $row['editor_id'],
-                'editor_name' => $row['editor_name'],
-            ];
+            if ($row['npc_id'] !== null) {
+                $quests[$questId]['npcs'][] = [
+                    'id' => $row['npc_id'],
+                    'name' => $row['nname'],
+                    'editor_id' => $row['editor_id'],
+                    'editor_name' => $row['editor_name'],
+                ];
+            }
         }
         return array_values($quests);
     }

@@ -64,9 +64,13 @@ class Scripts extends WebpageController
 
             case 'upload-script':
                 $questId = (int)($_POST['quest_id'] ?? 0);
-                $degeneratedName = $_POST['degenerated_name'] ?? '';
-                if ($questId <= 0 || empty($degeneratedName)) {
+                if ($questId <= 0) {
                     self::$data['scripts_error'] = 'Invalid quest.';
+                    break;
+                }
+                $degeneratedName = $cm->getQuestDegeneratedName($questId);
+                if ($degeneratedName === null) {
+                    self::$data['scripts_error'] = 'Quest not found.';
                     break;
                 }
                 if (empty($_FILES['script_file']['tmp_name']) || $_FILES['script_file']['error'] !== UPLOAD_ERR_OK) {
@@ -91,9 +95,13 @@ class Scripts extends WebpageController
 
             case 'save-quest':
                 $questId = (int)($_POST['quest_id'] ?? 0);
-                $degeneratedName = $_POST['degenerated_name'] ?? '';
                 if ($questId <= 0) {
                     self::$data['scripts_error'] = 'Invalid quest ID.';
+                    break;
+                }
+                $degeneratedName = $cm->getQuestDegeneratedName($questId);
+                if ($degeneratedName === null) {
+                    self::$data['scripts_error'] = 'Quest not found.';
                     break;
                 }
                 $writerId = !empty($_POST['writer_id']) ? (int)$_POST['writer_id'] : null;

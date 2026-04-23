@@ -462,6 +462,8 @@ a.cast-npc-va-name:hover { color: var(--gradient-pink); }
 @media (prefers-reduced-motion: reduce) {
   .cast-npc-va-avatar { transition: none; }
   .cast-npc-va-link--pic:hover .cast-npc-va-avatar { transform: none; }
+  .cast-npc-se-avatar { transition: none; }
+  .cast-npc-se-link--pic:hover .cast-npc-se-avatar { transform: none; }
 }
 
 /* Responsive grid breakpoints for cast-npc-header */

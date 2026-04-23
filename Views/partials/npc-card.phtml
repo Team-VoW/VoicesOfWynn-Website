@@ -122,7 +122,7 @@ $cardQuestForSoundEditor   = $cardQuestForSoundEditor   ?? null;
                   $allSe = $cardNpc->getSoundEditor();
                   $se = $cardQuestForSoundEditor !== null
                       ? $cardNpc->getSoundEditor($cardQuestForSoundEditor)
-                      : (is_array($allSe) ? reset($allSe) : $allSe);
+                      : (is_array($allSe) ? (reset($allSe) ?: null) : $allSe);
                   if ($se !== null): ?>
             <div class="cast-npc-se-row">
                 <span class="cast-npc-se-label">Edited by</span>
