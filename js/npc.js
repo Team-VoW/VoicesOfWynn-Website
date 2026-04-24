@@ -141,6 +141,90 @@ $(".delete-recording-btn").on('click', function(event){
     });
 });
 
+// ==========================================================================
+// RECORDING UPLOAD DROP ZONE
+// ==========================================================================
+
+var $dropZone = document.getElementById('upload-drop-zone');
+var $fileInput = document.getElementById('upload-file-input');
+var $uploadStatus = document.getElementById('upload-status');
+
+if ($dropZone) {
+    $dropZone.addEventListener('click', function() {
+        $fileInput.click();
+    });
+
+    $dropZone.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        $dropZone.classList.add('drag-over');
+    });
+
+    $dropZone.addEventListener('dragleave', function() {
+        $dropZone.classList.remove('drag-over');
+    });
+
+    $dropZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        $dropZone.classList.remove('drag-over');
+        if (e.dataTransfer.files.length > 0) {
+            uploadRecordings(e.dataTransfer.files);
+        }
+    });
+
+    $fileInput.addEventListener('change', function() {
+        if ($fileInput.files.length > 0) {
+            uploadRecordings($fileInput.files);
+            $fileInput.value = '';
+        }
+    });
+}
+
+function uploadRecordings(files) {
+    $dropZone.classList.add('uploading');
+    $uploadStatus.style.display = 'block';
+    $uploadStatus.innerHTML = '<p class="upload-progress">Uploading ' + files.length + ' file(s)...</p>';
+
+    var fd = new FormData();
+    for (var i = 0; i < files.length; i++) {
+        fd.append('recordings[]', files[i]);
+    }
+
+    $.ajax({
+        url: '/administration/npcs/manage/' + npcId,
+        type: 'POST',
+        data: fd,
+        processData: false,
+        contentType: false,
+        success: function(result) {
+            var html = '';
+            if (result.successes && result.successes.length > 0) {
+                html += '<div class="upload-result-success">';
+                result.successes.forEach(function(s) {
+                    html += '<p>' + s.desc + ' — <strong>' + s.file + '</strong></p>';
+                });
+                html += '</div>';
+            }
+            if (result.errors && result.errors.length > 0) {
+                html += '<div class="upload-result-error">';
+                result.errors.forEach(function(e) {
+                    html += '<p>' + e.desc + ' — <strong>' + e.file + '</strong></p>';
+                });
+                html += '</div>';
+            }
+            $uploadStatus.innerHTML = html;
+            $dropZone.classList.remove('uploading');
+        },
+        error: function(result, message, error) {
+            $uploadStatus.innerHTML = '<div class="upload-result-error"><p>Upload failed: ' + error + '</p></div>';
+            $dropZone.classList.remove('uploading');
+        }
+    });
+}
+
+// ==========================================================================
+// ARCHIVING QUEST RECORDINGS SECTION
+// ==========================================================================
+
 var $archivingRecordings;
 
 $(".archive-all-recordings-btn").on('click', function(event) {
