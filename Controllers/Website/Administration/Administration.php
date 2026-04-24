@@ -45,9 +45,6 @@ class Administration extends WebpageController
             case 'mass-upload':
                 $nextController = new Upload();
                 break;
-            case 'new-release':
-                $nextController = new NewRelease();
-                break;
 	        default:
 	        	$nextController = new Accounts();
         }
