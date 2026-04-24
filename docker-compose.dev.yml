@@ -6,8 +6,8 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "80:80"
-      - "443:443"
+      - "8000:80"
+      - "8443:443"
     environment:
       - WEBSITE_DB_HOST=website
       - WEBSITE_DB_NAME=website
@@ -44,8 +44,8 @@ services:
       MYSQL_DATABASE: website
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASSWORD}
-    ports:
-      - "3306:3306"
+    expose:
+      - "3306"
     volumes:
       - website_data:/var/lib/mysql
     env_file:
@@ -58,8 +58,8 @@ services:
       MYSQL_DATABASE: api
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASSWORD}
-    ports:
-      - "3307:3306"
+    expose:
+      - "3306"
     volumes:
       - api_data:/var/lib/mysql
     env_file:
