@@ -100,7 +100,7 @@ $("#archive-btn").on('click', function() {
     }
 
     $.ajax({
-        url: "/administration/npcs/manage/" + npcId + "/archive",
+        url: "administration/npcs/manage/" + npcId + "/archive",
         type: 'PUT',
         success: function(result, message) { /* Shouldn't happen */ },
         error: function(result, message, error) {
@@ -150,21 +150,39 @@ var $fileInput = document.getElementById('upload-file-input');
 var $uploadStatus = document.getElementById('upload-status');
 
 if ($dropZone) {
+    var dragCounter = 0;
+
     $dropZone.addEventListener('click', function() {
         $fileInput.click();
     });
 
+    $dropZone.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+            e.preventDefault();
+            $fileInput.click();
+        }
+    });
+
     $dropZone.addEventListener('dragover', function(e) {
         e.preventDefault();
+    });
+
+    $dropZone.addEventListener('dragenter', function(e) {
+        e.preventDefault();
+        dragCounter++;
         $dropZone.classList.add('drag-over');
     });
 
     $dropZone.addEventListener('dragleave', function() {
-        $dropZone.classList.remove('drag-over');
+        dragCounter--;
+        if (dragCounter === 0) {
+            $dropZone.classList.remove('drag-over');
+        }
     });
 
     $dropZone.addEventListener('drop', function(e) {
         e.preventDefault();
+        dragCounter = 0;
         $dropZone.classList.remove('drag-over');
         if (e.dataTransfer.files.length > 0) {
             uploadRecordings(e.dataTransfer.files);
@@ -190,32 +208,49 @@ function uploadRecordings(files) {
     }
 
     $.ajax({
-        url: '/administration/npcs/manage/' + npcId,
+        url: 'administration/npcs/manage/' + npcId,
         type: 'POST',
         data: fd,
         processData: false,
         contentType: false,
         success: function(result) {
-            var html = '';
+            $uploadStatus.textContent = '';
             if (result.successes && result.successes.length > 0) {
-                html += '<div class="upload-result-success">';
+                var successDiv = document.createElement('div');
+                successDiv.className = 'upload-result-success';
                 result.successes.forEach(function(s) {
-                    html += '<p>' + s.desc + ' — <strong>' + s.file + '</strong></p>';
+                    var p = document.createElement('p');
+                    p.textContent = s.desc + ' — ';
+                    var strong = document.createElement('strong');
+                    strong.textContent = s.file;
+                    p.appendChild(strong);
+                    successDiv.appendChild(p);
                 });
-                html += '</div>';
+                $uploadStatus.appendChild(successDiv);
             }
             if (result.errors && result.errors.length > 0) {
-                html += '<div class="upload-result-error">';
+                var errorDiv = document.createElement('div');
+                errorDiv.className = 'upload-result-error';
                 result.errors.forEach(function(e) {
-                    html += '<p>' + e.desc + ' — <strong>' + e.file + '</strong></p>';
+                    var p = document.createElement('p');
+                    p.textContent = e.desc + ' — ';
+                    var strong = document.createElement('strong');
+                    strong.textContent = e.file;
+                    p.appendChild(strong);
+                    errorDiv.appendChild(p);
                 });
-                html += '</div>';
+                $uploadStatus.appendChild(errorDiv);
             }
-            $uploadStatus.innerHTML = html;
             $dropZone.classList.remove('uploading');
         },
         error: function(result, message, error) {
-            $uploadStatus.innerHTML = '<div class="upload-result-error"><p>Upload failed: ' + error + '</p></div>';
+            $uploadStatus.textContent = '';
+            var errorDiv = document.createElement('div');
+            errorDiv.className = 'upload-result-error';
+            var p = document.createElement('p');
+            p.textContent = 'Upload failed: ' + error;
+            errorDiv.appendChild(p);
+            $uploadStatus.appendChild(errorDiv);
             $dropZone.classList.remove('uploading');
         }
     });

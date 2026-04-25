@@ -317,6 +317,11 @@
   background: rgba(123, 26, 155, 0.05);
 }
 
+.upload-drop-zone:focus-visible {
+  outline: 2px solid var(--npc-gradient-purple);
+  outline-offset: 2px;
+}
+
 .upload-drop-zone.uploading {
   opacity: 0.6;
   pointer-events: none;
@@ -500,7 +505,8 @@
   #change-actor-btn,
   #archive-btn,
   #va-confirm-change,
-  .back-btn-container .backbtn {
+  .back-btn-container .backbtn,
+  .upload-drop-zone {
     transition: none;
   }
 }

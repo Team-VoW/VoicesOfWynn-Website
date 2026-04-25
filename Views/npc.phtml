@@ -54,7 +54,7 @@
 <?php if (${basename(__FILE__, '.phtml') . '_admin'}) : ?>
 <!-- Upload Drop Zone -->
 <section class="upload-drop-zone-card npc-animate-on-scroll">
-    <div id="upload-drop-zone" class="upload-drop-zone">
+    <div id="upload-drop-zone" class="upload-drop-zone" role="button" tabindex="0" aria-label="Drop recording files here or click to browse">
         <p class="upload-drop-text">Drop recording files here</p>
         <p class="upload-drop-subtext">or click to browse (.ogg files)</p>
         <input type="file" id="upload-file-input" accept="audio/ogg" multiple hidden />
