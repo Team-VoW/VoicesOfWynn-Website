@@ -116,6 +116,31 @@ class Quest implements JsonSerializable
 		return $this->npcs ?? null;
 	}
 
+    /**
+     * Creates a new quest in the database
+     * @param string $name The display name of the quest
+     * @return int The ID of the newly created quest
+     * @throws \PDOException If the query fails (e.g. duplicate degenerated name)
+     */
+    public static function create(string $name): int
+    {
+        $degeneratedName = self::degenerateName($name);
+        $db = new Db('Website/DbInfo.ini');
+        return $db->executeQuery('INSERT INTO quest (name, degenerated_name) VALUES (?, ?);', array($name, $degeneratedName), true);
+    }
+
+    /**
+     * Generates a degenerated (URL-safe, ASCII) version of a name
+     * @param string $name The original name
+     * @return string The degenerated name (lowercase, no spaces or special chars)
+     */
+    public static function degenerateName(string $name): string
+    {
+        $degenerated = strtolower($name);
+        $degenerated = preg_replace('/[^a-z0-9]/', '', $degenerated);
+        return $degenerated;
+    }
+
     private function loadNpcs() : bool
     {
         $result = (new Db('Website/DbInfo.ini'))->fetchQuery('

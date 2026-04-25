@@ -1,0 +1,16 @@
+<h2 class="txt-c">Create a new quest</h2>
+<div class="txt-c display-block">
+    <form method="post" class="newaccform">
+        <div class="pw-box">
+            <label for="name" class="mb-l lb-a">Quest name</label>
+            <input class="login-form" type="text" name="name" id="name" class="mb-d"/>
+        </div>
+        <div class="pw-box" <?php if (empty(${str_replace('-', '', basename(__FILE__, '.phtml')).'_questId'})) : ?>style="display:none"<?php endif ?>>
+            <p>Quest created successfully with ID <?= ${str_replace('-', '', basename(__FILE__, '.phtml')).'_questId'}; ?>.</p>
+        </div>
+        <p class="lb-b mb-s mt-s"><input class="login-form submit" type="submit" value="Create" /></p>
+    </form>
+</div>
+<div class="error"><?= ${str_replace('-', '', basename(__FILE__, '.phtml')).'_error'}; ?></div>
+
+<button class="backbtn" onclick="history.go(-1)">< Go Back</button>
