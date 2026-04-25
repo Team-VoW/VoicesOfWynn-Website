@@ -164,17 +164,23 @@ class Npc extends WebpageController
 	private function post(array $args): int
 	{
 		if ($this->disallowAdministration) {
-			return 403;
+			header('Content-Type: application/json');
+			http_response_code(403);
+			echo json_encode(['errors' => [['code' => 403, 'msg' => 'Forbidden', 'desc' => 'You do not have permission to upload recordings', 'file' => '']], 'successes' => []]);
+			exit();
 		}
 
 		if (empty($this->npc->getId())) {
-			return 400;
+			header('Content-Type: application/json');
+			http_response_code(400);
+			echo json_encode(['errors' => [['code' => 400, 'msg' => 'Bad Request', 'desc' => 'NPC ID is missing or invalid', 'file' => '']], 'successes' => []]);
+			exit();
 		}
 
 		if (empty($_FILES['recordings'])) {
 			header('Content-Type: application/json');
 			http_response_code(400);
-			echo json_encode(['errors' => [['desc' => 'No files uploaded']], 'successes' => []]);
+			echo json_encode(['errors' => [['code' => 400, 'msg' => 'Bad Request', 'desc' => 'No files uploaded', 'file' => '']], 'successes' => []]);
 			exit();
 		}
 
