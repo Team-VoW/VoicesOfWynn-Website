@@ -3,7 +3,7 @@
     <form method="post" class="newaccform">
         <div class="pw-box">
             <label for="name" class="mb-l lb-a">Quest name</label>
-            <input class="login-form" type="text" name="name" id="name" class="mb-d"/>
+            <input class="login-form mb-d" type="text" name="name" id="name"/>
         </div>
         <div class="pw-box" <?php if (empty(${str_replace('-', '', basename(__FILE__, '.phtml')).'_questId'})) : ?>style="display:none"<?php endif ?>>
             <p>Quest created successfully with ID <?= ${str_replace('-', '', basename(__FILE__, '.phtml')).'_questId'}; ?>.</p>

@@ -90,23 +90,31 @@ class Npc implements JsonSerializable
         $degeneratedName = Quest::degenerateName($name);
         $db = new Db('Website/DbInfo.ini');
 
-        $npcId = $db->executeQuery(
-            'INSERT INTO npc (name, degenerated_name, voice_actor_id) VALUES (?, ?, ?);',
-            array($name, $degeneratedName, $voiceActorId),
-            true
-        );
-
-        foreach ($questIds as $questId) {
-            $maxOrder = $db->fetchQuery(
-                'SELECT COALESCE(MAX(sorting_order), 0) AS max_order FROM npc_quest WHERE quest_id = ?;',
-                array($questId)
+        $db->startTransaction();
+        try {
+            $npcId = (int) $db->executeQuery(
+                'INSERT INTO npc (name, degenerated_name, voice_actor_id) VALUES (?, ?, ?);',
+                array($name, $degeneratedName, $voiceActorId),
+                true
             );
-            $sortingOrder = ($maxOrder !== false ? $maxOrder['max_order'] : 0) + 1;
 
-            $db->executeQuery(
-                'INSERT INTO npc_quest (quest_id, npc_id, sorting_order) VALUES (?, ?, ?);',
-                array($questId, $npcId, $sortingOrder)
-            );
+            foreach ($questIds as $questId) {
+                $maxOrder = $db->fetchQuery(
+                    'SELECT COALESCE(MAX(sorting_order), 0) AS max_order FROM npc_quest WHERE quest_id = ?;',
+                    array($questId)
+                );
+                $sortingOrder = ($maxOrder !== false ? $maxOrder['max_order'] : 0) + 1;
+
+                $db->executeQuery(
+                    'INSERT INTO npc_quest (quest_id, npc_id, sorting_order) VALUES (?, ?, ?);',
+                    array($questId, $npcId, $sortingOrder)
+                );
+            }
+
+            $db->commitTransaction();
+        } catch (\Exception $e) {
+            $db->rollbackTransaction();
+            throw $e;
         }
 
         return $npcId;

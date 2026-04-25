@@ -126,7 +126,7 @@ class Quest implements JsonSerializable
     {
         $degeneratedName = self::degenerateName($name);
         $db = new Db('Website/DbInfo.ini');
-        return $db->executeQuery('INSERT INTO quest (name, degenerated_name) VALUES (?, ?);', array($name, $degeneratedName), true);
+        return (int) $db->executeQuery('INSERT INTO quest (name, degenerated_name) VALUES (?, ?);', array($name, $degeneratedName), true);
     }
 
     /**
@@ -138,6 +138,9 @@ class Quest implements JsonSerializable
     {
         $degenerated = strtolower($name);
         $degenerated = preg_replace('/[^a-z0-9]/', '', $degenerated);
+        if ($degenerated === '') {
+            throw new \InvalidArgumentException('Name must contain at least one alphanumeric character.');
+        }
         return $degenerated;
     }
 

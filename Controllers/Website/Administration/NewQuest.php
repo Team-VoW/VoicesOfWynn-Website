@@ -47,8 +47,11 @@ class NewQuest extends WebpageController
         try {
             $questId = Quest::create($name);
             self::$data['newquest_questId'] = $questId;
+        } catch (\InvalidArgumentException $e) {
+            self::$data['newquest_error'] = $e->getMessage();
+            return $result;
         } catch (\PDOException $e) {
-            if ($e->getCode() == 23000) {
+            if ($e->getCode() === '23000') {
                 self::$data['newquest_error'] = 'A quest with this name (or a similar degenerated name) already exists.';
             } else {
                 self::$data['newquest_error'] = 'An error occurred while creating the quest.';

@@ -55,14 +55,18 @@ class NewNpc extends WebpageController
         $voiceActorId = !empty($_POST['voice_actor_id']) ? (int)$_POST['voice_actor_id'] : null;
         $questIds = $_POST['quest_ids'] ?? [];
 
-        if (empty($questIds)) {
+        if (!is_array($questIds) || empty($questIds)) {
             self::$data['newnpc_error'] = 'At least one quest must be selected.';
             return $result;
         }
 
+        $questIds = array_map('intval', $questIds);
+
         try {
             $npcId = Npc::create($name, $voiceActorId, $questIds);
             self::$data['newnpc_npcId'] = $npcId;
+        } catch (\InvalidArgumentException $e) {
+            self::$data['newnpc_error'] = $e->getMessage();
         } catch (\PDOException $e) {
             self::$data['newnpc_error'] = 'An error occurred while creating the NPC.';
         }
