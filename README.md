@@ -24,7 +24,7 @@ this will create all the containers (databases and everything) for you.
 
 Once the containers are running, you can access the following services:
 
-- **Website:** [http://localhost](http://localhost) or [http://127.0.0.1](http://127.0.0.1)  
+- **Website:** [http://localhost:8000](http://localhost:8000) or [http://127.0.0.1:8000](http://127.0.0.1:8000)  
   The main Voices of Wynn website will be available here.
 
 - **phpMyAdmin:** [http://localhost:8080](http://localhost:8080)  
