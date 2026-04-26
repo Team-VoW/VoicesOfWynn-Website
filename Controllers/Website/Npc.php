@@ -157,6 +157,45 @@ class Npc extends WebpageController
 	}
 	
 	/**
+	 * Processing method for POST requests to this controller (recording files are being uploaded via AJAX)
+	 * @param array $args
+	 * @return int
+	 */
+	private function post(array $args): int
+	{
+		if ($this->disallowAdministration) {
+			header('Content-Type: application/json');
+			http_response_code(403);
+			echo json_encode(['errors' => [['code' => 403, 'msg' => 'Forbidden', 'desc' => 'You do not have permission to upload recordings', 'file' => '']], 'successes' => []]);
+			exit();
+		}
+
+		if (empty($this->npc->getId())) {
+			header('Content-Type: application/json');
+			http_response_code(400);
+			echo json_encode(['errors' => [['code' => 400, 'msg' => 'Bad Request', 'desc' => 'NPC ID is missing or invalid', 'file' => '']], 'successes' => []]);
+			exit();
+		}
+
+		if (empty($_FILES['recordings'])) {
+			header('Content-Type: application/json');
+			http_response_code(400);
+			echo json_encode(['errors' => [['code' => 400, 'msg' => 'Bad Request', 'desc' => 'No files uploaded', 'file' => '']], 'successes' => []]);
+			exit();
+		}
+
+		$uploader = new RecordingUploader();
+		$uploader->upload($_FILES['recordings'], false, null, $this->npc->getId());
+
+		header('Content-Type: application/json');
+		echo json_encode([
+			'errors' => $uploader->getErrors(),
+			'successes' => $uploader->getSuccesses()
+		]);
+		exit();
+	}
+
+	/**
 	 * Processing method for DELETE requests to this controller (a recording is supposed to be deleted)
 	 * @param array $args Recording ID as the first element
 	 * @return int|bool

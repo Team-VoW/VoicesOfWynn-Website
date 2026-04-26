@@ -100,7 +100,7 @@ $("#archive-btn").on('click', function() {
     }
 
     $.ajax({
-        url: "/administration/npcs/manage/" + npcId + "/archive",
+        url: "administration/npcs/manage/" + npcId + "/archive",
         type: 'PUT',
         success: function(result, message) { /* Shouldn't happen */ },
         error: function(result, message, error) {
@@ -140,6 +140,125 @@ $(".delete-recording-btn").on('click', function(event){
         }
     });
 });
+
+// ==========================================================================
+// RECORDING UPLOAD DROP ZONE
+// ==========================================================================
+
+var $dropZone = document.getElementById('upload-drop-zone');
+var $fileInput = document.getElementById('upload-file-input');
+var $uploadStatus = document.getElementById('upload-status');
+
+if ($dropZone) {
+    var dragCounter = 0;
+
+    $dropZone.addEventListener('click', function() {
+        $fileInput.click();
+    });
+
+    $dropZone.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+            e.preventDefault();
+            $fileInput.click();
+        }
+    });
+
+    $dropZone.addEventListener('dragover', function(e) {
+        e.preventDefault();
+    });
+
+    $dropZone.addEventListener('dragenter', function(e) {
+        e.preventDefault();
+        dragCounter++;
+        $dropZone.classList.add('drag-over');
+    });
+
+    $dropZone.addEventListener('dragleave', function() {
+        dragCounter--;
+        if (dragCounter === 0) {
+            $dropZone.classList.remove('drag-over');
+        }
+    });
+
+    $dropZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        dragCounter = 0;
+        $dropZone.classList.remove('drag-over');
+        if (e.dataTransfer.files.length > 0) {
+            uploadRecordings(e.dataTransfer.files);
+        }
+    });
+
+    $fileInput.addEventListener('change', function() {
+        if ($fileInput.files.length > 0) {
+            uploadRecordings($fileInput.files);
+            $fileInput.value = '';
+        }
+    });
+}
+
+function uploadRecordings(files) {
+    $dropZone.classList.add('uploading');
+    $uploadStatus.style.display = 'block';
+    $uploadStatus.innerHTML = '<p class="upload-progress">Uploading ' + files.length + ' file(s)...</p>';
+
+    var fd = new FormData();
+    for (var i = 0; i < files.length; i++) {
+        fd.append('recordings[]', files[i]);
+    }
+
+    $.ajax({
+        url: 'administration/npcs/manage/' + npcId,
+        type: 'POST',
+        data: fd,
+        processData: false,
+        contentType: false,
+        success: function(result) {
+            $uploadStatus.textContent = '';
+            if (result.successes && result.successes.length > 0) {
+                var successDiv = document.createElement('div');
+                successDiv.className = 'upload-result-success';
+                result.successes.forEach(function(s) {
+                    var p = document.createElement('p');
+                    p.textContent = s.desc + ' — ';
+                    var strong = document.createElement('strong');
+                    strong.textContent = s.file;
+                    p.appendChild(strong);
+                    successDiv.appendChild(p);
+                });
+                $uploadStatus.appendChild(successDiv);
+            }
+            if (result.errors && result.errors.length > 0) {
+                var errorDiv = document.createElement('div');
+                errorDiv.className = 'upload-result-error';
+                result.errors.forEach(function(e) {
+                    var p = document.createElement('p');
+                    p.textContent = e.desc + ' — ';
+                    var strong = document.createElement('strong');
+                    strong.textContent = e.file;
+                    p.appendChild(strong);
+                    errorDiv.appendChild(p);
+                });
+                $uploadStatus.appendChild(errorDiv);
+            }
+            $dropZone.classList.remove('uploading');
+        },
+        error: function(result, message, error) {
+            $uploadStatus.textContent = '';
+            var errorDiv = document.createElement('div');
+            errorDiv.className = 'upload-result-error';
+            var p = document.createElement('p');
+            p.textContent = 'Upload failed: ' + error;
+            errorDiv.appendChild(p);
+            $uploadStatus.appendChild(errorDiv);
+            $dropZone.classList.remove('uploading');
+        }
+    });
+}
+
+// ==========================================================================
+// ARCHIVING QUEST RECORDINGS SECTION
+// ==========================================================================
 
 var $archivingRecordings;
 
