@@ -82,7 +82,7 @@ class Scripts extends WebpageController
                 break;
 
             case 'set-editor':
-                $questId = (int)($_POST['quest_id'] ?? 0);
+                $questId = $_POST['quest_id'] ?? 0;
                 $npcId = (int)($_POST['npc_id'] ?? 0);
                 $editorId = !empty($_POST['editor_id']) ? (int)$_POST['editor_id'] : null;
                 if ($cm->getQuestDegeneratedName($questId) === null) {
