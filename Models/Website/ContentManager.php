@@ -276,22 +276,26 @@ class ContentManager
         foreach ($result as $row) {
             $questId = $row['quest_id'];
             if (!isset($quests[$questId])) {
-                $quests[$questId] = [
-                    'id' => $questId,
-                    'name' => $row['qname'],
+                $questData = [
+                    'id'               => $questId,
+                    'name'             => $row['qname'],
                     'degenerated_name' => $row['degenerated_name'],
-                    'writer_id' => $row['writer_id'],
-                    'writer_name' => $row['writer_name'],
-                    'npcs' => [],
                 ];
+                if ($row['writer_id'] !== null) {
+                    $writer = new User();
+                    $writer->setData(['id' => $row['writer_id'], 'name' => $row['writer_name']]);
+                    $questData['writer'] = $writer;
+                }
+                $quests[$questId] = new Quest($questData);
             }
             if ($row['npc_id'] !== null) {
-                $quests[$questId]['npcs'][] = [
-                    'id' => $row['npc_id'],
-                    'name' => $row['nname'],
-                    'editor_id' => $row['editor_id'],
-                    'editor_name' => $row['editor_name'],
-                ];
+                $npc = new Npc(['npc_id' => $row['npc_id'], 'nname' => $row['nname']]);
+                if ($row['editor_id'] !== null) {
+                    $editor = new User();
+                    $editor->setData(['id' => $row['editor_id'], 'name' => $row['editor_name']]);
+                    $npc->setSoundEditor($quests[$questId], $editor);
+                }
+                $quests[$questId]->addNpc($npc);
             }
         }
         return array_values($quests);

@@ -29,14 +29,8 @@ class Scripts extends WebpageController
         $total   = $cm->countQuests();
         $quests  = $cm->getQuestsWithCredits($page, $perPage);
 
-        $storage = Storage::get();
-        foreach ($quests as &$quest) {
-            $quest['has_script'] = $storage->exists('scripts/' . $quest['degenerated_name'] . '.txt');
-            $quest['script_url'] = $storage->getUrl('scripts/' . $quest['degenerated_name'] . '.txt');
-        }
-        unset($quest);
-
         self::$data['scripts_quests']       = $quests;
+        self::$data['scripts_storage']      = Storage::get();
         self::$data['scripts_users']        = $cm->getUsersForDropdown();
         self::$data['scripts_current_page'] = $page;
         self::$data['scripts_total_pages']  = (int)ceil($total / $perPage);

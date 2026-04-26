@@ -1,6 +1,7 @@
 <?php
 $quests      = ${basename(__FILE__, '.phtml') . '_quests'};
 $users       = ${basename(__FILE__, '.phtml') . '_users'};
+$storage     = ${basename(__FILE__, '.phtml') . '_storage'};
 $message     = ${basename(__FILE__, '.phtml') . '_message'};
 $error       = ${basename(__FILE__, '.phtml') . '_error'};
 $currentPage = ${basename(__FILE__, '.phtml') . '_current_page'};
@@ -23,34 +24,35 @@ $totalPages  = ${basename(__FILE__, '.phtml') . '_total_pages'};
 
 <div id="quest-list">
 <?php foreach ($quests as $quest): ?>
-    <details class="box" data-quest-name="<?= strtolower(htmlspecialchars($quest['name'])) ?>">
+    <?php $scriptUrl = $quest->getScriptUrl($storage) ?>
+    <details class="box" data-quest-name="<?= strtolower(htmlspecialchars($quest->getName())) ?>">
         <summary style="font-weight:bold; cursor:pointer;">
-            <?= htmlspecialchars($quest['name']) ?>
-            <?php if ($quest['writer_name']): ?>
-                <span class="va-name"> — script by <?= htmlspecialchars($quest['writer_name']) ?></span>
+            <?= htmlspecialchars($quest->getName()) ?>
+            <?php if ($quest->getScriptAuthor()): ?>
+                <span class="va-name"> — script by <?= htmlspecialchars($quest->getScriptAuthor()->getName()) ?></span>
             <?php endif ?>
-            <?php if ($quest['has_script']): ?>
+            <?php if ($scriptUrl): ?>
                 <span style="color:green;"> ✓ script file</span>
             <?php endif ?>
         </summary>
 
         <form method="post" action="/administration/scripts" enctype="multipart/form-data">
             <input type="hidden" name="action" value="save-quest">
-            <input type="hidden" name="quest_id" value="<?= (int)$quest['id'] ?>">
-            <input type="hidden" name="degenerated_name" value="<?= htmlspecialchars($quest['degenerated_name']) ?>">
+            <input type="hidden" name="quest_id" value="<?= (int)$quest->getId() ?>">
+            <input type="hidden" name="degenerated_name" value="<?= htmlspecialchars($quest->getDegeneratedName()) ?>">
 
             <table style="margin:8px 0; border-spacing:6px 4px;">
                 <tr>
                     <td><strong>Writer:</strong></td>
                     <td>
-                        <?php if ($quest['writer_name']): ?>
-                            <a href="/cast/<?= (int)$quest['writer_id'] ?>"><?= htmlspecialchars($quest['writer_name']) ?></a>
+                        <?php if ($quest->getScriptAuthor()): ?>
+                            <a href="/cast/<?= (int)$quest->getScriptAuthor()->getId() ?>"><?= htmlspecialchars($quest->getScriptAuthor()->getName()) ?></a>
                         <?php else: ?>
                             <em>None</em>
                         <?php endif ?>
                     </td>
                     <td>
-                        <select name="writer_id" class="user-select" data-selected="<?= (int)$quest['writer_id'] ?>">
+                        <select name="writer_id" class="user-select" data-selected="<?= (int)$quest->getScriptAuthor()?->getId() ?>">
                             <option value="">— None —</option>
                         </select>
                     </td>
@@ -58,8 +60,8 @@ $totalPages  = ${basename(__FILE__, '.phtml') . '_total_pages'};
                 <tr>
                     <td><strong>Script file:</strong></td>
                     <td>
-                        <?php if ($quest['has_script']): ?>
-                            <a href="<?= htmlspecialchars($quest['script_url']) ?>" target="_blank">View current</a>
+                        <?php if ($scriptUrl): ?>
+                            <a href="<?= htmlspecialchars($scriptUrl) ?>" target="_blank">View current</a>
                         <?php else: ?>
                             <em>Not uploaded</em>
                         <?php endif ?>
@@ -70,7 +72,7 @@ $totalPages  = ${basename(__FILE__, '.phtml') . '_total_pages'};
                 </tr>
             </table>
 
-            <?php if (!empty($quest['npcs'])): ?>
+            <?php if ($quest->getNpcs()): ?>
                 <strong>Sound editors by NPC:</strong>
                 <table style="border-spacing:6px 3px;">
                     <tr>
@@ -78,19 +80,19 @@ $totalPages  = ${basename(__FILE__, '.phtml') . '_total_pages'};
                         <th style="text-align:left;">Current editor</th>
                         <th></th>
                     </tr>
-                    <?php foreach ($quest['npcs'] as $npc): ?>
+                    <?php foreach ($quest->getNpcs() as $npc): ?>
                         <tr>
-                            <td class="npc-name"><?= htmlspecialchars($npc['name']) ?></td>
+                            <td class="npc-name"><?= htmlspecialchars($npc->getName()) ?></td>
                             <td>
-                                <?php if ($npc['editor_name']): ?>
-                                    <a href="/cast/<?= (int)$npc['editor_id'] ?>"><?= htmlspecialchars($npc['editor_name']) ?></a>
+                                <?php if ($npc->getSoundEditor($quest)): ?>
+                                    <a href="/cast/<?= (int)$npc->getSoundEditor($quest)->getId() ?>"><?= htmlspecialchars($npc->getSoundEditor($quest)->getName()) ?></a>
                                 <?php else: ?>
                                     <em>None</em>
                                 <?php endif ?>
                             </td>
                             <td>
-                                <select name="npc_editors[<?= (int)$npc['id'] ?>]" class="user-select"
-                                    data-selected="<?= (int)$npc['editor_id'] ?>">
+                                <select name="npc_editors[<?= (int)$npc->getId() ?>]" class="user-select"
+                                    data-selected="<?= (int)$npc->getSoundEditor($quest)?->getId() ?>">
                                     <option value="">— None —</option>
                                 </select>
                             </td>
