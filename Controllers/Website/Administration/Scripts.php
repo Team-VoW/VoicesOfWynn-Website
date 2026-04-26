@@ -30,7 +30,6 @@ class Scripts extends WebpageController
         $quests  = $cm->getQuestsWithCredits($page, $perPage);
 
         self::$data['scripts_quests']       = $quests;
-        self::$data['scripts_storage']      = Storage::get();
         self::$data['scripts_users']        = $cm->getUsersForDropdown();
         self::$data['scripts_current_page'] = $page;
         self::$data['scripts_total_pages']  = (int)ceil($total / $perPage);

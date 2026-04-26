@@ -1,7 +1,6 @@
 <?php
 $quests      = ${basename(__FILE__, '.phtml') . '_quests'};
 $users       = ${basename(__FILE__, '.phtml') . '_users'};
-$storage     = ${basename(__FILE__, '.phtml') . '_storage'};
 $message     = ${basename(__FILE__, '.phtml') . '_message'};
 $error       = ${basename(__FILE__, '.phtml') . '_error'};
 $currentPage = ${basename(__FILE__, '.phtml') . '_current_page'};
@@ -24,7 +23,7 @@ $totalPages  = ${basename(__FILE__, '.phtml') . '_total_pages'};
 
 <div id="quest-list">
 <?php foreach ($quests as $quest): ?>
-    <?php $scriptUrl = $quest->getScriptUrl($storage) ?>
+    <?php $scriptUrl = $quest->getScriptUrl() ?>
     <details class="box" data-quest-name="<?= strtolower(htmlspecialchars($quest->getName())) ?>">
         <summary style="font-weight:bold; cursor:pointer;">
             <?= htmlspecialchars($quest->getName()) ?>

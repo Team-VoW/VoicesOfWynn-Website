@@ -181,9 +181,10 @@ class Quest implements JsonSerializable
     /**
      * Returns the URL of this quest's script file, or NULL if no script has been uploaded yet
      */
-    public function getScriptUrl(Storage $storage): ?string
+    public function getScriptUrl(): ?string
     {
         $key = 'scripts/' . $this->degeneratedName . '.txt';
+        $storage = Storage::get();
         return $storage->exists($key) ? $storage->getUrl($key) : null;
     }
 
