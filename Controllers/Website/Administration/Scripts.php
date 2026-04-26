@@ -54,8 +54,8 @@ class Scripts extends WebpageController
             case 'set-writer':
                 $questId = (int)($_POST['quest_id'] ?? 0);
                 $writerId = !empty($_POST['writer_id']) ? (int)$_POST['writer_id'] : null;
-                if ($questId <= 0) {
-                    self::$data['scripts_error'] = 'Invalid quest ID.';
+                if ($cm->getQuestDegeneratedName($questId) === null) {
+                    self::$data['scripts_error'] = 'Quest not found.';
                     break;
                 }
                 $cm->setQuestWriter($questId, $writerId);
@@ -85,8 +85,12 @@ class Scripts extends WebpageController
                 $questId = (int)($_POST['quest_id'] ?? 0);
                 $npcId = (int)($_POST['npc_id'] ?? 0);
                 $editorId = !empty($_POST['editor_id']) ? (int)$_POST['editor_id'] : null;
-                if ($questId <= 0 || $npcId <= 0) {
-                    self::$data['scripts_error'] = 'Invalid quest or NPC ID.';
+                if ($cm->getQuestDegeneratedName($questId) === null) {
+                    self::$data['scripts_error'] = 'Quest not found.';
+                    break;
+                }
+                if ($npcId <= 0) {
+                    self::$data['scripts_error'] = 'Invalid NPC ID.';
                     break;
                 }
                 $cm->setNpcEditor($questId, $npcId, $editorId);
