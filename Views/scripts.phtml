@@ -10,10 +10,10 @@ $totalPages  = ${basename(__FILE__, '.phtml') . '_total_pages'};
 <h2 class="txt-c">Script Credits &amp; Sound Editors</h2>
 
 <?php if ($message): ?>
-    <p class="success"><?= htmlspecialchars($message) ?></p>
+    <p class="success"><?= $message ?></p>
 <?php endif ?>
 <?php if ($error): ?>
-    <p class="error"><?= htmlspecialchars($error) ?></p>
+    <p class="error"><?= $error ?></p>
 <?php endif ?>
 
 <p class="txt-c">
