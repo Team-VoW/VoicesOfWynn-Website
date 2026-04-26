@@ -77,6 +77,49 @@ class Npc implements JsonSerializable
 	    return (object) get_object_vars($this);
 	}
 
+    /**
+     * Creates a new NPC in the database and links it to the specified quests
+     * @param string $name The display name of the NPC
+     * @param int|null $voiceActorId The ID of the voice actor, or null if unassigned
+     * @param array $questIds Array of quest IDs to assign the NPC to
+     * @return int The ID of the newly created NPC
+     * @throws \PDOException If the query fails
+     */
+    public static function create(string $name, ?int $voiceActorId, array $questIds): int
+    {
+        $degeneratedName = Quest::degenerateName($name);
+        $db = new Db('Website/DbInfo.ini');
+
+        $db->startTransaction();
+        try {
+            $npcId = (int) $db->executeQuery(
+                'INSERT INTO npc (name, degenerated_name, voice_actor_id) VALUES (?, ?, ?);',
+                array($name, $degeneratedName, $voiceActorId),
+                true
+            );
+
+            foreach ($questIds as $questId) {
+                $maxOrder = $db->fetchQuery(
+                    'SELECT COALESCE(MAX(sorting_order), 0) AS max_order FROM npc_quest WHERE quest_id = ?;',
+                    array($questId)
+                );
+                $sortingOrder = ($maxOrder !== false ? $maxOrder['max_order'] : 0) + 1;
+
+                $db->executeQuery(
+                    'INSERT INTO npc_quest (quest_id, npc_id, sorting_order) VALUES (?, ?, ?);',
+                    array($questId, $npcId, $sortingOrder)
+                );
+            }
+
+            $db->commitTransaction();
+        } catch (\Exception $e) {
+            $db->rollbackTransaction();
+            throw $e;
+        }
+
+        return $npcId;
+    }
+
 	/**
 	 * VoiceActor setter
 	 * @param User $voiceActor

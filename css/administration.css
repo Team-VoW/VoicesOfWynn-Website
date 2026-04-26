@@ -139,3 +139,56 @@ td th {
 .rearrange-up-btn:hover, .rearrange-down-btn:hover {
     transform: none;
 }
+
+.admin-create-form {
+    display: inline-block;
+    text-align: left;
+    min-width: 400px;
+    max-width: 500px;
+}
+
+.admin-create-form label {
+    display: block;
+    margin-bottom: 0.4rem;
+}
+
+.admin-create-form .pw-box {
+    margin-left: 0;
+    margin-bottom: 1.2rem;
+}
+
+.admin-select {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid #999;
+    border-radius: 4px;
+    background: white;
+}
+
+.admin-checkbox-list {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 0.5rem;
+}
+
+.admin-checkbox-item {
+    display: flex !important;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.3rem;
+    margin-bottom: 0 !important;
+    cursor: pointer;
+}
+
+.admin-checkbox-item:hover {
+    background: #f0f0f0;
+}
+
+.admin-checkbox-item input[type="checkbox"] {
+    width: 1.1rem;
+    height: 1.1rem;
+    flex-shrink: 0;
+}
