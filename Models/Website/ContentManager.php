@@ -4,6 +4,13 @@ namespace VoicesOfWynn\Models\Website;
 
 use VoicesOfWynn\Models\Db;
 
+/**
+ * Provides cross-cutting read operations that span multiple domain models
+ * (e.g. Quest + NPC + User in a single query).
+ *
+ * Keep this class thin. Do NOT add methods that operate on a single domain
+ * object — those belong on the relevant model (Quest, Npc, User, etc.).
+ */
 class ContentManager
 {
 	/**
