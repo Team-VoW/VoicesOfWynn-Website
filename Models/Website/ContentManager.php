@@ -4,6 +4,13 @@ namespace VoicesOfWynn\Models\Website;
 
 use VoicesOfWynn\Models\Db;
 
+/**
+ * Provides cross-cutting read operations that span multiple domain models
+ * (e.g. Quest + NPC + User in a single query).
+ *
+ * Keep this class thin. Do NOT add methods that operate on a single domain
+ * object — those belong on the relevant model (Quest, Npc, User, etc.).
+ */
 class ContentManager
 {
 	/**
@@ -63,13 +70,14 @@ class ContentManager
 
 	public function getNpc($id)
 	{
+		$db = new Db('Website/DbInfo.ini');
 		$query = '
 		SELECT npc.npc_id, npc.name, user.user_id, user.display_name, user.picture, npc.archived, npc.upvotes, npc.downvotes,
 		(SELECT COUNT(*) FROM comment WHERE comment.npc_id = npc.npc_id) AS comments
 		FROM npc
 		LEFT JOIN user ON npc.voice_actor_id = user.user_id
 		WHERE npc_id = ?;';
-		$result = (new Db('Website/DbInfo.ini'))->fetchQuery($query, array($id));
+		$result = $db->fetchQuery($query, array($id));
 
 		if ($result === false) {
 			return false;
@@ -80,6 +88,20 @@ class ContentManager
 			$voiceActor->setData($result);
 			$npc->setVoiceActor($voiceActor);
 		}
+
+		$seResult = $db->fetchQuery('
+		SELECT npc_quest.quest_id, user.user_id AS se_id, user.display_name AS se_name, user.picture AS se_picture
+		FROM npc_quest
+		JOIN user ON user.user_id = npc_quest.editor
+		WHERE npc_quest.npc_id = ?;', array($id), true);
+		if ($seResult !== false) {
+			foreach ($seResult as $seRow) {
+				$se = new User();
+				$se->setData(['id' => $seRow['se_id'], 'name' => $seRow['se_name'], 'avatar' => $seRow['se_picture']]);
+				$npc->setSoundEditor(new Quest(['quest_id' => $seRow['quest_id']]), $se);
+			}
+		}
+
 		return $npc;
 	}
 
@@ -197,6 +219,86 @@ class ContentManager
         }
 
         return array_map(function($record) { return new Quest($record); }, $result);
+    }
+
+    public function getUsersForDropdown(): array
+    {
+        $result = (new Db('Website/DbInfo.ini'))->fetchQuery(
+            'SELECT user_id, display_name FROM user ORDER BY display_name;',
+            [], true
+        );
+        return $result === false ? [] : $result;
+    }
+
+    public function countQuests(): int
+    {
+        $result = (new Db('Website/DbInfo.ini'))->fetchQuery(
+            'SELECT COUNT(*) AS cnt FROM quest;', []
+        );
+        return (int)($result['cnt'] ?? 0);
+    }
+
+    public function getQuestsWithCredits(int $page = 1, int $perPage = 25): array
+    {
+        $offset = ($page - 1) * $perPage;
+
+        $idRows = (new Db('Website/DbInfo.ini'))->fetchQuery(
+            'SELECT quest_id FROM quest ORDER BY quest_id LIMIT ? OFFSET ?;',
+            [$perPage, $offset], true
+        );
+        if (empty($idRows) || $idRows === false) {
+            return [];
+        }
+
+        $ids = array_column($idRows, 'quest_id');
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+
+        $result = (new Db('Website/DbInfo.ini'))->fetchQuery("
+            SELECT
+                quest.quest_id, quest.name AS \"qname\", quest.degenerated_name,
+                writer.user_id AS \"writer_id\", writer.display_name AS \"writer_name\",
+                npc.npc_id, npc.name AS \"nname\",
+                editor.user_id AS \"editor_id\", editor.display_name AS \"editor_name\"
+            FROM quest
+            LEFT JOIN user writer ON writer.user_id = quest.writer
+            LEFT JOIN npc_quest ON npc_quest.quest_id = quest.quest_id
+            LEFT JOIN npc ON npc.npc_id = npc_quest.npc_id
+            LEFT JOIN user editor ON editor.user_id = npc_quest.editor
+            WHERE quest.quest_id IN ($placeholders)
+            ORDER BY quest.quest_id, npc_quest.sorting_order;
+        ", $ids, true);
+
+        if ($result === false) {
+            return [];
+        }
+
+        $quests = [];
+        foreach ($result as $row) {
+            $questId = $row['quest_id'];
+            if (!isset($quests[$questId])) {
+                $questData = [
+                    'id'               => $questId,
+                    'name'             => $row['qname'],
+                    'degenerated_name' => $row['degenerated_name'],
+                ];
+                if ($row['writer_id'] !== null) {
+                    $writer = new User();
+                    $writer->setData(['id' => $row['writer_id'], 'name' => $row['writer_name']]);
+                    $questData['writer'] = $writer;
+                }
+                $quests[$questId] = new Quest($questData);
+            }
+            if ($row['npc_id'] !== null) {
+                $npc = new Npc(['npc_id' => $row['npc_id'], 'nname' => $row['nname']]);
+                if ($row['editor_id'] !== null) {
+                    $editor = new User();
+                    $editor->setData(['id' => $row['editor_id'], 'name' => $row['editor_name']]);
+                    $npc->setSoundEditor($quests[$questId], $editor);
+                }
+                $quests[$questId]->addNpc($npc);
+            }
+        }
+        return array_values($quests);
     }
 
     public function getEditorsNpcsByQuests(int $editorId) : array

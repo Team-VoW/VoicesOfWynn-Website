@@ -4,13 +4,14 @@ namespace VoicesOfWynn\Models\Website;
 
 use \JsonSerializable;
 use VoicesOfWynn\Models\Db;
+use VoicesOfWynn\Models\Storage\Storage;
 
 class Quest implements JsonSerializable
 {
 	private int $id;
 	private ?string $name = null;
     private ?string $degeneratedName = null;
-    private User $scriptAuthor;
+    private ?User $scriptAuthor = null;
 
     private array $npcs;
 
@@ -57,6 +58,49 @@ class Quest implements JsonSerializable
 	{
 	    return (object) get_object_vars($this);
 	}
+
+    /**
+     * Loads basic quest data by ID from the database.
+     * @return static|null The Quest object, or NULL if no quest with the given ID exists
+     */
+    public static function findById(int $id): ?static
+    {
+        $result = (new Db('Website/DbInfo.ini'))->fetchQuery(
+            'SELECT quest_id, name, degenerated_name FROM quest WHERE quest_id = ?;',
+            [$id]
+        );
+        if ($result === false) {
+            return null;
+        }
+        return new static($result);
+    }
+
+    /**
+     * Updates the script writer for this quest in the database
+     * @param int|null $writerId ID of the user to set as writer, or NULL to clear
+     * @return bool Whether the database query was successful
+     */
+    public function setWriter(?int $writerId): bool
+    {
+        return (new Db('Website/DbInfo.ini'))->executeQuery(
+            'UPDATE quest SET writer = ? WHERE quest_id = ?;',
+            [$writerId, $this->id]
+        );
+    }
+
+    /**
+     * Updates the sound editor for a specific NPC in this quest in the database
+     * @param int $npcId ID of the NPC whose editor to update
+     * @param int|null $editorId ID of the user to set as editor, or NULL to clear
+     * @return bool Whether the database query was successful
+     */
+    public function setNpcEditor(int $npcId, ?int $editorId): bool
+    {
+        return (new Db('Website/DbInfo.ini'))->executeQuery(
+            'UPDATE npc_quest SET editor = ? WHERE quest_id = ? AND npc_id = ?;',
+            [$editorId, $this->id, $npcId]
+        );
+    }
 
     /**
      * Method loading quest ID and name from the database, filtering by the degenerated name that is already set
@@ -132,6 +176,16 @@ class Quest implements JsonSerializable
     public function getScriptAuthor() : ?User
     {
         return isset($this->scriptAuthor) ? $this->scriptAuthor : null;
+    }
+
+    /**
+     * Returns the URL of this quest's script file, or NULL if no script has been uploaded yet
+     */
+    public function getScriptUrl(): ?string
+    {
+        $key = 'scripts/' . $this->degeneratedName . '.txt';
+        $storage = Storage::get();
+        return $storage->exists($key) ? $storage->getUrl($key) : null;
     }
 
     /**

@@ -3,6 +3,7 @@ version: "3.8"
 services:
   web:
     image: ${DOCKER_IMAGE:-kmaxi/vow-website:latest}
+    restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
@@ -41,13 +42,14 @@ services:
 
   website:
     image: mariadb:10.5.24
+    restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MYSQL_DATABASE: website
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASSWORD}
-    ports:
-      - "3306:3306"
+    expose:
+      - "3306"
     volumes:
       - website_data:/var/lib/mysql
     env_file:
@@ -57,13 +59,14 @@ services:
 
   api:
     image: mariadb:10.5.24
+    restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MYSQL_DATABASE: api
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASSWORD}
-    ports:
-      - "3307:3306"
+    expose:
+      - "3306"
     volumes:
       - api_data:/var/lib/mysql
     env_file:
@@ -73,6 +76,7 @@ services:
 
   adminer:
     image: adminer
+    restart: unless-stopped
     # Remove the public port binding as we'll access it through the web service
     # ports:
     #   - "8080:8080"

@@ -29,21 +29,91 @@
             $cardShowFeaturedRecording    = true;
             $cardShowQuestNames           = false;
             $cardShowVoiceActor           = true;
+            $cardShowSoundEditor          = true;
+            $cardQuestForSoundEditor      = $quest;
             ?>
             <?php include 'Views/partials/npc-card.phtml'; ?>
         <?php endforeach ?>
     </div>
 
-    <h2>Processing</h2>
-    <?php if (!is_null($quest->getScriptAuthor())) : ?>
-        <div>Script by <a href="/cast/<?= $quest->getScriptAuthor()->getId() ?>"><?= $quest->getScriptAuthor()->getName() ?></a></div><!-- TODO @kmaxi integrate this into the frontend -->
-    <?php endif ?>
-    <div>
-        Sound editing by<br><!-- TODO @kmaxi integrate this into frontend -->
-        <?php foreach ($quest->getNpcs() as $npc) : ?>
-            <?php if (is_null($npc->getSoundEditor($quest))) { continue; } ?>
-            <a href="/cast/<?= $npc->getSoundEditor($quest)->getId() ?>"><?= $npc->getSoundEditor($quest)->getName() ?></a> (<a href="/npc/<?= $npc->getId() ?>"><?= $npc->getName() ?></a>)<br>
-        <?php endforeach ?>
+    <?php
+    $hasScriptAuthor = !is_null($quest->getScriptAuthor());
+    $editorMap = [];
+    foreach ($quest->getNpcs() as $npc) {
+        $se = $npc->getSoundEditor($quest);
+        if (!is_null($se)) {
+            $id = $se->getId();
+            if (!isset($editorMap[$id])) {
+                $editorMap[$id] = ['editor' => $se, 'npcs' => []];
+            }
+            $editorMap[$id]['npcs'][] = $npc;
+        }
+    }
+    ?>
+    <?php $quest_script_url = ${basename(__FILE__, '.phtml').'_script_url'} ?>
+    <?php if ($hasScriptAuthor || !empty($editorMap) || !is_null($quest_script_url)): ?>
+    <div class="quest-processing">
+        <h2 class="quest-section-title txt-c">Processing</h2>
+
+        <?php if ($hasScriptAuthor): ?>
+        <?php $writer = $quest->getScriptAuthor(); ?>
+        <div class="quest-processing-writer">
+            <a href="/cast/<?= $writer->getId() ?>" class="quest-processing-avatar-link">
+                <img class="quest-processing-avatar"
+                     src="<?= \VoicesOfWynn\storageUrl('avatars/' . $writer->getAvatar()) ?>"
+                     onerror="this.onerror=null; this.src='<?= \VoicesOfWynn\storageUrl('avatars/default.png') ?>'"
+                     alt="Profile picture" loading="lazy" />
+            </a>
+            <div class="quest-processing-writer-info">
+                <span class="quest-processing-role">Script by</span>
+                <a href="/cast/<?= $writer->getId() ?>" class="quest-processing-name">
+                    <?= htmlspecialchars($writer->getName()) ?>
+                </a>
+            </div>
+            <?php if (!is_null($quest_script_url)): ?>
+            <a href="<?= htmlspecialchars($quest_script_url) ?>" target="_blank" rel="noopener noreferrer"
+               class="quest-view-script-btn">View script</a>
+            <?php endif ?>
+        </div>
+        <?php elseif (!is_null($quest_script_url)): ?>
+        <div class="quest-processing-writer">
+            <a href="<?= htmlspecialchars($quest_script_url) ?>" target="_blank" rel="noopener noreferrer"
+               class="quest-view-script-btn">View script</a>
+        </div>
+        <?php endif ?>
+
+        <?php if (!empty($editorMap)): ?>
+        <div class="quest-processing-editors">
+            <h3 class="quest-processing-editors-title">Sound editing</h3>
+            <div class="quest-processing-editors-list">
+                <?php foreach ($editorMap as $entry):
+                      $se = $entry['editor'];
+                      $editorNpcs = $entry['npcs']; ?>
+                <div class="quest-processing-editor-card">
+                    <a href="/cast/<?= $se->getId() ?>" class="quest-processing-avatar-link">
+                        <img class="quest-processing-avatar"
+                             src="<?= \VoicesOfWynn\storageUrl('avatars/' . $se->getAvatar()) ?>"
+                             onerror="this.onerror=null; this.src='<?= \VoicesOfWynn\storageUrl('avatars/default.png') ?>'"
+                             alt="Profile picture" loading="lazy" />
+                    </a>
+                    <div class="quest-processing-editor-info">
+                        <a href="/cast/<?= $se->getId() ?>" class="quest-processing-name">
+                            <?= htmlspecialchars($se->getName()) ?>
+                        </a>
+                        <div class="quest-processing-editor-npcs">
+                            <?php foreach ($editorNpcs as $npc): ?>
+                            <a href="/contents/npc/<?= $npc->getId() ?>" class="quest-processing-npc-chip">
+                                <?= htmlspecialchars($npc->getName()) ?>
+                            </a>
+                            <?php endforeach ?>
+                        </div>
+                    </div>
+                </div>
+                <?php endforeach ?>
+            </div>
+        </div>
+        <?php endif ?>
     </div>
+    <?php endif ?>
 </section>
 <?php include 'Views/partials/comments-dialog.phtml'; ?>

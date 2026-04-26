@@ -1,0 +1,152 @@
+<?php
+$quests      = ${basename(__FILE__, '.phtml') . '_quests'};
+$users       = ${basename(__FILE__, '.phtml') . '_users'};
+$message     = ${basename(__FILE__, '.phtml') . '_message'};
+$error       = ${basename(__FILE__, '.phtml') . '_error'};
+$currentPage = ${basename(__FILE__, '.phtml') . '_current_page'};
+$totalPages  = ${basename(__FILE__, '.phtml') . '_total_pages'};
+?>
+
+<h2 class="txt-c">Script Credits &amp; Sound Editors</h2>
+
+<?php if ($message): ?>
+    <p class="success"><?= $message ?></p>
+<?php endif ?>
+<?php if ($error): ?>
+    <p class="error"><?= $error ?></p>
+<?php endif ?>
+
+<p class="txt-c">
+    <input type="text" id="quest-filter" placeholder="Filter quests by name…" oninput="filterQuests(this.value)"
+        style="width:20rem; padding:4px 8px;">
+</p>
+
+<div id="quest-list">
+<?php foreach ($quests as $quest): ?>
+    <?php $scriptUrl = $quest->getScriptUrl() ?>
+    <details class="box" data-quest-name="<?= strtolower(htmlspecialchars($quest->getName())) ?>">
+        <summary style="font-weight:bold; cursor:pointer;">
+            <?= htmlspecialchars($quest->getName()) ?>
+            <?php if ($quest->getScriptAuthor()): ?>
+                <span class="va-name"> — script by <?= htmlspecialchars($quest->getScriptAuthor()->getName()) ?></span>
+            <?php endif ?>
+            <?php if ($scriptUrl): ?>
+                <span style="color:green;"> ✓ script file</span>
+            <?php endif ?>
+        </summary>
+
+        <form method="post" action="/administration/scripts" enctype="multipart/form-data">
+            <input type="hidden" name="action" value="save-quest">
+            <input type="hidden" name="quest_id" value="<?= (int)$quest->getId() ?>">
+            <input type="hidden" name="degenerated_name" value="<?= htmlspecialchars($quest->getDegeneratedName()) ?>">
+
+            <table style="margin:8px 0; border-spacing:6px 4px;">
+                <tr>
+                    <td><strong>Writer:</strong></td>
+                    <td>
+                        <?php if ($quest->getScriptAuthor()): ?>
+                            <a href="/cast/<?= (int)$quest->getScriptAuthor()->getId() ?>"><?= htmlspecialchars($quest->getScriptAuthor()->getName()) ?></a>
+                        <?php else: ?>
+                            <em>None</em>
+                        <?php endif ?>
+                    </td>
+                    <td>
+                        <select name="writer_id" class="user-select" data-selected="<?= (int)$quest->getScriptAuthor()?->getId() ?>">
+                            <option value="">— None —</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Script file:</strong></td>
+                    <td>
+                        <?php if ($scriptUrl): ?>
+                            <a href="<?= htmlspecialchars($scriptUrl) ?>" target="_blank">View current</a>
+                        <?php else: ?>
+                            <em>Not uploaded</em>
+                        <?php endif ?>
+                    </td>
+                    <td>
+                        <input type="file" name="script_file" accept="text/plain,.txt">
+                    </td>
+                </tr>
+            </table>
+
+            <?php if ($quest->getNpcs()): ?>
+                <strong>Sound editors by NPC:</strong>
+                <table style="border-spacing:6px 3px;">
+                    <tr>
+                        <th style="text-align:left;">NPC</th>
+                        <th style="text-align:left;">Current editor</th>
+                        <th></th>
+                    </tr>
+                    <?php foreach ($quest->getNpcs() as $npc): ?>
+                        <tr>
+                            <td class="npc-name"><?= htmlspecialchars($npc->getName()) ?></td>
+                            <td>
+                                <?php if ($npc->getSoundEditor($quest)): ?>
+                                    <a href="/cast/<?= (int)$npc->getSoundEditor($quest)->getId() ?>"><?= htmlspecialchars($npc->getSoundEditor($quest)->getName()) ?></a>
+                                <?php else: ?>
+                                    <em>None</em>
+                                <?php endif ?>
+                            </td>
+                            <td>
+                                <select name="npc_editors[<?= (int)$npc->getId() ?>]" class="user-select"
+                                    data-selected="<?= (int)$npc->getSoundEditor($quest)?->getId() ?>">
+                                    <option value="">— None —</option>
+                                </select>
+                            </td>
+                        </tr>
+                    <?php endforeach ?>
+                </table>
+            <?php endif ?>
+
+            <div style="margin-top:8px;">
+                <button type="submit">Save all changes</button>
+            </div>
+        </form>
+    </details>
+<?php endforeach ?>
+</div>
+
+<?php if ($totalPages > 1): ?>
+<div style="text-align:center; margin-top:1rem;">
+    <?php if ($currentPage > 1): ?>
+        <a href="/administration/scripts?page=<?= $currentPage - 1 ?>">&larr; Previous</a>
+    <?php endif ?>
+    &nbsp; Page <?= $currentPage ?> of <?= $totalPages ?> &nbsp;
+    <?php if ($currentPage < $totalPages): ?>
+        <a href="/administration/scripts?page=<?= $currentPage + 1 ?>">Next &rarr;</a>
+    <?php endif ?>
+</div>
+<?php endif ?>
+
+<script>
+var USERS = <?= json_encode(array_map(fn($u) => ['id' => (int)$u['user_id'], 'name' => $u['display_name']], $users)) ?>;
+
+function populateSelects(details) {
+    details.querySelectorAll('select.user-select:not([data-populated])').forEach(function(sel) {
+        var selected = parseInt(sel.dataset.selected) || 0;
+        USERS.forEach(function(u) {
+            var opt = document.createElement('option');
+            opt.value = u.id;
+            opt.textContent = u.name;
+            if (u.id === selected) opt.selected = true;
+            sel.appendChild(opt);
+        });
+        sel.dataset.populated = '1';
+    });
+}
+
+document.querySelectorAll('#quest-list details').forEach(function(details) {
+    details.addEventListener('toggle', function() {
+        if (details.open) populateSelects(details);
+    });
+});
+
+function filterQuests(query) {
+    query = query.toLowerCase();
+    document.querySelectorAll('#quest-list details').forEach(function(el) {
+        el.style.display = el.dataset.questName.includes(query) ? '' : 'none';
+    });
+}
+</script>
