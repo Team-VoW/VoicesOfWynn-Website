@@ -223,15 +223,6 @@ class ContentManager
         return $result === false ? [] : $result;
     }
 
-    public function getQuestDegeneratedName(int $questId): ?string
-    {
-        $result = (new Db('Website/DbInfo.ini'))->fetchQuery(
-            'SELECT degenerated_name FROM quest WHERE quest_id = ?;',
-            [$questId]
-        );
-        return $result['degenerated_name'] ?? null;
-    }
-
     public function countQuests(): int
     {
         $result = (new Db('Website/DbInfo.ini'))->fetchQuery(
@@ -297,22 +288,6 @@ class ContentManager
             }
         }
         return array_values($quests);
-    }
-
-    public function setQuestWriter(int $questId, ?int $writerId): bool
-    {
-        return (new Db('Website/DbInfo.ini'))->executeQuery(
-            'UPDATE quest SET writer = ? WHERE quest_id = ?;',
-            [$writerId, $questId]
-        );
-    }
-
-    public function setNpcEditor(int $questId, int $npcId, ?int $editorId): bool
-    {
-        return (new Db('Website/DbInfo.ini'))->executeQuery(
-            'UPDATE npc_quest SET editor = ? WHERE quest_id = ? AND npc_id = ?;',
-            [$editorId, $questId, $npcId]
-        );
     }
 
     public function getEditorsNpcsByQuests(int $editorId) : array

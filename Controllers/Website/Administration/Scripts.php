@@ -5,6 +5,7 @@ namespace VoicesOfWynn\Controllers\Website\Administration;
 use VoicesOfWynn\Controllers\Website\WebpageController;
 use VoicesOfWynn\Models\Storage\Storage;
 use VoicesOfWynn\Models\Website\ContentManager;
+use VoicesOfWynn\Models\Website\Quest;
 
 class Scripts extends WebpageController
 {
@@ -54,11 +55,12 @@ class Scripts extends WebpageController
             case 'set-writer':
                 $questId = (int)($_POST['quest_id'] ?? 0);
                 $writerId = !empty($_POST['writer_id']) ? (int)$_POST['writer_id'] : null;
-                if ($cm->getQuestDegeneratedName($questId) === null) {
+                $quest = Quest::findById($questId);
+                if ($quest === null) {
                     self::$data['scripts_error'] = 'Quest not found.';
                     break;
                 }
-                $cm->setQuestWriter($questId, $writerId);
+                $quest->setWriter($writerId);
                 self::$data['scripts_message'] = 'Writer updated.';
                 break;
 
@@ -68,8 +70,8 @@ class Scripts extends WebpageController
                     self::$data['scripts_error'] = 'Invalid quest.';
                     break;
                 }
-                $degeneratedName = $cm->getQuestDegeneratedName($questId);
-                if ($degeneratedName === null) {
+                $quest = Quest::findById($questId);
+                if ($quest === null) {
                     self::$data['scripts_error'] = 'Quest not found.';
                     break;
                 }
@@ -77,15 +79,17 @@ class Scripts extends WebpageController
                     self::$data['scripts_error'] = 'No file uploaded or upload error.';
                     break;
                 }
+                $degeneratedName = $quest->getDegeneratedName();
                 Storage::get()->upload($_FILES['script_file']['tmp_name'], 'scripts/' . $degeneratedName . '.txt', 'text/plain');
                 self::$data['scripts_message'] = 'Script file uploaded for "' . htmlspecialchars($degeneratedName) . '".';
                 break;
 
             case 'set-editor':
-                $questId = $_POST['quest_id'] ?? 0;
+                $questId = (int)($_POST['quest_id'] ?? 0);
                 $npcId = (int)($_POST['npc_id'] ?? 0);
                 $editorId = !empty($_POST['editor_id']) ? (int)$_POST['editor_id'] : null;
-                if ($cm->getQuestDegeneratedName($questId) === null) {
+                $quest = Quest::findById($questId);
+                if ($quest === null) {
                     self::$data['scripts_error'] = 'Quest not found.';
                     break;
                 }
@@ -93,7 +97,7 @@ class Scripts extends WebpageController
                     self::$data['scripts_error'] = 'Invalid NPC ID.';
                     break;
                 }
-                $cm->setNpcEditor($questId, $npcId, $editorId);
+                $quest->setNpcEditor($npcId, $editorId);
                 self::$data['scripts_message'] = 'Editor updated.';
                 break;
 
@@ -103,18 +107,19 @@ class Scripts extends WebpageController
                     self::$data['scripts_error'] = 'Invalid quest ID.';
                     break;
                 }
-                $degeneratedName = $cm->getQuestDegeneratedName($questId);
-                if ($degeneratedName === null) {
+                $quest = Quest::findById($questId);
+                if ($quest === null) {
                     self::$data['scripts_error'] = 'Quest not found.';
                     break;
                 }
                 $writerId = !empty($_POST['writer_id']) ? (int)$_POST['writer_id'] : null;
-                $cm->setQuestWriter($questId, $writerId);
+                $quest->setWriter($writerId);
+                $degeneratedName = $quest->getDegeneratedName();
                 if (!empty($_FILES['script_file']['tmp_name']) && $_FILES['script_file']['error'] === UPLOAD_ERR_OK) {
                     Storage::get()->upload($_FILES['script_file']['tmp_name'], 'scripts/' . $degeneratedName . '.txt', 'text/plain');
                 }
                 foreach (($_POST['npc_editors'] ?? []) as $npcId => $editorId) {
-                    $cm->setNpcEditor($questId, (int)$npcId, !empty($editorId) ? (int)$editorId : null);
+                    $quest->setNpcEditor((int)$npcId, !empty($editorId) ? (int)$editorId : null);
                 }
                 self::$data['scripts_message'] = 'Quest saved.';
                 break;
