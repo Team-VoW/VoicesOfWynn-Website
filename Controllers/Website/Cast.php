@@ -54,8 +54,7 @@ class Cast extends WebpageController
 		$storage = Storage::get();
 		$scriptUrls = [];
 		foreach ($scriptedQuests as $q) {
-			$key = 'scripts/' . $q->getDegeneratedName() . '.txt';
-			$scriptUrls[$q->getId()] = $storage->exists($key) ? $storage->getUrl($key) : null;
+			$scriptUrls[$q->getId()] = $q->getScriptUrl($storage);
 		}
 		self::$data['cast_scripted_quests'] = $scriptedQuests;
 		self::$data['cast_script_urls'] = $scriptUrls;
