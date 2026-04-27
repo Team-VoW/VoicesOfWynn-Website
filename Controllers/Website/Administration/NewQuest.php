@@ -27,7 +27,7 @@ class NewQuest extends WebpageController
     {
         self::$data['base_description'] = 'Tool for the administrators to create new quests.';
 
-        self::$data['newquest_questId'] = 0;
+        self::$data['newquest_questId'] = null;
         self::$data['newquest_error'] = '';
 
         self::$views[] = 'new-quest';
@@ -41,6 +41,10 @@ class NewQuest extends WebpageController
         $name = trim($_POST['name'] ?? '');
         if (empty($name)) {
             self::$data['newquest_error'] = 'Quest name cannot be empty.';
+            return $result;
+        }
+        if (mb_strlen($name) > 63) {
+            self::$data['newquest_error'] = 'Quest name cannot be longer than 63 characters.';
             return $result;
         }
 

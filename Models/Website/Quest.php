@@ -5,7 +5,7 @@ namespace VoicesOfWynn\Models\Website;
 use \JsonSerializable;
 use VoicesOfWynn\Models\Db;
 
-class Quest implements JsonSerializable
+class Quest extends ContentModel implements JsonSerializable
 {
 	private int $id;
 	private ?string $name = null;
@@ -127,21 +127,6 @@ class Quest implements JsonSerializable
         $degeneratedName = self::degenerateName($name);
         $db = new Db('Website/DbInfo.ini');
         return (int) $db->executeQuery('INSERT INTO quest (name, degenerated_name) VALUES (?, ?);', array($name, $degeneratedName), true);
-    }
-
-    /**
-     * Generates a degenerated (URL-safe, ASCII) version of a name
-     * @param string $name The original name
-     * @return string The degenerated name (lowercase, no spaces or special chars)
-     */
-    public static function degenerateName(string $name): string
-    {
-        $degenerated = strtolower($name);
-        $degenerated = preg_replace('/[^a-z0-9]/', '', $degenerated);
-        if ($degenerated === '') {
-            throw new \InvalidArgumentException('Name must contain at least one alphanumeric character.');
-        }
-        return $degenerated;
     }
 
     private function loadNpcs() : bool

@@ -7,7 +7,7 @@ use VoicesOfWynn\Models\Db;
 use VoicesOfWynn\Models\Storage\Storage;
 use function VoicesOfWynn\storageUrl;
 
-class Npc implements JsonSerializable
+class Npc extends ContentModel implements JsonSerializable
 {
     public const IDEAL_COLORS = array(
         'red' => "#CC3333",
@@ -87,7 +87,7 @@ class Npc implements JsonSerializable
      */
     public static function create(string $name, ?int $voiceActorId, array $questIds): int
     {
-        $degeneratedName = Quest::degenerateName($name);
+        $degeneratedName = self::degenerateName($name);
         $db = new Db('Website/DbInfo.ini');
 
         $db->startTransaction();
@@ -99,15 +99,10 @@ class Npc implements JsonSerializable
             );
 
             foreach ($questIds as $questId) {
-                $maxOrder = $db->fetchQuery(
-                    'SELECT COALESCE(MAX(sorting_order), 0) AS max_order FROM npc_quest WHERE quest_id = ?;',
-                    array($questId)
-                );
-                $sortingOrder = ($maxOrder !== false ? $maxOrder['max_order'] : 0) + 1;
-
                 $db->executeQuery(
-                    'INSERT INTO npc_quest (quest_id, npc_id, sorting_order) VALUES (?, ?, ?);',
-                    array($questId, $npcId, $sortingOrder)
+                    'INSERT INTO npc_quest (quest_id, npc_id, sorting_order)
+                     VALUES (?, ?, (SELECT COALESCE(MAX(so), 0) + 1 FROM (SELECT sorting_order AS so FROM npc_quest WHERE quest_id = ?) AS sub));',
+                    array($questId, $npcId, $questId)
                 );
             }
 

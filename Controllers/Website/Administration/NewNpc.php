@@ -29,7 +29,7 @@ class NewNpc extends WebpageController
     {
         self::$data['base_description'] = 'Tool for the administrators to create new NPCs.';
 
-        self::$data['newnpc_npcId'] = 0;
+        self::$data['newnpc_npcId'] = null;
         self::$data['newnpc_error'] = '';
 
         $accountManager = new AccountManager();
@@ -49,6 +49,10 @@ class NewNpc extends WebpageController
         $name = trim($_POST['name'] ?? '');
         if (empty($name)) {
             self::$data['newnpc_error'] = 'NPC name cannot be empty.';
+            return $result;
+        }
+        if (mb_strlen($name) > 63) {
+            self::$data['newnpc_error'] = 'NPC name cannot be longer than 63 characters.';
             return $result;
         }
 
