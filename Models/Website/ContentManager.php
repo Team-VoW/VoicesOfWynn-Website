@@ -94,7 +94,7 @@ class ContentManager
 		FROM npc_quest
 		JOIN user ON user.user_id = npc_quest.editor
 		WHERE npc_quest.npc_id = ?;', array($id), true);
-		if ($seResult !== false) {
+		if ($seResult) {
 			foreach ($seResult as $seRow) {
 				$se = new User();
 				$se->setData(['id' => $seRow['se_id'], 'name' => $seRow['se_name'], 'avatar' => $seRow['se_picture']]);
