@@ -26,7 +26,7 @@ $cardQuestForSoundEditor   = $cardQuestForSoundEditor   ?? null;
                     class="cast-npc-pic"
                     src="<?= \VoicesOfWynn\storageUrl('npcs/' . $cardNpc->getId() . '.webp') ?>"
                     onerror="this.onerror=null; this.src='<?= \VoicesOfWynn\storageUrl('npcs/default.webp') ?>'"
-                    alt="<?= htmlspecialchars($cardNpc->getName()) ?>"
+                    alt="<?= $cardNpc->getName() ?>"
                     loading="lazy"
                 />
             </a>
@@ -133,7 +133,7 @@ $cardQuestForSoundEditor   = $cardQuestForSoundEditor   ?? null;
                          alt="Profile picture" loading="lazy" />
                 </a>
                 <a href="/cast/<?= $se->getId() ?>" class="cast-npc-se-name">
-                    <?= htmlspecialchars($se->getName()) ?>
+                    <?= $se->getName() ?>
                 </a>
             </div>
             <?php endif; endif ?>
@@ -150,7 +150,7 @@ $cardQuestForSoundEditor   = $cardQuestForSoundEditor   ?? null;
                              alt="Profile picture" loading="lazy" />
                     </a>
                     <a href="/cast/<?= $se->getId() ?>" class="cast-npc-se-name">
-                        <?= htmlspecialchars($se->getName()) ?>
+                        <?= $se->getName() ?>
                     </a>
                 </div>
                 <?php endif ?>

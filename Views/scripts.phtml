@@ -24,11 +24,11 @@ $totalPages  = ${basename(__FILE__, '.phtml') . '_total_pages'};
 <div id="quest-list">
 <?php foreach ($quests as $quest): ?>
     <?php $scriptUrl = $quest->getScriptUrl() ?>
-    <details class="box" data-quest-name="<?= strtolower(htmlspecialchars($quest->getName())) ?>">
+    <details class="box" data-quest-name="<?= strtolower($quest->getName()) ?>">
         <summary style="font-weight:bold; cursor:pointer;">
-            <?= htmlspecialchars($quest->getName()) ?>
+            <?= $quest->getName() ?>
             <?php if ($quest->getScriptAuthor()): ?>
-                <span class="va-name"> — script by <?= htmlspecialchars($quest->getScriptAuthor()->getName()) ?></span>
+                <span class="va-name"> — script by <?= $quest->getScriptAuthor()->getName() ?></span>
             <?php endif ?>
             <?php if ($scriptUrl): ?>
                 <span style="color:green;"> ✓ script file</span>
@@ -38,14 +38,14 @@ $totalPages  = ${basename(__FILE__, '.phtml') . '_total_pages'};
         <form method="post" action="/administration/scripts" enctype="multipart/form-data">
             <input type="hidden" name="action" value="save-quest">
             <input type="hidden" name="quest_id" value="<?= (int)$quest->getId() ?>">
-            <input type="hidden" name="degenerated_name" value="<?= htmlspecialchars($quest->getDegeneratedName()) ?>">
+            <input type="hidden" name="degenerated_name" value="<?= $quest->getDegeneratedName() ?>">
 
             <table style="margin:8px 0; border-spacing:6px 4px;">
                 <tr>
                     <td><strong>Writer:</strong></td>
                     <td>
                         <?php if ($quest->getScriptAuthor()): ?>
-                            <a href="/cast/<?= (int)$quest->getScriptAuthor()->getId() ?>"><?= htmlspecialchars($quest->getScriptAuthor()->getName()) ?></a>
+                            <a href="/cast/<?= (int)$quest->getScriptAuthor()->getId() ?>"><?= $quest->getScriptAuthor()->getName() ?></a>
                         <?php else: ?>
                             <em>None</em>
                         <?php endif ?>
@@ -60,7 +60,7 @@ $totalPages  = ${basename(__FILE__, '.phtml') . '_total_pages'};
                     <td><strong>Script file:</strong></td>
                     <td>
                         <?php if ($scriptUrl): ?>
-                            <a href="<?= htmlspecialchars($scriptUrl) ?>" target="_blank">View current</a>
+                            <a href="<?= $scriptUrl ?>" target="_blank">View current</a>
                         <?php else: ?>
                             <em>Not uploaded</em>
                         <?php endif ?>
@@ -81,10 +81,10 @@ $totalPages  = ${basename(__FILE__, '.phtml') . '_total_pages'};
                     </tr>
                     <?php foreach ($quest->getNpcs() as $npc): ?>
                         <tr>
-                            <td class="npc-name"><?= htmlspecialchars($npc->getName()) ?></td>
+                            <td class="npc-name"><?= $npc->getName() ?></td>
                             <td>
                                 <?php if ($npc->getSoundEditor($quest)): ?>
-                                    <a href="/cast/<?= (int)$npc->getSoundEditor($quest)->getId() ?>"><?= htmlspecialchars($npc->getSoundEditor($quest)->getName()) ?></a>
+                                    <a href="/cast/<?= (int)$npc->getSoundEditor($quest)->getId() ?>"><?= $npc->getSoundEditor($quest)->getName() ?></a>
                                 <?php else: ?>
                                     <em>None</em>
                                 <?php endif ?>

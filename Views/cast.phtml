@@ -106,7 +106,7 @@ const SOCIAL_NAME = ['youtube' => 'YouTube', 'twitter' => 'Twitter', 'castingcal
             <div>
                 <a href="/contents/<?= $scriptedQuest->getDegeneratedName() ?>"><?= $scriptedQuest->getName() ?></a>
                 <?php if (!empty($scriptUrls[$scriptedQuest->getId()])): ?>
-                    – <a href="<?= htmlspecialchars($scriptUrls[$scriptedQuest->getId()]) ?>">Script file</a>
+                    – <a href="<?= $scriptUrls[$scriptedQuest->getId()] ?>">Script file</a>
                 <?php endif ?>
             </div>
         <?php endforeach ?>

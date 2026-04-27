@@ -67,17 +67,17 @@
             <div class="quest-processing-writer-info">
                 <span class="quest-processing-role">Script by</span>
                 <a href="/cast/<?= $writer->getId() ?>" class="quest-processing-name">
-                    <?= htmlspecialchars($writer->getName()) ?>
+                    <?= $writer->getName() ?>
                 </a>
             </div>
             <?php if (!is_null($quest_script_url)): ?>
-            <a href="<?= htmlspecialchars($quest_script_url) ?>" target="_blank" rel="noopener noreferrer"
+            <a href="<?= $quest_script_url ?>" target="_blank" rel="noopener noreferrer"
                class="quest-view-script-btn">View script</a>
             <?php endif ?>
         </div>
         <?php elseif (!is_null($quest_script_url)): ?>
         <div class="quest-processing-writer">
-            <a href="<?= htmlspecialchars($quest_script_url) ?>" target="_blank" rel="noopener noreferrer"
+            <a href="<?= $quest_script_url ?>" target="_blank" rel="noopener noreferrer"
                class="quest-view-script-btn">View script</a>
         </div>
         <?php endif ?>
@@ -98,12 +98,12 @@
                     </a>
                     <div class="quest-processing-editor-info">
                         <a href="/cast/<?= $se->getId() ?>" class="quest-processing-name">
-                            <?= htmlspecialchars($se->getName()) ?>
+                            <?= $se->getName() ?>
                         </a>
                         <div class="quest-processing-editor-npcs">
                             <?php foreach ($editorNpcs as $npc): ?>
                             <a href="/contents/npc/<?= $npc->getId() ?>" class="quest-processing-npc-chip">
-                                <?= htmlspecialchars($npc->getName()) ?>
+                                <?= $npc->getName() ?>
                             </a>
                             <?php endforeach ?>
                         </div>

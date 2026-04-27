@@ -74,7 +74,7 @@ class Scripts extends WebpageController
                 }
                 $degeneratedName = $quest->getDegeneratedName();
                 Storage::get()->upload($_FILES['script_file']['tmp_name'], 'scripts/' . $degeneratedName . '.txt', 'text/plain');
-                self::$data['scripts_message'] = 'Script file uploaded for "' . htmlspecialchars($degeneratedName) . '".';
+                self::$data['scripts_message'] = 'Script file uploaded for "' . $degeneratedName . '".';
                 break;
 
             case 'set-editor':
