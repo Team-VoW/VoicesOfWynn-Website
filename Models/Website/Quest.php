@@ -96,7 +96,16 @@ class Quest implements JsonSerializable
      */
     public function setNpcEditor(int $npcId, ?int $editorId): bool
     {
-        return (new Db('Website/DbInfo.ini'))->executeQuery(
+        $db = new Db('Website/DbInfo.ini');
+        $npcQuest = $db->fetchQuery(
+            'SELECT npc_id FROM npc_quest WHERE quest_id = ? AND npc_id = ?;',
+            [$this->id, $npcId]
+        );
+        if ($npcQuest === false) {
+            return false;
+        }
+
+        return $db->executeQuery(
             'UPDATE npc_quest SET editor = ? WHERE quest_id = ? AND npc_id = ?;',
             [$editorId, $this->id, $npcId]
         );
@@ -247,4 +256,3 @@ class Quest implements JsonSerializable
         return true;
     }
 }
-

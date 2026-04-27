@@ -77,23 +77,6 @@ class Scripts extends WebpageController
                 self::$data['scripts_message'] = 'Script file uploaded for "' . $degeneratedName . '".';
                 break;
 
-            case 'set-editor':
-                $questId = (int)($_POST['quest_id'] ?? 0);
-                $npcId = (int)($_POST['npc_id'] ?? 0);
-                $editorId = !empty($_POST['editor_id']) ? (int)$_POST['editor_id'] : null;
-                $quest = Quest::findById($questId);
-                if ($quest === null) {
-                    self::$data['scripts_error'] = 'Quest not found.';
-                    break;
-                }
-                if ($npcId <= 0) {
-                    self::$data['scripts_error'] = 'Invalid NPC ID.';
-                    break;
-                }
-                $quest->setNpcEditor($npcId, $editorId);
-                self::$data['scripts_message'] = 'Editor updated.';
-                break;
-
             case 'save-quest':
                 $questId = (int)($_POST['quest_id'] ?? 0);
                 if ($questId <= 0) {
@@ -112,7 +95,11 @@ class Scripts extends WebpageController
                     Storage::get()->upload($_FILES['script_file']['tmp_name'], 'scripts/' . $degeneratedName . '.txt', 'text/plain');
                 }
                 foreach (($_POST['npc_editors'] ?? []) as $npcId => $editorId) {
-                    $quest->setNpcEditor((int)$npcId, !empty($editorId) ? (int)$editorId : null);
+                    $editorSaved = $quest->setNpcEditor((int)$npcId, !empty($editorId) ? (int)$editorId : null);
+                    if (!$editorSaved) {
+                        self::$data['scripts_error'] = 'NPC not found for this quest.';
+                        break 2;
+                    }
                 }
                 self::$data['scripts_message'] = 'Quest saved.';
                 break;
