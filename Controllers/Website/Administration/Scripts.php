@@ -28,13 +28,15 @@ class Scripts extends WebpageController
         $cm      = new ContentManager();
         $total   = $cm->countQuests();
         $quests  = $cm->getQuestsWithCredits($page, $perPage);
+        $flash   = $_SESSION['scripts_flash'] ?? [];
+        unset($_SESSION['scripts_flash']);
 
         self::$data['scripts_quests']       = $quests;
         self::$data['scripts_users']        = $cm->getUsersForDropdown();
         self::$data['scripts_current_page'] = $page;
         self::$data['scripts_total_pages']  = (int)ceil($total / $perPage);
-        self::$data['scripts_message']      = self::$data['scripts_message'] ?? null;
-        self::$data['scripts_error']        = self::$data['scripts_error'] ?? null;
+        self::$data['scripts_message']      = $flash['message'] ?? null;
+        self::$data['scripts_error']        = $flash['error'] ?? null;
         self::$views[] = 'scripts';
         return 200;
     }
@@ -42,50 +44,43 @@ class Scripts extends WebpageController
     private function post(): int
     {
         $action = $_POST['action'] ?? '';
-        $cm = new ContentManager();
+        $message = null;
+        $error = null;
 
         switch ($action) {
             case 'set-writer':
                 $questId = (int)($_POST['quest_id'] ?? 0);
                 $writerId = !empty($_POST['writer_id']) ? (int)$_POST['writer_id'] : null;
-                $quest = Quest::findById($questId);
-                if ($quest === null) {
-                    self::$data['scripts_error'] = 'Quest not found.';
+                $quest = new Quest(['id' => $questId]);
+                if (!$quest->loadFromId()) {
+                    $error = 'Quest not found.';
                     break;
                 }
                 $quest->setWriter($writerId);
-                self::$data['scripts_message'] = 'Writer updated.';
+                $message = 'Writer updated.';
                 break;
 
             case 'upload-script':
                 $questId = (int)($_POST['quest_id'] ?? 0);
-                if ($questId <= 0) {
-                    self::$data['scripts_error'] = 'Invalid quest.';
-                    break;
-                }
-                $quest = Quest::findById($questId);
-                if ($quest === null) {
-                    self::$data['scripts_error'] = 'Quest not found.';
+                $quest = new Quest(['id' => $questId]);
+                if (!$quest->loadFromId()) {
+                    $error = 'Quest not found.';
                     break;
                 }
                 if (empty($_FILES['script_file']['tmp_name']) || $_FILES['script_file']['error'] !== UPLOAD_ERR_OK) {
-                    self::$data['scripts_error'] = 'No file uploaded or upload error.';
+                    $error = 'No file uploaded or upload error.';
                     break;
                 }
                 $degeneratedName = $quest->getDegeneratedName();
                 Storage::get()->upload($_FILES['script_file']['tmp_name'], 'scripts/' . $degeneratedName . '.txt', 'text/plain');
-                self::$data['scripts_message'] = 'Script file uploaded for "' . $degeneratedName . '".';
+                $message = 'Script file uploaded for "' . $degeneratedName . '".';
                 break;
 
             case 'save-quest':
                 $questId = (int)($_POST['quest_id'] ?? 0);
-                if ($questId <= 0) {
-                    self::$data['scripts_error'] = 'Invalid quest ID.';
-                    break;
-                }
-                $quest = Quest::findById($questId);
-                if ($quest === null) {
-                    self::$data['scripts_error'] = 'Quest not found.';
+                $quest = new Quest(['id' => $questId]);
+                if (!$quest->loadFromId()) {
+                    $error = 'Quest not found.';
                     break;
                 }
                 $writerId = !empty($_POST['writer_id']) ? (int)$_POST['writer_id'] : null;
@@ -97,17 +92,25 @@ class Scripts extends WebpageController
                 foreach (($_POST['npc_editors'] ?? []) as $npcId => $editorId) {
                     $editorSaved = $quest->setNpcEditor((int)$npcId, !empty($editorId) ? (int)$editorId : null);
                     if (!$editorSaved) {
-                        self::$data['scripts_error'] = 'NPC not found for this quest.';
+                        $error = 'NPC not found for this quest.';
                         break 2;
                     }
                 }
-                self::$data['scripts_message'] = 'Quest saved.';
+                $message = 'Quest saved.';
                 break;
 
             default:
                 return 400;
         }
 
-        return $this->get();
+        $_SESSION['scripts_flash'] = [
+            'message' => $message,
+            'error' => $error,
+        ];
+
+        $page = max(1, (int)($_GET['page'] ?? 1));
+        header('Location: /administration/scripts?page=' . $page);
+        header('HTTP/1.1 303 See Other');
+        return 303;
     }
 }

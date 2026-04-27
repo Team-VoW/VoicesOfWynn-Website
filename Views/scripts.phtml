@@ -35,7 +35,7 @@ $totalPages  = ${basename(__FILE__, '.phtml') . '_total_pages'};
             <?php endif ?>
         </summary>
 
-        <form method="post" action="/administration/scripts" enctype="multipart/form-data">
+        <form method="post" action="/administration/scripts?page=<?= $currentPage ?>" enctype="multipart/form-data">
             <input type="hidden" name="action" value="save-quest">
             <input type="hidden" name="quest_id" value="<?= (int)$quest->getId() ?>">
             <input type="hidden" name="degenerated_name" value="<?= $quest->getDegeneratedName() ?>">

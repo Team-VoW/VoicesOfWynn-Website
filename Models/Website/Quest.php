@@ -60,22 +60,6 @@ class Quest implements JsonSerializable
 	}
 
     /**
-     * Loads basic quest data by ID from the database.
-     * @return static|null The Quest object, or NULL if no quest with the given ID exists
-     */
-    public static function findById(int $id): ?static
-    {
-        $result = (new Db('Website/DbInfo.ini'))->fetchQuery(
-            'SELECT quest_id, name, degenerated_name FROM quest WHERE quest_id = ?;',
-            [$id]
-        );
-        if ($result === false) {
-            return null;
-        }
-        return new static($result);
-    }
-
-    /**
      * Updates the script writer for this quest in the database
      * @param int|null $writerId ID of the user to set as writer, or NULL to clear
      * @return bool Whether the database query was successful
@@ -112,17 +96,17 @@ class Quest implements JsonSerializable
     }
 
     /**
-     * Method loading quest ID and name from the database, filtering by the degenerated name that is already set
+     * Method loading quest data from the database, filtering by the degenerated name that is already set
      * @return bool TRUE if data was loaded, FALSE if not (quest having the set degenerated name couldn't be found)
      */
     public function loadFromDegeneratedName() : bool
     {
         if (!isset($this->degeneratedName)) {
-            throw new \BadMethodCallException('Method Quest::load mustn\'t be called when the Quest::degeneratedName attribute is not set.');
+            throw new \BadMethodCallException('Method Quest::loadFromDegeneratedName mustn\'t be called when the Quest::degeneratedName attribute is not set.');
         }
 
         $result = (new Db('Website/DbInfo.ini'))->fetchQuery('
-            SELECT quest_id, name, writer
+            SELECT quest_id, name, degenerated_name, writer
             FROM quest
             WHERE degenerated_name = ?;
         ', array($this->degeneratedName));
@@ -130,16 +114,45 @@ class Quest implements JsonSerializable
         if ($result === false) {
             return false;
         }
-        $this->id = $result['quest_id'];
-        $this->name = $result['name'];
-        if (is_null($result['writer'])) {
+        $this->loadQuestData($result);
+        return true;
+    }
+
+    /**
+     * Method loading quest data from the database, filtering by the ID that is already set
+     * @return bool TRUE if data was loaded, FALSE if not (quest having the set ID couldn't be found)
+     */
+    public function loadFromId() : bool
+    {
+        if (!isset($this->id)) {
+            throw new \BadMethodCallException('Method Quest::loadFromId mustn\'t be called when the Quest::id attribute is not set.');
+        }
+
+        $result = (new Db('Website/DbInfo.ini'))->fetchQuery('
+            SELECT quest_id, name, degenerated_name, writer
+            FROM quest
+            WHERE quest_id = ?;
+        ', array($this->id));
+
+        if ($result === false) {
+            return false;
+        }
+        $this->loadQuestData($result);
+        return true;
+    }
+
+    private function loadQuestData(array $data) : void
+    {
+        $this->id = $data['quest_id'];
+        $this->name = $data['name'];
+        $this->degeneratedName = $data['degenerated_name'];
+        if (is_null($data['writer'])) {
             $this->scriptAuthor = null;
         } else {
             $writer = new User();
-            $writer->setData(['id' => $result['writer']]);
+            $writer->setData(['id' => $data['writer']]);
             $this->scriptAuthor = $writer;
         }
-        return true;
     }
 	
 	/**
