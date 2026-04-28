@@ -10,7 +10,7 @@ PHP website for the Voices of Wynn project — a Wynncraft mod that adds voiced 
 - One column-to-property mapping per model: the constructor's `$data` switch (or a `setData()` it delegates to). `loadFromX()` methods feed their fetched row into it instead of re-mapping.
 - XSS escaping is handled globally by `WebpageController`. Do not call `htmlspecialchars()` manually in views.
 - Check PDO query success by testing whether the result is not `false` (truthy check).
-- Avoid unnecessary type casts — don't cast values that are already the correct type.
+- Don't cast numeric strings to int unless strictly necessary — PHP's implicit conversion handles it.
 - Validate IDs against the database, not with `is_numeric()` / `> 0` checks alone. Those pass values like `42069` that don't correspond to real records. Either validate against the actual list of IDs from the DB, or skip numeric validation and let the DB query return no results naturally.
 - Validate string inputs against the DB column length (check the schema). Use `mb_strlen()` for multi-byte safety.
 - Shared logic between models (`Quest`, `Npc`, etc.) belongs in `ContentModel`, the abstract base class both extend.
