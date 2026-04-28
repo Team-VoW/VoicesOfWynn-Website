@@ -48,6 +48,9 @@ class Administration extends WebpageController
             case 'new-release':
                 $nextController = new NewRelease();
                 break;
+            case 'scripts':
+                $nextController = new Scripts();
+                break;
 	        default:
 	        	$nextController = new Accounts();
         }
