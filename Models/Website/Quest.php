@@ -22,6 +22,16 @@ class Quest implements JsonSerializable
 	 */
 	public function __construct(array $data)
 	{
+		$this->setData($data);
+	}
+
+	/**
+	 * Generic setter for all properties
+	 * @param array $data Associative array containing values to set. There are multiple allowed key names for each
+	 * attribute and any of the attributes can be omitted
+	 */
+	public function setData(array $data): void
+	{
 		foreach ($data as $key => $value) {
 			switch ($key) {
 				case 'id':
@@ -44,6 +54,7 @@ class Quest implements JsonSerializable
                         $this->scriptAuthor = $value;
                         break;
                     } else if (is_null($value)) {
+                        $this->scriptAuthor = null;
                         break;
                     }
                     $writer = new User();
@@ -114,7 +125,7 @@ class Quest implements JsonSerializable
         if ($result === false) {
             return false;
         }
-        $this->loadQuestData($result);
+        $this->setData($result);
         return true;
     }
 
@@ -137,22 +148,8 @@ class Quest implements JsonSerializable
         if ($result === false) {
             return false;
         }
-        $this->loadQuestData($result);
+        $this->setData($result);
         return true;
-    }
-
-    private function loadQuestData(array $data) : void
-    {
-        $this->id = $data['quest_id'] ?? $this->id;
-        $this->name = $data['name'];
-        $this->degeneratedName = $data['degenerated_name'] ?? $this->degeneratedName;
-        if (is_null($data['writer'])) {
-            $this->scriptAuthor = null;
-        } else {
-            $writer = new User();
-            $writer->setData(['id' => $data['writer']]);
-            $this->scriptAuthor = $writer;
-        }
     }
 	
 	/**

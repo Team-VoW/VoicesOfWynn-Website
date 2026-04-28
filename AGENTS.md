@@ -7,6 +7,7 @@ PHP website for the Voices of Wynn project — a Wynncraft mod that adds voiced 
 - Keep logic out of views. Data shaping and conditionals belong in controllers or models; views should only render pre-computed variables.
 - Prefer model methods over `ContentManager`. `ContentManager` is a legacy convenience class for a narrow set of info-getting procedures. Logic that naturally belongs to a database model (`Quest`, `Npc`, etc.) should live there as a method/getter, not in `ContentManager`. Do not expand it for new features.
 - Avoid static database fetchers on models; prefer constructing a model with identifying data and loading the rest through an instance method.
+- One column-to-property mapping per model: the constructor's `$data` switch (or a `setData()` it delegates to). `loadFromX()` methods feed their fetched row into it instead of re-mapping.
 - XSS escaping is handled globally by `WebpageController`. Do not call `htmlspecialchars()` manually in views.
 - Check PDO query success by testing whether the result is not `false` (truthy check).
 - Avoid unnecessary type casts — don't cast values that are already the correct type.
