@@ -211,8 +211,8 @@ function uploadRecordings(files) {
         url: '/administration/npcs/manage/' + npcId,
         type: 'POST',
         data: fd,
-        processData: false,
-        contentType: false,
+        processData: false, // prevent jQuery from serializing FormData into a query string
+        contentType: false, // let the browser set multipart/form-data with the correct boundary automatically
         success: function(result) {
             $uploadStatus.textContent = '';
             if (result.successes && result.successes.length > 0) {
