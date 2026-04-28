@@ -106,7 +106,7 @@ class Quest implements JsonSerializable
         }
 
         $result = (new Db('Website/DbInfo.ini'))->fetchQuery('
-            SELECT quest_id, name, degenerated_name, writer
+            SELECT quest_id, name, writer
             FROM quest
             WHERE degenerated_name = ?;
         ', array($this->degeneratedName));
@@ -129,7 +129,7 @@ class Quest implements JsonSerializable
         }
 
         $result = (new Db('Website/DbInfo.ini'))->fetchQuery('
-            SELECT quest_id, name, degenerated_name, writer
+            SELECT name, degenerated_name, writer
             FROM quest
             WHERE quest_id = ?;
         ', array($this->id));
@@ -143,9 +143,9 @@ class Quest implements JsonSerializable
 
     private function loadQuestData(array $data) : void
     {
-        $this->id = $data['quest_id'];
+        $this->id = $data['quest_id'] ?? $this->id;
         $this->name = $data['name'];
-        $this->degeneratedName = $data['degenerated_name'];
+        $this->degeneratedName = $data['degenerated_name'] ?? $this->degeneratedName;
         if (is_null($data['writer'])) {
             $this->scriptAuthor = null;
         } else {
