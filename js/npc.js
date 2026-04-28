@@ -66,7 +66,7 @@ $("#voice-actor-form").on('submit', function(event) {
     voiceActorName = $(event.target).find('select option:selected').text();
     voiceActorAvatar = $(event.target).find('select option:selected').attr('data-avatar-link');
     $.ajax({
-        url: "administration/npcs/manage/" + npcId + "/recast/" + voiceActorId,
+        url: "/administration/npcs/manage/" + npcId + "/recast/" + voiceActorId,
         type: 'PUT',
         success: function(result, message) {
             $(".voice-actor-avatar").attr('src', voiceActorAvatar);
@@ -100,7 +100,7 @@ $("#archive-btn").on('click', function() {
     }
 
     $.ajax({
-        url: "administration/npcs/manage/" + npcId + "/archive",
+        url: "/administration/npcs/manage/" + npcId + "/archive",
         type: 'PUT',
         success: function(result, message) { /* Shouldn't happen */ },
         error: function(result, message, error) {
@@ -129,7 +129,7 @@ $(".delete-recording-btn").on('click', function(event){
     }
     $deletingRecording = $(event.target).closest(".recording-row");
     $.ajax({
-        url: "administration/npcs/manage/" + npcId + "/delete/" + $(event.target).attr("data-recording-id"),
+        url: "/administration/npcs/manage/" + npcId + "/delete/" + $(event.target).attr("data-recording-id"),
         type: 'DELETE',
         success: function(result, message) {
             $deletingRecording.remove();
@@ -208,7 +208,7 @@ function uploadRecordings(files) {
     }
 
     $.ajax({
-        url: 'administration/npcs/manage/' + npcId,
+        url: '/administration/npcs/manage/' + npcId,
         type: 'POST',
         data: fd,
         processData: false,
@@ -276,7 +276,7 @@ $(".archive-all-recordings-btn").on('click', function(event) {
     let questId = $(event.target).attr('data-quest-id');
     $archivingRecordings = $(event.target).closest('.quest-card').find('.recording-row');
     $.ajax({
-        url: "administration/npcs/manage/" + npcId + "/archive-quest-recordings/" + questId,
+        url: "/administration/npcs/manage/" + npcId + "/archive-quest-recordings/" + questId,
         type: 'PUT',
         success: function(result, message) {
             $archivingRecordings.remove();
