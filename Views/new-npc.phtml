@@ -1,0 +1,37 @@
+<h2 class="txt-c">Create a new NPC</h2>
+<div class="txt-c display-block">
+    <form method="post" class="newaccform admin-create-form">
+        <div class="pw-box">
+            <label for="name" class="mb-l lb-a">NPC name</label>
+            <input class="login-form mb-d" type="text" name="name" id="name"/>
+        </div>
+        <div class="pw-box">
+            <label for="voice_actor_id" class="mb-l lb-b lb-a">Voice actor</label>
+            <select class="login-form admin-select" name="voice_actor_id" id="voice_actor_id">
+                <option value="">-- None --</option>
+                <?php foreach (${str_replace('-', '', basename(__FILE__, '.phtml')).'_users'} as $user) : ?>
+                    <option value="<?= $user->getId(); ?>"><?= htmlspecialchars($user->getName()); ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="pw-box">
+            <label class="mb-l lb-b lb-a">Quests (select at least one)</label>
+            <div class="admin-checkbox-list">
+                <?php foreach (${str_replace('-', '', basename(__FILE__, '.phtml')).'_quests'} as $quest) : ?>
+                    <label class="admin-checkbox-item" for="quest_<?= $quest->getId(); ?>">
+                        <input type="checkbox" name="quest_ids[]" value="<?= $quest->getId(); ?>" id="quest_<?= $quest->getId(); ?>"/>
+                        <?= htmlspecialchars($quest->getName()); ?>
+                    </label>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <div class="pw-box" <?php if (empty(${str_replace('-', '', basename(__FILE__, '.phtml')).'_npcId'})) : ?>style="display:none"<?php endif ?>>
+            <p>NPC created successfully with ID <?= ${str_replace('-', '', basename(__FILE__, '.phtml')).'_npcId'}; ?>.</p>
+            <a href="/administration/npcs/manage/<?= ${str_replace('-', '', basename(__FILE__, '.phtml')).'_npcId'}; ?>">Manage the NPC</a>
+        </div>
+        <p class="lb-b mb-s mt-s"><input class="login-form submit" type="submit" value="Create" /></p>
+    </form>
+</div>
+<div class="error"><?= ${str_replace('-', '', basename(__FILE__, '.phtml')).'_error'}; ?></div>
+
+<button class="backbtn" onclick="history.go(-1)">< Go Back</button>

@@ -14,7 +14,7 @@ $(".rearrange-up-btn").click(function(event) {
     let npc2Id = $moveDownRow.attr('data-npc-id');
 
     $.ajax({
-        url: "administration/npcs/swap/" + questId + "/" + npc1Id + "/" + npc2Id,
+        url: "/administration/npcs/swap/" + questId + "/" + npc1Id + "/" + npc2Id,
         type: 'PUT',
         success: function(result, message, error) {
             $moveDownRow.insertAfter($moveUpRow);
@@ -38,7 +38,7 @@ $(".rearrange-down-btn").click(function(event) {
     let npc2Id = $moveDownRow.attr('data-npc-id');
 
     $.ajax({
-        url: "administration/npcs/swap/" + questId + "/" + npc1Id + "/" + npc2Id,
+        url: "/administration/npcs/swap/" + questId + "/" + npc1Id + "/" + npc2Id,
         type: 'PUT',
         success: function(result, message, error) {
             $moveDownRow.insertAfter($moveUpRow);
