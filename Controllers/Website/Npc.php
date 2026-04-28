@@ -14,6 +14,15 @@ class Npc extends WebpageController
 {
 	private NpcModel $npc;
 	private bool $disallowAdministration;
+    private ?string $jsonResponse = null;
+
+    public function displayView(): string
+    {
+        if ($this->jsonResponse !== null) {
+            return $this->jsonResponse;
+        }
+        return parent::displayView();
+    }
 	
 	/**
 	 * @inheritDoc
@@ -164,35 +173,26 @@ class Npc extends WebpageController
 	private function post(array $args): int
 	{
 		if ($this->disallowAdministration) {
-			header('Content-Type: application/json');
-			http_response_code(403);
-			echo json_encode(['errors' => [['code' => 403, 'msg' => 'Forbidden', 'desc' => 'You do not have permission to upload recordings', 'file' => '']], 'successes' => []]);
-			exit();
+			return 403;
 		}
 
 		if (empty($this->npc->getId())) {
-			header('Content-Type: application/json');
-			http_response_code(400);
-			echo json_encode(['errors' => [['code' => 400, 'msg' => 'Bad Request', 'desc' => 'NPC ID is missing or invalid', 'file' => '']], 'successes' => []]);
-			exit();
+			return 400;
 		}
 
 		if (empty($_FILES['recordings'])) {
-			header('Content-Type: application/json');
-			http_response_code(400);
-			echo json_encode(['errors' => [['code' => 400, 'msg' => 'Bad Request', 'desc' => 'No files uploaded', 'file' => '']], 'successes' => []]);
-			exit();
+			return 400;
 		}
 
 		$uploader = new RecordingUploader();
 		$uploader->upload($_FILES['recordings'], false, null, $this->npc->getId());
 
 		header('Content-Type: application/json');
-		echo json_encode([
+		$this->jsonResponse = json_encode([
 			'errors' => $uploader->getErrors(),
 			'successes' => $uploader->getSuccesses()
 		]);
-		exit();
+		return 200;
 	}
 
 	/**
@@ -227,7 +227,7 @@ class Npc extends WebpageController
 			//Delete file
 			Storage::get()->delete('recordings/'.$filename);
 		}
-		exit($result);
+		return ($result) ? 204 : 500;
 	}
 }
 
