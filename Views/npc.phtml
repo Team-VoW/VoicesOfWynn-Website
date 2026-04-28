@@ -51,6 +51,27 @@
     <?php endif ?>
 </section>
 
+<?php if (${basename(__FILE__, '.phtml') . '_admin'}) : ?>
+<!-- Upload Drop Zone -->
+<section class="upload-drop-zone-card npc-animate-on-scroll">
+    <div id="upload-drop-zone" class="upload-drop-zone" role="button" tabindex="0" aria-label="Drop recording files here or click to browse">
+        <p class="upload-drop-text">Drop recording files here</p>
+        <p class="upload-drop-subtext">or click to browse (.ogg files)</p>
+        <input type="file" id="upload-file-input" accept="audio/ogg" multiple hidden />
+    </div>
+    <details class="upload-info">
+        <summary>How does this work?</summary>
+        <ul>
+            <li>Files must be named <code>questname-npcname-linenumber.ogg</code> (all lowercase, no spaces).</li>
+            <li>The <strong>NPC name</strong> in the filename is ignored &mdash; recordings are always assigned to this NPC.</li>
+            <li>The <strong>quest name</strong> is matched from the filename &mdash; use the quest name in all lowercase with no spaces (e.g. "A Grave Mistake" becomes <code>agravemistake</code>).</li>
+            <li>If a file with the same name already exists on the server, the new file will be <strong>automatically renamed</strong> (e.g. <code>_(1)</code>, <code>_(2)</code>) to avoid conflicts.</li>
+        </ul>
+    </details>
+    <div id="upload-status" class="upload-status" style="display:none;"></div>
+</section>
+<?php endif ?>
+
 <!-- NPC Card (expanded) -->
 <?php
 $prefix = basename(__FILE__, '.phtml') . '_';

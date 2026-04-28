@@ -14,6 +14,15 @@ class Npc extends WebpageController
 {
 	private NpcModel $npc;
 	private bool $disallowAdministration;
+    private ?string $jsonResponse = null;
+
+    public function displayView(): string
+    {
+        if ($this->jsonResponse !== null) {
+            return $this->jsonResponse;
+        }
+        return parent::displayView();
+    }
 	
 	/**
 	 * @inheritDoc
@@ -157,6 +166,36 @@ class Npc extends WebpageController
 	}
 	
 	/**
+	 * Processing method for POST requests to this controller (recording files are being uploaded via AJAX)
+	 * @param array $args
+	 * @return int
+	 */
+	private function post(array $args): int
+	{
+		if ($this->disallowAdministration) {
+			return 403;
+		}
+
+		if (empty($this->npc->getId())) {
+			return 400;
+		}
+
+		if (empty($_FILES['recordings'])) {
+			return 400;
+		}
+
+		$uploader = new RecordingUploader();
+		$uploader->upload($_FILES['recordings'], false, null, $this->npc->getId());
+
+		header('Content-Type: application/json');
+		$this->jsonResponse = json_encode([
+			'errors' => $uploader->getErrors(),
+			'successes' => $uploader->getSuccesses()
+		]);
+		return 200;
+	}
+
+	/**
 	 * Processing method for DELETE requests to this controller (a recording is supposed to be deleted)
 	 * @param array $args Recording ID as the first element
 	 * @return int|bool
@@ -188,7 +227,7 @@ class Npc extends WebpageController
 			//Delete file
 			Storage::get()->delete('recordings/'.$filename);
 		}
-		exit($result);
+		return ($result) ? 204 : 500;
 	}
 }
 
