@@ -36,6 +36,12 @@ class Administration extends WebpageController
             case 'new-account':
                 $nextController = new NewAccount();
                 break;
+            case 'new-quest':
+                $nextController = new NewQuest();
+                break;
+            case 'new-npc':
+                $nextController = new NewNpc();
+                break;
             case 'npcs':
                 $nextController = new Npcs();
                 break;
@@ -44,9 +50,6 @@ class Administration extends WebpageController
 	        	break;
             case 'mass-upload':
                 $nextController = new Upload();
-                break;
-            case 'new-release':
-                $nextController = new NewRelease();
                 break;
 	        default:
 	        	$nextController = new Accounts();

@@ -7,7 +7,7 @@ use VoicesOfWynn\Models\Db;
 use VoicesOfWynn\Models\Storage\Storage;
 use function VoicesOfWynn\storageUrl;
 
-class Npc implements JsonSerializable
+class Npc extends ContentModel implements JsonSerializable
 {
     public const IDEAL_COLORS = array(
         'red' => "#CC3333",
@@ -76,6 +76,44 @@ class Npc implements JsonSerializable
 	{
 	    return (object) get_object_vars($this);
 	}
+
+    /**
+     * Creates a new NPC in the database and links it to the specified quests
+     * @param string $name The display name of the NPC
+     * @param int|null $voiceActorId The ID of the voice actor, or null if unassigned
+     * @param array $questIds Array of quest IDs to assign the NPC to
+     * @return int The ID of the newly created NPC
+     * @throws \PDOException If the query fails
+     */
+    public static function create(string $name, ?int $voiceActorId, array $questIds): int
+    {
+        $degeneratedName = self::degenerateName($name);
+        $db = new Db('Website/DbInfo.ini');
+
+        $db->startTransaction();
+        try {
+            $npcId = (int) $db->executeQuery(
+                'INSERT INTO npc (name, degenerated_name, voice_actor_id) VALUES (?, ?, ?);',
+                array($name, $degeneratedName, $voiceActorId),
+                true
+            );
+
+            foreach ($questIds as $questId) {
+                $db->executeQuery(
+                    'INSERT INTO npc_quest (quest_id, npc_id, sorting_order)
+                     VALUES (?, ?, (SELECT COALESCE(MAX(so), 0) + 1 FROM (SELECT sorting_order AS so FROM npc_quest WHERE quest_id = ?) AS sub));',
+                    array($questId, $npcId, $questId)
+                );
+            }
+
+            $db->commitTransaction();
+        } catch (\Exception $e) {
+            $db->rollbackTransaction();
+            throw $e;
+        }
+
+        return $npcId;
+    }
 
 	/**
 	 * VoiceActor setter

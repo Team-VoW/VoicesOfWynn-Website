@@ -5,7 +5,7 @@ namespace VoicesOfWynn\Models\Website;
 use \JsonSerializable;
 use VoicesOfWynn\Models\Db;
 
-class Quest implements JsonSerializable
+class Quest extends ContentModel implements JsonSerializable
 {
 	private int $id;
 	private ?string $name = null;
@@ -115,6 +115,19 @@ class Quest implements JsonSerializable
         }
 		return $this->npcs ?? null;
 	}
+
+    /**
+     * Creates a new quest in the database
+     * @param string $name The display name of the quest
+     * @return int The ID of the newly created quest
+     * @throws \PDOException If the query fails (e.g. duplicate degenerated name)
+     */
+    public static function create(string $name): int
+    {
+        $degeneratedName = self::degenerateName($name);
+        $db = new Db('Website/DbInfo.ini');
+        return (int) $db->executeQuery('INSERT INTO quest (name, degenerated_name) VALUES (?, ?);', array($name, $degeneratedName), true);
+    }
 
     private function loadNpcs() : bool
     {
