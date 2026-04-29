@@ -7,6 +7,12 @@ use VoicesOfWynn\Controllers\Website\WebpageController;
 
 class Administration extends WebpageController
 {
+    private ?WebpageController $nextController = null;
+
+    public function displayView(): string
+    {
+        return $this->nextController?->displayView() ?? parent::displayView();
+    }
     
     /**
      * @inheritDoc
@@ -28,34 +34,32 @@ class Administration extends WebpageController
         self::$views[] = 'administration';
         self::$cssFiles[] = 'administration';
         
-        $nextController = null;
         switch (array_shift($args)) {
             case 'accounts':
-                $nextController = new Accounts();
+                $this->nextController = new Accounts();
                 break;
             case 'new-account':
-                $nextController = new NewAccount();
+                $this->nextController = new NewAccount();
                 break;
             case 'new-quest':
-                $nextController = new NewQuest();
+                $this->nextController = new NewQuest();
                 break;
             case 'new-npc':
-                $nextController = new NewNpc();
+                $this->nextController = new NewNpc();
                 break;
             case 'npcs':
-                $nextController = new Npcs();
+                $this->nextController = new Npcs();
                 break;
 	        case 'npc':
-	        	$nextController = new Npc();
+	        	$this->nextController = new Npc();
 	        	break;
             case 'mass-upload':
-                $nextController = new Upload();
+                $this->nextController = new Upload();
                 break;
 	        default:
-	        	$nextController = new Accounts();
+	        	$this->nextController = new Accounts();
         }
 
-        return $nextController->process($args);
+        return $this->nextController->process($args);
     }
 }
-
