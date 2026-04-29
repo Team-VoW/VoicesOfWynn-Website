@@ -1,0 +1,1 @@
+Our team's infrastructure is heavily centered around Discord. When Discord started messing around with ID verification, we did a poll on moving to Matrix if things went bad. Most of the polling users were interested.

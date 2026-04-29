@@ -1,0 +1,1 @@
+The new dialogue system that was introduced along with Fruma required kmaxi to remake the whole dialogue detection part of the mod's code. And it was huge pain.

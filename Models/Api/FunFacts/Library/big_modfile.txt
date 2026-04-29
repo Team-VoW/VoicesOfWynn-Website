@@ -1,0 +1,1 @@
+The mod used to be around 800 MB in size, because it used to contain all the voice lines, before we remade it to download voice lines on-demand from our servers. Because of such size, we couldn't host it on Modridth.

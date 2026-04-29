@@ -1,0 +1,1 @@
+We created a special honeypot channel on our Discord server to try and catch scammers and bots. It (mostly) doesn't work.
