@@ -133,23 +133,69 @@ class Quest extends ContentModel implements JsonSerializable
      * Method loading quest data from the database, filtering by the ID that is already set
      * @return bool TRUE if data was loaded, FALSE if not (quest having the set ID couldn't be found)
      */
-    public function loadFromId() : bool
+    public function loadFromId($id = null) : bool
     {
-        if (!isset($this->id)) {
-            throw new \BadMethodCallException('Method Quest::loadFromId mustn\'t be called when the Quest::id attribute is not set.');
+        if ($id === null) {
+            if (!isset($this->id)) {
+                throw new \BadMethodCallException('Method Quest::loadFromId mustn\'t be called when the Quest::id attribute is not set.');
+            }
+            $id = $this->id;
         }
 
         $result = (new Db('Website/DbInfo.ini'))->fetchQuery('
-            SELECT name, degenerated_name, writer
+            SELECT quest_id, name, degenerated_name, writer
             FROM quest
             WHERE quest_id = ?;
-        ', array($this->id));
+        ', array($id));
 
         if ($result === false) {
             return false;
         }
         $this->setData($result);
         return true;
+    }
+
+    public function getAllWithNpcs(): array
+    {
+        $result = (new Db('Website/DbInfo.ini'))->fetchQuery('
+            SELECT quest.quest_id, quest.name AS "qname", npc.npc_id, npc.name AS "nname", npc.voice_actor_id, npc.archived, user.user_id, user.display_name, COUNT(DISTINCT recording.recording_id) AS "recordings_count"
+            FROM quest
+            LEFT JOIN npc_quest ON npc_quest.quest_id = quest.quest_id
+            LEFT JOIN npc ON npc.npc_id = npc_quest.npc_id
+            LEFT JOIN recording ON recording.npc_id = npc.npc_id AND recording.quest_id = quest.quest_id
+            LEFT JOIN user ON npc.voice_actor_id = user.user_id
+            GROUP BY quest.quest_id, npc.npc_id, npc_quest.sorting_order
+            ORDER BY quest.quest_id, npc_quest.sorting_order;
+        ', array(), true);
+
+        if ($result === false) {
+            return array();
+        }
+
+        $quests = array();
+        $currentQuest = null;
+        foreach ($result as $npc) {
+            if ($currentQuest === null || $currentQuest->getId() !== $npc['quest_id']) {
+                if ($currentQuest !== null) {
+                    $quests[] = $currentQuest;
+                }
+                $currentQuest = new Quest($npc);
+            }
+            if ($npc['npc_id'] === null) {
+                continue;
+            }
+            $npcObj = new Npc($npc);
+            if ($npc['user_id'] !== null) {
+                $voiceActor = new User();
+                $voiceActor->setData($npc);
+                $npcObj->setVoiceActor($voiceActor);
+            }
+            $currentQuest->addNpc($npcObj);
+        }
+        if ($currentQuest !== null) {
+            $quests[] = $currentQuest;
+        }
+        return $quests;
     }
 	
 	/**

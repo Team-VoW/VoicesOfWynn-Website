@@ -38,6 +38,16 @@ class Npc extends ContentModel implements JsonSerializable
 	 */
 	public function __construct(array $data)
 	{
+        $this->setData($data);
+	}
+
+    /**
+     * Generic setter for all properties
+     * @param array $data Associative array containing values to set. There are multiple allowed key names for each
+     * attribute and any of the attributes can be omitted
+     */
+    public function setData(array $data): void
+    {
 		foreach ($data as $key => $value) {
 			switch ($key) {
 				case 'id':
@@ -123,6 +133,82 @@ class Npc extends ContentModel implements JsonSerializable
         }
 
         return $npcId;
+    }
+
+    public function isLinkedToQuest(int $questId): bool
+    {
+        $result = (new Db('Website/DbInfo.ini'))->fetchQuery(
+            'SELECT npc_quest_id FROM npc_quest WHERE quest_id = ? AND npc_id = ? LIMIT 1;',
+            array($questId, $this->id)
+        );
+
+        return $result !== false;
+    }
+
+    public function addToQuest(int $questId): bool
+    {
+        if ($this->isLinkedToQuest($questId)) {
+            return true;
+        }
+
+        return (new Db('Website/DbInfo.ini'))->executeQuery(
+            'INSERT INTO npc_quest (quest_id, npc_id, sorting_order)
+             VALUES (?, ?, (SELECT COALESCE(MAX(so), 0) + 1 FROM (SELECT sorting_order AS so FROM npc_quest WHERE quest_id = ?) AS sub));',
+            array($questId, $this->id, $questId)
+        );
+    }
+
+    public function hasRecordingsInQuest(int $questId): bool
+    {
+        $result = (new Db('Website/DbInfo.ini'))->fetchQuery(
+            'SELECT COUNT(*) AS cnt FROM recording WHERE npc_id = ? AND quest_id = ?;',
+            array($this->id, $questId)
+        );
+
+        return $result !== false && $result['cnt'] > 0;
+    }
+
+    public function removeFromQuest(int $questId): bool
+    {
+        return (new Db('Website/DbInfo.ini'))->executeQuery(
+            'DELETE FROM npc_quest WHERE quest_id = ? AND npc_id = ? LIMIT 1;',
+            array($questId, $this->id)
+        );
+    }
+
+    public function loadFromId($id = null): bool
+    {
+        $id = $id ?? $this->id;
+        $result = (new Db('Website/DbInfo.ini'))->fetchQuery(
+            'SELECT npc_id, name, degenerated_name, archived FROM npc WHERE npc_id = ? LIMIT 1;',
+            array($id)
+        );
+
+        if ($result === false) {
+            return false;
+        }
+
+        $this->setData($result);
+        return true;
+    }
+
+    public function getAll(): array
+    {
+        $result = (new Db('Website/DbInfo.ini'))->fetchQuery(
+            'SELECT npc_id, name, degenerated_name, archived FROM npc ORDER BY name, npc_id;',
+            array(),
+            true
+        );
+
+        if ($result === false) {
+            return array();
+        }
+
+        $npcs = array();
+        foreach ($result as $npcData) {
+            $npcs[] = new Npc($npcData);
+        }
+        return $npcs;
     }
 
 	/**
@@ -599,4 +685,3 @@ class Npc extends ContentModel implements JsonSerializable
         return $recordings[0] ?? null;
     }
 }
-

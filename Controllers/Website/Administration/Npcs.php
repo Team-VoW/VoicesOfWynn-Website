@@ -3,8 +3,9 @@
 namespace VoicesOfWynn\Controllers\Website\Administration;
 
 use VoicesOfWynn\Controllers\Website\WebpageController;
-use VoicesOfWynn\Models\Website\ContentManager;
+use VoicesOfWynn\Models\Website\Npc as NpcModel;
 use VoicesOfWynn\Models\Website\NpcRearranger;
+use VoicesOfWynn\Models\Website\Quest;
 
 class Npcs extends WebpageController
 {
@@ -23,7 +24,44 @@ class Npcs extends WebpageController
                     $npcRearranger = new NpcRearranger();
                     $result = $npcRearranger->swap($questId, $npc1Id, $npc2Id);
                     return ($result) ? 204 : 500;
-                /* More actions can be added here */
+                case 'add-to-quest':
+                    if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
+                        return 405;
+                    }
+                    $questId = $args[1] ?? null;
+                    $npcId = $args[2] ?? null;
+                    if ($questId === null || $npcId === null) {
+                        return 400;
+                    }
+                    $quest = new Quest(array());
+                    $npc = new NpcModel(array());
+                    if (!$quest->loadFromId($questId) || !$npc->loadFromId($npcId)) {
+                        return 404;
+                    }
+                    $result = $npc->addToQuest($questId);
+                    return ($result) ? 204 : 500;
+                case 'remove-from-quest':
+                    if ($_SERVER['REQUEST_METHOD'] !== 'DELETE') {
+                        return 405;
+                    }
+                    $questId = $args[1] ?? null;
+                    $npcId = $args[2] ?? null;
+                    if ($questId === null || $npcId === null) {
+                        return 400;
+                    }
+                    $quest = new Quest(array());
+                    $npc = new NpcModel(array());
+                    if (!$quest->loadFromId($questId) || !$npc->loadFromId($npcId)) {
+                        return 404;
+                    }
+                    if (!$npc->isLinkedToQuest($questId)) {
+                        return 404;
+                    }
+                    if ($npc->hasRecordingsInQuest($questId)) {
+                        return 409;
+                    }
+                    $result = $npc->removeFromQuest($questId);
+                    return ($result) ? 204 : 500;
                 default:
                     return 400;
             }
@@ -31,8 +69,39 @@ class Npcs extends WebpageController
 
         self::$data['base_description'] = 'Tool for the administrators to manage NPCs and assign voice actors to them.';
 
-        $cnm = new ContentManager();
-        self::$data['npcs_quests'] = $cnm->getQuests();
+        $quests = (new Quest(array()))->getAllWithNpcs();
+        $allNpcs = (new NpcModel(array()))->getAll();
+        self::$data['npcs_all_options'] = array_map(function (NpcModel $npc) {
+            return array(
+                'id' => $npc->getId(),
+                'name' => $npc->getName(),
+                'label_suffix' => $npc->isArchived() ? ' (outdated)' : '',
+            );
+        }, $allNpcs);
+        self::$data['npcs_quest_rows'] = array_map(function (Quest $quest) {
+            $questNpcs = $quest->getNpcs() ?? array();
+            $questNpcIds = array_map(fn($npc) => $npc->getId(), $questNpcs);
+            $npcRows = array_map(function (NpcModel $npc) {
+                $voiceActor = $npc->getVoiceActor();
+                $canRemove = $npc->getRecordingsCount() === 0;
+                return array(
+                    'id' => $npc->getId(),
+                    'name' => $npc->getName(),
+                    'voice_actor_id' => $voiceActor?->getId(),
+                    'voice_actor_name' => $voiceActor?->getName(),
+                    'recordings_count' => $npc->getRecordingsCount(),
+                    'can_remove' => $canRemove,
+                    'remove_title' => $canRemove ? '' : 'NPCs with recordings linked to this quest cannot be removed.',
+                );
+            }, $questNpcs);
+
+            return array(
+                'quest_id' => $quest->getId(),
+                'quest_name' => $quest->getName(),
+                'npc_ids' => $questNpcIds,
+                'npc_rows' => $npcRows,
+            );
+        }, $quests);
 
         self::$jsFiles[] = 'npcs';
         self::$views[] = 'npcs';
@@ -40,4 +109,3 @@ class Npcs extends WebpageController
         return true;
     }
 }
-

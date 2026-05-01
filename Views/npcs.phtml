@@ -1,25 +1,39 @@
-<?php foreach (${basename(__FILE__, '.phtml').'_quests'} as $quest) : ?>
-<section data-quest-id="<?= $quest->getId() ?>" class="txt-c">
-	<h3 class="txt-c"><?= $quest->getName() ?></h3>
+<?php foreach (${basename(__FILE__, '.phtml').'_quest_rows'} as $questRow) : ?>
+<section data-quest-id="<?= $questRow['quest_id'] ?>" class="txt-c">
+	<h3 class="txt-c"><?= $questRow['quest_name'] ?></h3>
+    <form class="add-npc-to-quest-form">
+        <select class="admin-select add-npc-to-quest-select" name="npc_id">
+            <option value="">-- Add NPC to this quest --</option>
+            <?php foreach (${basename(__FILE__, '.phtml').'_all_options'} as $npcOption) : ?>
+                <option value="<?= $npcOption['id'] ?>" <?php if (in_array($npcOption['id'], $questRow['npc_ids'], true)) : ?>disabled<?php endif ?>>
+                    <?= $npcOption['name'] ?><?= $npcOption['label_suffix'] ?>
+                </option>
+            <?php endforeach ?>
+        </select>
+        <input type="submit" value="Add" />
+    </form>
 	<table class="table-npc-management">
 		<tr>
-			<th>Rearrange</th><th>NPC</th><th>Voice actor</th><th>Recordings</th><th>Action</th>
+			<th>Rearrange</th><th>NPC</th><th>Voice actor</th><th>Recordings</th><th>Action</th><th>Quest</th>
 		</tr>
-	<?php foreach ($quest->getNpcs() as $npc) : ?>
-		<tr data-npc-id="<?= $npc->getId() ?>">
+	<?php foreach ($questRow['npc_rows'] as $npcRow) : ?>
+		<tr data-npc-id="<?= $npcRow['id'] ?>">
             <td>
                 <button class="rearrange-up-btn">🔼</button>
                 <br>
                 <button class="rearrange-down-btn">🔽</button>
             </td>
-			<td class="width-150"><a href="contents/npc/<?= $npc->getId() ?>" class="npc-name"><?= $npc->getName() ?></a></td>
-			<?php if ($npc->getVoiceActor() === null) : ?>
+			<td class="width-150"><a href="contents/npc/<?= $npcRow['id'] ?>" class="npc-name"><?= $npcRow['name'] ?></a></td>
+			<?php if ($npcRow['voice_actor_id'] === null) : ?>
 				<td class="width-150"><i>Nobody</i></td>
 			<?php else : ?>
-                <td class="width-150"><a href="cast/<?= $npc->getVoiceActor()->getId() ?>" class="va-name"><?= $npc->getVoiceActor()->getName() ?></a></td>
-			<?php endif ?>
-            <td><?= $npc->getRecordingsCount() ?></td>
-			<td><b><a id="managelink" href="administration/npcs/manage/<?= $npc->getId() ?>" class="width-150">Manage</a></b></td>
+                <td class="width-150"><a href="cast/<?= $npcRow['voice_actor_id'] ?>" class="va-name"><?= $npcRow['voice_actor_name'] ?></a></td>
+            <?php endif ?>
+            <td><?= $npcRow['recordings_count'] ?></td>
+			<td><b><a id="managelink" href="administration/npcs/manage/<?= $npcRow['id'] ?>" class="width-150">Manage</a></b></td>
+            <td>
+                <button class="remove-npc-from-quest-btn" <?php if (!$npcRow['can_remove']) : ?>disabled title="<?= $npcRow['remove_title'] ?>"<?php endif ?>>Remove from quest</button>
+            </td>
 		</tr>
 	<?php endforeach ?>
 	</table><hr class="hr-f">
