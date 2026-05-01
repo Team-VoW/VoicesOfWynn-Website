@@ -211,6 +211,25 @@ class Npc extends ContentModel implements JsonSerializable
         return $npcs;
     }
 
+    public function search(string $term, int $limit): array
+    {
+        $result = (new Db('Website/DbInfo.ini'))->fetchQuery(
+            'SELECT npc_id, name, archived FROM npc WHERE name LIKE ? ORDER BY name LIMIT ?;',
+            ['%' . $term . '%', $limit],
+            true
+        );
+
+        if ($result === false) {
+            return array();
+        }
+
+        $npcs = array();
+        foreach ($result as $npcData) {
+            $npcs[] = new Npc($npcData);
+        }
+        return $npcs;
+    }
+
 	/**
 	 * VoiceActor setter
 	 * @param User $voiceActor

@@ -62,46 +62,72 @@ class Npcs extends WebpageController
                     }
                     $result = $npc->removeFromQuest($questId);
                     return ($result) ? 204 : 500;
+                case 'search':
+                    $q = trim($_GET['q'] ?? '');
+                    if (mb_strlen($q) > 63) {
+                        http_response_code(400);
+                        exit();
+                    }
+                    if ($q === '') {
+                        header('Content-Type: application/json');
+                        echo json_encode([]);
+                        exit();
+                    }
+                    $quests = (new Quest(array()))->searchWithNpcs($q);
+                    $rows = array_map(function (Quest $quest) {
+                        $questNpcs = $quest->getNpcs() ?? array();
+                        $questNpcIds = array_map(fn($npc) => $npc->getId(), $questNpcs);
+                        $npcRows = array_map(function (NpcModel $npc) {
+                            $voiceActor = $npc->getVoiceActor();
+                            $canRemove = $npc->getRecordingsCount() === 0;
+                            return array(
+                                'id' => $npc->getId(),
+                                'name' => $npc->getName(),
+                                'voice_actor_id' => $voiceActor?->getId(),
+                                'voice_actor_name' => $voiceActor?->getName(),
+                                'recordings_count' => $npc->getRecordingsCount(),
+                                'can_remove' => $canRemove,
+                                'remove_title' => $canRemove ? '' : 'NPCs with recordings linked to this quest cannot be removed.',
+                            );
+                        }, $questNpcs);
+                        return array(
+                            'quest_id' => $quest->getId(),
+                            'quest_name' => $quest->getName(),
+                            'npc_ids' => $questNpcIds,
+                            'npc_rows' => $npcRows,
+                        );
+                    }, $quests);
+                    header('Content-Type: application/json');
+                    echo json_encode($rows);
+                    exit();
+                case 'autocomplete':
+                    $q = trim($_GET['q'] ?? '');
+                    if (mb_strlen($q) > 63) {
+                        http_response_code(400);
+                        exit();
+                    }
+                    if ($q === '') {
+                        header('Content-Type: application/json');
+                        echo json_encode([]);
+                        exit();
+                    }
+                    $npcs = (new NpcModel(array()))->search($q, 20);
+                    $data = array_map(function (NpcModel $npc) {
+                        return array(
+                            'id' => $npc->getId(),
+                            'name' => $npc->getName(),
+                            'archived' => $npc->isArchived(),
+                        );
+                    }, $npcs);
+                    header('Content-Type: application/json');
+                    echo json_encode($data);
+                    exit();
                 default:
                     return 400;
             }
         }
 
         self::$data['base_description'] = 'Tool for the administrators to manage NPCs and assign voice actors to them.';
-
-        $quests = (new Quest(array()))->getAllWithNpcs();
-        $allNpcs = (new NpcModel(array()))->getAll();
-        self::$data['npcs_all_options'] = array_map(function (NpcModel $npc) {
-            return array(
-                'id' => $npc->getId(),
-                'name' => $npc->getName(),
-                'label_suffix' => $npc->isArchived() ? ' (outdated)' : '',
-            );
-        }, $allNpcs);
-        self::$data['npcs_quest_rows'] = array_map(function (Quest $quest) {
-            $questNpcs = $quest->getNpcs() ?? array();
-            $questNpcIds = array_map(fn($npc) => $npc->getId(), $questNpcs);
-            $npcRows = array_map(function (NpcModel $npc) {
-                $voiceActor = $npc->getVoiceActor();
-                $canRemove = $npc->getRecordingsCount() === 0;
-                return array(
-                    'id' => $npc->getId(),
-                    'name' => $npc->getName(),
-                    'voice_actor_id' => $voiceActor?->getId(),
-                    'voice_actor_name' => $voiceActor?->getName(),
-                    'recordings_count' => $npc->getRecordingsCount(),
-                    'can_remove' => $canRemove,
-                    'remove_title' => $canRemove ? '' : 'NPCs with recordings linked to this quest cannot be removed.',
-                );
-            }, $questNpcs);
-
-            return array(
-                'quest_id' => $quest->getId(),
-                'quest_name' => $quest->getName(),
-                'npc_ids' => $questNpcIds,
-                'npc_rows' => $npcRows,
-            );
-        }, $quests);
 
         self::$jsFiles[] = 'npcs';
         self::$views[] = 'npcs';
