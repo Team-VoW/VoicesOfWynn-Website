@@ -2,6 +2,7 @@
 
 namespace VoicesOfWynn\Controllers\Website;
 
+use VoicesOfWynn\Models\Storage\Storage;
 use VoicesOfWynn\Models\Website\ContentManager;
 use VoicesOfWynn\Models\Website\Quest AS QuestModel;
 
@@ -46,7 +47,7 @@ class Quest extends WebpageController
             return 404;
         }
 
-        $this->quest->getNpcs(true);   //Also load and save NPCs themselves into attribute
+        $this->quest->getNpcs(true);   //Also load and save NPCs themselves into attribute, also loads voice actors and sound editors
 
         self::$data['quest_quest'] = $this->quest;
 
@@ -57,6 +58,8 @@ class Quest extends WebpageController
         self::$data['quest_uuid'] = $uuid;
         self::$data['quest_upvoted'] = $cnm->getVotes(hash('sha256', $uuid ?? $_SERVER['REMOTE_ADDR']), '+', $this->quest);
         self::$data['quest_downvoted'] = $cnm->getVotes(hash('sha256', $uuid ?? $_SERVER['REMOTE_ADDR']), '-', $this->quest);
+
+        self::$data['quest_script_url'] = $this->quest->getScriptUrl(Storage::get());
 
         self::$views[] = 'quest';
         self::$cssFiles[] = 'quest';

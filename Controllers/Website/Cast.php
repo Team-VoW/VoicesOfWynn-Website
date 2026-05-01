@@ -2,6 +2,7 @@
 
 namespace VoicesOfWynn\Controllers\Website;
 
+use VoicesOfWynn\Models\Storage\Storage;
 use VoicesOfWynn\Models\Website\ContentManager;
 
 class Cast extends WebpageController
@@ -12,9 +13,9 @@ class Cast extends WebpageController
 	 */
 	public function process(array $args): int
 	{
-		$voiceActorId = $args[0];
+		$contributorId = $args[0];
 		$cnm = new ContentManager();
-		$voiceActor = $cnm->getVoiceActor($voiceActorId);
+		$voiceActor = $cnm->getVoiceActor($contributorId);
 		if ($voiceActor === false) {
 			//Voice actor with this ID doesn't exist
 			return 404;
@@ -26,7 +27,7 @@ class Cast extends WebpageController
 
 		self::$data['cast_voice_actor'] = $voiceActor;
 
-		$questRecordings = $cnm->getVoiceActorRecordings($voiceActorId);
+		$questRecordings = $cnm->getVoiceActorRecordings($contributorId);
 		$npcGroups = [];
 		foreach ($questRecordings as $quest) {
 			foreach ($quest->getNpcs() as $npc) {
@@ -49,6 +50,15 @@ class Cast extends WebpageController
 			}
 		}
 		self::$data['cast_npc_groups'] = array_values($npcGroups);
+		$scriptedQuests = $cnm->getWritersQuests($contributorId);
+		$storage = Storage::get();
+		$scriptUrls = [];
+		foreach ($scriptedQuests as $q) {
+			$scriptUrls[$q->getId()] = $q->getScriptUrl($storage);
+		}
+		self::$data['cast_scripted_quests'] = $scriptedQuests;
+		self::$data['cast_script_urls'] = $scriptUrls;
+		self::$data['cast_edited_npcs'] = $cnm->getEditorsNpcsByQuests($contributorId);
 
         $uuid = $this->loadUUID(); //Also saves UUID in $_SESSION
         self::$data['cast_uuid'] = $uuid;

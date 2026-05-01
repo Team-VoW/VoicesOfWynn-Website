@@ -368,6 +368,47 @@
   border-top: 1px solid #eee;
 }
 
+/* Sound editor strip (shown at bottom of expanded card when $cardShowSoundEditor = true) */
+.cast-npc-se-row {
+  margin-top: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.75rem;
+  background: rgba(123, 26, 155, 0.04);
+  border-radius: 0.625rem;
+  border-left: 3px solid var(--gradient-purple);
+}
+
+.cast-npc-se-label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.cast-npc-se-link--pic { display: block; flex-shrink: 0; }
+
+.cast-npc-se-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--gradient-purple);
+  transition: transform 0.2s ease;
+}
+
+.cast-npc-se-link--pic:hover .cast-npc-se-avatar { transform: scale(1.1); }
+
+.cast-npc-se-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--gradient-purple);
+  text-decoration: none;
+}
+
+.cast-npc-se-name:hover { color: var(--gradient-pink); }
+
 /* Featured recording (shown inline when $cardShowFeaturedRecording = true) */
 .cast-npc-featured-audio {
   grid-area: audio;
@@ -421,6 +462,8 @@ a.cast-npc-va-name:hover { color: var(--gradient-pink); }
 @media (prefers-reduced-motion: reduce) {
   .cast-npc-va-avatar { transition: none; }
   .cast-npc-va-link--pic:hover .cast-npc-va-avatar { transform: none; }
+  .cast-npc-se-avatar { transition: none; }
+  .cast-npc-se-link--pic:hover .cast-npc-se-avatar { transform: none; }
 }
 
 /* Responsive grid breakpoints for cast-npc-header */

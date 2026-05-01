@@ -142,10 +142,14 @@ abstract class WebpageController extends Controller
                     $return = $value;
                 }
                 else if ($value instanceof Quest) {
-                    $id = $this->sanitize($value->getId());
-                    $name = $this->sanitize($value->getName());
-                    $degeneratedName = $this->sanitize($value->getDegeneratedName());
-                    $quest = new Quest(array('id' => $id, 'name' => $name, 'degenerated_name' => $degeneratedName));
+                    $attributes = [];
+                    $attributes['id'] = $this->sanitize($value->getId());
+                    $attributes['name'] = $this->sanitize($value->getName());
+                    $attributes['degenerated_name'] = $this->sanitize($value->getDegeneratedName());
+                    if ($value->getScriptAuthor() !== null) {
+                        $attributes['writer'] = $this->sanitize($value->getScriptAuthor());
+                    }
+                    $quest = new Quest($attributes);
                     foreach ($value->getNpcs() ?? [] as $npc) {
                         $quest->addNpc($this->sanitize($npc));
                     }
@@ -160,10 +164,15 @@ abstract class WebpageController extends Controller
                     $attr['upvotes'] = $this->sanitize($value->getUpvotes());
                     $attr['downvotes'] = $this->sanitize($value->getDownvotes());
                     $attr['comments'] = $this->sanitize($value->getCommentsCount());
-                    $voiceActor = $this->sanitize($value->getVoiceActor());
+                    $voiceActor = ($value->getVoiceActor() !== null) ? $this->sanitize($value->getVoiceActor()) : null;
                     $npc = new Npc($attr);
                     if ($voiceActor !== null) {
                         $npc->setVoiceActor($voiceActor);
+                    }
+                    if ($value->getSoundEditor() !== null) {
+                        foreach ($value->getSoundEditor() as $quest => $editor) {
+                            $npc->setSoundEditor(new Quest(['id' => $this->sanitize($quest)]), $this->sanitize($editor));
+                        }
                     }
                     foreach ($value->getRecordings() as $recording) {
                         $npc->addRecording($this->sanitize($recording));
@@ -171,7 +180,6 @@ abstract class WebpageController extends Controller
                     $return = $npc;
                 }
                 else if ($value instanceof Recording) {
-                    $return = $value;
                     $attr = array();
                     $attr['id'] = $this->sanitize($value->id);
                     $attr['npc_id'] = $this->sanitize($value->npcId);

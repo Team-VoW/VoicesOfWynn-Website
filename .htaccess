@@ -25,6 +25,7 @@ RewriteEngine On
 # RewriteCond %{REQUEST_FILENAME} !-d
 
 RewriteRule ^downloads$ https://modrinth.com/mod/vow [R=301,L]
+RewriteRule ^submit$ https://owncloud.cesnet.cz/index.php/s/BniTsVDqRMOIAFm [R=301,L]
 
 RewriteCond %{REQUEST_URI} ^/files/updater-data/.*
 RewriteRule ^.*$ - [NC,L]

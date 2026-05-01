@@ -1,0 +1,1 @@
+In the older version of our website, you could rate and comment on individual recordings, not the whole NPCs. It didn't make much sense and one person commented the same thing on all voicelines of a certain NPC.
