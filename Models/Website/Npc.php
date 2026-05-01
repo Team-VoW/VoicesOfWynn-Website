@@ -266,6 +266,20 @@ class Npc extends ContentModel implements JsonSerializable
     }
 
 
+    public function rename(string $name): bool
+    {
+        $degeneratedName = self::degenerateName($name);
+        $result = (new Db('Website/DbInfo.ini'))->executeQuery(
+            'UPDATE npc SET name = ?, degenerated_name = ? WHERE npc_id = ? LIMIT 1;',
+            array($name, $degeneratedName, $this->id)
+        );
+        if ($result) {
+            $this->name = $name;
+            $this->degeneratedName = $degeneratedName;
+        }
+        return $result;
+    }
+
     /**
      * Checks if this NPC has been voted for by certain client
      * @param string $voterId SHA256 hash of either Minecraft user UUID or IP address of the user whose voting we're checking

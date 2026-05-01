@@ -82,6 +82,38 @@ $("#voice-actor-form").on('submit', function(event) {
 });
 
 // ==========================================================================
+// RENAMING SECTION
+// ==========================================================================
+
+function toggleRenameForm() {
+    $("#rename-btn").text($("#rename-btn").text() === "Cancel" ? "Rename NPC" : "Cancel");
+    $("#rename-form").toggle();
+}
+
+$("#rename-btn").on('click', toggleRenameForm);
+
+$("#rename-form").on('submit', function(event) {
+    event.preventDefault();
+    var newName = $("#npc-name-input").val().trim();
+    if (!newName) return;
+    $.ajax({
+        url: "/administration/npcs/manage/" + npcId + "/rename",
+        type: 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify({ name: newName }),
+        success: function() {
+            $(".npc-hero-title").contents().filter(function() {
+                return this.nodeType === 3;
+            }).first().replaceWith(newName);
+            toggleRenameForm();
+        },
+        error: function(result, message, error) {
+            alert("An error occurred: " + error);
+        }
+    });
+});
+
+// ==========================================================================
 // ARCHIVING SECTION
 // ==========================================================================
 

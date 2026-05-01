@@ -153,6 +153,24 @@ class Npc extends WebpageController
                 header('HTTP/1.1 303 See Other');
                 echo json_encode(array('Location' => '/administration/npcs/manage/'.$result));
                 return ($result) ? 303 : 500;
+            case 'rename':
+                $body = json_decode(file_get_contents('php://input'), true);
+                $name = trim($body['name'] ?? '');
+                if (empty($name)) {
+                    return 400;
+                }
+                if (mb_strlen($name) > 63) {
+                    return 400;
+                }
+                try {
+                    $result = $this->npc->rename($name);
+                } catch (\InvalidArgumentException $e) {
+                    http_response_code(400);
+                    header('Content-Type: application/json');
+                    echo json_encode(['error' => $e->getMessage()]);
+                    return 400;
+                }
+                return ($result) ? 204 : 500;
             case 'archive-quest-recordings':
                 $questId = array_shift($args);
                 if (empty($questId)) {

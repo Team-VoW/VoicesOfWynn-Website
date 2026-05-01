@@ -32,7 +32,12 @@
         <div class="admin-controls">
             <button id="change-actor-btn">Change</button>
             <button id="archive-btn">Archive NPC</button>
+            <button id="rename-btn">Rename NPC</button>
         </div>
+        <form id="rename-form" style="display:none;">
+            <input type="text" name="npc_name" id="npc-name-input" maxlength="63" value="<?= ${basename(__FILE__, '.phtml') . '_npc'}->getName() ?>" />
+            <input type="submit" value="Confirm" id="rename-confirm" />
+        </form>
         <form id="voice-actor-form">
             <select name="actor">
                 <?php if (${basename(__FILE__, '.phtml') . '_voice_actor'} === null) : ?>
