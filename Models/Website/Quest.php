@@ -70,6 +70,21 @@ class Quest extends ContentModel implements JsonSerializable
 	    return (object) get_object_vars($this);
 	}
 
+    public function delete(): bool
+    {
+        $linked = (new Db('Website/DbInfo.ini'))->fetchQuery(
+            'SELECT COUNT(*) AS cnt FROM npc_quest WHERE quest_id = ?;',
+            array($this->id)
+        );
+        if ($linked === false || $linked['cnt'] > 0) {
+            return false;
+        }
+        return (new Db('Website/DbInfo.ini'))->executeQuery(
+            'DELETE FROM quest WHERE quest_id = ? LIMIT 1;',
+            array($this->id)
+        );
+    }
+
     public function rename(string $name): bool
     {
         $degeneratedName = self::degenerateName($name);

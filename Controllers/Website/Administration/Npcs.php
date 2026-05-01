@@ -62,6 +62,20 @@ class Npcs extends WebpageController
                     }
                     $result = $npc->removeFromQuest($questId);
                     return ($result) ? 204 : 500;
+                case 'delete-quest':
+                    if ($_SERVER['REQUEST_METHOD'] !== 'DELETE') {
+                        return 405;
+                    }
+                    $questId = $args[1] ?? null;
+                    if ($questId === null) {
+                        return 400;
+                    }
+                    $quest = new Quest(array());
+                    if (!$quest->loadFromId($questId)) {
+                        return 404;
+                    }
+                    $result = $quest->delete();
+                    return ($result) ? 204 : 409;
                 case 'rename-quest':
                     if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
                         return 405;

@@ -52,6 +52,7 @@ function buildSection(quest) {
         '<h3 class="txt-c">' + escHtml(quest.quest_name) +
             ' <button class="rename-quest-btn">Rename</button>' +
         '</h3>' +
+        (quest.npc_rows.length === 0 ? ' <button class="delete-quest-btn">Delete quest</button>' : '') +
         '<form class="rename-quest-form" style="display:none;">' +
             '<input type="text" class="rename-quest-input" maxlength="63" value="' + escHtml(quest.quest_name) + '">' +
             '<input type="submit" value="Confirm">' +
@@ -230,6 +231,28 @@ $results.on('click', '.remove-npc-from-quest-btn', function (event) {
                 showRemoveBlockedDialog(npcId);
                 return;
             }
+            alert('An error occurred: ' + error);
+        }
+    });
+});
+
+// Delete quest
+$results.on('click', '.delete-quest-btn', function () {
+    const $section = $(this).closest('section');
+    const questName = $section.find('h3').contents().filter(function () {
+        return this.nodeType === 3;
+    }).first().text().trim();
+    if (!confirm('Delete quest "' + questName + '"?\nThis cannot be undone.')) {
+        return;
+    }
+    const questId = $section.attr('data-quest-id');
+    $.ajax({
+        url: '/administration/npcs/delete-quest/' + questId,
+        type: 'DELETE',
+        success: function () {
+            $section.remove();
+        },
+        error: function (result, message, error) {
             alert('An error occurred: ' + error);
         }
     });
