@@ -1,21 +1,34 @@
 const $results = $('#npc-search-results');
 let searchTimer;
 let autocompleteTimer;
+let lastSearchXhr;
+let lastAutocompleteXhr;
 
 $('#npc-search').on('input', function () {
     clearTimeout(searchTimer);
     const q = this.value.trim();
     if (q.length < 3) {
+        if (lastSearchXhr) {
+            lastSearchXhr.abort();
+            lastSearchXhr = null;
+        }
         $results.html('<p>Search for a quest name or NPC name (minimum 3 characters).</p>');
         return;
     }
     searchTimer = setTimeout(function () {
-        $.getJSON('/administration/npcs/search', { q }, function (rows) {
+        if (lastSearchXhr) {
+            lastSearchXhr.abort();
+        }
+        const request = $.getJSON('/administration/npcs/search', { q }, function (rows) {
+            if (lastSearchXhr !== request) {
+                return;
+            }
             $results.empty();
             rows.forEach(function (quest) {
                 $results.append(buildSection(quest));
             });
         });
+        lastSearchXhr = request;
     }, 300);
 });
 
@@ -84,11 +97,21 @@ $results.on('input', '.add-npc-autocomplete', function () {
     $idField.val('');
     const q = $input.val().trim();
     if (!q) {
+        if (lastAutocompleteXhr) {
+            lastAutocompleteXhr.abort();
+            lastAutocompleteXhr = null;
+        }
         $suggestions.empty().hide();
         return;
     }
     autocompleteTimer = setTimeout(function () {
-        $.getJSON('/administration/npcs/autocomplete', { q }, function (npcs) {
+        if (lastAutocompleteXhr) {
+            lastAutocompleteXhr.abort();
+        }
+        const request = $.getJSON('/administration/npcs/autocomplete', { q }, function (npcs) {
+            if (lastAutocompleteXhr !== request) {
+                return;
+            }
             $suggestions.empty();
             if (!npcs.length) {
                 $suggestions.hide();
@@ -103,6 +126,7 @@ $results.on('input', '.add-npc-autocomplete', function () {
             });
             $suggestions.show();
         });
+        lastAutocompleteXhr = request;
     }, 200);
 });
 
@@ -225,6 +249,9 @@ $results.on('click', '.remove-npc-from-quest-btn', function (event) {
         type: 'DELETE',
         success: function () {
             $row.remove();
+            if ($section.find('tr[data-npc-id]').length === 0) {
+                $('#npc-search').trigger('input');
+            }
         },
         error: function (result, message, error) {
             if (result.status === 409) {

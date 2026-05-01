@@ -116,6 +116,11 @@ class Npcs extends WebpageController
                         echo json_encode([]);
                         exit();
                     }
+                    if (mb_strlen($q) < 3) {
+                        header('Content-Type: application/json');
+                        echo json_encode([]);
+                        exit();
+                    }
                     $quests = (new Quest(array()))->searchWithNpcs($q);
                     $rows = array_map(function (Quest $quest) {
                         $questNpcs = $quest->getNpcs() ?? array();

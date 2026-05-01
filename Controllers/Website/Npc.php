@@ -162,6 +162,12 @@ class Npc extends WebpageController
                 if (mb_strlen($name) > 63) {
                     return 400;
                 }
+                if (!$this->npc->loadFromId()) {
+                    http_response_code(404);
+                    header('Content-Type: application/json');
+                    echo json_encode(['error' => 'NPC not found.']);
+                    return 404;
+                }
                 try {
                     $result = $this->npc->rename($name);
                 } catch (\InvalidArgumentException $e) {
@@ -248,4 +254,3 @@ class Npc extends WebpageController
 		return ($result) ? 204 : 500;
 	}
 }
-

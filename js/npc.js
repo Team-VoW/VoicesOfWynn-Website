@@ -104,7 +104,7 @@ $("#rename-form").on('submit', function(event) {
         success: function() {
             $(".npc-hero-title").contents().filter(function() {
                 return this.nodeType === 3;
-            }).first().replaceWith(newName);
+            }).first().replaceWith(document.createTextNode(newName));
             toggleRenameForm();
         },
         error: function(result, message, error) {

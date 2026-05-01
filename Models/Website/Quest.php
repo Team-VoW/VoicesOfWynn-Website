@@ -72,26 +72,93 @@ class Quest extends ContentModel implements JsonSerializable
 
     public function delete(): bool
     {
-        $linked = (new Db('Website/DbInfo.ini'))->fetchQuery(
-            'SELECT COUNT(*) AS cnt FROM npc_quest WHERE quest_id = ?;',
-            array($this->id)
-        );
-        if ($linked === false || $linked['cnt'] > 0) {
+        $db = new Db('Website/DbInfo.ini');
+        $db->startTransaction();
+        try {
+            $quest = $db->fetchQuery(
+                'SELECT quest_id FROM quest WHERE quest_id = ? FOR UPDATE;',
+                array($this->id)
+            );
+            if ($quest === false) {
+                $db->rollbackTransaction();
+                return false;
+            }
+
+            $linked = $db->fetchQuery(
+                'SELECT COUNT(*) AS cnt FROM npc_quest WHERE quest_id = ? FOR UPDATE;',
+                array($this->id)
+            );
+            if ($linked === false || $linked['cnt'] > 0) {
+                $db->rollbackTransaction();
+                return false;
+            }
+
+            $result = $db->executeQuery(
+                'DELETE FROM quest WHERE quest_id = ? LIMIT 1;',
+                array($this->id)
+            );
+            if (!$result) {
+                $db->rollbackTransaction();
+                return false;
+            }
+
+            $db->commitTransaction();
+            return true;
+        } catch (\Throwable $e) {
+            $db->rollbackTransaction();
             return false;
         }
-        return (new Db('Website/DbInfo.ini'))->executeQuery(
-            'DELETE FROM quest WHERE quest_id = ? LIMIT 1;',
-            array($this->id)
-        );
     }
 
     public function rename(string $name): bool
     {
+        $oldDegenerated = $this->degeneratedName;
         $degeneratedName = self::degenerateName($name);
-        $result = (new Db('Website/DbInfo.ini'))->executeQuery(
-            'UPDATE quest SET name = ?, degenerated_name = ? WHERE quest_id = ? LIMIT 1;',
-            array($name, $degeneratedName, $this->id)
-        );
+        $storage = null;
+        $oldKey = null;
+        $newKey = null;
+        $movedScript = false;
+
+        if ($oldDegenerated !== null && $oldDegenerated !== $degeneratedName) {
+            $storage = Storage::get();
+            $oldKey = 'scripts/' . $oldDegenerated . '.txt';
+            $newKey = 'scripts/' . $degeneratedName . '.txt';
+            try {
+                if ($storage->exists($oldKey)) {
+                    if (!$storage->rename($oldKey, $newKey)) {
+                        return false;
+                    }
+                    $movedScript = true;
+                }
+            } catch (\Throwable $e) {
+                return false;
+            }
+        }
+
+        try {
+            $result = (new Db('Website/DbInfo.ini'))->executeQuery(
+                'UPDATE quest SET name = ?, degenerated_name = ? WHERE quest_id = ? LIMIT 1;',
+                array($name, $degeneratedName, $this->id)
+            );
+        } catch (\Throwable $e) {
+            if ($movedScript) {
+                try {
+                    $storage->rename($newKey, $oldKey);
+                } catch (\Throwable $rollbackException) {
+                    // The original database failure should still make the rename fail.
+                }
+            }
+            return false;
+        }
+
+        if (!$result && $movedScript) {
+            try {
+                $storage->rename($newKey, $oldKey);
+            } catch (\Throwable $rollbackException) {
+                return false;
+            }
+        }
+
         if ($result) {
             $this->name = $name;
             $this->degeneratedName = $degeneratedName;
@@ -223,6 +290,10 @@ class Quest extends ContentModel implements JsonSerializable
         }
 
         $ids = array_column($idsResult, 'quest_id');
+        if (empty($ids)) {
+            return array();
+        }
+
         $placeholders = implode(',', array_fill(0, count($ids), '?'));
 
         $result = $db->fetchQuery('
