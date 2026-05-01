@@ -49,7 +49,14 @@ function buildSection(quest) {
 
     return $(
         '<section data-quest-id="' + quest.quest_id + '" class="txt-c">' +
-        '<h3 class="txt-c">' + escHtml(quest.quest_name) + '</h3>' +
+        '<h3 class="txt-c">' + escHtml(quest.quest_name) +
+            ' <button class="rename-quest-btn">Rename</button>' +
+        '</h3>' +
+        '<form class="rename-quest-form" style="display:none;">' +
+            '<input type="text" class="rename-quest-input" maxlength="63" value="' + escHtml(quest.quest_name) + '">' +
+            '<input type="submit" value="Confirm">' +
+            ' <button type="button" class="rename-quest-cancel-btn">Cancel</button>' +
+        '</form>' +
         '<form class="add-npc-to-quest-form">' +
             '<div class="autocomplete-wrapper" style="display:inline-block;position:relative;">' +
                 '<input type="text" class="add-npc-autocomplete" placeholder="Add NPC to this quest\u2026" autocomplete="off">' +
@@ -223,6 +230,41 @@ $results.on('click', '.remove-npc-from-quest-btn', function (event) {
                 showRemoveBlockedDialog(npcId);
                 return;
             }
+            alert('An error occurred: ' + error);
+        }
+    });
+});
+
+// Rename quest
+$results.on('click', '.rename-quest-btn', function () {
+    const $section = $(this).closest('section');
+    $section.find('.rename-quest-form').toggle();
+});
+
+$results.on('click', '.rename-quest-cancel-btn', function () {
+    $(this).closest('.rename-quest-form').hide();
+});
+
+$results.on('submit', '.rename-quest-form', function (event) {
+    event.preventDefault();
+    const $form = $(this);
+    const $section = $form.closest('section');
+    const questId = $section.attr('data-quest-id');
+    const newName = $form.find('.rename-quest-input').val().trim();
+    if (!newName) return;
+    $.ajax({
+        url: '/administration/npcs/rename-quest/' + questId,
+        type: 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify({ name: newName }),
+        success: function () {
+            $section.find('h3').contents().filter(function () {
+                return this.nodeType === 3;
+            }).first().replaceWith(escHtml(newName));
+            $form.find('.rename-quest-input').val(newName);
+            $form.hide();
+        },
+        error: function (result, message, error) {
             alert('An error occurred: ' + error);
         }
     });

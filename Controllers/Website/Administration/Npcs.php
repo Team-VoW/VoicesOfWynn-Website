@@ -62,6 +62,35 @@ class Npcs extends WebpageController
                     }
                     $result = $npc->removeFromQuest($questId);
                     return ($result) ? 204 : 500;
+                case 'rename-quest':
+                    if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
+                        return 405;
+                    }
+                    $questId = $args[1] ?? null;
+                    if ($questId === null) {
+                        return 400;
+                    }
+                    $body = json_decode(file_get_contents('php://input'), true);
+                    $name = trim($body['name'] ?? '');
+                    if (empty($name)) {
+                        return 400;
+                    }
+                    if (mb_strlen($name) > 63) {
+                        return 400;
+                    }
+                    $quest = new Quest(array());
+                    if (!$quest->loadFromId($questId)) {
+                        return 404;
+                    }
+                    try {
+                        $result = $quest->rename($name);
+                    } catch (\InvalidArgumentException $e) {
+                        http_response_code(400);
+                        header('Content-Type: application/json');
+                        echo json_encode(['error' => $e->getMessage()]);
+                        return 400;
+                    }
+                    return ($result) ? 204 : 500;
                 case 'search':
                     $q = trim($_GET['q'] ?? '');
                     if (mb_strlen($q) > 63) {

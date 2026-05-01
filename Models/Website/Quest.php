@@ -70,6 +70,20 @@ class Quest extends ContentModel implements JsonSerializable
 	    return (object) get_object_vars($this);
 	}
 
+    public function rename(string $name): bool
+    {
+        $degeneratedName = self::degenerateName($name);
+        $result = (new Db('Website/DbInfo.ini'))->executeQuery(
+            'UPDATE quest SET name = ?, degenerated_name = ? WHERE quest_id = ? LIMIT 1;',
+            array($name, $degeneratedName, $this->id)
+        );
+        if ($result) {
+            $this->name = $name;
+            $this->degeneratedName = $degeneratedName;
+        }
+        return $result;
+    }
+
     /**
      * Updates the script writer for this quest in the database
      * @param int|null $writerId ID of the user to set as writer, or NULL to clear
