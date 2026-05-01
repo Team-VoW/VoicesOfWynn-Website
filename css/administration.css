@@ -5,6 +5,11 @@ main {
     max-width:100%;
 }
 
+.remove-npc-from-quest-btn-blocked {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .checkbox-large {
     width: 5vh;
     height: 5vh;

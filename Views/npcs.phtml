@@ -2,3 +2,9 @@
     <input type="search" id="npc-search" placeholder="Search quests or NPCs…" autocomplete="off" style="width:300px;padding:6px 10px;font-size:1em;">
     <div id="npc-search-results"><p>Search for a quest name or NPC name (minimum 3 characters).</p></div>
 </div>
+<dialog id="remove-blocked-dialog" style="max-width:420px;padding:1.5rem;border-radius:6px;border:1px solid #ccc;">
+    <p><strong>Cannot remove NPC from quest</strong></p>
+    <p>This NPC has recordings linked to this quest and cannot be removed directly.</p>
+    <p>To remove it, go to the <a id="remove-blocked-npc-link" href="#">NPC's page</a> and click <strong>Archive all recordings</strong>.</p>
+    <button id="remove-blocked-dialog-close">Close</button>
+</dialog>

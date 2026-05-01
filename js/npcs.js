@@ -34,14 +34,16 @@ function buildSection(quest) {
         const vaCell = npc.voice_actor_id
             ? '<a href="cast/' + npc.voice_actor_id + '" class="va-name">' + escHtml(npc.voice_actor_name) + '</a>'
             : '<i>Nobody</i>';
-        const removeDisabled = npc.can_remove ? '' : 'disabled title="' + escHtml(npc.remove_title) + '"';
+        const removeBtn = npc.can_remove
+            ? '<button class="remove-npc-from-quest-btn">Remove from quest</button>'
+            : '<button class="remove-npc-from-quest-btn-blocked">Remove from quest</button>';
         rows += '<tr data-npc-id="' + npc.id + '">' +
             '<td><button class="rearrange-up-btn">\uD83D\uDD3C</button><br><button class="rearrange-down-btn">\uD83D\uDD3D</button></td>' +
             '<td class="width-150"><a href="contents/npc/' + npc.id + '" class="npc-name">' + escHtml(npc.name) + '</a></td>' +
             '<td class="width-150">' + vaCell + '</td>' +
             '<td>' + npc.recordings_count + '</td>' +
             '<td><b><a id="managelink" href="administration/npcs/manage/' + npc.id + '" class="width-150">Manage</a></b></td>' +
-            '<td><button class="remove-npc-from-quest-btn" ' + removeDisabled + '>Remove from quest</button></td>' +
+            '<td>' + removeBtn + '</td>' +
             '</tr>';
     });
 
@@ -184,6 +186,22 @@ $results.on('click', '.rearrange-down-btn', function (event) {
     });
 });
 
+const removeBlockedDialog = document.getElementById('remove-blocked-dialog');
+$('#remove-blocked-dialog-close').on('click', function () {
+    removeBlockedDialog.close();
+});
+
+function showRemoveBlockedDialog(npcId) {
+    $('#remove-blocked-npc-link').attr('href', '/administration/npcs/manage/' + npcId);
+    removeBlockedDialog.showModal();
+}
+
+// Remove NPC from quest (blocked — has recordings)
+$results.on('click', '.remove-npc-from-quest-btn-blocked', function (event) {
+    const npcId = $(event.target).closest('tr').attr('data-npc-id');
+    showRemoveBlockedDialog(npcId);
+});
+
 // Remove NPC from quest
 $results.on('click', '.remove-npc-from-quest-btn', function (event) {
     const $row = $(event.target).closest('tr');
@@ -202,7 +220,7 @@ $results.on('click', '.remove-npc-from-quest-btn', function (event) {
         },
         error: function (result, message, error) {
             if (result.status === 409) {
-                alert("This NPC can't be removed from this quest because it has recordings linked to the quest.");
+                showRemoveBlockedDialog(npcId);
                 return;
             }
             alert('An error occurred: ' + error);
