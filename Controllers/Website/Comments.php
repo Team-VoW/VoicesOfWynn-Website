@@ -4,7 +4,6 @@ namespace VoicesOfWynn\Controllers\Website;
 
 use VoicesOfWynn\Models\Db;
 use VoicesOfWynn\Models\Website\ContentManager;
-use VoicesOfWynn\Models\Website\Npc;
 
 class Comments extends WebpageController
 {
@@ -53,10 +52,6 @@ class Comments extends WebpageController
 		self::$data[$prefix.'voice_actor_id']   = $voiceActor ? $voiceActor->getId() : 0;
 		self::$data[$prefix.'comments']         = $cnm->getComments($npcId);
 		self::$data[$prefix.'owned_comments']   = $cnm->getOwnedComments($npcId);
-		$color = ['red', 'yellow', 'green', 'blue', 'purple'][rand(0, 4)];
-		$_SESSION['antispam'] = $color;
-		self::$data[$prefix.'antispam_color']      = $color;
-		self::$data[$prefix.'antispam_color_code'] = Npc::IDEAL_COLORS[$color];
 
 		if ($isDialog) {
 			self::$data[$prefix.'npcId'] = $npcId;
@@ -110,4 +105,3 @@ class Comments extends WebpageController
 		return 500;
 	}
 }
-
