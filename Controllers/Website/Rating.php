@@ -45,10 +45,10 @@ class Rating extends WebpageController
 			case 'c':
 				try {
                     if (isset($_POST['verified']) && $_POST['verified'] === "true") { //HTTP turns JavaScript "true" into string
-                        $commentId = $npc->comment(true, null, null, null, $_POST['content'], null, null);
+                        $commentId = $npc->comment(true, null, null, null, $_POST['content']);
                     }
                     else {
-	                    $commentId = $npc->comment(false, $_SERVER['REMOTE_ADDR'], $_POST['name'], $_POST['email'], $_POST['content'], $_SESSION['antispam'], $_POST['antispam']);
+	                    $commentId = $npc->comment(false, $_SERVER['REMOTE_ADDR'], $_POST['name'], $_POST['email'], $_POST['content']);
                     }
 					exit($commentId); //TODO Not ideal
 				} catch (UserException $e) {

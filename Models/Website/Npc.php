@@ -9,15 +9,6 @@ use function VoicesOfWynn\storageUrl;
 
 class Npc extends ContentModel implements JsonSerializable
 {
-    public const IDEAL_COLORS = array(
-        'red' => "#CC3333",
-        'yellow' => '#CCCC33',
-        'green' => '#33CC33',
-        'blue' => '#3333CC',
-        'purple' => '#CC33CC'
-    );
-    private const ANTISPAM_TOLLERANCE = 20; //In % out of 256
-
 	private int $id = 0;
 	private string $name = '';
     private string $degeneratedName = '';
@@ -257,32 +248,11 @@ class Npc extends ContentModel implements JsonSerializable
      * @param $author string|null
      * @param $email string|null
      * @param $content string
-     * @param $antispam string|null
      * @return int ID of the newly created comment
      * @throws \Exception
      */
-    public function comment(bool $verified, $ip, $author, $email, $content, $antispamQuestion, $antispamAnswer)
+    public function comment(bool $verified, $ip, $author, $email, $content)
     {
-        if (!$verified) {
-            $idealColor = self::IDEAL_COLORS[$antispamQuestion];
-            $redPart = hexdec(substr($idealColor, 1, 2));
-            $greenPart = hexdec(substr($idealColor, 3, 2));
-            $bluePart = hexdec(substr($idealColor, 5, 2));
-            $absoluteTollerance = round(256 * self::ANTISPAM_TOLLERANCE / 100);
-
-            $redPartAnswer = hexdec(substr($antispamAnswer, 1, 2));
-            $greenPartAnswer = hexdec(substr($antispamAnswer, 3, 2));
-            $bluePartAnswer = hexdec(substr($antispamAnswer, 5, 2));
-
-            if (
-                $redPartAnswer + $absoluteTollerance < $redPart || $redPartAnswer - $absoluteTollerance > $redPart ||
-                $greenPartAnswer + $absoluteTollerance < $greenPart || $greenPartAnswer - $absoluteTollerance > $greenPart ||
-                $bluePartAnswer + $absoluteTollerance < $bluePart || $bluePartAnswer - $absoluteTollerance > $bluePart
-            ) {
-                throw new UserException('The colour you picked was too distinct from ' . $antispamQuestion . '. Try again please. If you are colorblind, please let us know on Discord by sending a DM to any admin.');
-            }
-        }
-
         if ($verified) {
             if (!isset($_SESSION['user'])) {
                 throw new UserException('No contributor is logged in.');
