@@ -1,8 +1,14 @@
 const $results = $('#npc-search-results');
 let searchTimer;
-let autocompleteTimer;
 let lastSearchXhr;
-let lastAutocompleteXhr;
+let allNpcs = [];
+let npcsLoaded = false;
+
+$.getJSON('/administration/npcs/list', function (npcs) {
+    allNpcs = npcs;
+    npcsLoaded = true;
+    populateNpcSelects($results);
+});
 
 $('#npc-search').on('input', function () {
     clearTimeout(searchTimer);
@@ -27,6 +33,7 @@ $('#npc-search').on('input', function () {
             rows.forEach(function (quest) {
                 $results.append(buildSection(quest));
             });
+            populateNpcSelects($results);
         });
         lastSearchXhr = request;
     }, 300);
@@ -72,11 +79,9 @@ function buildSection(quest) {
             ' <button type="button" class="rename-quest-cancel-btn">Cancel</button>' +
         '</form>' +
         '<form class="add-npc-to-quest-form">' +
-            '<div class="autocomplete-wrapper" style="display:inline-block;position:relative;">' +
-                '<input type="text" class="add-npc-autocomplete" placeholder="Add NPC to this quest\u2026" autocomplete="off">' +
-                '<input type="hidden" class="add-npc-id">' +
-                '<div class="autocomplete-suggestions" style="display:none;position:absolute;z-index:100;background:#fff;border:1px solid #ccc;max-height:200px;overflow-y:auto;min-width:200px;"></div>' +
-            '</div>' +
+            '<select class="add-npc-id" data-selected-npc-ids="' + escHtml(quest.npc_ids.join(',')) + '">' +
+                '<option value="">Loading NPCs...</option>' +
+            '</select> ' +
             '<input type="submit" value="Add">' +
         '</form>' +
         '<table class="table-npc-management">' +
@@ -87,68 +92,27 @@ function buildSection(quest) {
     );
 }
 
-// Autocomplete input handler
-$results.on('input', '.add-npc-autocomplete', function () {
-    clearTimeout(autocompleteTimer);
-    const $input = $(this);
-    const $wrapper = $input.closest('.autocomplete-wrapper');
-    const $idField = $wrapper.find('.add-npc-id');
-    const $suggestions = $wrapper.find('.autocomplete-suggestions');
-    $idField.val('');
-    const q = $input.val().trim();
-    if (!q) {
-        if (lastAutocompleteXhr) {
-            lastAutocompleteXhr.abort();
-            lastAutocompleteXhr = null;
-        }
-        $suggestions.empty().hide();
+function populateNpcSelects($container) {
+    if (!npcsLoaded) {
         return;
     }
-    autocompleteTimer = setTimeout(function () {
-        if (lastAutocompleteXhr) {
-            lastAutocompleteXhr.abort();
-        }
-        const request = $.getJSON('/administration/npcs/autocomplete', { q }, function (npcs) {
-            if (lastAutocompleteXhr !== request) {
-                return;
+
+    $container.find('.add-npc-id').each(function () {
+        const $select = $(this);
+        const selectedNpcIds = ($select.attr('data-selected-npc-ids') || '').split(',');
+        $select.empty().append('<option value="">Add NPC to this quest...</option>');
+        allNpcs.forEach(function (npc) {
+            const label = npc.name + (npc.archived ? ' (outdated)' : '');
+            const $option = $('<option>')
+                .val(npc.id)
+                .text(label);
+            if (selectedNpcIds.includes(String(npc.id))) {
+                $option.prop('disabled', true);
             }
-            $suggestions.empty();
-            if (!npcs.length) {
-                $suggestions.hide();
-                return;
-            }
-            npcs.forEach(function (npc) {
-                const label = npc.name + (npc.archived ? ' (outdated)' : '');
-                $('<div class="autocomplete-item" style="padding:4px 8px;cursor:pointer;">')
-                    .text(label)
-                    .data('id', npc.id)
-                    .appendTo($suggestions);
-            });
-            $suggestions.show();
+            $select.append($option);
         });
-        lastAutocompleteXhr = request;
-    }, 200);
-});
-
-$results.on('mouseenter', '.autocomplete-item', function () {
-    $(this).css('background', '#eee');
-}).on('mouseleave', '.autocomplete-item', function () {
-    $(this).css('background', '');
-});
-
-$results.on('click', '.autocomplete-item', function () {
-    const $item = $(this);
-    const $wrapper = $item.closest('.autocomplete-wrapper');
-    $wrapper.find('.add-npc-autocomplete').val($item.text());
-    $wrapper.find('.add-npc-id').val($item.data('id'));
-    $item.closest('.autocomplete-suggestions').hide();
-});
-
-$(document).on('click', function (e) {
-    if (!$(e.target).closest('.autocomplete-wrapper').length) {
-        $('.autocomplete-suggestions').hide();
-    }
-});
+    });
+}
 
 // Add NPC form submit
 $results.on('submit', '.add-npc-to-quest-form', function (event) {

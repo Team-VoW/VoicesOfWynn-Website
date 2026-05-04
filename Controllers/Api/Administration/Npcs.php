@@ -17,7 +17,7 @@ class Npcs extends ApiController
         'delete-quest' => 'DELETE',
         'rename-quest' => 'PUT',
         'search' => 'GET',
-        'autocomplete' => 'GET',
+        'list' => 'GET',
     ];
 
     /**
@@ -50,8 +50,8 @@ class Npcs extends ApiController
                 return $this->renameQuest($args);
             case 'search':
                 return $this->search();
-            case 'autocomplete':
-                return $this->autocomplete();
+            case 'list':
+                return $this->listNpcs();
         }
 
         return 400;
@@ -161,18 +161,9 @@ class Npcs extends ApiController
         return 200;
     }
 
-    private function autocomplete(): int
+    private function listNpcs(): int
     {
-        $q = trim($_GET['q'] ?? '');
-        if (mb_strlen($q) > 63) {
-            return 400;
-        }
-        if ($q === '') {
-            echo json_encode([]);
-            return 200;
-        }
-
-        $npcs = (new NpcAdministration())->searchNpcs($q, 20);
+        $npcs = (new NpcAdministration())->getNpcs();
         echo json_encode(array_map(function (Npc $npc) {
             return [
                 'id' => $npc->getId(),

@@ -6,11 +6,11 @@ use VoicesOfWynn\Models\Db;
 
 class NpcAdministration
 {
-    public function searchNpcs(string $term, int $limit): array
+    public function getNpcs(): array
     {
         $result = (new Db('Website/DbInfo.ini'))->fetchQuery(
-            'SELECT npc_id, name, archived FROM npc WHERE name LIKE ? ORDER BY name LIMIT ?;',
-            ['%' . $term . '%', $limit],
+            'SELECT npc_id, name, archived FROM npc ORDER BY name;',
+            [],
             true
         );
 
