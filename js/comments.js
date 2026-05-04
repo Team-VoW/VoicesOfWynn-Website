@@ -52,7 +52,7 @@ $("#guest-option").on('click', function () {
 $("form").on('submit', function (event) {
     event.preventDefault();
     let npcId = $(event.target).attr('data-npc-id');
-    let name, email, content, antispam, verified;
+    let name, email, content, verified;
     if ($("#contributor-option").length === 1 && $("#contributor-option").hasClass('selected')) {
         //Posting as a contributor
         verified = true;
@@ -63,7 +63,6 @@ $("form").on('submit', function (event) {
         name = $("#name").val();
         email = $("#email").val();
         content = $("#content-guest").val();
-        antispam = $("#antispam").val();
     }
 
     $.ajax({
@@ -73,8 +72,7 @@ $("form").on('submit', function (event) {
             'verified': verified,
             'name': name,
             'email': email,
-            'content': content,
-            'antispam': antispam
+            'content': content
         },
         success: function (result, message) {
             let name, badges = "", gravatar, content;

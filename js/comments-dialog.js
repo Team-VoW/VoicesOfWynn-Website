@@ -139,7 +139,7 @@ function initDialogHandlers(npcId) {
         e.preventDefault();
         var $form = $(this);
         var formNpcId = $form.data('npc-id');
-        var name, email, content, antispam, verified;
+        var name, email, content, verified;
 
         var $contributorTab = $overlay.find('#comments-dialog-contributor-tab');
         if ($contributorTab.length && $contributorTab.hasClass('selected')) {
@@ -150,7 +150,6 @@ function initDialogHandlers(npcId) {
             name = $overlay.find('#comments-dialog-name').val();
             email = $overlay.find('#comments-dialog-email').val();
             content = $overlay.find('#comments-dialog-content-guest').val();
-            antispam = $overlay.find('#comments-dialog-antispam').val();
         }
 
         $.ajax({
@@ -160,8 +159,7 @@ function initDialogHandlers(npcId) {
                 'verified': verified,
                 'name': name,
                 'email': email,
-                'content': content,
-                'antispam': antispam
+                'content': content
             },
             success: function (newCommentId) {
                 // Keep the comment count badge on the trigger button in sync

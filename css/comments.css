@@ -249,26 +249,6 @@
   min-height: 8rem;
 }
 
-.comment-antispam {
-  width: 100%;
-  height: 4rem;
-  border: 2px solid #ddd;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  margin-bottom: var(--comments-space-sm);
-}
-
-.comment-antispam:focus-visible {
-  border-color: var(--comments-gradient-purple);
-  outline: 2px solid var(--comments-gradient-purple);
-  outline-offset: 2px;
-}
-
-.antispam-label {
-  margin-bottom: 0.5rem;
-  margin-top: var(--comments-space-sm);
-}
-
 .comment-submit-btn {
   background: linear-gradient(135deg, var(--comments-gradient-cyan), var(--comments-gradient-green));
   color: #333;
@@ -588,7 +568,6 @@
   .comment-tab,
   .comment-input,
   .comment-textarea,
-  .comment-antispam,
   .comment-author-name a {
     transition: none;
   }
