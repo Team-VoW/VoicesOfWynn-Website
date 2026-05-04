@@ -62,7 +62,7 @@ function buildSection(quest) {
 
     return $(
         '<section data-quest-id="' + quest.quest_id + '" class="txt-c">' +
-        '<h3 class="txt-c">' + escHtml(quest.quest_name) +
+        '<h3 class="txt-c"><span class="quest-name">' + escHtml(quest.quest_name) + '</span>' +
             ' <button class="rename-quest-btn">Rename</button>' +
         '</h3>' +
         (quest.npc_rows.length === 0 ? ' <button class="delete-quest-btn">Delete quest</button>' : '') +
@@ -246,7 +246,7 @@ $results.on('click', '.remove-npc-from-quest-btn', function (event) {
     }
     $.ajax({
         url: '/administration/npcs/remove-from-quest/' + questId + '/' + npcId,
-        type: 'DELETE',
+        type: 'PUT',
         success: function () {
             $row.remove();
             if ($section.find('tr[data-npc-id]').length === 0) {
@@ -266,9 +266,7 @@ $results.on('click', '.remove-npc-from-quest-btn', function (event) {
 // Delete quest
 $results.on('click', '.delete-quest-btn', function () {
     const $section = $(this).closest('section');
-    const questName = $section.find('h3').contents().filter(function () {
-        return this.nodeType === 3;
-    }).first().text().trim();
+    const questName = $section.find('.quest-name').text().trim();
     if (!confirm('Delete quest "' + questName + '"?\nThis cannot be undone.')) {
         return;
     }
@@ -308,9 +306,7 @@ $results.on('submit', '.rename-quest-form', function (event) {
         contentType: 'application/json',
         data: JSON.stringify({ name: newName }),
         success: function () {
-            $section.find('h3').contents().filter(function () {
-                return this.nodeType === 3;
-            }).first().replaceWith(escHtml(newName));
+            $section.find('.quest-name').text(newName);
             $form.find('.rename-quest-input').val(newName);
             $form.hide();
         },

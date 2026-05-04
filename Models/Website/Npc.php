@@ -138,60 +138,25 @@ class Npc extends ContentModel implements JsonSerializable
     public function isLinkedToQuest(int $questId): bool
     {
         $result = (new Db('Website/DbInfo.ini'))->fetchQuery(
-            'SELECT npc_quest_id FROM npc_quest WHERE quest_id = ? AND npc_id = ? LIMIT 1;',
+            'SELECT COUNT(*) AS cnt FROM npc_quest WHERE quest_id = ? AND npc_id = ?;',
             array($questId, $this->id)
         );
 
-        return $result !== false;
+        return $result !== false && $result['cnt'] === 1;
     }
 
     public function addToQuest(int $questId): bool
     {
         $db = new Db('Website/DbInfo.ini');
-        $db->startTransaction();
-        try {
-            $quest = $db->fetchQuery(
-                'SELECT quest_id FROM quest WHERE quest_id = ? FOR UPDATE;',
-                array($questId)
-            );
-            if ($quest === false) {
-                $db->rollbackTransaction();
-                return false;
-            }
-
-            $existing = $db->fetchQuery(
-                'SELECT npc_quest_id FROM npc_quest WHERE quest_id = ? AND npc_id = ? LIMIT 1 FOR UPDATE;',
-                array($questId, $this->id)
-            );
-            if ($existing !== false) {
-                $db->commitTransaction();
-                return true;
-            }
-
-            $max = $db->fetchQuery(
-                'SELECT COALESCE(MAX(sorting_order), 0) AS sorting_order FROM npc_quest WHERE quest_id = ? FOR UPDATE;',
-                array($questId)
-            );
-            if ($max === false) {
-                $db->rollbackTransaction();
-                return false;
-            }
-
-            $result = $db->executeQuery(
-                'INSERT INTO npc_quest (quest_id, npc_id, sorting_order) VALUES (?, ?, ?);',
-                array($questId, $this->id, $max['sorting_order'] + 1)
-            );
-            if (!$result) {
-                $db->rollbackTransaction();
-                return false;
-            }
-
-            $db->commitTransaction();
+        if ($this->isLinkedToQuest($questId)) {
             return true;
-        } catch (\Throwable $e) {
-            $db->rollbackTransaction();
-            return false;
         }
+
+        return $db->executeQuery(
+            'INSERT INTO npc_quest (quest_id, npc_id, sorting_order)
+             VALUES (?, ?, (SELECT COALESCE(MAX(so), 0) + 1 FROM (SELECT sorting_order AS so FROM npc_quest WHERE quest_id = ?) AS sub));',
+            array($questId, $this->id, $questId)
+        );
     }
 
     public function hasRecordingsInQuest(int $questId): bool
@@ -216,12 +181,11 @@ class Npc extends ContentModel implements JsonSerializable
         );
     }
 
-    public function loadFromId($id = null): bool
+    public function loadFromId(): bool
     {
-        $id = $id ?? $this->id;
         $result = (new Db('Website/DbInfo.ini'))->fetchQuery(
             'SELECT npc_id, name, degenerated_name, archived FROM npc WHERE npc_id = ? LIMIT 1;',
-            array($id)
+            array($this->id)
         );
 
         if ($result === false) {
@@ -230,44 +194,6 @@ class Npc extends ContentModel implements JsonSerializable
 
         $this->setData($result);
         return true;
-    }
-
-    public function getAll(): array
-    {
-        $result = (new Db('Website/DbInfo.ini'))->fetchQuery(
-            'SELECT npc_id, name, degenerated_name, archived FROM npc ORDER BY name, npc_id;',
-            array(),
-            true
-        );
-
-        if ($result === false) {
-            return array();
-        }
-
-        $npcs = array();
-        foreach ($result as $npcData) {
-            $npcs[] = new Npc($npcData);
-        }
-        return $npcs;
-    }
-
-    public function search(string $term, int $limit): array
-    {
-        $result = (new Db('Website/DbInfo.ini'))->fetchQuery(
-            'SELECT npc_id, name, archived FROM npc WHERE name LIKE ? ORDER BY name LIMIT ?;',
-            ['%' . $term . '%', $limit],
-            true
-        );
-
-        if ($result === false) {
-            return array();
-        }
-
-        $npcs = array();
-        foreach ($result as $npcData) {
-            $npcs[] = new Npc($npcData);
-        }
-        return $npcs;
     }
 
 	/**
@@ -308,6 +234,10 @@ class Npc extends ContentModel implements JsonSerializable
 
     public function rename(string $name): bool
     {
+        if ($this->id === 0) {
+            throw new \BadMethodCallException('Method Npc::rename mustn\'t be called when the Npc::id attribute is not set.');
+        }
+
         $degeneratedName = self::degenerateName($name);
         $result = (new Db('Website/DbInfo.ini'))->executeQuery(
             'UPDATE npc SET name = ?, degenerated_name = ? WHERE npc_id = ? LIMIT 1;',

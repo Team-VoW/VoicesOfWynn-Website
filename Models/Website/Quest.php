@@ -73,41 +73,18 @@ class Quest extends ContentModel implements JsonSerializable
     public function delete(): bool
     {
         $db = new Db('Website/DbInfo.ini');
-        $db->startTransaction();
-        try {
-            $quest = $db->fetchQuery(
-                'SELECT quest_id FROM quest WHERE quest_id = ? FOR UPDATE;',
-                array($this->id)
-            );
-            if ($quest === false) {
-                $db->rollbackTransaction();
-                return false;
-            }
-
-            $linked = $db->fetchQuery(
-                'SELECT COUNT(*) AS cnt FROM npc_quest WHERE quest_id = ? FOR UPDATE;',
-                array($this->id)
-            );
-            if ($linked === false || $linked['cnt'] > 0) {
-                $db->rollbackTransaction();
-                return false;
-            }
-
-            $result = $db->executeQuery(
-                'DELETE FROM quest WHERE quest_id = ? LIMIT 1;',
-                array($this->id)
-            );
-            if (!$result) {
-                $db->rollbackTransaction();
-                return false;
-            }
-
-            $db->commitTransaction();
-            return true;
-        } catch (\Throwable $e) {
-            $db->rollbackTransaction();
+        $linked = $db->fetchQuery(
+            'SELECT COUNT(*) AS cnt FROM npc_quest WHERE quest_id = ?;',
+            array($this->id)
+        );
+        if ($linked === false || $linked['cnt'] > 0) {
             return false;
         }
+
+        return $db->executeQuery(
+            'DELETE FROM quest WHERE quest_id = ? LIMIT 1;',
+            array($this->id)
+        );
     }
 
     public function rename(string $name): bool
@@ -229,20 +206,17 @@ class Quest extends ContentModel implements JsonSerializable
      * Method loading quest data from the database, filtering by the ID that is already set
      * @return bool TRUE if data was loaded, FALSE if not (quest having the set ID couldn't be found)
      */
-    public function loadFromId($id = null) : bool
+    public function loadFromId() : bool
     {
-        if ($id === null) {
-            if (!isset($this->id)) {
-                throw new \BadMethodCallException('Method Quest::loadFromId mustn\'t be called when the Quest::id attribute is not set.');
-            }
-            $id = $this->id;
+        if (!isset($this->id)) {
+            throw new \BadMethodCallException('Method Quest::loadFromId mustn\'t be called when the Quest::id attribute is not set.');
         }
 
         $result = (new Db('Website/DbInfo.ini'))->fetchQuery('
             SELECT quest_id, name, degenerated_name, writer
             FROM quest
             WHERE quest_id = ?;
-        ', array($id));
+        ', array($this->id));
 
         if ($result === false) {
             return false;
@@ -251,98 +225,6 @@ class Quest extends ContentModel implements JsonSerializable
         return true;
     }
 
-    public function getAllWithNpcs(): array
-    {
-        $result = (new Db('Website/DbInfo.ini'))->fetchQuery('
-            SELECT quest.quest_id, quest.name AS "qname", npc.npc_id, npc.name AS "nname", npc.voice_actor_id, npc.archived, user.user_id, user.display_name, COUNT(DISTINCT recording.recording_id) AS "recordings_count"
-            FROM quest
-            LEFT JOIN npc_quest ON npc_quest.quest_id = quest.quest_id
-            LEFT JOIN npc ON npc.npc_id = npc_quest.npc_id
-            LEFT JOIN recording ON recording.npc_id = npc.npc_id AND recording.quest_id = quest.quest_id
-            LEFT JOIN user ON npc.voice_actor_id = user.user_id
-            GROUP BY quest.quest_id, npc.npc_id, npc_quest.sorting_order
-            ORDER BY quest.quest_id, npc_quest.sorting_order;
-        ', array(), true);
-
-        if ($result === false) {
-            return array();
-        }
-
-        return $this->buildQuestObjects($result);
-    }
-
-    public function searchWithNpcs(string $term): array
-    {
-        $db = new Db('Website/DbInfo.ini');
-        $like = '%' . $term . '%';
-
-        $idsResult = $db->fetchQuery('
-            SELECT DISTINCT q.quest_id
-            FROM quest q
-            LEFT JOIN npc_quest nq ON nq.quest_id = q.quest_id
-            LEFT JOIN npc n ON n.npc_id = nq.npc_id
-            WHERE q.name LIKE ? OR n.name LIKE ?
-            LIMIT 50;
-        ', [$like, $like], true);
-
-        if ($idsResult === false) {
-            return array();
-        }
-
-        $ids = array_column($idsResult, 'quest_id');
-        if (empty($ids)) {
-            return array();
-        }
-
-        $placeholders = implode(',', array_fill(0, count($ids), '?'));
-
-        $result = $db->fetchQuery('
-            SELECT quest.quest_id, quest.name AS "qname", npc.npc_id, npc.name AS "nname", npc.voice_actor_id, npc.archived, user.user_id, user.display_name, COUNT(DISTINCT recording.recording_id) AS "recordings_count"
-            FROM quest
-            LEFT JOIN npc_quest ON npc_quest.quest_id = quest.quest_id
-            LEFT JOIN npc ON npc.npc_id = npc_quest.npc_id
-            LEFT JOIN recording ON recording.npc_id = npc.npc_id AND recording.quest_id = quest.quest_id
-            LEFT JOIN user ON npc.voice_actor_id = user.user_id
-            WHERE quest.quest_id IN (' . $placeholders . ')
-            GROUP BY quest.quest_id, npc.npc_id, npc_quest.sorting_order
-            ORDER BY quest.quest_id, npc_quest.sorting_order;
-        ', $ids, true);
-
-        if ($result === false) {
-            return array();
-        }
-
-        return $this->buildQuestObjects($result);
-    }
-
-    private function buildQuestObjects(array $result): array
-    {
-        $quests = array();
-        $currentQuest = null;
-        foreach ($result as $npc) {
-            if ($currentQuest === null || $currentQuest->getId() !== $npc['quest_id']) {
-                if ($currentQuest !== null) {
-                    $quests[] = $currentQuest;
-                }
-                $currentQuest = new Quest($npc);
-            }
-            if ($npc['npc_id'] === null) {
-                continue;
-            }
-            $npcObj = new Npc($npc);
-            if ($npc['user_id'] !== null) {
-                $voiceActor = new User();
-                $voiceActor->setData($npc);
-                $npcObj->setVoiceActor($voiceActor);
-            }
-            $currentQuest->addNpc($npcObj);
-        }
-        if ($currentQuest !== null) {
-            $quests[] = $currentQuest;
-        }
-        return $quests;
-    }
-	
 	/**
 	 * Method adding a NPC object to this quest's $npcs attribute
 	 * @param Npc $npc The NPC object to add

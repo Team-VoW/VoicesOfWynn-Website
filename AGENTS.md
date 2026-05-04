@@ -14,3 +14,12 @@ PHP website for the Voices of Wynn project — a Wynncraft mod that adds voiced 
 - Validate IDs against the database, not with `is_numeric()` / `> 0` checks alone. Those pass values like `42069` that don't correspond to real records. Either validate against the actual list of IDs from the DB, or skip numeric validation and let the DB query return no results naturally.
 - Validate string inputs against the DB column length (check the schema). Use `mb_strlen()` for multi-byte safety.
 - Shared logic between models (`Quest`, `Npc`, etc.) belongs in `ContentModel`, the abstract base class both extend.
+
+## Admin/API notes
+
+- Admin AJAX/JSON endpoints belong in `Controllers/Api/...`, not `Controllers/Website/...`; webpage controllers should render pages.
+- Let the front controller set HTTP status codes from controller return values. Avoid `http_response_code()`, manual JSON headers, and `exit()` in controllers unless an existing framework pattern requires it.
+- Collection/search/list queries should not be instance methods on `Npc`, `Quest`, etc. Use a dedicated query/service model instead.
+- `loadFromId()` should use the ID already set on the model instance: construct with `['id' => $id]`, then call `loadFromId()`.
+- For relation updates like adding/removing an NPC from a quest, prefer `PUT` unless the relation itself is modeled as a deletable resource.
+- In JS, prefer stable class/data selectors over traversing text nodes or relying on heading structure.
