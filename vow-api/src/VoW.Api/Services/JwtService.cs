@@ -6,12 +6,13 @@ using VoW.Api.Models;
 
 namespace VoW.Api.Services;
 
-public sealed class JwtService(IConfiguration configuration) : IJwtService
+public sealed class JwtService(IConfiguration configuration, IHostEnvironment environment) : IJwtService
 {
     public const string AccessTokenType = "access";
     public const string RefreshTokenType = "refresh";
+    public const string DevelopmentJwtSecret = "development-only-secret-change-before-running-anywhere";
 
-    private readonly SymmetricSecurityKey signingKey = new(Encoding.UTF8.GetBytes(GetJwtSecret(configuration)));
+    private readonly SymmetricSecurityKey signingKey = new(Encoding.UTF8.GetBytes(GetJwtSecret(configuration, environment)));
 
     public AuthTokenResponse CreateTokenPair(User user)
     {
@@ -76,11 +77,24 @@ public sealed class JwtService(IConfiguration configuration) : IJwtService
         return (new JwtSecurityTokenHandler().WriteToken(token), expiresAt);
     }
 
-    private static string GetJwtSecret(IConfiguration configuration)
+    public static string GetJwtSecret(IConfiguration configuration, IHostEnvironment environment)
     {
         var jwtSecret = configuration["JWT_SECRET"];
-        return string.IsNullOrWhiteSpace(jwtSecret)
-            ? "development-only-secret-change-before-running-anywhere"
-            : jwtSecret;
+        if (string.IsNullOrWhiteSpace(jwtSecret))
+        {
+            if (environment.IsDevelopment())
+            {
+                return DevelopmentJwtSecret;
+            }
+
+            throw new InvalidOperationException("JWT_SECRET must be configured outside Development.");
+        }
+
+        if (!environment.IsDevelopment() && jwtSecret == DevelopmentJwtSecret)
+        {
+            throw new InvalidOperationException("JWT_SECRET cannot use the development fallback value outside Development.");
+        }
+
+        return jwtSecret;
     }
 }

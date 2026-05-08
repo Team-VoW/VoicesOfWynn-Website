@@ -27,11 +27,7 @@ builder.Services.AddCors(options =>
     });
 });
 
-var jwtSecret = builder.Configuration["JWT_SECRET"];
-if (string.IsNullOrWhiteSpace(jwtSecret))
-{
-    jwtSecret = "development-only-secret-change-before-running-anywhere";
-}
+var jwtSecret = JwtService.GetJwtSecret(builder.Configuration, builder.Environment);
 var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
