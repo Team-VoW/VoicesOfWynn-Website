@@ -1,0 +1,63 @@
+name: Deploy stack
+
+on:
+  push:
+    branches:
+      - docker
+      - master
+    paths:
+      - 'docker-compose.yml'
+      - '.github/workflows/stack.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+
+      - name: Check whether API changed
+        id: changed
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            git diff --name-only "${{ github.event.before }}" "${{ github.sha }}" > changed_files
+          else
+            : > changed_files
+          fi
+
+          if grep -q '^vow-api/' changed_files; then
+            echo "api_changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "api_changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Copy docker-compose.yml to Oracle Cloud
+        if: steps.changed.outputs.api_changed != 'true'
+        run: |
+          echo "${{ secrets.ORACLE_CLOUD_SSH_PRIVATE_KEY }}" > oracle_cloud_key
+          chmod 600 oracle_cloud_key
+          scp -i oracle_cloud_key -o StrictHostKeyChecking=no docker-compose.yml ${{ secrets.ORACLE_CLOUD_SSH_USER }}@${{ secrets.ORACLE_CLOUD_IP }}:website/
+          rm oracle_cloud_key
+
+      - name: Reconcile stack
+        if: steps.changed.outputs.api_changed != 'true'
+        run: |
+          echo "${{ secrets.ORACLE_CLOUD_SSH_PRIVATE_KEY }}" > oracle_cloud_key
+          chmod 600 oracle_cloud_key
+          ssh -i oracle_cloud_key -o StrictHostKeyChecking=no ${{ secrets.ORACLE_CLOUD_SSH_USER }}@${{ secrets.ORACLE_CLOUD_IP }} << EOF
+            cd website
+            docker compose up -d
+            docker image prune -f
+          EOF
+          rm oracle_cloud_key

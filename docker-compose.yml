@@ -28,6 +28,7 @@ services:
       - website
       - api
       - adminer
+      - vow-api
     volumes:
       # Keep dynamic_data volume commented during Azure migration for easy rollback
       # Remove completely once Azure storage is proven stable
@@ -35,6 +36,31 @@ services:
       - /etc/letsencrypt/live/voicesofwynn.com:/etc/letsencrypt/live/voicesofwynn.com:ro
       - /etc/letsencrypt/archive/voicesofwynn.com:/etc/letsencrypt/archive/voicesofwynn.com:ro
       - ${PWD}/logs:/var/log
+    env_file:
+      - .env
+    networks:
+      - app_network
+
+  vow-api:
+    image: ghcr.io/kmaxi/vow-api:latest
+    restart: unless-stopped
+    expose:
+      - "8080"
+    environment:
+      - WEBSITE_DB_HOST=website
+      - WEBSITE_DB_NAME=website
+      - API_DB_HOST=api
+      - API_DB_NAME=api
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - DISCORD_CLIENT_ID=${DISCORD_CLIENT_ID}
+      - DISCORD_CLIENT_SECRET=${DISCORD_CLIENT_SECRET}
+      - DISCORD_REDIRECT_URI=${DISCORD_REDIRECT_URI}
+      - CORS_ORIGIN=${CORS_ORIGIN:-https://app.voicesofwynn.com}
+    depends_on:
+      - website
+      - api
     env_file:
       - .env
     networks:
