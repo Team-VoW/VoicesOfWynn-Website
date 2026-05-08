@@ -56,8 +56,9 @@ services:
       - JWT_SECRET=${JWT_SECRET}
       - DISCORD_CLIENT_ID=${DISCORD_CLIENT_ID}
       - DISCORD_CLIENT_SECRET=${DISCORD_CLIENT_SECRET}
-      - DISCORD_REDIRECT_URI=${DISCORD_REDIRECT_URI}
+      - DISCORD_REDIRECT_URI=${DISCORD_REDIRECT_URI:-https://voicesofwynn.com/vow-api/auth/callback/discord}
       - CORS_ORIGIN=${CORS_ORIGIN:-https://app.voicesofwynn.com}
+      - SPA_AUTH_CALLBACK_URL=${SPA_AUTH_CALLBACK_URL:-https://app.voicesofwynn.com/auth/callback}
     depends_on:
       - website
       - api

@@ -55,8 +55,9 @@ services:
       - JWT_SECRET=${JWT_SECRET}
       - DISCORD_CLIENT_ID=${DISCORD_CLIENT_ID}
       - DISCORD_CLIENT_SECRET=${DISCORD_CLIENT_SECRET}
-      - DISCORD_REDIRECT_URI=${DISCORD_REDIRECT_URI}
+      - DISCORD_REDIRECT_URI=${DISCORD_REDIRECT_URI:-http://localhost:5080/auth/callback/discord}
       - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:5173}
+      - SPA_AUTH_CALLBACK_URL=${SPA_AUTH_CALLBACK_URL:-http://localhost:5173/auth/callback}
     depends_on:
       - website
       - api
