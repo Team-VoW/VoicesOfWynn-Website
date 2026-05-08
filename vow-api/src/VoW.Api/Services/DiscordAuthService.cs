@@ -6,8 +6,10 @@ using VoW.Api.Models;
 
 namespace VoW.Api.Services;
 
-public sealed class DiscordAuthService(HttpClient httpClient, IConfiguration configuration) : IDiscordAuthService
+public sealed class DiscordAuthService(HttpClient httpClient, IConfiguration configuration) : IExternalAuthProvider
 {
+    public string Name => "discord";
+
     public string BuildLoginUrl()
     {
         var clientId = GetRequired("DISCORD_CLIENT_ID");
@@ -22,7 +24,7 @@ public sealed class DiscordAuthService(HttpClient httpClient, IConfiguration con
         });
     }
 
-    public async Task<DiscordUserResponse> ExchangeCodeForUserAsync(string code, CancellationToken cancellationToken)
+    public async Task<ExternalUserIdentity> ExchangeCodeForIdentityAsync(string code, CancellationToken cancellationToken)
     {
         var token = await ExchangeCodeAsync(code, cancellationToken);
 
@@ -38,7 +40,7 @@ public sealed class DiscordAuthService(HttpClient httpClient, IConfiguration con
             throw new InvalidOperationException("Discord user response was empty.");
         }
 
-        return new DiscordUserResponse(user.Id, user.Username, user.GlobalName);
+        return new ExternalUserIdentity(Name, user.Id, user.GlobalName ?? user.Username);
     }
 
     private async Task<DiscordTokenResponse> ExchangeCodeAsync(string code, CancellationToken cancellationToken)
@@ -68,8 +70,13 @@ public sealed class DiscordAuthService(HttpClient httpClient, IConfiguration con
         return new DiscordTokenResponse(token.AccessToken, token.TokenType, token.ExpiresIn, token.Scope);
     }
 
-    private string GetRequired(string key) =>
-        configuration[key] ?? throw new InvalidOperationException($"{key} is not configured.");
+    private string GetRequired(string key)
+    {
+        var value = configuration[key];
+        return string.IsNullOrWhiteSpace(value)
+            ? throw new InvalidOperationException($"{key} is not configured.")
+            : value;
+    }
 
     private sealed record DiscordApiToken(
         [property: JsonPropertyName("access_token")] string AccessToken,

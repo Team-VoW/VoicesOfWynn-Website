@@ -1,0 +1,10 @@
+using VoW.Api.Models;
+
+namespace VoW.Api.Services;
+
+public interface IAuthHandoffService
+{
+    string Create(AuthTokenResponse tokens);
+
+    AuthTokenResponse? Consume(string code);
+}

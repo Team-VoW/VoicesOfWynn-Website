@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.IdentityModel.Tokens;
 using VoW.Api.Models;
 using VoW.Api.Repositories;
@@ -10,39 +11,65 @@ namespace VoW.Api.Controllers;
 [ApiController]
 [Route("auth")]
 public sealed class AuthController(
-    IDiscordAuthService discordAuthService,
+    IEnumerable<IExternalAuthProvider> authProviders,
     IUserRepository userRepository,
     IJwtService jwtService,
+    IAuthHandoffService handoffService,
+    IConfiguration configuration,
     ILogger<AuthController> logger) : ControllerBase
 {
-    [HttpGet("login")]
-    public IActionResult Login() => Redirect(discordAuthService.BuildLoginUrl());
-
-    [HttpGet("callback")]
-    public async Task<ActionResult<AuthTokenResponse>> Callback([FromQuery] string? code, CancellationToken cancellationToken)
+    [HttpGet("login/{provider}")]
+    public IActionResult Login(string provider)
     {
+        var authProvider = FindProvider(provider);
+        return authProvider is null ? NotFound() : Redirect(authProvider.BuildLoginUrl());
+    }
+
+    [HttpGet("callback/{provider}")]
+    public async Task<IActionResult> Callback(
+        string provider,
+        [FromQuery] string? code,
+        CancellationToken cancellationToken)
+    {
+        var authProvider = FindProvider(provider);
+        if (authProvider is null)
+        {
+            return NotFound();
+        }
+
         if (string.IsNullOrWhiteSpace(code))
         {
-            return BadRequest(new ProblemDetails { Title = "Discord authorization code is required." });
+            return BadRequest(new ProblemDetails { Title = "Authorization code is required." });
         }
 
         try
         {
-            var discordUser = await discordAuthService.ExchangeCodeForUserAsync(code, cancellationToken);
-            var user = await userRepository.GetAdminByDiscordIdAsync(discordUser.Id, cancellationToken);
+            var externalUser = await authProvider.ExchangeCodeForIdentityAsync(code, cancellationToken);
+            var user = externalUser.Provider == "discord"
+                ? await userRepository.GetAdminByDiscordIdAsync(externalUser.Id, cancellationToken)
+                : null;
 
             if (user is null)
             {
                 return Forbid();
             }
 
-            return Ok(jwtService.CreateTokenPair(user));
+            var handoffCode = handoffService.Create(jwtService.CreateTokenPair(user));
+            var callbackUrl = QueryHelpers.AddQueryString(GetSpaCallbackUrl(), "code", handoffCode);
+            return Redirect(callbackUrl);
         }
         catch (HttpRequestException exception)
         {
-            logger.LogWarning(exception, "Discord OAuth request failed.");
-            return StatusCode(StatusCodes.Status502BadGateway, new ProblemDetails { Title = "Discord OAuth request failed." });
+            logger.LogWarning(exception, "External OAuth request failed.");
+            return StatusCode(StatusCodes.Status502BadGateway, new ProblemDetails { Title = "External OAuth request failed." });
         }
+    }
+
+    [HttpPost("handoff")]
+    public ActionResult<AuthTokenResponse> Handoff([FromBody] AuthHandoffRequest request)
+    {
+        var tokens = handoffService.Consume(request.Code);
+        return tokens is null ? Unauthorized() : Ok(tokens);
     }
 
     [HttpPost("refresh")]
@@ -67,5 +94,21 @@ public sealed class AuthController(
         {
             return Unauthorized();
         }
+    }
+
+    private IExternalAuthProvider? FindProvider(string provider) =>
+        authProviders.FirstOrDefault(candidate =>
+            string.Equals(candidate.Name, provider, StringComparison.OrdinalIgnoreCase));
+
+    private string GetSpaCallbackUrl()
+    {
+        var configured = configuration["SPA_AUTH_CALLBACK_URL"];
+        if (!string.IsNullOrWhiteSpace(configured))
+        {
+            return configured;
+        }
+
+        var origin = configuration["CORS_ORIGIN"] ?? "https://app.voicesofwynn.com";
+        return $"{origin.TrimEnd('/')}/auth/callback";
     }
 }

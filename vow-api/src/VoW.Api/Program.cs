@@ -9,9 +9,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
-builder.Services.AddHttpClient<IDiscordAuthService, DiscordAuthService>();
+builder.Services.AddHttpClient<IExternalAuthProvider, DiscordAuthService>();
 
 builder.Services.AddSingleton<IJwtService, JwtService>();
+builder.Services.AddSingleton<IAuthHandoffService, AuthHandoffService>();
 builder.Services.AddScoped<IReportRepository, ReportRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
