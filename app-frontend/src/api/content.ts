@@ -109,3 +109,12 @@ export function unlinkQuestNpc(questId: number, npcId: number): Promise<void> {
     method: 'DELETE',
   })
 }
+
+export function uploadQuestScript(questId: number, file: File): Promise<void> {
+  const form = new FormData()
+  form.append('file', file)
+  return apiFetch<void>(`/admin/content/quests/${questId}/script`, {
+    method: 'PUT',
+    body: form,
+  })
+}

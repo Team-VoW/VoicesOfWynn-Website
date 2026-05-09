@@ -92,6 +92,14 @@ public sealed class ContentRepository(IConfiguration configuration) : IContentRe
         return await connection.ExecuteScalarAsync<int>(command) > 0;
     }
 
+    public async Task<string?> GetQuestDegeneratedNameAsync(int questId, CancellationToken cancellationToken)
+    {
+        const string sql = "SELECT degenerated_name FROM quest WHERE quest_id = @QuestId;";
+        await using var connection = new MySqlConnection(DatabaseSettings.GetWebsiteConnectionString(configuration));
+        var command = new CommandDefinition(sql, new { QuestId = questId }, cancellationToken: cancellationToken);
+        return await connection.ExecuteScalarAsync<string?>(command);
+    }
+
     public async Task<string?> GetNpcDegeneratedNameAsync(int npcId, CancellationToken cancellationToken)
     {
         const string sql = "SELECT degenerated_name FROM npc WHERE npc_id = @NpcId;";

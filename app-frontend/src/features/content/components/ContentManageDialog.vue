@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import { Edit, Headphones, LinkIcon, Trash2, Unlink, UserRound, X } from 'lucide-vue-next'
+import { ref, useTemplateRef, watch } from 'vue'
+import { Edit, FileUp, Headphones, LinkIcon, Trash2, Unlink, UserRound, X } from 'lucide-vue-next'
 import {
   DialogClose,
   DialogContent,
@@ -31,6 +31,7 @@ import {
   useUpdateQuest,
   useUpdateQuestNpcSoundEditor,
   useUpdateQuestWriter,
+  useUploadQuestScript,
 } from '../queries'
 
 type DialogMode = 'quest' | 'npc' | null
@@ -59,6 +60,7 @@ const updateNpcVoiceActorMutation = useUpdateNpcVoiceActor()
 const updateQuestNpcSoundEditorMutation = useUpdateQuestNpcSoundEditor()
 const linkQuestNpcMutation = useLinkQuestNpc()
 const unlinkQuestNpcMutation = useUnlinkQuestNpc()
+const uploadQuestScriptMutation = useUploadQuestScript()
 
 const editName = ref('')
 const editWriter = ref(CONTENT_NONE)
@@ -66,6 +68,8 @@ const editVoiceActor = ref(CONTENT_NONE)
 const editSoundEditor = ref(CONTENT_NONE)
 const linkNpcId = ref(CONTENT_NONE)
 const dialogError = ref('')
+const scriptFile = ref<File | null>(null)
+const scriptInput = useTemplateRef<HTMLInputElement>('scriptInput')
 
 watch(
   () => [props.mode, props.selectedQuest, props.selectedNpc, props.open] as const,
@@ -74,6 +78,8 @@ watch(
 
     dialogError.value = ''
     linkNpcId.value = CONTENT_NONE
+    scriptFile.value = null
+    if (scriptInput.value) scriptInput.value.value = ''
 
     if (props.mode === 'quest' && props.selectedQuest) {
       editName.value = props.selectedQuest.questName
@@ -196,6 +202,24 @@ async function saveSoundEditor() {
   )
 }
 
+function onScriptFilePicked(event: Event) {
+  const target = event.target as HTMLInputElement
+  scriptFile.value = target.files?.[0] ?? null
+}
+
+async function uploadScript() {
+  if (!props.selectedQuest || !scriptFile.value) return
+  const file = scriptFile.value
+  await runDialogAction(async () => {
+    await uploadQuestScriptMutation.mutateAsync({
+      questId: props.selectedQuest!.questId,
+      file,
+    })
+    scriptFile.value = null
+    if (scriptInput.value) scriptInput.value.value = ''
+  }, 'Script uploaded.')
+}
+
 async function unlinkNpc() {
   if (!props.selectedQuest || !props.selectedNpc) return
   await runDialogAction(async () => {
@@ -278,6 +302,41 @@ async function unlinkNpc() {
                 Save
               </Button>
             </div>
+          </div>
+
+          <div class="space-y-2">
+            <Label for="dialog-quest-script">Script file (.txt)</Label>
+            <div class="flex gap-2">
+              <input
+                id="dialog-quest-script"
+                ref="scriptInput"
+                type="file"
+                accept="text/plain,.txt"
+                class="border-input file:text-foreground h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-sm file:mr-3 file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium"
+                @change="onScriptFilePicked"
+              />
+              <Button
+                class="gap-2"
+                variant="outline"
+                :disabled="!scriptFile || uploadQuestScriptMutation.isPending.value"
+                @click="uploadScript"
+              >
+                <FileUp class="size-4" />
+                Upload
+              </Button>
+            </div>
+            <p v-if="selectedQuest.scriptUrl" class="text-sm text-muted-foreground">
+              Current:
+              <a
+                :href="selectedQuest.scriptUrl"
+                target="_blank"
+                rel="noopener"
+                class="underline"
+              >
+                View current script
+              </a>
+            </p>
+            <p v-else class="text-sm text-muted-foreground">No script uploaded.</p>
           </div>
 
           <div class="space-y-2">

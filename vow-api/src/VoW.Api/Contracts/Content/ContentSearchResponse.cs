@@ -12,6 +12,7 @@ public sealed record QuestContentResult(
     string QuestDegeneratedName,
     int? WriterId,
     string? WriterName,
+    string? ScriptUrl,
     IReadOnlyCollection<NpcContentResult> Npcs);
 
 public sealed record NpcContentResult(

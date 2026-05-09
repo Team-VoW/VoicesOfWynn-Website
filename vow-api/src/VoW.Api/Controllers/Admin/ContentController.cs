@@ -137,6 +137,38 @@ public sealed class ContentController(IContentService contentService) : Controll
         return result.Succeeded ? NoContent() : ProblemFrom(result);
     }
 
+    [HttpPut("quests/{questId:int}/script")]
+    [RequestSizeLimit(QuestScriptMaxSizeBytes)]
+    public async Task<IActionResult> UploadQuestScript(
+        int questId,
+        IFormFile? file,
+        CancellationToken cancellationToken)
+    {
+        if (file is null || file.Length == 0)
+        {
+            ModelState.AddModelError(nameof(file), "A script file is required.");
+            return ValidationProblem(ModelState);
+        }
+
+        if (file.Length > QuestScriptMaxSizeBytes)
+        {
+            ModelState.AddModelError(nameof(file), $"Script file must not exceed {QuestScriptMaxSizeBytes} bytes.");
+            return ValidationProblem(ModelState);
+        }
+
+        if (!string.Equals(Path.GetExtension(file.FileName), ".txt", StringComparison.OrdinalIgnoreCase))
+        {
+            ModelState.AddModelError(nameof(file), "Only .txt files are accepted.");
+            return ValidationProblem(ModelState);
+        }
+
+        await using var stream = file.OpenReadStream();
+        var result = await contentService.UploadQuestScriptAsync(questId, stream, cancellationToken);
+        return result.Succeeded ? NoContent() : ProblemFrom(result);
+    }
+
+    private const int QuestScriptMaxSizeBytes = 2_000_000;
+
     private IActionResult ProblemFrom(ContentMutationResult result)
     {
         if (!result.Found)

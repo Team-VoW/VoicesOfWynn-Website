@@ -60,6 +60,7 @@ services:
       - CORS_ORIGIN=${CORS_ORIGIN:-https://app.voicesofwynn.com}
       - SPA_AUTH_CALLBACK_URL=${SPA_AUTH_CALLBACK_URL:-https://app.voicesofwynn.com/auth/callback}
       - PATH_BASE=${PATH_BASE:-/vow-api}
+      - AZURE_STORAGE_CONNECTION_STRING=${AZURE_STORAGE_CONNECTION_STRING:-}
     depends_on:
       - website
       - api

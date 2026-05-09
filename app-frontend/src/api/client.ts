@@ -70,15 +70,22 @@ export async function apiFetch<T>(path: string, opts: RequestOptions = {}): Prom
   const auth = useAuthStore()
   const useAuth = opts.auth !== false
 
+  const isFormData = opts.body instanceof FormData
+
   const exec = async (token: string | null): Promise<Response> => {
     const headers: Record<string, string> = {}
-    if (opts.body !== undefined) headers['Content-Type'] = 'application/json'
+    if (opts.body !== undefined && !isFormData) headers['Content-Type'] = 'application/json'
     if (useAuth && token) headers.Authorization = `Bearer ${token}`
 
     return fetch(buildUrl(path, opts.query), {
       method: opts.method ?? 'GET',
       headers,
-      body: opts.body !== undefined ? JSON.stringify(opts.body) : undefined,
+      body:
+        opts.body === undefined
+          ? undefined
+          : isFormData
+            ? (opts.body as FormData)
+            : JSON.stringify(opts.body),
       signal: opts.signal,
     })
   }

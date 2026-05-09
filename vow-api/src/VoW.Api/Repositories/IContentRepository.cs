@@ -21,6 +21,8 @@ public interface IContentRepository
 
     Task<bool> NpcExistsAsync(int npcId, CancellationToken cancellationToken);
 
+    Task<string?> GetQuestDegeneratedNameAsync(int questId, CancellationToken cancellationToken);
+
     Task<string?> GetNpcDegeneratedNameAsync(int npcId, CancellationToken cancellationToken);
 
     Task<bool> NpcDegeneratedNameConflictsForLinkedQuestsAsync(

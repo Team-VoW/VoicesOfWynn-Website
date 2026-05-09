@@ -49,4 +49,9 @@ public interface IContentService
         int questId,
         int npcId,
         CancellationToken cancellationToken);
+
+    Task<ContentMutationResult> UploadQuestScriptAsync(
+        int questId,
+        Stream content,
+        CancellationToken cancellationToken);
 }
