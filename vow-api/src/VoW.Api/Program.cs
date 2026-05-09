@@ -6,6 +6,7 @@ using VoW.Api.Domain.Auth;
 using VoW.Api.Repositories;
 using VoW.Api.Services;
 using VoW.Api.Services.Auth;
+using VoW.Api.Services.Content;
 using VoW.Api.Services.Reports;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,7 +18,9 @@ builder.Services.AddHttpClient<IExternalAuthProvider, DiscordAuthService>();
 builder.Services.AddSingleton<IJwtService, JwtService>();
 builder.Services.AddSingleton<IAuthHandoffService, AuthHandoffService>();
 builder.Services.AddScoped<IUserAccessService, UserAccessService>();
+builder.Services.AddScoped<IContentService, ContentService>();
 builder.Services.AddScoped<IReportService, ReportService>();
+builder.Services.AddScoped<IContentRepository, ContentRepository>();
 builder.Services.AddScoped<IReportRepository, ReportRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 

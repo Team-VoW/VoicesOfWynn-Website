@@ -1,5 +1,13 @@
 import { createRouter, createWebHistory, type RouteLocationNormalized } from 'vue-router'
+import { Capabilities, type Capability } from '@/lib/capabilities'
 import { useAuthStore } from '@/stores/auth'
+
+declare module 'vue-router' {
+  interface RouteMeta {
+    public?: boolean
+    capability?: Capability
+  }
+}
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -28,6 +36,13 @@ const router = createRouter({
           path: 'admin/reports',
           name: 'reports',
           component: () => import('@/features/reports/views/ReportsSearchView.vue'),
+          meta: { capability: Capabilities.ReportsView },
+        },
+        {
+          path: 'admin/content',
+          name: 'content',
+          component: () => import('@/features/content/views/ContentManageView.vue'),
+          meta: { capability: Capabilities.ContentManage },
         },
       ],
     },
@@ -39,6 +54,9 @@ router.beforeEach((to: RouteLocationNormalized) => {
   const auth = useAuthStore()
   if (!to.meta.public && !auth.isAuthenticated) {
     return { name: 'login', query: { redirect: to.fullPath } }
+  }
+  if (to.meta.capability && !auth.hasCapability(to.meta.capability)) {
+    return { name: 'reports' }
   }
   if (to.name === 'login' && auth.isAuthenticated) {
     return { name: 'reports' }

@@ -59,3 +59,35 @@ export interface AuthTokenResponse {
 export interface AuthHandoffRequest {
   code: string
 }
+
+export interface ContentOption {
+  id: number
+  name: string
+}
+
+export interface ContentOptionsResponse {
+  quests: ContentOption[]
+  writers: ContentOption[]
+  voiceActors: ContentOption[]
+  soundEditors: ContentOption[]
+}
+
+export interface CreateQuestRequest {
+  name: string
+  writerUserId?: number
+}
+
+export interface CreateNpcQuestAssignmentRequest {
+  questId: number
+  soundEditorUserId?: number
+}
+
+export interface CreateNpcRequest {
+  name: string
+  voiceActorUserId?: number
+  questAssignments: CreateNpcQuestAssignmentRequest[]
+}
+
+export interface CreateContentResponse {
+  id: number
+}
