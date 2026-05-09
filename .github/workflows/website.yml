@@ -14,6 +14,7 @@ on:
       - 'docker-compose.dev.yml'
       - '.github/workflows/api.yml'
       - '.github/workflows/stack.yml'
+  workflow_dispatch:
 
 permissions:
   contents: read

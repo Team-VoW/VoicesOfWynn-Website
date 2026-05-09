@@ -8,6 +8,7 @@ on:
     paths:
       - 'vow-api/**'
       - '.github/workflows/api.yml'
+  workflow_dispatch:
 
 permissions:
   contents: read
