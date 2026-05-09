@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.IdentityModel.Tokens;
 using VoW.Api.Contracts.Auth;
-using VoW.Api.Repositories;
 using VoW.Api.Services;
+using VoW.Api.Services.Auth;
 
 namespace VoW.Api.Controllers;
 
@@ -13,7 +13,7 @@ namespace VoW.Api.Controllers;
 [Route("auth")]
 public sealed class AuthController(
     IEnumerable<IExternalAuthProvider> authProviders,
-    IUserRepository userRepository,
+    IUserAccessService userAccessService,
     IJwtService jwtService,
     IAuthHandoffService handoffService,
     IConfiguration configuration,
@@ -83,7 +83,7 @@ public sealed class AuthController(
         {
             var externalUser = await authProvider.ExchangeCodeForIdentityAsync(code, cancellationToken);
             var user = externalUser.Provider == "discord"
-                ? await userRepository.GetAdminByDiscordIdAsync(externalUser.Id, cancellationToken)
+                ? await userAccessService.GetAccessibleUserByDiscordIdAsync(externalUser.Id, cancellationToken)
                 : null;
 
             if (user is null)
@@ -124,7 +124,7 @@ public sealed class AuthController(
                 return Unauthorized();
             }
 
-            var user = await userRepository.GetAdminByUserIdAsync(userId, cancellationToken);
+            var user = await userAccessService.GetAccessibleUserByUserIdAsync(userId, cancellationToken);
             // Rotate the refresh token alongside the access token (RFC 9700 §4.14).
             // Note: without server-side revocation, the previous refresh token is still
             // technically replayable until it expires; full reuse-detection requires

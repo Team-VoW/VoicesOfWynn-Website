@@ -4,7 +4,7 @@ namespace VoW.Api.Repositories;
 
 public interface IUserRepository
 {
-    Task<User?> GetAdminByDiscordIdAsync(string discordId, CancellationToken cancellationToken);
+    Task<UserProfile?> GetByDiscordIdAsync(string discordId, CancellationToken cancellationToken);
 
-    Task<User?> GetAdminByUserIdAsync(int userId, CancellationToken cancellationToken);
+    Task<UserProfile?> GetByUserIdAsync(int userId, CancellationToken cancellationToken);
 }

@@ -1,12 +1,12 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VoW.Api.Contracts.Reports;
+using VoW.Api.Domain.Auth;
 using VoW.Api.Services.Reports;
 
 namespace VoW.Api.Controllers.Admin;
 
 [ApiController]
-[Authorize]
+[RequireCapability(Capability.ReportsView)]
 [Route("admin/reports")]
 public sealed class ReportsController(IReportService reportService) : ControllerBase
 {
