@@ -5,12 +5,13 @@ import { refDebounced } from '@vueuse/core'
 import type { ContentSearchNpc, ContentSearchQuest, ContentSearchRequest } from '@/api/types'
 import ContentCreateNpcForm from '../components/ContentCreateNpcForm.vue'
 import ContentCreateQuestForm from '../components/ContentCreateQuestForm.vue'
+import ContentMassUpload from '../components/ContentMassUpload.vue'
 import ContentManageDialog from '../components/ContentManageDialog.vue'
 import ContentManageSearch from '../components/ContentManageSearch.vue'
 import { messageFromContentError } from '../contentUtils'
 import { useContentOptions, useContentSearch } from '../queries'
 
-type Tab = 'quest' | 'npc' | 'manage'
+type Tab = 'quest' | 'npc' | 'manage' | 'mass-upload'
 type DialogMode = 'quest' | 'npc' | null
 
 const DEFAULT_PAGE_SIZE = 25
@@ -31,7 +32,8 @@ function pageSizeFromQuery(value: unknown): number {
 }
 
 function tabFromQuery(value: unknown): Tab {
-  return value === 'manage' ? 'manage' : value === 'npc' ? 'npc' : 'quest'
+  if (value === 'manage' || value === 'npc' || value === 'mass-upload') return value
+  return 'quest'
 }
 
 const activeTab = ref<Tab>(tabFromQuery(route.query.tab))
@@ -171,6 +173,14 @@ function openNpcDialog(quest: ContentSearchQuest, npc: ContentSearchNpc) {
       >
         Manage all
       </button>
+      <button
+        type="button"
+        class="rounded-sm px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors"
+        :class="{ 'bg-accent text-accent-foreground': activeTab === 'mass-upload' }"
+        @click="activeTab = 'mass-upload'"
+      >
+        Mass upload
+      </button>
     </div>
 
     <div
@@ -192,6 +202,13 @@ function openNpcDialog(quest: ContentSearchQuest, npc: ContentSearchNpc) {
       :quests="quests"
       :sound-editors="soundEditors"
       :voice-actors="voiceActors"
+    />
+
+    <ContentMassUpload
+      v-else-if="activeTab === 'mass-upload'"
+      :is-loading="isLoading"
+      :npcs="npcs"
+      :quests="quests"
     />
 
     <ContentManageSearch
