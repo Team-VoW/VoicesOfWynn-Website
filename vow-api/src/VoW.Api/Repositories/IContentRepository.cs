@@ -42,6 +42,37 @@ public interface IContentRepository
 
     Task<bool> QuestNpcHasRecordingsAsync(int questId, int npcId, CancellationToken cancellationToken);
 
+    Task<IReadOnlyCollection<NpcRecording>> GetQuestNpcRecordingsAsync(
+        int questId,
+        int npcId,
+        CancellationToken cancellationToken);
+
+    Task<RecordingFile?> GetQuestNpcRecordingFileAsync(
+        int questId,
+        int npcId,
+        int recordingId,
+        CancellationToken cancellationToken);
+
+    Task<RecordingFile?> GetRecordingByFileAsync(string fileName, CancellationToken cancellationToken);
+
+    Task<bool> UpdateRecordingFileAsync(
+        int recordingId,
+        string fileName,
+        CancellationToken cancellationToken);
+
+    Task<CreatedContent> InsertRecordingAsync(
+        int questId,
+        int npcId,
+        int line,
+        string fileName,
+        CancellationToken cancellationToken);
+
+    Task<bool> DeleteQuestNpcRecordingAsync(
+        int questId,
+        int npcId,
+        int recordingId,
+        CancellationToken cancellationToken);
+
     Task<ContentSearchPage> SearchAsync(ContentSearchCriteria criteria, CancellationToken cancellationToken);
 
     Task<CreatedContent> CreateQuestAsync(CreateQuestCommand command, string degeneratedName, CancellationToken cancellationToken);

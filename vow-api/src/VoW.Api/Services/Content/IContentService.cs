@@ -73,4 +73,22 @@ public interface IContentService
         int npcId,
         Stream content,
         CancellationToken cancellationToken);
+
+    Task<NpcRecordingUploadServiceResult> UploadNpcRecordingsAsync(
+        int questId,
+        int npcId,
+        IReadOnlyCollection<NpcRecordingUpload> recordings,
+        bool overwrite,
+        CancellationToken cancellationToken);
+
+    Task<NpcRecordingsServiceResult> GetNpcRecordingsAsync(
+        int questId,
+        int npcId,
+        CancellationToken cancellationToken);
+
+    Task<ContentMutationResult> DeleteNpcRecordingAsync(
+        int questId,
+        int npcId,
+        int recordingId,
+        CancellationToken cancellationToken);
 }

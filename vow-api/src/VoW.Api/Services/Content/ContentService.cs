@@ -11,10 +11,15 @@ namespace VoW.Api.Services.Content;
 public sealed partial class ContentService(
     IContentRepository contentRepository,
     IQuestScriptStorage questScriptStorage,
-    INpcImageStorage npcImageStorage) : IContentService
+    INpcImageStorage npcImageStorage,
+    INpcRecordingStorage npcRecordingStorage) : IContentService
 {
     private const int ContentNameMaxLength = 63;
+    private const int RecordingFileNameMaxLength = 63;
+    private const short RecordingLineMinValue = 1;
+    private const short RecordingLineMaxValue = short.MaxValue;
     private static readonly int[] AllowedPageSizes = [10, 25, 50, 100];
+    private static readonly string[] AcceptedRecordingContentTypes = ["audio/ogg", "video/ogg", "application/ogg"];
 
     public async Task<ContentOptionsResponse> GetOptionsAsync(CancellationToken cancellationToken)
     {
@@ -444,6 +449,249 @@ public sealed partial class ContentService(
         return ContentMutationResult.Success();
     }
 
+    public async Task<NpcRecordingUploadServiceResult> UploadNpcRecordingsAsync(
+        int questId,
+        int npcId,
+        IReadOnlyCollection<NpcRecordingUpload> recordings,
+        bool overwrite,
+        CancellationToken cancellationToken)
+    {
+        if (!await contentRepository.QuestNpcLinkExistsAsync(questId, npcId, cancellationToken))
+        {
+            return NpcRecordingUploadServiceResult.NotFound();
+        }
+
+        var results = new List<UploadNpcRecordingResult>(recordings.Count);
+        foreach (var recording in recordings)
+        {
+            results.Add(await UploadNpcRecordingAsync(questId, npcId, recording, overwrite, cancellationToken));
+        }
+
+        return NpcRecordingUploadServiceResult.Success(new UploadNpcRecordingsResponse(results));
+    }
+
+    public async Task<NpcRecordingsServiceResult> GetNpcRecordingsAsync(
+        int questId,
+        int npcId,
+        CancellationToken cancellationToken)
+    {
+        if (!await contentRepository.QuestNpcLinkExistsAsync(questId, npcId, cancellationToken))
+        {
+            return NpcRecordingsServiceResult.NotFound();
+        }
+
+        var recordings = await contentRepository.GetQuestNpcRecordingsAsync(questId, npcId, cancellationToken);
+        var response = recordings
+            .Select(recording => new NpcRecordingResponse(
+                recording.RecordingId,
+                recording.Line,
+                recording.FileName,
+                npcRecordingStorage.GetRecordingUrl(recording.FileName).ToString()))
+            .ToArray();
+
+        return NpcRecordingsServiceResult.Success(response);
+    }
+
+    public async Task<ContentMutationResult> DeleteNpcRecordingAsync(
+        int questId,
+        int npcId,
+        int recordingId,
+        CancellationToken cancellationToken)
+    {
+        var recording = await contentRepository.GetQuestNpcRecordingFileAsync(
+            questId,
+            npcId,
+            recordingId,
+            cancellationToken);
+        if (recording is null)
+        {
+            return ContentMutationResult.NotFound();
+        }
+
+        var deleted = await contentRepository.DeleteQuestNpcRecordingAsync(
+            questId,
+            npcId,
+            recordingId,
+            cancellationToken);
+        if (!deleted)
+        {
+            return ContentMutationResult.NotFound();
+        }
+
+        await npcRecordingStorage.DeleteRecordingAsync(recording.File, cancellationToken);
+        return ContentMutationResult.Success();
+    }
+
+    private async Task<UploadNpcRecordingResult> UploadNpcRecordingAsync(
+        int questId,
+        int npcId,
+        NpcRecordingUpload recording,
+        bool overwrite,
+        CancellationToken cancellationToken)
+    {
+        var fileName = Path.GetFileName(recording.FileName);
+        var validation = ValidateRecordingFile(fileName, recording.ContentType, recording.Length);
+        if (validation is not null)
+        {
+            return validation;
+        }
+
+        var line = ParseRecordingLine(fileName);
+        var conflictExists = await npcRecordingStorage.RecordingExistsAsync(fileName, cancellationToken);
+        if (conflictExists && !overwrite)
+        {
+            var renamedFileName = await NextAvailableRecordingFileNameAsync(fileName, cancellationToken);
+            if (renamedFileName is null)
+            {
+                return RecordingResult(
+                    fileName,
+                    409,
+                    "Conflict",
+                    "A conflict-safe filename could not be created within the database filename limit.");
+            }
+
+            await npcRecordingStorage.RenameRecordingAsync(fileName, renamedFileName, cancellationToken);
+
+            var existingRecording = await contentRepository.GetRecordingByFileAsync(fileName, cancellationToken);
+            if (existingRecording is not null)
+            {
+                await contentRepository.UpdateRecordingFileAsync(
+                    existingRecording.RecordingId,
+                    renamedFileName,
+                    cancellationToken);
+            }
+
+            await using var content = recording.OpenReadStream();
+            await npcRecordingStorage.UploadRecordingAsync(fileName, content, cancellationToken);
+            await contentRepository.InsertRecordingAsync(questId, npcId, line, fileName, cancellationToken);
+
+            return RecordingResult(
+                fileName,
+                201,
+                "Created",
+                $"Existing file was renamed to {renamedFileName}; new recording was uploaded.",
+                fileName);
+        }
+
+        await using (var content = recording.OpenReadStream())
+        {
+            await npcRecordingStorage.UploadRecordingAsync(fileName, content, cancellationToken);
+        }
+
+        if (conflictExists)
+        {
+            return RecordingResult(
+                fileName,
+                200,
+                "OK",
+                "File was uploaded and overwrote an existing file with the same name.",
+                fileName);
+        }
+
+        await contentRepository.InsertRecordingAsync(questId, npcId, line, fileName, cancellationToken);
+        return RecordingResult(fileName, 201, "Created", "File was uploaded.", fileName);
+    }
+
+    private static UploadNpcRecordingResult? ValidateRecordingFile(string fileName, string contentType, long length)
+    {
+        if (string.IsNullOrWhiteSpace(fileName))
+        {
+            return RecordingResult(fileName, 400, "Bad Request", "A filename is required.");
+        }
+
+        if (length == 0)
+        {
+            return RecordingResult(fileName, 400, "Bad Request", "Recording file cannot be empty.");
+        }
+
+        if (new StringInfo(fileName).LengthInTextElements > RecordingFileNameMaxLength)
+        {
+            return RecordingResult(
+                fileName,
+                400,
+                "Bad Request",
+                $"Filename cannot be longer than {RecordingFileNameMaxLength} characters.");
+        }
+
+        if (!string.Equals(Path.GetExtension(fileName), ".ogg", StringComparison.OrdinalIgnoreCase))
+        {
+            return RecordingResult(fileName, 415, "Unsupported Media Type", "Only .ogg files are accepted.");
+        }
+
+        var normalizedContentType = NormalizeContentType(contentType);
+        if (string.IsNullOrWhiteSpace(normalizedContentType) ||
+            !AcceptedRecordingContentTypes.Contains(normalizedContentType, StringComparer.OrdinalIgnoreCase))
+        {
+            return RecordingResult(
+                fileName,
+                415,
+                "Unsupported Media Type",
+                $"The uploaded file is not an accepted OGG content type. MIME-type {contentType} provided.");
+        }
+
+        if (!TryParseRecordingLine(fileName, out _))
+        {
+            return RecordingResult(
+                fileName,
+                400,
+                "Bad Request",
+                "Filename must end with a supported line number, for example 1.ogg or quest-npc-1.ogg.");
+        }
+
+        return null;
+    }
+
+    private async Task<string?> NextAvailableRecordingFileNameAsync(
+        string fileName,
+        CancellationToken cancellationToken)
+    {
+        var stem = Path.GetFileNameWithoutExtension(fileName);
+        for (var index = 1; index < 10_000; index++)
+        {
+            var candidate = FormattableString.Invariant($"{stem}_({index}).ogg");
+            if (new StringInfo(candidate).LengthInTextElements > RecordingFileNameMaxLength)
+            {
+                return null;
+            }
+
+            if (!await npcRecordingStorage.RecordingExistsAsync(candidate, cancellationToken))
+            {
+                return candidate;
+            }
+        }
+
+        return null;
+    }
+
+    private static int ParseRecordingLine(string fileName)
+    {
+        TryParseRecordingLine(fileName, out var line);
+        return line;
+    }
+
+    private static bool TryParseRecordingLine(string fileName, out int line)
+    {
+        var stem = Path.GetFileNameWithoutExtension(fileName);
+        var lineText = RecordingLineSuffixRegex().Match(stem) is { Success: true } match
+            ? match.Groups["line"].Value
+            : stem;
+
+        return int.TryParse(lineText, NumberStyles.None, CultureInfo.InvariantCulture, out line) &&
+            line >= RecordingLineMinValue &&
+            line <= RecordingLineMaxValue;
+    }
+
+    private static string NormalizeContentType(string contentType) =>
+        contentType.Split(';', 2, StringSplitOptions.TrimEntries)[0];
+
+    private static UploadNpcRecordingResult RecordingResult(
+        string fileName,
+        int code,
+        string message,
+        string description,
+        string? storedFileName = null) =>
+        new(fileName, code, message, description, storedFileName);
+
     private async Task<bool> OptionExistsAsync(
         ContentUserRole role,
         int id,
@@ -487,4 +735,7 @@ public sealed partial class ContentService(
 
     [GeneratedRegex("[^a-z0-9]")]
     private static partial Regex DegeneratedNameRegex();
+
+    [GeneratedRegex("-(?<line>\\d+)$")]
+    private static partial Regex RecordingLineSuffixRegex();
 }

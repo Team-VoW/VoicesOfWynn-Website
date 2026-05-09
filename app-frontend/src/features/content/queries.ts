@@ -3,8 +3,10 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tansta
 import {
   createNpc,
   createQuest,
+  deleteNpcRecording,
   deleteQuest,
   getContentOptions,
+  getNpcRecordings,
   linkQuestNpc,
   searchContent,
   unlinkQuestNpc,
@@ -14,6 +16,7 @@ import {
   updateQuestNpcSoundEditor,
   updateQuestWriter,
   uploadNpcImage,
+  uploadNpcRecordings,
   uploadQuestScript,
 } from '@/api/content'
 import type {
@@ -66,6 +69,10 @@ export function useCreateNpc() {
 
 function invalidateContent(queryClient: ReturnType<typeof useQueryClient>) {
   queryClient.invalidateQueries({ queryKey: ['content'] })
+}
+
+function npcRecordingsQueryKey(questId: number, npcId: number) {
+  return ['content', 'recordings', questId, npcId] as const
 }
 
 export function useUpdateQuest() {
@@ -146,6 +153,43 @@ export function useUnlinkQuestNpc() {
   })
 }
 
+export function useNpcRecordings(
+  questId: Ref<number | null> | ComputedRef<number | null>,
+  npcId: Ref<number | null> | ComputedRef<number | null>,
+  enabled: Ref<boolean> | ComputedRef<boolean>,
+) {
+  return useQuery({
+    queryKey: computed(() =>
+      questId.value !== null && npcId.value !== null
+        ? npcRecordingsQueryKey(questId.value, npcId.value)
+        : (['content', 'recordings', null, null] as const),
+    ),
+    queryFn: ({ signal }) => getNpcRecordings(questId.value!, npcId.value!, signal),
+    enabled,
+  })
+}
+
+export function useDeleteNpcRecording() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({
+      questId,
+      npcId,
+      recordingId,
+    }: {
+      questId: number
+      npcId: number
+      recordingId: number
+    }) => deleteNpcRecording(questId, npcId, recordingId),
+    onSuccess: (_data, variables) => {
+      invalidateContent(queryClient)
+      queryClient.invalidateQueries({
+        queryKey: npcRecordingsQueryKey(variables.questId, variables.npcId),
+      })
+    },
+  })
+}
+
 export function useUploadQuestScript() {
   const queryClient = useQueryClient()
   return useMutation({
@@ -158,8 +202,25 @@ export function useUploadQuestScript() {
 export function useUploadNpcImage() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({ npcId, file }: { npcId: number; file: Blob }) =>
-      uploadNpcImage(npcId, file),
+    mutationFn: ({ npcId, file }: { npcId: number; file: Blob }) => uploadNpcImage(npcId, file),
+    onSuccess: () => invalidateContent(queryClient),
+  })
+}
+
+export function useUploadNpcRecordings() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({
+      questId,
+      npcId,
+      recordings,
+      overwrite,
+    }: {
+      questId: number
+      npcId: number
+      recordings: File[]
+      overwrite: boolean
+    }) => uploadNpcRecordings(questId, npcId, recordings, overwrite),
     onSuccess: () => invalidateContent(queryClient),
   })
 }

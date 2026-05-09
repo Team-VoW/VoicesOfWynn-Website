@@ -7,10 +7,12 @@ import type {
   CreateNpcRequest,
   CreateQuestRequest,
   LinkQuestNpcRequest,
+  NpcRecording,
   UpdateContentNameRequest,
   UpdateNpcVoiceActorRequest,
   UpdateQuestNpcSoundEditorRequest,
   UpdateQuestWriterRequest,
+  UploadNpcRecordingsResponse,
 } from './types'
 
 export function getContentOptions(signal?: AbortSignal): Promise<ContentOptionsResponse> {
@@ -110,6 +112,29 @@ export function unlinkQuestNpc(questId: number, npcId: number): Promise<void> {
   })
 }
 
+export function getNpcRecordings(
+  questId: number,
+  npcId: number,
+  signal?: AbortSignal,
+): Promise<NpcRecording[]> {
+  return apiFetch<NpcRecording[]>(`/admin/content/quests/${questId}/npcs/${npcId}/recordings`, {
+    signal,
+  })
+}
+
+export function deleteNpcRecording(
+  questId: number,
+  npcId: number,
+  recordingId: number,
+): Promise<void> {
+  return apiFetch<void>(
+    `/admin/content/quests/${questId}/npcs/${npcId}/recordings/${recordingId}`,
+    {
+      method: 'DELETE',
+    },
+  )
+}
+
 export function uploadQuestScript(questId: number, file: File): Promise<void> {
   const form = new FormData()
   form.append('file', file)
@@ -126,4 +151,25 @@ export function uploadNpcImage(npcId: number, file: Blob, fileName = 'image.webp
     method: 'PUT',
     body: form,
   })
+}
+
+export function uploadNpcRecordings(
+  questId: number,
+  npcId: number,
+  recordings: File[],
+  overwrite: boolean,
+): Promise<UploadNpcRecordingsResponse> {
+  const form = new FormData()
+  for (const recording of recordings) {
+    form.append('recordings', recording)
+  }
+  form.append('overwrite', String(overwrite))
+
+  return apiFetch<UploadNpcRecordingsResponse>(
+    `/admin/content/quests/${questId}/npcs/${npcId}/recordings`,
+    {
+      method: 'PUT',
+      body: form,
+    },
+  )
 }
