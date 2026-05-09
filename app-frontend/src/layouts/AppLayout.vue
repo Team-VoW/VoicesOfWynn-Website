@@ -22,7 +22,7 @@ async function logout() {
   <TooltipProvider>
     <div class="min-h-screen bg-background text-foreground">
       <header class="border-b">
-        <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
+        <div class="flex items-center justify-between px-6 py-3">
           <RouterLink to="/admin/reports" class="flex items-center gap-2 text-base font-semibold">
             <img src="/wynnvplogo.svg" alt="Voices of Wynn logo" class="size-8 shrink-0" />
             <span>VoW Admin</span>

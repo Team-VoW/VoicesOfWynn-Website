@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref, useTemplateRef, watch } from 'vue'
+import { nextTick, onBeforeUnmount, onMounted, ref, useTemplateRef, watch } from 'vue'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
 const props = defineProps<{
@@ -31,8 +31,7 @@ onBeforeUnmount(() => {
 })
 
 watch(() => props.text, () => {
-  // Re-measure on next paint after text content changes.
-  queueMicrotask(measure)
+  void nextTick(measure)
 })
 </script>
 

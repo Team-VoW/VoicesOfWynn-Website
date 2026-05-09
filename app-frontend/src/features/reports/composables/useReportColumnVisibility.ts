@@ -27,7 +27,7 @@ export function useReportColumnVisibility() {
   })
 
   function toggle(key: ReportSortField, value: boolean) {
-    visibility.value = { ...visibility.value, [key]: value }
+    visibility.value[key] = value
   }
 
   return { visibility, toggle, columnLabels: REPORT_COLUMN_LABELS }

@@ -13,20 +13,15 @@ export const REPORT_STATUSES: ReportStatus[] = [
   'fixed',
 ]
 
-export type ReportSortField =
-  | 'npcName'
-  | 'chatMessage'
-  | 'status'
-  | 'reportedTimes'
-  | 'timeSubmitted'
-
-export const REPORT_SORT_FIELDS: ReportSortField[] = [
+export const REPORT_SORT_FIELDS = [
   'npcName',
   'chatMessage',
   'status',
   'reportedTimes',
   'timeSubmitted',
-]
+] as const
+
+export type ReportSortField = typeof REPORT_SORT_FIELDS[number]
 
 export type SortDirection = 'asc' | 'desc'
 

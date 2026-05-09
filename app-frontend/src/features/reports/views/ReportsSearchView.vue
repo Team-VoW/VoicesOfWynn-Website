@@ -27,7 +27,7 @@ function statusFromQuery(value: unknown): ReportStatus | 'any' {
 }
 
 function sortByFromQuery(value: unknown): ReportSortField | undefined {
-  return typeof value === 'string' && (REPORT_SORT_FIELDS as string[]).includes(value)
+  return typeof value === 'string' && REPORT_SORT_FIELDS.includes(value as ReportSortField)
     ? (value as ReportSortField)
     : undefined
 }
