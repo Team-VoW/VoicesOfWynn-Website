@@ -6,6 +6,16 @@ namespace VoW.Api.Repositories;
 
 public sealed class ReportRepository(IConfiguration configuration) : IReportRepository
 {
+    private static string ColumnFor(ReportSortField field) => field switch
+    {
+        ReportSortField.NpcName => "npc_name",
+        ReportSortField.ChatMessage => "chat_message",
+        ReportSortField.Status => "status",
+        ReportSortField.ReportedTimes => "reported_times",
+        ReportSortField.TimeSubmitted => "time_submitted",
+        _ => throw new ArgumentOutOfRangeException(nameof(field), field, null),
+    };
+
     public async Task<ReportSearchPage> SearchAsync(ReportSearchCriteria criteria, CancellationToken cancellationToken)
     {
         var where = new List<string>();
@@ -34,6 +44,8 @@ public sealed class ReportRepository(IConfiguration configuration) : IReportRepo
         parameters.Add("PageSize", criteria.PageSize);
         parameters.Add("Offset", offset);
 
+        var orderBySql = BuildOrderBy(criteria);
+
         var countSql = $"SELECT COUNT(*) FROM report {whereSql};";
         var searchSql = $"""
             SELECT
@@ -45,7 +57,7 @@ public sealed class ReportRepository(IConfiguration configuration) : IReportRepo
                 time_submitted AS TimeSubmitted
             FROM report
             {whereSql}
-            ORDER BY time_submitted DESC, report_id DESC
+            {orderBySql}
             LIMIT @PageSize OFFSET @Offset;
             """;
 
@@ -57,5 +69,16 @@ public sealed class ReportRepository(IConfiguration configuration) : IReportRepo
         var results = (await connection.QueryAsync<ReportSummary>(command)).AsList();
 
         return new ReportSearchPage(total, criteria.Page, results);
+    }
+
+    private static string BuildOrderBy(ReportSearchCriteria criteria)
+    {
+        if (criteria.SortBy is not { } sortBy)
+        {
+            return "ORDER BY time_submitted DESC, report_id DESC";
+        }
+
+        var direction = criteria.SortDir == SortDirection.Asc ? "ASC" : "DESC";
+        return $"ORDER BY {ColumnFor(sortBy)} {direction}, report_id DESC";
     }
 }

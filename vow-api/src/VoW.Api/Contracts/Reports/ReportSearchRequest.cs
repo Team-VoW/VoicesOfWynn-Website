@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using VoW.Api.Domain.Reports;
 
 namespace VoW.Api.Contracts.Reports;
 
@@ -11,6 +12,10 @@ public sealed class ReportSearchRequest
     public string? Content { get; init; }
 
     public string? Status { get; init; }
+
+    public ReportSortField? SortBy { get; init; }
+
+    public SortDirection? SortDir { get; init; }
 
     [Range(1, int.MaxValue)]
     public int Page { get; init; } = 1;

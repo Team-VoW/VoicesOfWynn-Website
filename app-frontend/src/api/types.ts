@@ -13,10 +13,29 @@ export const REPORT_STATUSES: ReportStatus[] = [
   'fixed',
 ]
 
+export type ReportSortField =
+  | 'npcName'
+  | 'chatMessage'
+  | 'status'
+  | 'reportedTimes'
+  | 'timeSubmitted'
+
+export const REPORT_SORT_FIELDS: ReportSortField[] = [
+  'npcName',
+  'chatMessage',
+  'status',
+  'reportedTimes',
+  'timeSubmitted',
+]
+
+export type SortDirection = 'asc' | 'desc'
+
 export interface ReportSearchRequest {
   npc?: string
   content?: string
   status?: ReportStatus
+  sortBy?: ReportSortField
+  sortDir?: SortDirection
   page: number
   pageSize: number
 }
