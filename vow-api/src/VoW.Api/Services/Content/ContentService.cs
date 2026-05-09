@@ -10,7 +10,8 @@ namespace VoW.Api.Services.Content;
 
 public sealed partial class ContentService(
     IContentRepository contentRepository,
-    IQuestScriptStorage questScriptStorage) : IContentService
+    IQuestScriptStorage questScriptStorage,
+    INpcImageStorage npcImageStorage) : IContentService
 {
     private const int ContentNameMaxLength = 63;
     private static readonly int[] AllowedPageSizes = [10, 25, 50, 100];
@@ -409,6 +410,37 @@ public sealed partial class ContentService(
         }
 
         await questScriptStorage.UploadScriptAsync(degeneratedName, content, cancellationToken);
+        return ContentMutationResult.Success();
+    }
+
+    public async Task<ContentMutationResult> UploadNpcImageAsync(
+        int npcId,
+        Stream content,
+        CancellationToken cancellationToken)
+    {
+        if (!await contentRepository.NpcExistsAsync(npcId, cancellationToken))
+        {
+            return ContentMutationResult.NotFound();
+        }
+
+        MemoryStream normalized;
+        try
+        {
+            normalized = await NpcImagePipeline.NormalizeToWebpAsync(content, cancellationToken);
+        }
+        catch (SixLabors.ImageSharp.UnknownImageFormatException)
+        {
+            return ContentMutationResult.Invalid("file", "The uploaded file is not a recognized image.");
+        }
+        catch (SixLabors.ImageSharp.InvalidImageContentException)
+        {
+            return ContentMutationResult.Invalid("file", "The uploaded image is corrupted or could not be decoded.");
+        }
+
+        await using (normalized)
+        {
+            await npcImageStorage.UploadImageAsync(npcId, normalized, cancellationToken);
+        }
         return ContentMutationResult.Success();
     }
 

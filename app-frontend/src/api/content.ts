@@ -118,3 +118,12 @@ export function uploadQuestScript(questId: number, file: File): Promise<void> {
     body: form,
   })
 }
+
+export function uploadNpcImage(npcId: number, file: Blob, fileName = 'image.webp'): Promise<void> {
+  const form = new FormData()
+  form.append('file', file, fileName)
+  return apiFetch<void>(`/admin/content/npcs/${npcId}/image`, {
+    method: 'PUT',
+    body: form,
+  })
+}

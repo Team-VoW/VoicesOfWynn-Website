@@ -13,6 +13,7 @@ import {
   updateQuest,
   updateQuestNpcSoundEditor,
   updateQuestWriter,
+  uploadNpcImage,
   uploadQuestScript,
 } from '@/api/content'
 import type {
@@ -150,6 +151,15 @@ export function useUploadQuestScript() {
   return useMutation({
     mutationFn: ({ questId, file }: { questId: number; file: File }) =>
       uploadQuestScript(questId, file),
+    onSuccess: () => invalidateContent(queryClient),
+  })
+}
+
+export function useUploadNpcImage() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ npcId, file }: { npcId: number; file: Blob }) =>
+      uploadNpcImage(npcId, file),
     onSuccess: () => invalidateContent(queryClient),
   })
 }

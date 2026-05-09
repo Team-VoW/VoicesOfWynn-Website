@@ -1,6 +1,15 @@
 <script setup lang="ts">
-import { ref, useTemplateRef, watch } from 'vue'
-import { Edit, FileUp, Headphones, LinkIcon, Trash2, Unlink, UserRound, X } from 'lucide-vue-next'
+import { computed, ref, useTemplateRef, watch } from 'vue'
+import {
+  Edit,
+  FileUp,
+  Headphones,
+  LinkIcon,
+  Trash2,
+  Unlink,
+  UserRound,
+  X,
+} from 'lucide-vue-next'
 import {
   DialogClose,
   DialogContent,
@@ -33,6 +42,10 @@ import {
   useUpdateQuestWriter,
   useUploadQuestScript,
 } from '../queries'
+import NpcImageCropDialog from './NpcImageCropDialog.vue'
+
+const NPC_IMAGE_BASE_URL = import.meta.env.VITE_NPC_IMAGE_BASE_URL.replace(/\/$/, '')
+const NPC_DEFAULT_IMAGE_URL = `${NPC_IMAGE_BASE_URL}/default.webp`
 
 type DialogMode = 'quest' | 'npc' | null
 
@@ -70,6 +83,40 @@ const linkNpcId = ref(CONTENT_NONE)
 const dialogError = ref('')
 const scriptFile = ref<File | null>(null)
 const scriptInput = useTemplateRef<HTMLInputElement>('scriptInput')
+const imageInput = useTemplateRef<HTMLInputElement>('imageInput')
+const pendingImageFile = ref<File | null>(null)
+const cropDialogOpen = ref(false)
+const imageBusters = ref<Map<number, number>>(new Map())
+
+const npcImageSrc = computed(() => {
+  if (!props.selectedNpc) return NPC_DEFAULT_IMAGE_URL
+  const url = `${NPC_IMAGE_BASE_URL}/${props.selectedNpc.npcId}.webp`
+  const buster = imageBusters.value.get(props.selectedNpc.npcId)
+  return buster ? `${url}${url.includes('?') ? '&' : '?'}v=${buster}` : url
+})
+
+function onImageError(event: Event) {
+  const img = event.target as HTMLImageElement
+  if (img.src !== NPC_DEFAULT_IMAGE_URL) {
+    img.src = NPC_DEFAULT_IMAGE_URL
+  }
+}
+
+function onImageFilePicked(event: Event) {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0] ?? null
+  target.value = ''
+  if (!file) return
+  pendingImageFile.value = file
+  cropDialogOpen.value = true
+}
+
+function onImageUploaded() {
+  if (props.selectedNpc) {
+    imageBusters.value.set(props.selectedNpc.npcId, Date.now())
+  }
+  pendingImageFile.value = null
+}
 
 watch(
   () => [props.mode, props.selectedQuest, props.selectedNpc, props.open] as const,
@@ -80,6 +127,9 @@ watch(
     linkNpcId.value = CONTENT_NONE
     scriptFile.value = null
     if (scriptInput.value) scriptInput.value.value = ''
+    pendingImageFile.value = null
+    cropDialogOpen.value = false
+    if (imageInput.value) imageInput.value.value = ''
 
     if (props.mode === 'quest' && props.selectedQuest) {
       editName.value = props.selectedQuest.questName
@@ -392,6 +442,30 @@ async function unlinkNpc() {
             <p class="font-medium">{{ selectedQuest.questName }}</p>
           </div>
 
+          <div class="flex items-start gap-4">
+            <img
+              :key="npcImageSrc"
+              :src="npcImageSrc"
+              alt="NPC picture"
+              class="size-24 shrink-0 rounded-md border bg-muted object-cover"
+              @error="onImageError"
+            />
+            <div class="flex-1 space-y-2">
+              <Label for="dialog-npc-image">Picture</Label>
+              <input
+                id="dialog-npc-image"
+                ref="imageInput"
+                type="file"
+                accept="image/png,image/jpeg,image/webp"
+                class="border-input file:text-foreground h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-sm file:mr-3 file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium"
+                @change="onImageFilePicked"
+              />
+              <p class="text-xs text-muted-foreground">
+                After picking a file you can crop and zoom; the image will be saved as 256×256 webp.
+              </p>
+            </div>
+          </div>
+
           <div class="space-y-2">
             <Label for="dialog-npc-name">NPC name</Label>
             <div class="flex gap-2">
@@ -491,4 +565,11 @@ async function unlinkNpc() {
       </DialogContent>
     </DialogPortal>
   </DialogRoot>
+
+  <NpcImageCropDialog
+    v-model:open="cropDialogOpen"
+    :npc-id="selectedNpc?.npcId ?? null"
+    :source="pendingImageFile"
+    @uploaded="onImageUploaded"
+  />
 </template>

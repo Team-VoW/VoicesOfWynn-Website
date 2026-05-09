@@ -54,4 +54,9 @@ public interface IContentService
         int questId,
         Stream content,
         CancellationToken cancellationToken);
+
+    Task<ContentMutationResult> UploadNpcImageAsync(
+        int npcId,
+        Stream content,
+        CancellationToken cancellationToken);
 }

@@ -33,6 +33,7 @@ builder.Services.AddSingleton(sp =>
     return new BlobServiceClient(connectionString);
 });
 builder.Services.AddSingleton<IQuestScriptStorage, AzureQuestScriptStorage>();
+builder.Services.AddSingleton<INpcImageStorage, AzureNpcImageStorage>();
 
 builder.Services.AddCors(options =>
 {

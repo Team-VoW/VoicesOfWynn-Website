@@ -167,7 +167,53 @@ public sealed class ContentController(IContentService contentService) : Controll
         return result.Succeeded ? NoContent() : ProblemFrom(result);
     }
 
+    [HttpPut("npcs/{npcId:int}/image")]
+    [RequestSizeLimit(NpcImageMaxSizeBytes)]
+    public async Task<IActionResult> UploadNpcImage(
+        int npcId,
+        IFormFile? file,
+        CancellationToken cancellationToken)
+    {
+        if (file is null || file.Length == 0)
+        {
+            ModelState.AddModelError(nameof(file), "An image file is required.");
+            return ValidationProblem(ModelState);
+        }
+
+        if (file.Length > NpcImageMaxSizeBytes)
+        {
+            ModelState.AddModelError(nameof(file), $"Image file must not exceed {NpcImageMaxSizeBytes} bytes.");
+            return ValidationProblem(ModelState);
+        }
+
+        if (!IsAcceptedImage(file))
+        {
+            ModelState.AddModelError(nameof(file), "Only PNG, JPEG, or WebP images are accepted.");
+            return ValidationProblem(ModelState);
+        }
+
+        await using var stream = file.OpenReadStream();
+        var result = await contentService.UploadNpcImageAsync(npcId, stream, cancellationToken);
+        return result.Succeeded ? NoContent() : ProblemFrom(result);
+    }
+
     private const int QuestScriptMaxSizeBytes = 2_000_000;
+    private const int NpcImageMaxSizeBytes = 8_000_000;
+
+    private static readonly string[] AcceptedImageExtensions = [".png", ".jpg", ".jpeg", ".webp"];
+
+    private static bool IsAcceptedImage(IFormFile file)
+    {
+        var extension = Path.GetExtension(file.FileName);
+        if (!string.IsNullOrEmpty(extension) &&
+            AcceptedImageExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        return !string.IsNullOrEmpty(file.ContentType) &&
+            file.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase);
+    }
 
     private IActionResult ProblemFrom(ContentMutationResult result)
     {
