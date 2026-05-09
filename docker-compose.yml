@@ -42,7 +42,7 @@ services:
       - app_network
 
   vow-api:
-    image: ghcr.io/kmaxi/vow-api:latest
+    image: ghcr.io/team-vow/vow-api:latest
     restart: unless-stopped
     expose:
       - "8080"

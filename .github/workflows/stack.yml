@@ -29,11 +29,20 @@ jobs:
 
       - name: Check whether API changed
         id: changed
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.sha }}
+          EVENT_NAME: ${{ github.event_name }}
         run: |
-          if [ "${{ github.event_name }}" = "push" ]; then
-            git diff --name-only "${{ github.event.before }}" "${{ github.sha }}" > changed_files
+          : > changed_files
+          if [ "$EVENT_NAME" = "push" ] \
+             && [ -n "$BEFORE_SHA" ] \
+             && [ "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ] \
+             && git cat-file -e "$BEFORE_SHA^{commit}" 2>/dev/null; then
+            git diff --name-only "$BEFORE_SHA" "$AFTER_SHA" > changed_files
           else
-            : > changed_files
+            # First push to a branch (or non-push trigger): assume API may have changed.
+            echo "vow-api/" > changed_files
           fi
 
           if grep -q '^vow-api/' changed_files; then
