@@ -11,8 +11,10 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { REPORT_SORT_FIELDS } from '@/api/types'
 import { useReportColumnVisibility } from '../composables/useReportColumnVisibility'
+import { useReportsManageColumn } from '../composables/useReportsManageColumn'
 
 const { visibility, toggle, columnLabels } = useReportColumnVisibility()
+const { canManage, stored: manageStored, toggle: toggleManage } = useReportsManageColumn()
 </script>
 
 <template>
@@ -35,6 +37,16 @@ const { visibility, toggle, columnLabels } = useReportColumnVisibility()
       >
         {{ columnLabels[key] }}
       </DropdownMenuCheckboxItem>
+      <template v-if="canManage">
+        <DropdownMenuSeparator />
+        <DropdownMenuCheckboxItem
+          :model-value="manageStored"
+          @update:model-value="(v) => toggleManage(v === true)"
+          @select.prevent
+        >
+          Manage
+        </DropdownMenuCheckboxItem>
+      </template>
     </DropdownMenuContent>
   </DropdownMenu>
 </template>

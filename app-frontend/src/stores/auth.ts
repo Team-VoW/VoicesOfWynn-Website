@@ -1,6 +1,7 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import { jwtDecode } from 'jwt-decode'
+import type { Capability } from '@/lib/capabilities'
 
 // Tokens are kept in localStorage. We accept the XSS tradeoff for an admin-only
 // SPA over the complexity of a server-side refresh-cookie flow.
@@ -17,6 +18,7 @@ interface AccessTokenClaims {
   discord_id?: string
   display_name?: string
   exp?: number
+  capability?: string | string[]
 }
 
 function load(): PersistedAuth | null {
@@ -56,6 +58,17 @@ export const useAuthStore = defineStore('auth', () => {
 
   const displayName = computed(() => claims.value?.display_name ?? '')
 
+  const capabilities = computed<string[]>(() => {
+    const c = claims.value?.capability
+    if (Array.isArray(c)) return c
+    if (typeof c === 'string' && c) return [c]
+    return []
+  })
+
+  function hasCapability(name: Capability) {
+    return capabilities.value.includes(name)
+  }
+
   function persist() {
     if (accessToken.value && refreshToken.value) {
       save({
@@ -88,6 +101,8 @@ export const useAuthStore = defineStore('auth', () => {
     expiresAt,
     isAuthenticated,
     displayName,
+    capabilities,
+    hasCapability,
     setTokens,
     clear,
   }

@@ -71,6 +71,24 @@ public sealed class ReportRepository(IConfiguration configuration) : IReportRepo
         return new ReportSearchPage(total, criteria.Page, results);
     }
 
+    public async Task<bool> UpdateStatusAsync(int reportId, string status, CancellationToken cancellationToken)
+    {
+        const string sql = "UPDATE report SET status = @Status WHERE report_id = @Id;";
+        await using var connection = new MySqlConnection(DatabaseSettings.GetApiConnectionString(configuration));
+        var command = new CommandDefinition(sql, new { Id = reportId, Status = status }, cancellationToken: cancellationToken);
+        var rows = await connection.ExecuteAsync(command);
+        return rows > 0;
+    }
+
+    public async Task<bool> DeleteAsync(int reportId, CancellationToken cancellationToken)
+    {
+        const string sql = "DELETE FROM report WHERE report_id = @Id;";
+        await using var connection = new MySqlConnection(DatabaseSettings.GetApiConnectionString(configuration));
+        var command = new CommandDefinition(sql, new { Id = reportId }, cancellationToken: cancellationToken);
+        var rows = await connection.ExecuteAsync(command);
+        return rows > 0;
+    }
+
     private static string BuildOrderBy(ReportSearchCriteria criteria)
     {
         if (criteria.SortBy is not { } sortBy)

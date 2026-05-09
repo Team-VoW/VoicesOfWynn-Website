@@ -27,7 +27,7 @@ builder.Services.AddCors(options =>
     {
         var origin = builder.Configuration["CORS_ORIGIN"] ?? "https://app.voicesofwynn.com";
         policy.WithOrigins(origin)
-            .WithMethods("GET", "POST")
+            .WithMethods("GET", "POST", "PATCH", "DELETE")
             .WithHeaders("Authorization", "Content-Type");
     });
 });

@@ -39,6 +39,28 @@ public sealed class ReportService(IReportRepository reportRepository) : IReportS
                 result.TimeSubmitted)).ToList()));
     }
 
+    public async Task<ReportMutationResult> UpdateStatusAsync(
+        int reportId,
+        string status,
+        CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(status) || !ReportStatus.IsValid(status))
+        {
+            return ReportMutationResult.Invalid(
+                nameof(status),
+                $"Status must be one of {ReportStatus.DisplayList}.");
+        }
+
+        var found = await reportRepository.UpdateStatusAsync(reportId, status.ToLowerInvariant(), cancellationToken);
+        return found ? ReportMutationResult.Success() : ReportMutationResult.NotFound();
+    }
+
+    public async Task<ReportMutationResult> DeleteAsync(int reportId, CancellationToken cancellationToken)
+    {
+        var found = await reportRepository.DeleteAsync(reportId, cancellationToken);
+        return found ? ReportMutationResult.Success() : ReportMutationResult.NotFound();
+    }
+
     private static string? NormalizeFilter(string? value) =>
         string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 }
