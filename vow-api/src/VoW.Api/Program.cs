@@ -6,6 +6,7 @@ using Scalar.AspNetCore;
 using VoW.Api.Domain.Auth;
 using VoW.Api.Repositories;
 using VoW.Api.Services;
+using VoW.Api.Services.Accounts;
 using VoW.Api.Services.Auth;
 using VoW.Api.Services.Content;
 using VoW.Api.Services.Reports;
@@ -20,8 +21,10 @@ builder.Services.AddHttpClient<IExternalAuthProvider, DiscordAuthService>();
 builder.Services.AddSingleton<IJwtService, JwtService>();
 builder.Services.AddSingleton<IAuthHandoffService, AuthHandoffService>();
 builder.Services.AddScoped<IUserAccessService, UserAccessService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IContentService, ContentService>();
 builder.Services.AddScoped<IReportService, ReportService>();
+builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IContentRepository, ContentRepository>();
 builder.Services.AddScoped<IReportRepository, ReportRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -38,6 +41,7 @@ builder.Services.AddSingleton(sp =>
 });
 builder.Services.AddSingleton<IQuestScriptStorage, AzureQuestScriptStorage>();
 builder.Services.AddSingleton<INpcImageStorage, AzureNpcImageStorage>();
+builder.Services.AddSingleton<IAccountAvatarStorage, AzureAccountAvatarStorage>();
 
 builder.Services.AddCors(options =>
 {

@@ -4,6 +4,7 @@ export const Capabilities = {
   ReportsView: 'reports.view',
   ReportsManage: 'reports.manage',
   ContentManage: 'content.manage',
+  AccountsManage: 'accounts.manage',
 } as const
 
 export type Capability = (typeof Capabilities)[keyof typeof Capabilities]

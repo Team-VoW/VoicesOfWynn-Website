@@ -147,3 +147,70 @@ export interface UpdateQuestNpcSoundEditorRequest {
 export interface LinkQuestNpcRequest {
   npcId: number
 }
+
+export interface AccountRole {
+  id: number
+  name: string
+  color: string
+  weight: number
+}
+
+export interface AccountSearchRequest {
+  query?: string
+  page: number
+  pageSize: number
+}
+
+export interface AccountSearchResult {
+  userId: number
+  displayName: string
+  avatarUrl: string
+  defaultAvatarUrl: string
+  socialSummary: string
+  roleIds: number[]
+}
+
+export interface AccountSearchResponse {
+  total: number
+  page: number
+  pageSize: number
+  results: AccountSearchResult[]
+}
+
+export interface AccountDetails {
+  userId: number
+  displayName: string
+  avatarUrl: string
+  defaultAvatarUrl: string
+  email: string | null
+  publicEmail: boolean
+  discord: string | null
+  youtube: string | null
+  twitter: string | null
+  castingCallClub: string | null
+  bio: string | null
+  lore: string | null
+  systemAdmin: boolean
+  roleIds: number[]
+}
+
+export interface UpdateAccountRequest {
+  displayName: string
+  password?: string
+  email?: string
+  publicEmail: boolean
+  discord?: string
+  youtube?: string
+  twitter?: string
+  castingCallClub?: string
+  bio?: string
+  lore?: string
+}
+
+export interface UpdateAccountRolesRequest {
+  roleIds: number[]
+}
+
+export interface ResetPasswordResponse {
+  temporaryPassword: string
+}

@@ -6,12 +6,14 @@ public static class CapabilityMapper
     public const string ReportsViewClaim = "reports.view";
     public const string ReportsManageClaim = "reports.manage";
     public const string ContentManageClaim = "content.manage";
+    public const string AccountsManageClaim = "accounts.manage";
 
     private static readonly Capability[] AllCapabilities =
     [
         Capability.ReportsView,
         Capability.ReportsManage,
-        Capability.ContentManage
+        Capability.ContentManage,
+        Capability.AccountsManage
     ];
 
     private static readonly HashSet<DiscordRoleId> AdminRoles =
@@ -52,6 +54,7 @@ public static class CapabilityMapper
         Capability.ReportsView => ReportsViewClaim,
         Capability.ReportsManage => ReportsManageClaim,
         Capability.ContentManage => ContentManageClaim,
+        Capability.AccountsManage => AccountsManageClaim,
         _ => throw new ArgumentOutOfRangeException(nameof(capability), capability, null)
     };
 

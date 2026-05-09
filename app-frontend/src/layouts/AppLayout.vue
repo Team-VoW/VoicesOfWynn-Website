@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import { FileText, LayoutDashboard } from 'lucide-vue-next'
+import { FileText, LayoutDashboard, Users } from 'lucide-vue-next'
 import { computed } from 'vue'
 import { RouterView, useRoute, useRouter } from 'vue-router'
 import { Button } from '@/components/ui/button'
@@ -36,6 +36,13 @@ const navItems: {
     routeName: 'content',
     capability: Capabilities.ContentManage,
     icon: FileText,
+  },
+  {
+    label: 'Accounts',
+    to: '/admin/accounts',
+    routeName: 'accounts',
+    capability: Capabilities.AccountsManage,
+    icon: Users,
   },
 ]
 
