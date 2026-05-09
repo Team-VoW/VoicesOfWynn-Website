@@ -1,0 +1,72 @@
+name: Deploy stack
+
+on:
+  push:
+    branches:
+      - docker
+      - master
+    paths:
+      - 'docker-compose.yml'
+      - '.github/workflows/stack.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+
+      - name: Check whether API changed
+        id: changed
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.sha }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          : > changed_files
+          if [ "$EVENT_NAME" = "push" ] \
+             && [ -n "$BEFORE_SHA" ] \
+             && [ "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ] \
+             && git cat-file -e "$BEFORE_SHA^{commit}" 2>/dev/null; then
+            git diff --name-only "$BEFORE_SHA" "$AFTER_SHA" > changed_files
+          elif [ "$EVENT_NAME" = "push" ]; then
+            # First push to a branch: assume API may have changed.
+            echo "vow-api/" > changed_files
+          fi
+
+          if grep -q '^vow-api/' changed_files; then
+            echo "api_changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "api_changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Copy docker-compose.yml to Oracle Cloud
+        if: steps.changed.outputs.api_changed != 'true'
+        run: |
+          echo "${{ secrets.ORACLE_CLOUD_SSH_PRIVATE_KEY }}" > oracle_cloud_key
+          chmod 600 oracle_cloud_key
+          scp -i oracle_cloud_key -o StrictHostKeyChecking=no docker-compose.yml ${{ secrets.ORACLE_CLOUD_SSH_USER }}@${{ secrets.ORACLE_CLOUD_IP }}:website/
+          rm oracle_cloud_key
+
+      - name: Reconcile stack
+        if: steps.changed.outputs.api_changed != 'true'
+        run: |
+          echo "${{ secrets.ORACLE_CLOUD_SSH_PRIVATE_KEY }}" > oracle_cloud_key
+          chmod 600 oracle_cloud_key
+          ssh -i oracle_cloud_key -o StrictHostKeyChecking=no ${{ secrets.ORACLE_CLOUD_SSH_USER }}@${{ secrets.ORACLE_CLOUD_IP }} << EOF
+            cd website
+            docker compose up -d
+            docker image prune -f
+          EOF
+          rm oracle_cloud_key

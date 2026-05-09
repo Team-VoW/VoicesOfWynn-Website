@@ -7,9 +7,14 @@
 /files/*
 !/files/core-dev-server/*
 /vendor/
+.env
+.env.local
+.env.*.local
 profiles.php
 composer.phar
 .devcontainer
 /sessions/*
 !/sessions/.gitkeep
 *nul
+vow-api/**/bin/
+vow-api/**/obj/
