@@ -1,5 +1,5 @@
 import { apiFetch } from './client'
-import type { AuthTokenResponse, RefreshTokenResponse } from './types'
+import type { AuthTokenResponse } from './types'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? ''
 
@@ -15,8 +15,8 @@ export function exchangeHandoffCode(code: string): Promise<AuthTokenResponse> {
   })
 }
 
-export function refreshAccessToken(refreshToken: string): Promise<RefreshTokenResponse> {
-  return apiFetch<RefreshTokenResponse>('/auth/refresh', {
+export function refreshAccessToken(refreshToken: string): Promise<AuthTokenResponse> {
+  return apiFetch<AuthTokenResponse>('/auth/refresh', {
     method: 'POST',
     auth: false,
     body: { refreshToken },

@@ -45,8 +45,3 @@ export interface AuthTokenResponse {
 export interface AuthHandoffRequest {
   code: string
 }
-
-export interface RefreshTokenResponse {
-  accessToken: string
-  expiresAt: string
-}

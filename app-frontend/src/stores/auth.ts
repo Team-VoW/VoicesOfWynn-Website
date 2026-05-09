@@ -39,7 +39,11 @@ export const useAuthStore = defineStore('auth', () => {
   const refreshToken = ref<string>(initial?.refreshToken ?? '')
   const expiresAt = ref<string>(initial?.expiresAt ?? '')
 
-  const isAuthenticated = computed(() => accessToken.value.length > 0)
+  const isAuthenticated = computed(() => {
+    if (!accessToken.value) return false
+    if (!expiresAt.value) return true
+    return new Date(expiresAt.value).getTime() > Date.now()
+  })
 
   const claims = computed<AccessTokenClaims | null>(() => {
     if (!accessToken.value) return null
@@ -71,12 +75,6 @@ export const useAuthStore = defineStore('auth', () => {
     persist()
   }
 
-  function setAccessToken(access: string, expiresAtIso: string) {
-    accessToken.value = access
-    expiresAt.value = expiresAtIso
-    persist()
-  }
-
   function clear() {
     accessToken.value = ''
     refreshToken.value = ''
@@ -91,7 +89,6 @@ export const useAuthStore = defineStore('auth', () => {
     isAuthenticated,
     displayName,
     setTokens,
-    setAccessToken,
     clear,
   }
 })

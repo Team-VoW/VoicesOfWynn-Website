@@ -1,5 +1,5 @@
 import { useAuthStore } from '@/stores/auth'
-import type { RefreshTokenResponse } from './types'
+import type { AuthTokenResponse } from './types'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? ''
 
@@ -36,14 +36,17 @@ async function refreshAccessToken(): Promise<string | null> {
         body: JSON.stringify({ refreshToken: auth.refreshToken }),
       })
       if (!res.ok) {
-        auth.clear()
+        // Only an explicit auth rejection means the refresh token is no longer valid.
+        // Other failures (5xx, network/CORS) are transient — keep the session and let the caller retry.
+        if (res.status === 400 || res.status === 401) {
+          auth.clear()
+        }
         return null
       }
-      const data = (await res.json()) as RefreshTokenResponse
-      auth.setAccessToken(data.accessToken, data.expiresAt)
+      const data = (await res.json()) as AuthTokenResponse
+      auth.setTokens(data.accessToken, data.refreshToken, data.expiresAt)
       return data.accessToken
     } catch {
-      auth.clear()
       return null
     } finally {
       inFlightRefresh = null

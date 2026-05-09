@@ -2,8 +2,10 @@ import { onBeforeUnmount, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/stores/auth'
 import { refreshAccessToken } from '@/api/auth'
+import { ApiError } from '@/api/client'
 
 const REFRESH_LEEWAY_MS = 60_000
+const RETRY_DELAY_MS = 30_000
 
 export function useSilentRefresh() {
   const auth = useAuthStore()
@@ -21,9 +23,15 @@ export function useSilentRefresh() {
     if (!auth.refreshToken) return
     try {
       const res = await refreshAccessToken(auth.refreshToken)
-      auth.setAccessToken(res.accessToken, res.expiresAt)
-    } catch {
-      auth.clear()
+      auth.setTokens(res.accessToken, res.refreshToken, res.expiresAt)
+    } catch (err) {
+      // Only clear when the refresh token itself was rejected. Transient failures
+      // (network, 5xx) leave the session intact and we'll retry shortly.
+      if (err instanceof ApiError && (err.status === 400 || err.status === 401)) {
+        auth.clear()
+        return
+      }
+      timer = window.setTimeout(() => void doRefresh(), RETRY_DELAY_MS)
     }
   }
 
