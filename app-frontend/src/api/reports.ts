@@ -10,6 +10,8 @@ export function searchReports(
       npc: params.npc,
       content: params.content,
       status: params.status,
+      sortBy: params.sortBy,
+      sortDir: params.sortDir,
       page: params.page,
       pageSize: params.pageSize,
     },

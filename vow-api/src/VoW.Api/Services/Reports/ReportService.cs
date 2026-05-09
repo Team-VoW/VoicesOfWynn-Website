@@ -21,6 +21,8 @@ public sealed class ReportService(IReportRepository reportRepository) : IReportS
             NormalizeFilter(request.Npc),
             NormalizeFilter(request.Content),
             string.IsNullOrWhiteSpace(request.Status) ? null : request.Status.ToLowerInvariant(),
+            request.SortBy,
+            request.SortDir,
             request.Page,
             request.PageSize);
 
