@@ -39,8 +39,10 @@ public sealed class JwtService(IConfiguration configuration, IHostEnvironment en
             new("display_name", user.DisplayName)
         };
 
-        claims.AddRange(user.Capabilities.Select(capability =>
-            new Claim(CapabilityMapper.ClaimType, CapabilityMapper.ToClaimValue(capability))));
+        claims.AddRange(user.Capabilities
+            .Select(CapabilityMapper.ToClaimValue)
+            .Distinct()
+            .Select(value => new Claim(CapabilityMapper.ClaimType, value)));
 
         return CreateToken(claims, TimeSpan.FromHours(1));
     }

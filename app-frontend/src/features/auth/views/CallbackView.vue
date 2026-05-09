@@ -11,7 +11,7 @@ const error = ref<string>('')
 
 const errorMessages: Record<string, string> = {
   access_denied: 'Sign-in was cancelled.',
-  admin_required: 'Your account is not allowed to access this admin area.',
+  insufficient_permissions: 'Your account does not have permission to access this admin area.',
   external_oauth_failed: 'The sign-in provider did not respond successfully.',
   invalid_oauth_state: 'Sign-in state expired or was rejected.',
   invalid_provider: 'Unknown sign-in provider.',

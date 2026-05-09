@@ -88,7 +88,7 @@ public sealed class AuthController(
 
             if (user is null)
             {
-                return RedirectToSpaCallbackError("admin_required");
+                return RedirectToSpaCallbackError("insufficient_permissions");
             }
 
             var handoffCode = handoffService.Create(jwtService.CreateTokenPair(user));

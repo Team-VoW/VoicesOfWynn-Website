@@ -11,65 +11,65 @@ public sealed class UserRepository(IConfiguration configuration) : IUserReposito
     {
         const string sql = """
             SELECT
-                user_id AS UserId,
-                CAST(discord_id AS CHAR) AS DiscordId,
-                display_name AS DisplayName
-            FROM user
-            WHERE CAST(discord_id AS CHAR) = @DiscordId
-            LIMIT 1;
+                u.user_id AS UserId,
+                CAST(u.discord_id AS CHAR) AS DiscordId,
+                u.display_name AS DisplayName,
+                udr.discord_role_id AS RoleId
+            FROM user u
+            LEFT JOIN user_discord_role udr ON udr.user_id = u.user_id
+            WHERE CAST(u.discord_id AS CHAR) = @DiscordId;
             """;
 
         await using var connection = new MySqlConnection(DatabaseSettings.GetWebsiteConnectionString(configuration));
         var command = new CommandDefinition(sql, new { DiscordId = discordId }, cancellationToken: cancellationToken);
-        var row = await connection.QuerySingleOrDefaultAsync<UserRow>(command);
+        var rows = await connection.QueryAsync<UserRoleRow>(command);
 
-        return row is null ? null : await BuildUserProfileAsync(connection, row, cancellationToken);
+        return BuildUserProfile(rows);
     }
 
     public async Task<UserProfile?> GetByUserIdAsync(int userId, CancellationToken cancellationToken)
     {
         const string sql = """
             SELECT
-                user_id AS UserId,
-                CAST(discord_id AS CHAR) AS DiscordId,
-                display_name AS DisplayName
-            FROM user
-            WHERE user_id = @UserId
-              AND discord_id IS NOT NULL
-            LIMIT 1;
+                u.user_id AS UserId,
+                CAST(u.discord_id AS CHAR) AS DiscordId,
+                u.display_name AS DisplayName,
+                udr.discord_role_id AS RoleId
+            FROM user u
+            LEFT JOIN user_discord_role udr ON udr.user_id = u.user_id
+            WHERE u.user_id = @UserId
+              AND u.discord_id IS NOT NULL;
             """;
 
         await using var connection = new MySqlConnection(DatabaseSettings.GetWebsiteConnectionString(configuration));
         var command = new CommandDefinition(sql, new { UserId = userId }, cancellationToken: cancellationToken);
-        var row = await connection.QuerySingleOrDefaultAsync<UserRow>(command);
+        var rows = await connection.QueryAsync<UserRoleRow>(command);
 
-        return row is null ? null : await BuildUserProfileAsync(connection, row, cancellationToken);
+        return BuildUserProfile(rows);
     }
 
-    private static async Task<UserProfile> BuildUserProfileAsync(
-        MySqlConnection connection,
-        UserRow row,
-        CancellationToken cancellationToken)
+    private static UserProfile? BuildUserProfile(IEnumerable<UserRoleRow> rows)
     {
-        const string roleSql = """
-            SELECT discord_role_id
-            FROM user_discord_role
-            WHERE user_id = @UserId;
-            """;
+        var userRows = rows.ToArray();
+        var first = userRows.FirstOrDefault();
+        if (first is null)
+        {
+            return null;
+        }
 
-        var command = new CommandDefinition(roleSql, new { row.UserId }, cancellationToken: cancellationToken);
-        var roleIds = await connection.QueryAsync<int>(command);
-        var roles = roleIds
-            .Where(roleId => Enum.IsDefined(typeof(DiscordRoleId), roleId))
-            .Select(roleId => (DiscordRoleId)roleId)
+        var roles = userRows
+            .Select(row => row.RoleId)
+            .Where(roleId => roleId.HasValue && Enum.IsDefined(typeof(DiscordRoleId), roleId.Value))
+            .Select(roleId => (DiscordRoleId)roleId!.Value)
             .Distinct()
             .ToArray();
 
-        return new UserProfile(row.UserId, row.DiscordId, row.DisplayName, roles);
+        return new UserProfile(first.UserId, first.DiscordId, first.DisplayName, roles);
     }
 
-    private sealed record UserRow(
+    private sealed record UserRoleRow(
         int UserId,
         string DiscordId,
-        string DisplayName);
+        string DisplayName,
+        int? RoleId);
 }
