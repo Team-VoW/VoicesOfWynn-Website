@@ -45,6 +45,7 @@ jobs:
         run: |
           dotnet publish ./vow-api/src/VoW.Api/VoW.Api.csproj \
             /t:PublishContainer \
+            -r linux-arm64 \
             -p ContainerRegistry=ghcr.io \
             -p ContainerRepository=${{ steps.owner.outputs.name }}/vow-api \
             -p ContainerImageTag=latest
