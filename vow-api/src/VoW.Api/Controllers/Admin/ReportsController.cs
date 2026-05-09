@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using VoW.Api.Models;
+using VoW.Api.Contracts.Reports;
+using VoW.Api.Domain.Reports;
 using VoW.Api.Repositories;
 
 namespace VoW.Api.Controllers.Admin;

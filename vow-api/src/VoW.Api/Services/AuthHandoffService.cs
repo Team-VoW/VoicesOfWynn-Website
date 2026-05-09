@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.WebUtilities;
-using VoW.Api.Models;
+using VoW.Api.Contracts.Auth;
 
 namespace VoW.Api.Services;
 

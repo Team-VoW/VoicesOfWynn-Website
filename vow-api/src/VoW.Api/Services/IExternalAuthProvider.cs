@@ -1,4 +1,4 @@
-using VoW.Api.Models;
+using VoW.Api.Domain.Auth;
 
 namespace VoW.Api.Services;
 

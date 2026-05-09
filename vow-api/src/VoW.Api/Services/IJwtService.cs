@@ -1,5 +1,6 @@
 using System.Security.Claims;
-using VoW.Api.Models;
+using VoW.Api.Contracts.Auth;
+using VoW.Api.Domain.Users;
 
 namespace VoW.Api.Services;
 

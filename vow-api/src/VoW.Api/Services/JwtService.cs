@@ -2,7 +2,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using VoW.Api.Models;
+using VoW.Api.Contracts.Auth;
+using VoW.Api.Domain.Users;
 
 namespace VoW.Api.Services;
 

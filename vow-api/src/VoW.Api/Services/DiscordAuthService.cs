@@ -2,7 +2,7 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.WebUtilities;
-using VoW.Api.Models;
+using VoW.Api.Domain.Auth;
 
 namespace VoW.Api.Services;
 
@@ -44,7 +44,7 @@ public sealed class DiscordAuthService(HttpClient httpClient, IConfiguration con
         return new ExternalUserIdentity(Name, user.Id, user.GlobalName ?? user.Username);
     }
 
-    private async Task<DiscordTokenResponse> ExchangeCodeAsync(string code, CancellationToken cancellationToken)
+    private async Task<DiscordApiToken> ExchangeCodeAsync(string code, CancellationToken cancellationToken)
     {
         var clientId = GetRequired("DISCORD_CLIENT_ID");
         var clientSecret = GetRequired("DISCORD_CLIENT_SECRET");
@@ -68,7 +68,7 @@ public sealed class DiscordAuthService(HttpClient httpClient, IConfiguration con
             throw new InvalidOperationException("Discord token response was empty.");
         }
 
-        return new DiscordTokenResponse(token.AccessToken, token.TokenType, token.ExpiresIn, token.Scope);
+        return token;
     }
 
     private string GetRequired(string key)

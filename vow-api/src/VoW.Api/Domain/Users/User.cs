@@ -1,4 +1,4 @@
-namespace VoW.Api.Models;
+namespace VoW.Api.Domain.Users;
 
 public sealed record User(
     int UserId,

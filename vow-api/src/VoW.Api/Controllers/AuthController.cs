@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.IdentityModel.Tokens;
-using VoW.Api.Models;
+using VoW.Api.Contracts.Auth;
 using VoW.Api.Repositories;
 using VoW.Api.Services;
 

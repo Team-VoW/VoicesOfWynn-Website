@@ -1,6 +1,6 @@
 using Dapper;
 using MySqlConnector;
-using VoW.Api.Models;
+using VoW.Api.Contracts.Reports;
 
 namespace VoW.Api.Repositories;
 
