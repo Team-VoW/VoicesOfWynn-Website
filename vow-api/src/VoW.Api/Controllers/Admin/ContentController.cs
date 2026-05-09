@@ -236,6 +236,40 @@ public sealed class ContentController(IContentService contentService) : Controll
         return result.Succeeded ? Ok(result.Response) : ValidationProblem(ModelState);
     }
 
+    [HttpPut("recordings/mass")]
+    [RequestSizeLimit(NpcRecordingsMaxSizeBytes)]
+    public async Task<IActionResult> UploadMassNpcRecordings(
+        [FromForm] List<IFormFile>? recordings,
+        [FromForm] bool overwrite,
+        [FromForm] int? questId,
+        [FromForm] int? npcId,
+        CancellationToken cancellationToken)
+    {
+        if (recordings is null || recordings.Count == 0)
+        {
+            ModelState.AddModelError(nameof(recordings), "At least one recording file is required.");
+            return ValidationProblem(ModelState);
+        }
+
+        var uploads = recordings
+            .Select(file => new NpcRecordingUpload(
+                file.FileName,
+                file.ContentType,
+                file.Length,
+                file.OpenReadStream))
+            .ToArray();
+
+        var result = await contentService.UploadMassNpcRecordingsAsync(
+            uploads,
+            overwrite,
+            questId,
+            npcId,
+            cancellationToken);
+
+        AddErrors(result.Errors);
+        return result.Succeeded ? Ok(result.Response) : ValidationProblem(ModelState);
+    }
+
     [HttpGet("quests/{questId:int}/npcs/{npcId:int}/recordings")]
     public async Task<ActionResult<IReadOnlyCollection<NpcRecordingResponse>>> GetNpcRecordings(
         int questId,

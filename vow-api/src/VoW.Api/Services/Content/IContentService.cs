@@ -81,6 +81,13 @@ public interface IContentService
         bool overwrite,
         CancellationToken cancellationToken);
 
+    Task<NpcRecordingUploadServiceResult> UploadMassNpcRecordingsAsync(
+        IReadOnlyCollection<NpcRecordingUpload> recordings,
+        bool overwrite,
+        int? questId,
+        int? npcId,
+        CancellationToken cancellationToken);
+
     Task<NpcRecordingsServiceResult> GetNpcRecordingsAsync(
         int questId,
         int npcId,

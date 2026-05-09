@@ -173,3 +173,28 @@ export function uploadNpcRecordings(
     },
   )
 }
+
+export function uploadMassNpcRecordings({
+  recordings,
+  overwrite,
+  questId,
+  npcId,
+}: {
+  recordings: File[]
+  overwrite: boolean
+  questId?: number
+  npcId?: number
+}): Promise<UploadNpcRecordingsResponse> {
+  const form = new FormData()
+  for (const recording of recordings) {
+    form.append('recordings', recording)
+  }
+  form.append('overwrite', String(overwrite))
+  if (questId !== undefined) form.append('questId', String(questId))
+  if (npcId !== undefined) form.append('npcId', String(npcId))
+
+  return apiFetch<UploadNpcRecordingsResponse>('/admin/content/recordings/mass', {
+    method: 'PUT',
+    body: form,
+  })
+}

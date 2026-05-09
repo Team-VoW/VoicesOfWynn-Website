@@ -15,6 +15,7 @@ import {
   updateQuest,
   updateQuestNpcSoundEditor,
   updateQuestWriter,
+  uploadMassNpcRecordings,
   uploadNpcImage,
   uploadNpcRecordings,
   uploadQuestScript,
@@ -221,6 +222,14 @@ export function useUploadNpcRecordings() {
       recordings: File[]
       overwrite: boolean
     }) => uploadNpcRecordings(questId, npcId, recordings, overwrite),
+    onSuccess: () => invalidateContent(queryClient),
+  })
+}
+
+export function useUploadMassNpcRecordings() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: uploadMassNpcRecordings,
     onSuccess: () => invalidateContent(queryClient),
   })
 }

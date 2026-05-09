@@ -470,6 +470,22 @@ public sealed partial class ContentService(
         return NpcRecordingUploadServiceResult.Success(new UploadNpcRecordingsResponse(results));
     }
 
+    public async Task<NpcRecordingUploadServiceResult> UploadMassNpcRecordingsAsync(
+        IReadOnlyCollection<NpcRecordingUpload> recordings,
+        bool overwrite,
+        int? questId,
+        int? npcId,
+        CancellationToken cancellationToken)
+    {
+        var results = new List<UploadNpcRecordingResult>(recordings.Count);
+        foreach (var recording in recordings)
+        {
+            results.Add(await UploadMassNpcRecordingAsync(recording, overwrite, questId, npcId, cancellationToken));
+        }
+
+        return NpcRecordingUploadServiceResult.Success(new UploadNpcRecordingsResponse(results));
+    }
+
     public async Task<NpcRecordingsServiceResult> GetNpcRecordingsAsync(
         int questId,
         int npcId,
@@ -592,6 +608,119 @@ public sealed partial class ContentService(
         return RecordingResult(fileName, 201, "Created", "File was uploaded.", fileName);
     }
 
+    private async Task<UploadNpcRecordingResult> UploadMassNpcRecordingAsync(
+        NpcRecordingUpload recording,
+        bool overwrite,
+        int? overrideQuestId,
+        int? overrideNpcId,
+        CancellationToken cancellationToken)
+    {
+        var fileName = Path.GetFileName(recording.FileName);
+        var validation = ValidateMassRecordingFile(fileName, recording.ContentType, recording.Length);
+        if (validation is not null)
+        {
+            return validation;
+        }
+
+        var fileParts = SplitMassRecordingFileName(fileName)!.Value;
+        var line = ParseRecordingLine(fileName);
+
+        int questId;
+        if (overrideQuestId is not null)
+        {
+            questId = overrideQuestId.Value;
+            if (!await contentRepository.QuestExistsAsync(questId, cancellationToken))
+            {
+                return RecordingResult(fileName, 404, "Not Found", "The selected quest could not be found.");
+            }
+        }
+        else
+        {
+            var resolvedQuestId = await contentRepository.GetQuestIdByDegeneratedNameAsync(
+                fileParts.QuestName,
+                cancellationToken);
+            if (resolvedQuestId is null)
+            {
+                return RecordingResult(
+                    fileName,
+                    404,
+                    "Not Found",
+                    $"Quest with a name corresponding to {fileParts.QuestName} couldn't be found.");
+            }
+
+            questId = resolvedQuestId.Value;
+        }
+
+        int npcId;
+        if (overrideNpcId is not null)
+        {
+            npcId = overrideNpcId.Value;
+            if (!await contentRepository.QuestNpcLinkExistsAsync(questId, npcId, cancellationToken))
+            {
+                return RecordingResult(fileName, 404, "Not Found", "The selected NPC could not be found for this quest.");
+            }
+        }
+        else
+        {
+            var resolvedNpcId = await contentRepository.GetQuestNpcIdByDegeneratedNameAsync(
+                questId,
+                fileParts.NpcName,
+                cancellationToken);
+            if (resolvedNpcId is null)
+            {
+                return RecordingResult(
+                    fileName,
+                    404,
+                    "Not Found",
+                    $"NPC with a name corresponding to {fileParts.NpcName} couldn't be found.");
+            }
+
+            npcId = resolvedNpcId.Value;
+        }
+
+        var storedFileName = fileName;
+        var conflictExists = await npcRecordingStorage.RecordingExistsAsync(storedFileName, cancellationToken);
+        if (conflictExists && !overwrite)
+        {
+            var renamedFileName = await NextAvailableRecordingFileNameAsync(storedFileName, cancellationToken);
+            if (renamedFileName is null)
+            {
+                return RecordingResult(
+                    fileName,
+                    409,
+                    "Conflict",
+                    "A conflict-safe filename could not be created within the database filename limit.");
+            }
+
+            storedFileName = renamedFileName;
+        }
+
+        await using (var content = recording.OpenReadStream())
+        {
+            await npcRecordingStorage.UploadRecordingAsync(storedFileName, content, cancellationToken);
+        }
+
+        if (conflictExists && overwrite)
+        {
+            return RecordingResult(
+                fileName,
+                200,
+                "OK",
+                "File was uploaded and overwrote an existing file with the same name.",
+                storedFileName);
+        }
+
+        await contentRepository.InsertRecordingAsync(questId, npcId, line, storedFileName, cancellationToken);
+        return RecordingResult(
+            fileName,
+            201,
+            "Created",
+            conflictExists
+                ? $"File was uploaded and renamed to {storedFileName} in order to prevent a conflict."
+                : "File was uploaded.",
+            storedFileName);
+    }
+
     private static UploadNpcRecordingResult? ValidateRecordingFile(string fileName, string contentType, long length)
     {
         if (string.IsNullOrWhiteSpace(fileName))
@@ -639,6 +768,43 @@ public sealed partial class ContentService(
         }
 
         return null;
+    }
+
+    private static UploadNpcRecordingResult? ValidateMassRecordingFile(
+        string fileName,
+        string contentType,
+        long length)
+    {
+        var validation = ValidateRecordingFile(fileName, contentType, length);
+        if (validation is not null)
+        {
+            return validation;
+        }
+
+        if (SplitMassRecordingFileName(fileName) is not { } fileParts ||
+            string.IsNullOrWhiteSpace(fileParts.QuestName) ||
+            string.IsNullOrWhiteSpace(fileParts.NpcName) ||
+            string.IsNullOrWhiteSpace(fileParts.Line))
+        {
+            return RecordingResult(
+                fileName,
+                400,
+                "Bad Request",
+                "File doesn't follow the required format (questname-npcname-line.ogg).");
+        }
+
+        return null;
+    }
+
+    private static (string QuestName, string NpcName, string Line)? SplitMassRecordingFileName(string fileName)
+    {
+        var parts = fileName.Split('-');
+        if (parts.Length != 3)
+        {
+            return null;
+        }
+
+        return (parts[0], parts[1], Path.GetFileNameWithoutExtension(parts[2]));
     }
 
     private async Task<string?> NextAvailableRecordingFileNameAsync(

@@ -108,6 +108,41 @@ public sealed class ContentRepository(IConfiguration configuration) : IContentRe
         return await connection.ExecuteScalarAsync<string?>(command);
     }
 
+    public async Task<int?> GetQuestIdByDegeneratedNameAsync(
+        string degeneratedName,
+        CancellationToken cancellationToken)
+    {
+        const string sql = """
+            SELECT quest_id
+            FROM quest
+            WHERE degenerated_name = @DegeneratedName
+            LIMIT 1;
+            """;
+        await using var connection = new MySqlConnection(DatabaseSettings.GetWebsiteConnectionString(configuration));
+        var command = new CommandDefinition(sql, new { DegeneratedName = degeneratedName }, cancellationToken: cancellationToken);
+        return await connection.ExecuteScalarAsync<int?>(command);
+    }
+
+    public async Task<int?> GetQuestNpcIdByDegeneratedNameAsync(
+        int questId,
+        string degeneratedName,
+        CancellationToken cancellationToken)
+    {
+        const string sql = """
+            SELECT n.npc_id
+            FROM npc n
+            JOIN npc_quest nq ON nq.npc_id = n.npc_id
+            WHERE nq.quest_id = @QuestId AND n.degenerated_name = @DegeneratedName
+            LIMIT 1;
+            """;
+        await using var connection = new MySqlConnection(DatabaseSettings.GetWebsiteConnectionString(configuration));
+        var command = new CommandDefinition(
+            sql,
+            new { QuestId = questId, DegeneratedName = degeneratedName },
+            cancellationToken: cancellationToken);
+        return await connection.ExecuteScalarAsync<int?>(command);
+    }
+
     public async Task<bool> NpcDegeneratedNameConflictsForLinkedQuestsAsync(
         int npcId,
         string degeneratedName,

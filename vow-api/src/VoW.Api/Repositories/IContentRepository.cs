@@ -25,6 +25,13 @@ public interface IContentRepository
 
     Task<string?> GetNpcDegeneratedNameAsync(int npcId, CancellationToken cancellationToken);
 
+    Task<int?> GetQuestIdByDegeneratedNameAsync(string degeneratedName, CancellationToken cancellationToken);
+
+    Task<int?> GetQuestNpcIdByDegeneratedNameAsync(
+        int questId,
+        string degeneratedName,
+        CancellationToken cancellationToken);
+
     Task<bool> NpcDegeneratedNameConflictsForLinkedQuestsAsync(
         int npcId,
         string degeneratedName,
