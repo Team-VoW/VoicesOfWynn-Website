@@ -11,6 +11,8 @@ import {
   updateNpc,
   updateNpcVoiceActor,
   updateQuest,
+  updateQuestNpcSoundEditor,
+  updateQuestWriter,
 } from '@/api/content'
 import type {
   ContentSearchRequest,
@@ -19,6 +21,8 @@ import type {
   LinkQuestNpcRequest,
   UpdateContentNameRequest,
   UpdateNpcVoiceActorRequest,
+  UpdateQuestNpcSoundEditorRequest,
+  UpdateQuestWriterRequest,
 } from '@/api/types'
 
 export function useContentOptions() {
@@ -29,7 +33,9 @@ export function useContentOptions() {
   })
 }
 
-export function useContentSearch(params: Ref<ContentSearchRequest> | ComputedRef<ContentSearchRequest>) {
+export function useContentSearch(
+  params: Ref<ContentSearchRequest> | ComputedRef<ContentSearchRequest>,
+) {
   return useQuery({
     queryKey: computed(() => ['content', 'search', params.value] as const),
     queryFn: ({ signal }) => searchContent(params.value, signal),
@@ -79,6 +85,15 @@ export function useDeleteQuest() {
   })
 }
 
+export function useUpdateQuestWriter() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ questId, request }: { questId: number; request: UpdateQuestWriterRequest }) =>
+      updateQuestWriter(questId, request),
+    onSuccess: () => invalidateContent(queryClient),
+  })
+}
+
 export function useUpdateNpc() {
   const queryClient = useQueryClient()
   return useMutation({
@@ -106,10 +121,27 @@ export function useLinkQuestNpc() {
   })
 }
 
+export function useUpdateQuestNpcSoundEditor() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({
+      questId,
+      npcId,
+      request,
+    }: {
+      questId: number
+      npcId: number
+      request: UpdateQuestNpcSoundEditorRequest
+    }) => updateQuestNpcSoundEditor(questId, npcId, request),
+    onSuccess: () => invalidateContent(queryClient),
+  })
+}
+
 export function useUnlinkQuestNpc() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({ questId, npcId }: { questId: number; npcId: number }) => unlinkQuestNpc(questId, npcId),
+    mutationFn: ({ questId, npcId }: { questId: number; npcId: number }) =>
+      unlinkQuestNpc(questId, npcId),
     onSuccess: () => invalidateContent(queryClient),
   })
 }

@@ -218,7 +218,9 @@ function openNpcDialog(quest: ContentSearchQuest, npc: ContentSearchNpc) {
       :npcs="npcs"
       :selected-npc="selectedNpc"
       :selected-quest="selectedQuest"
+      :sound-editors="soundEditors"
       :voice-actors="voiceActors"
+      :writers="writers"
     />
   </div>
 </template>

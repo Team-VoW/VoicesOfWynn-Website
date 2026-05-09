@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { Edit, LinkIcon, Trash2, Unlink, UserRound, X } from 'lucide-vue-next'
+import { Edit, Headphones, LinkIcon, Trash2, Unlink, UserRound, X } from 'lucide-vue-next'
 import {
   DialogClose,
   DialogContent,
@@ -29,6 +29,8 @@ import {
   useUpdateNpc,
   useUpdateNpcVoiceActor,
   useUpdateQuest,
+  useUpdateQuestNpcSoundEditor,
+  useUpdateQuestWriter,
 } from '../queries'
 
 type DialogMode = 'quest' | 'npc' | null
@@ -40,7 +42,9 @@ const props = defineProps<{
   open: boolean
   selectedNpc: ContentSearchNpc | null
   selectedQuest: ContentSearchQuest | null
+  soundEditors: ContentOption[]
   voiceActors: ContentOption[]
+  writers: ContentOption[]
 }>()
 
 const emit = defineEmits<{
@@ -48,14 +52,18 @@ const emit = defineEmits<{
 }>()
 
 const updateQuestMutation = useUpdateQuest()
+const updateQuestWriterMutation = useUpdateQuestWriter()
 const deleteQuestMutation = useDeleteQuest()
 const updateNpcMutation = useUpdateNpc()
 const updateNpcVoiceActorMutation = useUpdateNpcVoiceActor()
+const updateQuestNpcSoundEditorMutation = useUpdateQuestNpcSoundEditor()
 const linkQuestNpcMutation = useLinkQuestNpc()
 const unlinkQuestNpcMutation = useUnlinkQuestNpc()
 
 const editName = ref('')
+const editWriter = ref(CONTENT_NONE)
 const editVoiceActor = ref(CONTENT_NONE)
+const editSoundEditor = ref(CONTENT_NONE)
 const linkNpcId = ref(CONTENT_NONE)
 const dialogError = ref('')
 
@@ -69,6 +77,8 @@ watch(
 
     if (props.mode === 'quest' && props.selectedQuest) {
       editName.value = props.selectedQuest.questName
+      editWriter.value =
+        props.selectedQuest.writerId === null ? CONTENT_NONE : String(props.selectedQuest.writerId)
     }
 
     if (props.mode === 'npc' && props.selectedNpc) {
@@ -77,6 +87,10 @@ watch(
         props.selectedNpc.voiceActorId === null
           ? CONTENT_NONE
           : String(props.selectedNpc.voiceActorId)
+      editSoundEditor.value =
+        props.selectedNpc.soundEditorId === null
+          ? CONTENT_NONE
+          : String(props.selectedNpc.soundEditorId)
     }
   },
   { immediate: true },
@@ -114,6 +128,18 @@ async function removeQuest() {
     await deleteQuestMutation.mutateAsync(props.selectedQuest!.questId)
     setOpen(false)
   }, 'Quest deleted.')
+}
+
+async function saveWriter() {
+  if (!props.selectedQuest) return
+  await runDialogAction(
+    () =>
+      updateQuestWriterMutation.mutateAsync({
+        questId: props.selectedQuest!.questId,
+        request: { writerUserId: optionalContentId(editWriter.value) },
+      }),
+    'Writer updated.',
+  )
 }
 
 async function linkNpc() {
@@ -154,6 +180,19 @@ async function saveVoiceActor() {
         request: { voiceActorUserId: optionalContentId(editVoiceActor.value) },
       }),
     'Voice actor updated.',
+  )
+}
+
+async function saveSoundEditor() {
+  if (!props.selectedQuest || !props.selectedNpc) return
+  await runDialogAction(
+    () =>
+      updateQuestNpcSoundEditorMutation.mutateAsync({
+        questId: props.selectedQuest!.questId,
+        npcId: props.selectedNpc!.npcId,
+        request: { soundEditorUserId: optionalContentId(editSoundEditor.value) },
+      }),
+    'Sound editor updated.',
   )
 }
 
@@ -205,6 +244,36 @@ async function unlinkNpc() {
                 @click="renameQuest"
               >
                 <Edit class="size-4" />
+                Save
+              </Button>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <Label for="dialog-quest-writer">Writer</Label>
+            <div class="flex gap-2">
+              <Select v-model="editWriter" :disabled="isLoading">
+                <SelectTrigger id="dialog-quest-writer" class="w-full">
+                  <SelectValue placeholder="None" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem :value="CONTENT_NONE">None</SelectItem>
+                  <SelectItem
+                    v-for="writer in writers"
+                    :key="writer.id"
+                    :value="String(writer.id)"
+                  >
+                    {{ writer.name }}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+              <Button
+                class="gap-2"
+                variant="outline"
+                :disabled="updateQuestWriterMutation.isPending.value"
+                @click="saveWriter"
+              >
+                <UserRound class="size-4" />
                 Save
               </Button>
             </div>
@@ -303,6 +372,36 @@ async function unlinkNpc() {
                 @click="saveVoiceActor"
               >
                 <UserRound class="size-4" />
+                Save
+              </Button>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <Label for="dialog-sound-editor">Sound editor</Label>
+            <div class="flex gap-2">
+              <Select v-model="editSoundEditor" :disabled="isLoading">
+                <SelectTrigger id="dialog-sound-editor" class="w-full">
+                  <SelectValue placeholder="None" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem :value="CONTENT_NONE">None</SelectItem>
+                  <SelectItem
+                    v-for="editor in soundEditors"
+                    :key="editor.id"
+                    :value="String(editor.id)"
+                  >
+                    {{ editor.name }}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+              <Button
+                class="gap-2"
+                variant="outline"
+                :disabled="updateQuestNpcSoundEditorMutation.isPending.value"
+                @click="saveSoundEditor"
+              >
+                <Headphones class="size-4" />
                 Save
               </Button>
             </div>

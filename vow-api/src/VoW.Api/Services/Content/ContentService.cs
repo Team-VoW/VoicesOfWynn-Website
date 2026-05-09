@@ -49,12 +49,16 @@ public sealed partial class ContentService(IContentRepository contentRepository)
                 quest.QuestId,
                 quest.QuestName,
                 quest.QuestDegeneratedName,
+                quest.WriterId,
+                quest.WriterName,
                 quest.Npcs.Select(npc => new NpcContentResult(
                     npc.NpcId,
                     npc.NpcName,
                     npc.NpcDegeneratedName,
                     npc.VoiceActorId,
                     npc.VoiceActorName,
+                    npc.SoundEditorId,
+                    npc.SoundEditorName,
                     npc.RecordingCount)).ToArray())).ToArray()));
     }
 
@@ -222,6 +226,27 @@ public sealed partial class ContentService(IContentRepository contentRepository)
             : ContentMutationResult.NotFound();
     }
 
+    public async Task<ContentMutationResult> UpdateQuestWriterAsync(
+        int questId,
+        UpdateQuestWriterRequest request,
+        CancellationToken cancellationToken)
+    {
+        if (!await contentRepository.QuestExistsAsync(questId, cancellationToken))
+        {
+            return ContentMutationResult.NotFound();
+        }
+
+        if (request.WriterUserId is not null &&
+            !await OptionExistsAsync(ContentUserRole.Writer, request.WriterUserId.Value, cancellationToken))
+        {
+            return ContentMutationResult.Invalid(nameof(request.WriterUserId), "Writer must be an existing writer user.");
+        }
+
+        return await contentRepository.UpdateQuestWriterAsync(questId, request.WriterUserId, cancellationToken)
+            ? ContentMutationResult.Success()
+            : ContentMutationResult.NotFound();
+    }
+
     public async Task<ContentMutationResult> UpdateNpcAsync(
         int npcId,
         UpdateContentNameRequest request,
@@ -303,6 +328,32 @@ public sealed partial class ContentService(IContentRepository contentRepository)
         }
 
         return await contentRepository.LinkNpcToQuestAsync(questId, request.NpcId, cancellationToken)
+            ? ContentMutationResult.Success()
+            : ContentMutationResult.NotFound();
+    }
+
+    public async Task<ContentMutationResult> UpdateQuestNpcSoundEditorAsync(
+        int questId,
+        int npcId,
+        UpdateQuestNpcSoundEditorRequest request,
+        CancellationToken cancellationToken)
+    {
+        if (!await contentRepository.QuestNpcLinkExistsAsync(questId, npcId, cancellationToken))
+        {
+            return ContentMutationResult.NotFound();
+        }
+
+        if (request.SoundEditorUserId is not null &&
+            !await OptionExistsAsync(ContentUserRole.SoundEditor, request.SoundEditorUserId.Value, cancellationToken))
+        {
+            return ContentMutationResult.Invalid(nameof(request.SoundEditorUserId), "Sound editor must be an existing sound editor user.");
+        }
+
+        return await contentRepository.UpdateQuestNpcSoundEditorAsync(
+                questId,
+                npcId,
+                request.SoundEditorUserId,
+                cancellationToken)
             ? ContentMutationResult.Success()
             : ContentMutationResult.NotFound();
     }

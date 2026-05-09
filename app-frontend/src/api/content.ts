@@ -9,6 +9,8 @@ import type {
   LinkQuestNpcRequest,
   UpdateContentNameRequest,
   UpdateNpcVoiceActorRequest,
+  UpdateQuestNpcSoundEditorRequest,
+  UpdateQuestWriterRequest,
 } from './types'
 
 export function getContentOptions(signal?: AbortSignal): Promise<ContentOptionsResponse> {
@@ -51,6 +53,16 @@ export function updateQuest(questId: number, request: UpdateContentNameRequest):
   })
 }
 
+export function updateQuestWriter(
+  questId: number,
+  request: UpdateQuestWriterRequest,
+): Promise<void> {
+  return apiFetch<void>(`/admin/content/quests/${questId}/writer`, {
+    method: 'PATCH',
+    body: request,
+  })
+}
+
 export function deleteQuest(questId: number): Promise<void> {
   return apiFetch<void>(`/admin/content/quests/${questId}`, {
     method: 'DELETE',
@@ -77,6 +89,17 @@ export function updateNpcVoiceActor(
 export function linkQuestNpc(questId: number, request: LinkQuestNpcRequest): Promise<void> {
   return apiFetch<void>(`/admin/content/quests/${questId}/npcs`, {
     method: 'POST',
+    body: request,
+  })
+}
+
+export function updateQuestNpcSoundEditor(
+  questId: number,
+  npcId: number,
+  request: UpdateQuestNpcSoundEditorRequest,
+): Promise<void> {
+  return apiFetch<void>(`/admin/content/quests/${questId}/npcs/${npcId}/sound-editor`, {
+    method: 'PATCH',
     body: request,
   })
 }

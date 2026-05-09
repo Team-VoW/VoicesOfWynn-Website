@@ -86,6 +86,8 @@ export interface ContentSearchNpc {
   npcDegeneratedName: string
   voiceActorId: number | null
   voiceActorName: string | null
+  soundEditorId: number | null
+  soundEditorName: string | null
   recordingCount: number
 }
 
@@ -93,6 +95,8 @@ export interface ContentSearchQuest {
   questId: number
   questName: string
   questDegeneratedName: string
+  writerId: number | null
+  writerName: string | null
   npcs: ContentSearchNpc[]
 }
 
@@ -127,8 +131,16 @@ export interface UpdateContentNameRequest {
   name: string
 }
 
+export interface UpdateQuestWriterRequest {
+  writerUserId?: number
+}
+
 export interface UpdateNpcVoiceActorRequest {
   voiceActorUserId?: number
+}
+
+export interface UpdateQuestNpcSoundEditorRequest {
+  soundEditorUserId?: number
 }
 
 export interface LinkQuestNpcRequest {

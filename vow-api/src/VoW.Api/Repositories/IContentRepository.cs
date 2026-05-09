@@ -48,6 +48,8 @@ public interface IContentRepository
 
     Task<bool> UpdateQuestAsync(int questId, string name, string degeneratedName, CancellationToken cancellationToken);
 
+    Task<bool> UpdateQuestWriterAsync(int questId, int? writerUserId, CancellationToken cancellationToken);
+
     Task<bool> DeleteQuestAsync(int questId, CancellationToken cancellationToken);
 
     Task<bool> UpdateNpcAsync(int npcId, string name, string degeneratedName, CancellationToken cancellationToken);
@@ -55,6 +57,12 @@ public interface IContentRepository
     Task<bool> UpdateNpcVoiceActorAsync(int npcId, int? voiceActorUserId, CancellationToken cancellationToken);
 
     Task<bool> LinkNpcToQuestAsync(int questId, int npcId, CancellationToken cancellationToken);
+
+    Task<bool> UpdateQuestNpcSoundEditorAsync(
+        int questId,
+        int npcId,
+        int? soundEditorUserId,
+        CancellationToken cancellationToken);
 
     Task<bool> UnlinkNpcFromQuestAsync(int questId, int npcId, CancellationToken cancellationToken);
 }

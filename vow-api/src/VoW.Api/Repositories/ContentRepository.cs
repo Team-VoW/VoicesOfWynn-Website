@@ -197,8 +197,11 @@ public sealed class ContentRepository(IConfiguration configuration) : IContentRe
             SELECT
                 q.quest_id AS QuestId,
                 q.name AS QuestName,
-                q.degenerated_name AS QuestDegeneratedName
+                q.degenerated_name AS QuestDegeneratedName,
+                q.writer AS WriterId,
+                writer.display_name AS WriterName
             FROM quest q
+            LEFT JOIN user writer ON writer.user_id = q.writer
             {whereSql}
             ORDER BY q.name, q.quest_id
             LIMIT @PageSize OFFSET @Offset;
@@ -223,13 +226,16 @@ public sealed class ContentRepository(IConfiguration configuration) : IContentRe
                 n.degenerated_name AS NpcDegeneratedName,
                 n.voice_actor_id AS VoiceActorId,
                 u.display_name AS VoiceActorName,
+                nq.editor AS SoundEditorId,
+                editor.display_name AS SoundEditorName,
                 COUNT(r.recording_id) AS RecordingCount
             FROM npc_quest nq
             JOIN npc n ON n.npc_id = nq.npc_id
             LEFT JOIN user u ON u.user_id = n.voice_actor_id
+            LEFT JOIN user editor ON editor.user_id = nq.editor
             LEFT JOIN recording r ON r.quest_id = nq.quest_id AND r.npc_id = n.npc_id
             WHERE nq.quest_id IN @QuestIds
-            GROUP BY nq.quest_id, n.npc_id, n.name, n.degenerated_name, n.voice_actor_id, u.display_name, nq.sorting_order
+            GROUP BY nq.quest_id, n.npc_id, n.name, n.degenerated_name, n.voice_actor_id, u.display_name, nq.editor, editor.display_name, nq.sorting_order
             ORDER BY nq.quest_id, nq.sorting_order, n.name;
             """;
 
@@ -244,6 +250,8 @@ public sealed class ContentRepository(IConfiguration configuration) : IContentRe
             quest.QuestId,
             quest.QuestName,
             quest.QuestDegeneratedName,
+            quest.WriterId,
+            quest.WriterName,
             npcsByQuest.TryGetValue(quest.QuestId, out var questNpcs)
                 ? questNpcs.Select(npc => new NpcContentSummary(
                     npc.NpcId,
@@ -251,6 +259,8 @@ public sealed class ContentRepository(IConfiguration configuration) : IContentRe
                     npc.NpcDegeneratedName,
                     npc.VoiceActorId,
                     npc.VoiceActorName,
+                    npc.SoundEditorId,
+                    npc.SoundEditorName,
                     npc.RecordingCount)).ToArray()
                 : [])).ToArray();
 
@@ -348,6 +358,17 @@ public sealed class ContentRepository(IConfiguration configuration) : IContentRe
         return await connection.ExecuteAsync(command) > 0;
     }
 
+    public async Task<bool> UpdateQuestWriterAsync(
+        int questId,
+        int? writerUserId,
+        CancellationToken cancellationToken)
+    {
+        const string sql = "UPDATE quest SET writer = @WriterUserId WHERE quest_id = @QuestId;";
+        await using var connection = new MySqlConnection(DatabaseSettings.GetWebsiteConnectionString(configuration));
+        var command = new CommandDefinition(sql, new { QuestId = questId, WriterUserId = writerUserId }, cancellationToken: cancellationToken);
+        return await connection.ExecuteAsync(command) > 0;
+    }
+
     public async Task<bool> DeleteQuestAsync(int questId, CancellationToken cancellationToken)
     {
         const string sql = "DELETE FROM quest WHERE quest_id = @QuestId;";
@@ -396,6 +417,25 @@ public sealed class ContentRepository(IConfiguration configuration) : IContentRe
         return await connection.ExecuteAsync(command) > 0;
     }
 
+    public async Task<bool> UpdateQuestNpcSoundEditorAsync(
+        int questId,
+        int npcId,
+        int? soundEditorUserId,
+        CancellationToken cancellationToken)
+    {
+        const string sql = """
+            UPDATE npc_quest
+            SET editor = @SoundEditorUserId
+            WHERE quest_id = @QuestId AND npc_id = @NpcId;
+            """;
+        await using var connection = new MySqlConnection(DatabaseSettings.GetWebsiteConnectionString(configuration));
+        var command = new CommandDefinition(
+            sql,
+            new { QuestId = questId, NpcId = npcId, SoundEditorUserId = soundEditorUserId },
+            cancellationToken: cancellationToken);
+        return await connection.ExecuteAsync(command) > 0;
+    }
+
     public async Task<bool> UnlinkNpcFromQuestAsync(int questId, int npcId, CancellationToken cancellationToken)
     {
         const string sql = "DELETE FROM npc_quest WHERE quest_id = @QuestId AND npc_id = @NpcId;";
@@ -409,6 +449,8 @@ public sealed class ContentRepository(IConfiguration configuration) : IContentRe
         public int QuestId { get; init; }
         public string QuestName { get; init; } = string.Empty;
         public string QuestDegeneratedName { get; init; } = string.Empty;
+        public int? WriterId { get; init; }
+        public string? WriterName { get; init; }
     }
 
     private sealed class NpcContentRow
@@ -419,6 +461,8 @@ public sealed class ContentRepository(IConfiguration configuration) : IContentRe
         public string NpcDegeneratedName { get; init; } = string.Empty;
         public int? VoiceActorId { get; init; }
         public string? VoiceActorName { get; init; }
+        public int? SoundEditorId { get; init; }
+        public string? SoundEditorName { get; init; }
         public int RecordingCount { get; init; }
     }
 }

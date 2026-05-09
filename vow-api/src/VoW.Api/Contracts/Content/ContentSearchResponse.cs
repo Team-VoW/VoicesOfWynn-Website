@@ -10,6 +10,8 @@ public sealed record QuestContentResult(
     int QuestId,
     string QuestName,
     string QuestDegeneratedName,
+    int? WriterId,
+    string? WriterName,
     IReadOnlyCollection<NpcContentResult> Npcs);
 
 public sealed record NpcContentResult(
@@ -18,4 +20,6 @@ public sealed record NpcContentResult(
     string NpcDegeneratedName,
     int? VoiceActorId,
     string? VoiceActorName,
+    int? SoundEditorId,
+    string? SoundEditorName,
     int RecordingCount);

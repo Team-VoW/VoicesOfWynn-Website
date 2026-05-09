@@ -76,6 +76,16 @@ public sealed class ContentController(IContentService contentService) : Controll
         return result.Succeeded ? NoContent() : ProblemFrom(result);
     }
 
+    [HttpPatch("quests/{questId:int}/writer")]
+    public async Task<IActionResult> UpdateQuestWriter(
+        int questId,
+        [FromBody] UpdateQuestWriterRequest request,
+        CancellationToken cancellationToken)
+    {
+        var result = await contentService.UpdateQuestWriterAsync(questId, request, cancellationToken);
+        return result.Succeeded ? NoContent() : ProblemFrom(result);
+    }
+
     [HttpPatch("npcs/{npcId:int}")]
     public async Task<IActionResult> UpdateNpc(
         int npcId,
@@ -103,6 +113,17 @@ public sealed class ContentController(IContentService contentService) : Controll
         CancellationToken cancellationToken)
     {
         var result = await contentService.LinkNpcToQuestAsync(questId, request, cancellationToken);
+        return result.Succeeded ? NoContent() : ProblemFrom(result);
+    }
+
+    [HttpPatch("quests/{questId:int}/npcs/{npcId:int}/sound-editor")]
+    public async Task<IActionResult> UpdateQuestNpcSoundEditor(
+        int questId,
+        int npcId,
+        [FromBody] UpdateQuestNpcSoundEditorRequest request,
+        CancellationToken cancellationToken)
+    {
+        var result = await contentService.UpdateQuestNpcSoundEditorAsync(questId, npcId, request, cancellationToken);
         return result.Succeeded ? NoContent() : ProblemFrom(result);
     }
 

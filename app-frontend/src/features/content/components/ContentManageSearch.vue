@@ -85,6 +85,10 @@ defineEmits<{
           <div class="min-w-0">
             <h2 class="truncate text-base font-medium">{{ quest.questName }}</h2>
             <p class="font-mono text-xs text-muted-foreground">{{ quest.questDegeneratedName }}</p>
+            <p class="text-xs text-muted-foreground">
+              Writer:
+              <span class="text-foreground">{{ quest.writerName ?? 'None' }}</span>
+            </p>
           </div>
           <Button variant="outline" size="sm" class="gap-2" @click="$emit('manageQuest', quest)">
             <Edit class="size-4" />
@@ -107,6 +111,10 @@ defineEmits<{
             </div>
             <div class="text-muted-foreground">
               <span class="text-foreground">{{ npc.voiceActorName ?? 'No voice actor' }}</span>
+              <p class="text-xs">
+                Editor:
+                <span class="text-foreground">{{ npc.soundEditorName ?? 'None' }}</span>
+              </p>
               <p class="text-xs">
                 {{ npc.recordingCount }} {{ npc.recordingCount === 1 ? 'recording' : 'recordings' }}
               </p>

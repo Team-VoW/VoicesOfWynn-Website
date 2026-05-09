@@ -17,6 +17,11 @@ public interface IContentService
         UpdateContentNameRequest request,
         CancellationToken cancellationToken);
 
+    Task<ContentMutationResult> UpdateQuestWriterAsync(
+        int questId,
+        UpdateQuestWriterRequest request,
+        CancellationToken cancellationToken);
+
     Task<ContentMutationResult> DeleteQuestAsync(int questId, CancellationToken cancellationToken);
 
     Task<ContentMutationResult> UpdateNpcAsync(
@@ -32,6 +37,12 @@ public interface IContentService
     Task<ContentMutationResult> LinkNpcToQuestAsync(
         int questId,
         LinkQuestNpcRequest request,
+        CancellationToken cancellationToken);
+
+    Task<ContentMutationResult> UpdateQuestNpcSoundEditorAsync(
+        int questId,
+        int npcId,
+        UpdateQuestNpcSoundEditorRequest request,
         CancellationToken cancellationToken);
 
     Task<ContentMutationResult> UnlinkNpcFromQuestAsync(
