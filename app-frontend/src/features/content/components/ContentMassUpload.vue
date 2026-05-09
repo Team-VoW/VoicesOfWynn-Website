@@ -51,6 +51,11 @@ const invalidFiles = computed(() =>
 const totalSize = computed(() => selectedFiles.value.reduce((sum, file) => sum + file.size, 0))
 const successCount = computed(() => results.value.filter((result) => result.code < 400).length)
 const errorCount = computed(() => results.value.filter((result) => result.code >= 400).length)
+const estimatedBatchCount = computed(() =>
+  selectedFiles.value.some((file) => file.size > BATCH_SIZE_LIMIT)
+    ? 0
+    : createBatches(selectedFiles.value).length,
+)
 
 function addFiles(files: FileList | File[]) {
   selectedFiles.value = [...selectedFiles.value, ...Array.from(files)]
@@ -97,6 +102,10 @@ function createBatches(files: File[]) {
   let currentSize = 0
 
   for (const file of files) {
+    if (file.size > BATCH_SIZE_LIMIT) {
+      throw new Error(`${file.name} exceeds the ${formatBytes(BATCH_SIZE_LIMIT)} batch size limit.`)
+    }
+
     const wouldExceedCount = current.length >= BATCH_FILE_LIMIT
     const wouldExceedSize = current.length > 0 && currentSize + file.size > BATCH_SIZE_LIMIT
     if (wouldExceedCount || wouldExceedSize) {
@@ -124,11 +133,11 @@ async function uploadSelectedFiles() {
     return
   }
 
-  const batches = createBatches(files)
-  totalBatches.value = batches.length
-  isUploading.value = true
-
   try {
+    const batches = createBatches(files)
+    totalBatches.value = batches.length
+    isUploading.value = true
+
     for (const batch of batches) {
       const response = await uploadMutation.mutateAsync({
         recordings: batch,
@@ -241,7 +250,7 @@ async function uploadSelectedFiles() {
           </div>
           <div class="rounded-md border p-3">
             <div class="text-muted-foreground">Batches</div>
-            <div class="text-lg font-semibold">{{ totalBatches || createBatches(selectedFiles).length }}</div>
+            <div class="text-lg font-semibold">{{ totalBatches || estimatedBatchCount }}</div>
           </div>
         </div>
 

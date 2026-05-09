@@ -553,27 +553,24 @@ public sealed partial class ContentService(
         }
 
         var line = ParseRecordingLine(fileName);
-        if (await contentRepository.RecordingFileBelongsToDifferentNpcAsync(fileName, npcId, cancellationToken))
+        if (await contentRepository.RecordingFileBelongsToDifferentRecordingAsync(
+                fileName,
+                questId,
+                npcId,
+                line,
+                cancellationToken))
         {
             return RecordingResult(
                 fileName,
                 409,
                 "Conflict",
-                "A recording with this filename is already connected to a different NPC.");
+                "A recording with this filename is already connected to a different quest, NPC, or line.");
         }
 
         var conflictExists = await npcRecordingStorage.RecordingExistsAsync(fileName, cancellationToken);
         if (conflictExists && !overwrite)
         {
-            var renamedFileName = await NextAvailableRecordingFileNameAsync(fileName, cancellationToken);
-            if (renamedFileName is null)
-            {
-                return RecordingResult(
-                    fileName,
-                    409,
-                    "Conflict",
-                    "A conflict-safe filename could not be created within the database filename limit.");
-            }
+            var renamedFileName = CreateConflictRecordingFileName(fileName);
 
             await npcRecordingStorage.RenameRecordingAsync(fileName, renamedFileName, cancellationToken);
 
@@ -688,20 +685,24 @@ public sealed partial class ContentService(
         }
 
         var storedFileName = fileName;
+        if (await contentRepository.RecordingFileBelongsToDifferentRecordingAsync(
+                storedFileName,
+                questId,
+                npcId,
+                line,
+                cancellationToken))
+        {
+            return RecordingResult(
+                fileName,
+                409,
+                "Conflict",
+                "A recording with this filename is already connected to a different quest, NPC, or line.");
+        }
+
         var conflictExists = await npcRecordingStorage.RecordingExistsAsync(storedFileName, cancellationToken);
         if (conflictExists && !overwrite)
         {
-            var renamedFileName = await NextAvailableRecordingFileNameAsync(storedFileName, cancellationToken);
-            if (renamedFileName is null)
-            {
-                return RecordingResult(
-                    fileName,
-                    409,
-                    "Conflict",
-                    "A conflict-safe filename could not be created within the database filename limit.");
-            }
-
-            storedFileName = renamedFileName;
+            storedFileName = CreateConflictRecordingFileName(storedFileName);
         }
 
         await using (var content = recording.OpenReadStream())
@@ -816,26 +817,17 @@ public sealed partial class ContentService(
         return (parts[0], parts[1], Path.GetFileNameWithoutExtension(parts[2]));
     }
 
-    private async Task<string?> NextAvailableRecordingFileNameAsync(
-        string fileName,
-        CancellationToken cancellationToken)
+    private static string CreateConflictRecordingFileName(string fileName)
     {
         var stem = Path.GetFileNameWithoutExtension(fileName);
-        for (var index = 1; index < 10_000; index++)
-        {
-            var candidate = FormattableString.Invariant($"{stem}_({index}).ogg");
-            if (new StringInfo(candidate).LengthInTextElements > RecordingFileNameMaxLength)
-            {
-                return null;
-            }
+        const string extension = ".ogg";
+        var suffix = FormattableString.Invariant($"_{Guid.NewGuid():N}");
+        var maxStemLength = RecordingFileNameMaxLength - suffix.Length - extension.Length;
+        var safeStem = new StringInfo(stem).LengthInTextElements <= maxStemLength
+            ? stem
+            : new StringInfo(stem).SubstringByTextElements(0, maxStemLength);
 
-            if (!await npcRecordingStorage.RecordingExistsAsync(candidate, cancellationToken))
-            {
-                return candidate;
-            }
-        }
-
-        return null;
+        return FormattableString.Invariant($"{safeStem}{suffix}{extension}");
     }
 
     private static int ParseRecordingLine(string fileName)

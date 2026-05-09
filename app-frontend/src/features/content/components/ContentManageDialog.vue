@@ -114,6 +114,9 @@ const shouldLoadNpcRecordings = computed(
 )
 const npcRecordingsQuery = useNpcRecordings(selectedQuestId, selectedNpcId, shouldLoadNpcRecordings)
 const npcRecordings = computed(() => npcRecordingsQuery.data.value ?? [])
+const selectedNpcRecordingCount = computed(
+  () => npcRecordingsQuery.data.value?.length ?? props.selectedNpc?.recordingCount ?? 0,
+)
 
 const npcImageSrc = computed(() => {
   if (!props.selectedNpc) return NPC_DEFAULT_IMAGE_URL
@@ -299,6 +302,7 @@ function addRecordingFiles(files: FileList | File[]) {
 
   if (accepted.length === 0) return
 
+  dialogError.value = ''
   const existingKeys = new Set(recordingFiles.value.map((file) => `${file.name}:${file.size}`))
   recordingFiles.value = [
     ...recordingFiles.value,
@@ -808,17 +812,17 @@ async function unlinkNpc() {
           <div
             class="flex flex-col gap-3 border-t pt-4 sm:flex-row sm:items-center sm:justify-between"
           >
-            <p v-if="selectedNpc.recordingCount > 0" class="text-sm text-muted-foreground">
+            <p v-if="selectedNpcRecordingCount > 0" class="text-sm text-muted-foreground">
               Unlinking is blocked because this NPC has
-              {{ selectedNpc.recordingCount }}
-              {{ selectedNpc.recordingCount === 1 ? 'recording' : 'recordings' }}
+              {{ selectedNpcRecordingCount }}
+              {{ selectedNpcRecordingCount === 1 ? 'recording' : 'recordings' }}
               in this quest.
             </p>
             <div v-else />
             <Button
               variant="destructive"
               class="gap-2 self-start sm:self-auto"
-              :disabled="selectedNpc.recordingCount > 0 || unlinkQuestNpcMutation.isPending.value"
+              :disabled="selectedNpcRecordingCount > 0 || unlinkQuestNpcMutation.isPending.value"
               @click="unlinkNpc"
             >
               <Unlink class="size-4" />
