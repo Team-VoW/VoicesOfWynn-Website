@@ -1,0 +1,56 @@
+namespace VoW.Api.Domain.Auth;
+
+public static class CapabilityMapper
+{
+    public const string ClaimType = "capability";
+    public const string ReportsViewClaim = "reports.view";
+    public const string ReportsManageClaim = "reports.manage";
+
+    private static readonly Capability[] AllCapabilities =
+    [
+        Capability.ReportsView,
+        Capability.ReportsManage
+    ];
+
+    private static readonly HashSet<DiscordRoleId> AdminRoles =
+    [
+        DiscordRoleId.ProjectDirector,
+        DiscordRoleId.Admin
+    ];
+
+    private static readonly HashSet<DiscordRoleId> ReportViewRoles =
+    [
+        DiscordRoleId.Moderator,
+        DiscordRoleId.CastManager,
+        DiscordRoleId.VoiceManager,
+        DiscordRoleId.Developer,
+        DiscordRoleId.Writer,
+        DiscordRoleId.SoundEditor
+    ];
+
+    public static IReadOnlyCollection<Capability> Map(IEnumerable<DiscordRoleId> roles)
+    {
+        var roleSet = roles.ToHashSet();
+        if (roleSet.Overlaps(AdminRoles))
+        {
+            return AllCapabilities;
+        }
+
+        var capabilities = new HashSet<Capability>();
+        if (roleSet.Overlaps(ReportViewRoles))
+        {
+            capabilities.Add(Capability.ReportsView);
+        }
+
+        return capabilities;
+    }
+
+    public static string ToClaimValue(Capability capability) => capability switch
+    {
+        Capability.ReportsView => ReportsViewClaim,
+        Capability.ReportsManage => ReportsManageClaim,
+        _ => throw new ArgumentOutOfRangeException(nameof(capability), capability, null)
+    };
+
+    public static IEnumerable<Capability> GetAllCapabilities() => AllCapabilities;
+}

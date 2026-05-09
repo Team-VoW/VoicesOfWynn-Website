@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using VoW.Api.Contracts.Auth;
+using VoW.Api.Domain.Auth;
 using VoW.Api.Domain.Users;
 
 namespace VoW.Api.Services;
@@ -28,15 +29,23 @@ public sealed class JwtService(IConfiguration configuration, IHostEnvironment en
         return new AuthTokenResponse(access.token, refresh.token, access.expiresAt);
     }
 
-    private (string token, DateTimeOffset expiresAt) CreateAccessToken(User user) =>
-        CreateToken(
-            [
-                new Claim("type", AccessTokenType),
-                new Claim(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
-                new Claim("discord_id", user.DiscordId),
-                new Claim("display_name", user.DisplayName)
-            ],
-            TimeSpan.FromHours(1));
+    private (string token, DateTimeOffset expiresAt) CreateAccessToken(User user)
+    {
+        var claims = new List<Claim>
+        {
+            new("type", AccessTokenType),
+            new(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
+            new("discord_id", user.DiscordId),
+            new("display_name", user.DisplayName)
+        };
+
+        claims.AddRange(user.Capabilities
+            .Select(CapabilityMapper.ToClaimValue)
+            .Distinct()
+            .Select(value => new Claim(CapabilityMapper.ClaimType, value)));
+
+        return CreateToken(claims, TimeSpan.FromHours(1));
+    }
 
     public ClaimsPrincipal ValidateRefreshToken(string token)
     {
