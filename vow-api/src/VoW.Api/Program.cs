@@ -56,6 +56,12 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
+var pathBase = builder.Configuration["PATH_BASE"];
+if (!string.IsNullOrEmpty(pathBase))
+{
+    app.UsePathBase(pathBase);
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
