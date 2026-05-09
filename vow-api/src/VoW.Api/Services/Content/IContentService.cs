@@ -49,4 +49,28 @@ public interface IContentService
         int questId,
         int npcId,
         CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Uploads the quest script content for the specified quest.
+    /// </summary>
+    /// <param name="content">
+    /// The caller retains ownership of this stream and must dispose it after the call.
+    /// The implementation may read it asynchronously and does not require it to be seekable.
+    /// </param>
+    Task<ContentMutationResult> UploadQuestScriptAsync(
+        int questId,
+        Stream content,
+        CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Uploads and normalizes the NPC image content for the specified NPC.
+    /// </summary>
+    /// <param name="content">
+    /// The caller retains ownership of this stream and must dispose it after the call.
+    /// The implementation may read it asynchronously and will seek to the beginning when the stream supports seeking.
+    /// </param>
+    Task<ContentMutationResult> UploadNpcImageAsync(
+        int npcId,
+        Stream content,
+        CancellationToken cancellationToken);
 }

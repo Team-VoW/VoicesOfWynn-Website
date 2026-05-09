@@ -97,6 +97,7 @@ export interface ContentSearchQuest {
   questDegeneratedName: string
   writerId: number | null
   writerName: string | null
+  scriptUrl: string | null
   npcs: ContentSearchNpc[]
 }
 

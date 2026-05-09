@@ -4,10 +4,14 @@ using MySqlConnector;
 using VoW.Api.Contracts.Content;
 using VoW.Api.Domain.Content;
 using VoW.Api.Repositories;
+using VoW.Api.Services.Storage;
 
 namespace VoW.Api.Services.Content;
 
-public sealed partial class ContentService(IContentRepository contentRepository) : IContentService
+public sealed partial class ContentService(
+    IContentRepository contentRepository,
+    IQuestScriptStorage questScriptStorage,
+    INpcImageStorage npcImageStorage) : IContentService
 {
     private const int ContentNameMaxLength = 63;
     private static readonly int[] AllowedPageSizes = [10, 25, 50, 100];
@@ -41,16 +45,20 @@ public sealed partial class ContentService(IContentRepository contentRepository)
             pageSize);
 
         var resultPage = await contentRepository.SearchAsync(criteria, cancellationToken);
-        return ContentSearchServiceResult.Success(new ContentSearchResponse(
-            resultPage.Total,
-            resultPage.Page,
-            resultPage.PageSize,
-            resultPage.Results.Select(quest => new QuestContentResult(
+
+        var scriptUrlTasks = resultPage.Results
+            .Select(quest => ResolveScriptUrlAsync(quest.QuestDegeneratedName, cancellationToken))
+            .ToArray();
+        var scriptUrls = await Task.WhenAll(scriptUrlTasks);
+
+        var results = resultPage.Results
+            .Select((quest, index) => new QuestContentResult(
                 quest.QuestId,
                 quest.QuestName,
                 quest.QuestDegeneratedName,
                 quest.WriterId,
                 quest.WriterName,
+                scriptUrls[index],
                 quest.Npcs.Select(npc => new NpcContentResult(
                     npc.NpcId,
                     npc.NpcName,
@@ -59,8 +67,20 @@ public sealed partial class ContentService(IContentRepository contentRepository)
                     npc.VoiceActorName,
                     npc.SoundEditorId,
                     npc.SoundEditorName,
-                    npc.RecordingCount)).ToArray())).ToArray()));
+                    npc.RecordingCount)).ToArray()))
+            .ToArray();
+
+        return ContentSearchServiceResult.Success(new ContentSearchResponse(
+            resultPage.Total,
+            resultPage.Page,
+            resultPage.PageSize,
+            results));
     }
+
+    private async Task<string?> ResolveScriptUrlAsync(string degeneratedName, CancellationToken cancellationToken) =>
+        await questScriptStorage.ScriptExistsAsync(degeneratedName, cancellationToken)
+            ? questScriptStorage.GetScriptUrl(degeneratedName).ToString()
+            : null;
 
     public async Task<ContentMutationResult> CreateQuestAsync(
         CreateQuestRequest request,
@@ -376,6 +396,52 @@ public sealed partial class ContentService(IContentRepository contentRepository)
         return await contentRepository.UnlinkNpcFromQuestAsync(questId, npcId, cancellationToken)
             ? ContentMutationResult.Success()
             : ContentMutationResult.NotFound();
+    }
+
+    public async Task<ContentMutationResult> UploadQuestScriptAsync(
+        int questId,
+        Stream content,
+        CancellationToken cancellationToken)
+    {
+        var degeneratedName = await contentRepository.GetQuestDegeneratedNameAsync(questId, cancellationToken);
+        if (degeneratedName is null)
+        {
+            return ContentMutationResult.NotFound();
+        }
+
+        await questScriptStorage.UploadScriptAsync(degeneratedName, content, cancellationToken);
+        return ContentMutationResult.Success();
+    }
+
+    public async Task<ContentMutationResult> UploadNpcImageAsync(
+        int npcId,
+        Stream content,
+        CancellationToken cancellationToken)
+    {
+        if (!await contentRepository.NpcExistsAsync(npcId, cancellationToken))
+        {
+            return ContentMutationResult.NotFound();
+        }
+
+        MemoryStream normalized;
+        try
+        {
+            normalized = await NpcImagePipeline.NormalizeToWebpAsync(content, cancellationToken);
+        }
+        catch (SixLabors.ImageSharp.UnknownImageFormatException)
+        {
+            return ContentMutationResult.Invalid("file", "The uploaded file is not a recognized image.");
+        }
+        catch (SixLabors.ImageSharp.InvalidImageContentException)
+        {
+            return ContentMutationResult.Invalid("file", "The uploaded image is corrupted or could not be decoded.");
+        }
+
+        await using (normalized)
+        {
+            await npcImageStorage.UploadImageAsync(npcId, normalized, cancellationToken);
+        }
+        return ContentMutationResult.Success();
     }
 
     private async Task<bool> OptionExistsAsync(

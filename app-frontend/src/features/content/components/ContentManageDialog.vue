@@ -1,6 +1,15 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import { Edit, Headphones, LinkIcon, Trash2, Unlink, UserRound, X } from 'lucide-vue-next'
+import { computed, ref, useTemplateRef, watch } from 'vue'
+import {
+  Edit,
+  FileUp,
+  Headphones,
+  LinkIcon,
+  Trash2,
+  Unlink,
+  UserRound,
+  X,
+} from 'lucide-vue-next'
 import {
   DialogClose,
   DialogContent,
@@ -31,7 +40,12 @@ import {
   useUpdateQuest,
   useUpdateQuestNpcSoundEditor,
   useUpdateQuestWriter,
+  useUploadQuestScript,
 } from '../queries'
+import NpcImageCropDialog from './NpcImageCropDialog.vue'
+
+const NPC_IMAGE_BASE_URL = (import.meta.env.VITE_NPC_IMAGE_BASE_URL ?? '').replace(/\/$/, '')
+const NPC_DEFAULT_IMAGE_URL = NPC_IMAGE_BASE_URL ? `${NPC_IMAGE_BASE_URL}/default.webp` : '/default.webp'
 
 type DialogMode = 'quest' | 'npc' | null
 
@@ -59,6 +73,7 @@ const updateNpcVoiceActorMutation = useUpdateNpcVoiceActor()
 const updateQuestNpcSoundEditorMutation = useUpdateQuestNpcSoundEditor()
 const linkQuestNpcMutation = useLinkQuestNpc()
 const unlinkQuestNpcMutation = useUnlinkQuestNpc()
+const uploadQuestScriptMutation = useUploadQuestScript()
 
 const editName = ref('')
 const editWriter = ref(CONTENT_NONE)
@@ -66,6 +81,42 @@ const editVoiceActor = ref(CONTENT_NONE)
 const editSoundEditor = ref(CONTENT_NONE)
 const linkNpcId = ref(CONTENT_NONE)
 const dialogError = ref('')
+const scriptFile = ref<File | null>(null)
+const scriptInput = useTemplateRef<HTMLInputElement>('scriptInput')
+const imageInput = useTemplateRef<HTMLInputElement>('imageInput')
+const pendingImageFile = ref<File | null>(null)
+const cropDialogOpen = ref(false)
+const imageBusters = ref<Map<number, number>>(new Map())
+
+const npcImageSrc = computed(() => {
+  if (!props.selectedNpc) return NPC_DEFAULT_IMAGE_URL
+  const url = `${NPC_IMAGE_BASE_URL}/${props.selectedNpc.npcId}.webp`
+  const buster = imageBusters.value.get(props.selectedNpc.npcId)
+  return buster ? `${url}${url.includes('?') ? '&' : '?'}v=${buster}` : url
+})
+
+function onImageError(event: Event) {
+  const img = event.target as HTMLImageElement
+  if (img.src !== NPC_DEFAULT_IMAGE_URL) {
+    img.src = NPC_DEFAULT_IMAGE_URL
+  }
+}
+
+function onImageFilePicked(event: Event) {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0] ?? null
+  target.value = ''
+  if (!file) return
+  pendingImageFile.value = file
+  cropDialogOpen.value = true
+}
+
+function onImageUploaded() {
+  if (props.selectedNpc) {
+    imageBusters.value.set(props.selectedNpc.npcId, Date.now())
+  }
+  pendingImageFile.value = null
+}
 
 watch(
   () => [props.mode, props.selectedQuest, props.selectedNpc, props.open] as const,
@@ -74,6 +125,11 @@ watch(
 
     dialogError.value = ''
     linkNpcId.value = CONTENT_NONE
+    scriptFile.value = null
+    if (scriptInput.value) scriptInput.value.value = ''
+    pendingImageFile.value = null
+    cropDialogOpen.value = false
+    if (imageInput.value) imageInput.value.value = ''
 
     if (props.mode === 'quest' && props.selectedQuest) {
       editName.value = props.selectedQuest.questName
@@ -196,6 +252,24 @@ async function saveSoundEditor() {
   )
 }
 
+function onScriptFilePicked(event: Event) {
+  const target = event.target as HTMLInputElement
+  scriptFile.value = target.files?.[0] ?? null
+}
+
+async function uploadScript() {
+  if (!props.selectedQuest || !scriptFile.value) return
+  const file = scriptFile.value
+  await runDialogAction(async () => {
+    await uploadQuestScriptMutation.mutateAsync({
+      questId: props.selectedQuest!.questId,
+      file,
+    })
+    scriptFile.value = null
+    if (scriptInput.value) scriptInput.value.value = ''
+  }, 'Script uploaded.')
+}
+
 async function unlinkNpc() {
   if (!props.selectedQuest || !props.selectedNpc) return
   await runDialogAction(async () => {
@@ -281,6 +355,41 @@ async function unlinkNpc() {
           </div>
 
           <div class="space-y-2">
+            <Label for="dialog-quest-script">Script file (.txt)</Label>
+            <div class="flex gap-2">
+              <input
+                id="dialog-quest-script"
+                ref="scriptInput"
+                type="file"
+                accept="text/plain,.txt"
+                class="border-input file:text-foreground h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-sm file:mr-3 file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium"
+                @change="onScriptFilePicked"
+              />
+              <Button
+                class="gap-2"
+                variant="outline"
+                :disabled="!scriptFile || uploadQuestScriptMutation.isPending.value"
+                @click="uploadScript"
+              >
+                <FileUp class="size-4" />
+                Upload
+              </Button>
+            </div>
+            <p v-if="selectedQuest.scriptUrl" class="text-sm text-muted-foreground">
+              Current:
+              <a
+                :href="selectedQuest.scriptUrl"
+                target="_blank"
+                rel="noopener"
+                class="underline"
+              >
+                View current script
+              </a>
+            </p>
+            <p v-else class="text-sm text-muted-foreground">No script uploaded.</p>
+          </div>
+
+          <div class="space-y-2">
             <Label for="dialog-link-npc">Link existing NPC</Label>
             <div class="flex gap-2">
               <Select v-model="linkNpcId" :disabled="isLoading">
@@ -331,6 +440,30 @@ async function unlinkNpc() {
           <div>
             <p class="text-sm text-muted-foreground">Quest</p>
             <p class="font-medium">{{ selectedQuest.questName }}</p>
+          </div>
+
+          <div class="flex items-start gap-4">
+            <img
+              :key="npcImageSrc"
+              :src="npcImageSrc"
+              alt="NPC picture"
+              class="size-24 shrink-0 rounded-md border bg-muted object-cover"
+              @error="onImageError"
+            />
+            <div class="flex-1 space-y-2">
+              <Label for="dialog-npc-image">Picture</Label>
+              <input
+                id="dialog-npc-image"
+                ref="imageInput"
+                type="file"
+                accept="image/png,image/jpeg,image/webp"
+                class="border-input file:text-foreground h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-sm file:mr-3 file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium"
+                @change="onImageFilePicked"
+              />
+              <p class="text-xs text-muted-foreground">
+                After picking a file you can crop and zoom; the image will be saved as 256×256 webp.
+              </p>
+            </div>
           </div>
 
           <div class="space-y-2">
@@ -432,4 +565,11 @@ async function unlinkNpc() {
       </DialogContent>
     </DialogPortal>
   </DialogRoot>
+
+  <NpcImageCropDialog
+    v-model:open="cropDialogOpen"
+    :npc-id="selectedNpc?.npcId ?? null"
+    :source="pendingImageFile"
+    @uploaded="onImageUploaded"
+  />
 </template>

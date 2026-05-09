@@ -1,4 +1,5 @@
 using System.Text;
+using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
@@ -8,6 +9,7 @@ using VoW.Api.Services;
 using VoW.Api.Services.Auth;
 using VoW.Api.Services.Content;
 using VoW.Api.Services.Reports;
+using VoW.Api.Services.Storage;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,13 +26,26 @@ builder.Services.AddScoped<IContentRepository, ContentRepository>();
 builder.Services.AddScoped<IReportRepository, ReportRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
+builder.Services.AddSingleton(sp =>
+{
+    var connectionString = sp.GetRequiredService<IConfiguration>()["AZURE_STORAGE_CONNECTION_STRING"];
+    if (string.IsNullOrWhiteSpace(connectionString))
+    {
+        throw new InvalidOperationException("AZURE_STORAGE_CONNECTION_STRING is not configured.");
+    }
+
+    return new BlobServiceClient(connectionString);
+});
+builder.Services.AddSingleton<IQuestScriptStorage, AzureQuestScriptStorage>();
+builder.Services.AddSingleton<INpcImageStorage, AzureNpcImageStorage>();
+
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
         var origin = builder.Configuration["CORS_ORIGIN"] ?? "https://app.voicesofwynn.com";
         policy.WithOrigins(origin)
-            .WithMethods("GET", "POST", "PATCH", "DELETE")
+            .WithMethods("GET", "POST", "PUT", "PATCH", "DELETE")
             .WithHeaders("Authorization", "Content-Type");
     });
 });

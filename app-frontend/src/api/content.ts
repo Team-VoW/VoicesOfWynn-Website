@@ -109,3 +109,21 @@ export function unlinkQuestNpc(questId: number, npcId: number): Promise<void> {
     method: 'DELETE',
   })
 }
+
+export function uploadQuestScript(questId: number, file: File): Promise<void> {
+  const form = new FormData()
+  form.append('file', file)
+  return apiFetch<void>(`/admin/content/quests/${questId}/script`, {
+    method: 'PUT',
+    body: form,
+  })
+}
+
+export function uploadNpcImage(npcId: number, file: Blob, fileName = 'image.webp'): Promise<void> {
+  const form = new FormData()
+  form.append('file', file, fileName)
+  return apiFetch<void>(`/admin/content/npcs/${npcId}/image`, {
+    method: 'PUT',
+    body: form,
+  })
+}
