@@ -20,11 +20,14 @@ export function useSilentRefresh() {
   }
 
   async function doRefresh() {
-    if (!auth.refreshToken) return
+    const tokenAtStart = auth.refreshToken
+    if (!tokenAtStart) return
     try {
-      const res = await refreshAccessToken(auth.refreshToken)
+      const res = await refreshAccessToken(tokenAtStart)
+      if (auth.refreshToken !== tokenAtStart) return
       auth.setTokens(res.accessToken, res.refreshToken, res.expiresAt)
     } catch (err) {
+      if (auth.refreshToken !== tokenAtStart) return
       // Only clear when the refresh token itself was rejected. Transient failures
       // (network, 5xx) leave the session intact and we'll retry shortly.
       if (err instanceof ApiError && (err.status === 400 || err.status === 401)) {

@@ -40,8 +40,8 @@ jobs:
              && [ "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ] \
              && git cat-file -e "$BEFORE_SHA^{commit}" 2>/dev/null; then
             git diff --name-only "$BEFORE_SHA" "$AFTER_SHA" > changed_files
-          else
-            # First push to a branch (or non-push trigger): assume API may have changed.
+          elif [ "$EVENT_NAME" = "push" ]; then
+            # First push to a branch: assume API may have changed.
             echo "vow-api/" > changed_files
           fi
 

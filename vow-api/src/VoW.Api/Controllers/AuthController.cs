@@ -20,7 +20,7 @@ public sealed class AuthController(
     IHostEnvironment environment,
     ILogger<AuthController> logger) : ControllerBase
 {
-    private const string OAuthStateCookie = "vow_oauth_state";
+    private const string OAuthStateCookiePrefix = "vow_oauth_state_";
     private static readonly TimeSpan OAuthStateLifetime = TimeSpan.FromMinutes(10);
 
     [HttpGet("login/{provider}")]
@@ -33,7 +33,7 @@ public sealed class AuthController(
         }
 
         var state = WebEncoders.Base64UrlEncode(RandomNumberGenerator.GetBytes(32));
-        Response.Cookies.Append(OAuthStateCookie, state, BuildStateCookieOptions(OAuthStateLifetime));
+        Response.Cookies.Append(CreateOAuthStateCookieName(state), state, BuildStateCookieOptions(OAuthStateLifetime));
         return Redirect(authProvider.BuildLoginUrl(state));
     }
 
@@ -42,17 +42,22 @@ public sealed class AuthController(
         string provider,
         [FromQuery] string? code,
         [FromQuery] string? state,
+        [FromQuery(Name = "error")] string? providerError,
         CancellationToken cancellationToken)
     {
         var authProvider = FindProvider(provider);
         if (authProvider is null)
         {
-            return NotFound();
+            return RedirectToSpaCallbackError("invalid_provider");
         }
 
-        var expectedState = Request.Cookies[OAuthStateCookie];
-        // Always clear the cookie — it's single-use either way.
-        Response.Cookies.Delete(OAuthStateCookie, BuildStateCookieOptions(TimeSpan.Zero));
+        var stateCookieName = string.IsNullOrEmpty(state) ? null : CreateOAuthStateCookieName(state);
+        var expectedState = stateCookieName is null ? null : Request.Cookies[stateCookieName];
+        // Always clear the cookie - it's single-use either way.
+        if (stateCookieName is not null)
+        {
+            Response.Cookies.Delete(stateCookieName, BuildStateCookieOptions(TimeSpan.Zero));
+        }
 
         if (string.IsNullOrEmpty(state)
             || string.IsNullOrEmpty(expectedState)
@@ -61,12 +66,17 @@ public sealed class AuthController(
                 System.Text.Encoding.ASCII.GetBytes(expectedState)))
         {
             logger.LogWarning("OAuth state mismatch on {Provider} callback.", provider);
-            return BadRequest(new ProblemDetails { Title = "Invalid OAuth state." });
+            return RedirectToSpaCallbackError("invalid_oauth_state");
+        }
+
+        if (!string.IsNullOrWhiteSpace(providerError))
+        {
+            return RedirectToSpaCallbackError(providerError);
         }
 
         if (string.IsNullOrWhiteSpace(code))
         {
-            return BadRequest(new ProblemDetails { Title = "Authorization code is required." });
+            return RedirectToSpaCallbackError("missing_authorization_code");
         }
 
         try
@@ -78,8 +88,7 @@ public sealed class AuthController(
 
             if (user is null)
             {
-                var errorUrl = QueryHelpers.AddQueryString(GetSpaCallbackUrl(), "error", "admin_required");
-                return Redirect(errorUrl);
+                return RedirectToSpaCallbackError("admin_required");
             }
 
             var handoffCode = handoffService.Create(jwtService.CreateTokenPair(user));
@@ -89,7 +98,7 @@ public sealed class AuthController(
         catch (HttpRequestException exception)
         {
             logger.LogWarning(exception, "External OAuth request failed.");
-            return StatusCode(StatusCodes.Status502BadGateway, new ProblemDetails { Title = "External OAuth request failed." });
+            return RedirectToSpaCallbackError("external_oauth_failed");
         }
     }
 
@@ -131,6 +140,14 @@ public sealed class AuthController(
     private IExternalAuthProvider? FindProvider(string provider) =>
         authProviders.FirstOrDefault(candidate =>
             string.Equals(candidate.Name, provider, StringComparison.OrdinalIgnoreCase));
+
+    private static string CreateOAuthStateCookieName(string state) => $"{OAuthStateCookiePrefix}{state}";
+
+    private IActionResult RedirectToSpaCallbackError(string error)
+    {
+        var errorUrl = QueryHelpers.AddQueryString(GetSpaCallbackUrl(), "error", error);
+        return Redirect(errorUrl);
+    }
 
     private CookieOptions BuildStateCookieOptions(TimeSpan lifetime) => new()
     {
