@@ -62,6 +62,11 @@ public interface IContentRepository
 
     Task<RecordingFile?> GetRecordingByFileAsync(string fileName, CancellationToken cancellationToken);
 
+    Task<bool> RecordingFileBelongsToDifferentNpcAsync(
+        string fileName,
+        int npcId,
+        CancellationToken cancellationToken);
+
     Task<bool> UpdateRecordingFileAsync(
         int recordingId,
         string fileName,

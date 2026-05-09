@@ -553,6 +553,15 @@ public sealed partial class ContentService(
         }
 
         var line = ParseRecordingLine(fileName);
+        if (await contentRepository.RecordingFileBelongsToDifferentNpcAsync(fileName, npcId, cancellationToken))
+        {
+            return RecordingResult(
+                fileName,
+                409,
+                "Conflict",
+                "A recording with this filename is already connected to a different NPC.");
+        }
+
         var conflictExists = await npcRecordingStorage.RecordingExistsAsync(fileName, cancellationToken);
         if (conflictExists && !overwrite)
         {
