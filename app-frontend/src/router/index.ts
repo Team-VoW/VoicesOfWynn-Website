@@ -56,9 +56,12 @@ router.beforeEach((to: RouteLocationNormalized) => {
     return { name: 'login', query: { redirect: to.fullPath } }
   }
   if (to.meta.capability && !auth.hasCapability(to.meta.capability)) {
-    return { name: 'reports' }
+    if (auth.hasCapability(Capabilities.ReportsView)) {
+      return { name: 'reports' }
+    }
+    return { name: 'login' }
   }
-  if (to.name === 'login' && auth.isAuthenticated) {
+  if (to.name === 'login' && auth.isAuthenticated && auth.hasCapability(Capabilities.ReportsView)) {
     return { name: 'reports' }
   }
   return true

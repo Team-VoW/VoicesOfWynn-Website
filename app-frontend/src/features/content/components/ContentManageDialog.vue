@@ -220,6 +220,7 @@ async function unlinkNpc() {
             {{ mode === 'quest' ? 'Manage quest' : 'Manage NPC' }}
           </DialogTitle>
           <DialogClose
+            aria-label="Close"
             class="rounded-md p-1 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
           >
             <X class="size-4" />

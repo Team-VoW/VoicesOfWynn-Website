@@ -311,25 +311,33 @@ public sealed class ContentRepository(IConfiguration configuration) : IContentRe
                 cancellationToken: cancellationToken);
             var npcId = await connection.ExecuteScalarAsync<int>(npcCommand);
 
-            const string questSql = """
+            const string nextOrderSql = """
+                SELECT COALESCE(MAX(sorting_order), 0) + 1
+                FROM npc_quest
+                WHERE quest_id = @QuestId
+                FOR UPDATE;
+                """;
+
+            const string insertQuestSql = """
                 INSERT INTO npc_quest (quest_id, npc_id, sorting_order, editor)
-                VALUES (
-                    @QuestId,
-                    @NpcId,
-                    (SELECT COALESCE(MAX(so), 0) + 1
-                     FROM (SELECT sorting_order AS so FROM npc_quest WHERE quest_id = @QuestId) AS sub),
-                    @SoundEditorUserId
-                );
+                VALUES (@QuestId, @NpcId, @SortingOrder, @SoundEditorUserId);
                 """;
 
             foreach (var assignment in command.QuestAssignments)
             {
-                var questCommand = new CommandDefinition(
-                    questSql,
-                    new { assignment.QuestId, NpcId = npcId, assignment.SoundEditorUserId },
+                var nextOrderCommand = new CommandDefinition(
+                    nextOrderSql,
+                    new { assignment.QuestId },
                     transaction,
                     cancellationToken: cancellationToken);
-                await connection.ExecuteAsync(questCommand);
+                var sortingOrder = await connection.ExecuteScalarAsync<int>(nextOrderCommand);
+
+                var insertCommand = new CommandDefinition(
+                    insertQuestSql,
+                    new { assignment.QuestId, NpcId = npcId, SortingOrder = sortingOrder, assignment.SoundEditorUserId },
+                    transaction,
+                    cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(insertCommand);
             }
 
             await transaction.CommitAsync(cancellationToken);

@@ -30,9 +30,15 @@ async function submitQuest() {
   questError.value = ''
   createdQuestId.value = null
 
+  const trimmedName = questName.value.trim()
+  if (trimmedName === '') {
+    questError.value = 'Quest name is required.'
+    return
+  }
+
   try {
     const result = await createQuestMutation.mutateAsync({
-      name: questName.value,
+      name: trimmedName,
       writerUserId: optionalContentId(questWriter.value),
     })
     createdQuestId.value = result.id

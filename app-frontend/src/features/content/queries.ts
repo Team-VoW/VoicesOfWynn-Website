@@ -58,9 +58,7 @@ export function useCreateNpc() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (request: CreateNpcRequest) => createNpc(request),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['content'] })
-    },
+    onSuccess: () => invalidateContent(queryClient),
   })
 }
 
