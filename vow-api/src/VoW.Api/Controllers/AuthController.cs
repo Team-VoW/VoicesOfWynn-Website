@@ -78,7 +78,8 @@ public sealed class AuthController(
 
             if (user is null)
             {
-                return Forbid();
+                var errorUrl = QueryHelpers.AddQueryString(GetSpaCallbackUrl(), "error", "admin_required");
+                return Redirect(errorUrl);
             }
 
             var handoffCode = handoffService.Create(jwtService.CreateTokenPair(user));

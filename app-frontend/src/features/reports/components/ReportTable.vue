@@ -32,7 +32,8 @@ function formatDate(iso: string) {
 </script>
 
 <template>
-  <div class="rounded-md border">
+  <div class="relative rounded-md border" :aria-busy="loading">
+    <div v-if="loading && results.length > 0" class="absolute inset-x-0 top-0 z-10 h-0.5 animate-pulse bg-primary" />
     <Table>
       <TableHeader>
         <TableRow>
@@ -54,9 +55,11 @@ function formatDate(iso: string) {
           </TableRow>
         </template>
         <TableEmpty v-else-if="results.length === 0" :colspan="5">No reports match the filters.</TableEmpty>
-        <TableRow v-for="r in results" v-else :key="r.reportId">
+        <TableRow v-for="r in results" v-else :key="r.reportId" :class="loading && 'opacity-60'">
           <TableCell class="font-medium">{{ r.npcName ?? '—' }}</TableCell>
-          <TableCell class="max-w-md truncate">{{ r.chatMessage }}</TableCell>
+          <TableCell>
+            <div class="max-w-md truncate">{{ r.chatMessage }}</div>
+          </TableCell>
           <TableCell>
             <Badge :variant="statusVariant[r.status]">{{ r.status }}</Badge>
           </TableCell>

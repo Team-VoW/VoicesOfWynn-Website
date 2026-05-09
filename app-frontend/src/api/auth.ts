@@ -1,7 +1,6 @@
 import { apiFetch } from './client'
+import { API_BASE_URL } from './config'
 import type { AuthTokenResponse } from './types'
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? ''
 
 export function discordLoginUrl(): string {
   return `${API_BASE_URL}/auth/login/discord`

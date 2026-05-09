@@ -7,6 +7,9 @@
 /files/*
 !/files/core-dev-server/*
 /vendor/
+.env
+.env.local
+.env.*.local
 profiles.php
 composer.phar
 .devcontainer
