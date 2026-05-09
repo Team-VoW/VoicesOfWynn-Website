@@ -7,6 +7,9 @@ on:
       - master
     paths-ignore:
       - 'vow-api/**'
+      - 'app-frontend/**'
+      - 'README.md'
+      - 'AGENTS.md'
       - 'docker-compose.yml'
       - 'docker-compose.dev.yml'
       - '.github/workflows/api.yml'
