@@ -18,7 +18,8 @@ import {
   type SortDirection,
 } from '@/api/types'
 
-const PAGE_SIZE = 25
+const DEFAULT_PAGE_SIZE = 25
+const PAGE_SIZE_OPTIONS = [10, 25, 50, 100] as const
 const route = useRoute()
 const router = useRouter()
 
@@ -42,17 +43,29 @@ function stringFromQuery(value: unknown): string {
   return typeof value === 'string' ? value : ''
 }
 
+function pageSizeFromQuery(value: unknown): number {
+  const pageSize = Number(value)
+  return PAGE_SIZE_OPTIONS.includes(pageSize as typeof PAGE_SIZE_OPTIONS[number])
+    ? pageSize
+    : DEFAULT_PAGE_SIZE
+}
+
 const npc = ref(stringFromQuery(route.query.npc))
 const content = ref(stringFromQuery(route.query.content))
 const status = ref<ReportStatus | 'any'>(statusFromQuery(route.query.status))
 const sortBy = ref<ReportSortField | undefined>(sortByFromQuery(route.query.sortBy))
 const sortDir = ref<SortDirection | undefined>(sortDirFromQuery(route.query.sortDir))
 const page = ref(Number(route.query.page) > 0 ? Number(route.query.page) : 1)
+const pageSize = ref(pageSizeFromQuery(route.query.pageSize))
 
 const npcDebounced = refDebounced(npc, 300)
 const contentDebounced = refDebounced(content, 300)
 
 watch([npcDebounced, contentDebounced, status, sortBy, sortDir], () => {
+  page.value = 1
+})
+
+watch(pageSize, () => {
   page.value = 1
 })
 
@@ -63,7 +76,7 @@ const params = computed<ReportSearchRequest>(() => ({
   sortBy: sortBy.value,
   sortDir: sortBy.value ? sortDir.value : undefined,
   page: page.value,
-  pageSize: PAGE_SIZE,
+  pageSize: pageSize.value,
 }))
 
 watch(
@@ -77,6 +90,7 @@ watch(
         ...(p.sortBy ? { sortBy: p.sortBy } : {}),
         ...(p.sortBy && p.sortDir ? { sortDir: p.sortDir } : {}),
         ...(p.page > 1 ? { page: String(p.page) } : {}),
+        ...(p.pageSize !== DEFAULT_PAGE_SIZE ? { pageSize: String(p.pageSize) } : {}),
       },
     })
   },
@@ -94,6 +108,7 @@ watch(
     const nextSortBy = sortByFromQuery(q.sortBy)
     const nextSortDir = sortDirFromQuery(q.sortDir)
     const nextPage = Number(q.page) > 0 ? Number(q.page) : 1
+    const nextPageSize = pageSizeFromQuery(q.pageSize)
 
     if (nextNpc !== npc.value) npc.value = nextNpc
     if (nextContent !== content.value) content.value = nextContent
@@ -101,6 +116,7 @@ watch(
     if (nextSortBy !== sortBy.value) sortBy.value = nextSortBy
     if (nextSortDir !== sortDir.value) sortDir.value = nextSortDir
     if (nextPage !== page.value) page.value = nextPage
+    if (nextPageSize !== pageSize.value) pageSize.value = nextPageSize
   },
 )
 
@@ -161,9 +177,11 @@ function onManage(report: ReportSearchResult) {
 
     <ReportPagination
       :page="page"
-      :page-size="PAGE_SIZE"
+      :page-size="pageSize"
+      :page-size-options="PAGE_SIZE_OPTIONS"
       :total="total"
       @update:page="(v) => (page = v)"
+      @update:page-size="(v) => (pageSize = v)"
     />
 
     <ReportManageDrawer v-model:open="drawerOpen" :report="selectedReport" />

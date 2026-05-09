@@ -1,15 +1,25 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 const props = defineProps<{
   page: number
   pageSize: number
+  pageSizeOptions: readonly number[]
   total: number
 }>()
 
 const emit = defineEmits<{
   (e: 'update:page', value: number): void
+  (e: 'update:pageSize', value: number): void
 }>()
 
 const safeTotal = computed(() => (Number.isFinite(props.total) && props.total > 0 ? props.total : 0))
@@ -24,10 +34,19 @@ const canPrev = computed(() => currentPage.value > 1)
 const canNext = computed(() => currentPage.value < totalPages.value)
 const rangeStart = computed(() => (safeTotal.value === 0 ? 0 : (currentPage.value - 1) * safePageSize.value + 1))
 const rangeEnd = computed(() => Math.min(safeTotal.value, currentPage.value * safePageSize.value))
+const pageSizeValue = computed({
+  get: () => String(props.pageSize),
+  set: (value: string) => {
+    const pageSize = Number(value)
+    if (Number.isFinite(pageSize) && pageSize > 0) {
+      emit('update:pageSize', pageSize)
+    }
+  },
+})
 </script>
 
 <template>
-  <div class="flex items-center justify-between gap-4 text-sm text-muted-foreground">
+  <div class="flex flex-col gap-3 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
     <p>
       <template v-if="total > 0">
         Showing <span class="text-foreground">{{ rangeStart }}–{{ rangeEnd }}</span> of
@@ -35,14 +54,29 @@ const rangeEnd = computed(() => Math.min(safeTotal.value, currentPage.value * sa
       </template>
       <template v-else>No results</template>
     </p>
-    <div class="flex items-center gap-2">
-      <Button variant="outline" size="sm" :disabled="!canPrev" @click="emit('update:page', currentPage - 1)">
-        Previous
-      </Button>
-      <span class="tabular-nums">Page {{ currentPage }} / {{ totalPages }}</span>
-      <Button variant="outline" size="sm" :disabled="!canNext" @click="emit('update:page', currentPage + 1)">
-        Next
-      </Button>
+    <div class="flex flex-wrap items-center gap-3">
+      <div class="flex items-center gap-2">
+        <Label for="reports-page-size" class="text-muted-foreground">Rows per page</Label>
+        <Select v-model="pageSizeValue">
+          <SelectTrigger id="reports-page-size" size="sm" class="w-20">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem v-for="option in pageSizeOptions" :key="option" :value="String(option)">
+              {{ option }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div class="flex items-center gap-2">
+        <Button variant="outline" size="sm" :disabled="!canPrev" @click="emit('update:page', currentPage - 1)">
+          Previous
+        </Button>
+        <span class="tabular-nums">Page {{ currentPage }} / {{ totalPages }}</span>
+        <Button variant="outline" size="sm" :disabled="!canNext" @click="emit('update:page', currentPage + 1)">
+          Next
+        </Button>
+      </div>
     </div>
   </div>
 </template>
