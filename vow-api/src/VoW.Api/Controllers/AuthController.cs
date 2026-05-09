@@ -155,7 +155,7 @@ public sealed class AuthController(
         Secure = !environment.IsDevelopment(),
         // Lax (not Strict) so the cookie is sent on the top-level redirect back from the OAuth provider.
         SameSite = SameSiteMode.Lax,
-        Path = "/auth",
+        Path = $"{HttpContext.Request.PathBase}/auth",
         MaxAge = lifetime,
         IsEssential = true
     };
