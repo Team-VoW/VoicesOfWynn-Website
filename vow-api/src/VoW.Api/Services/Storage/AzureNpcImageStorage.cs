@@ -21,15 +21,12 @@ public sealed class AzureNpcImageStorage : INpcImageStorage
     public async Task UploadImageAsync(int npcId, Stream webpContent, CancellationToken cancellationToken)
     {
         var blob = containerClient.GetBlobClient(BlobKey(npcId));
-        var options = new BlobUploadOptions
+        await blob.UploadAsync(webpContent, overwrite: true, cancellationToken);
+        await blob.SetHttpHeadersAsync(new BlobHttpHeaders
         {
-            HttpHeaders = new BlobHttpHeaders
-            {
-                ContentType = ImageContentType,
-                CacheControl = ImageCacheControl,
-            },
-        };
-        await blob.UploadAsync(webpContent, options, cancellationToken);
+            ContentType = ImageContentType,
+            CacheControl = ImageCacheControl,
+        }, cancellationToken: cancellationToken);
     }
 
     private static string BlobKey(int npcId) =>

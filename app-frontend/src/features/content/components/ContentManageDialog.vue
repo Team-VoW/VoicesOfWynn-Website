@@ -44,8 +44,8 @@ import {
 } from '../queries'
 import NpcImageCropDialog from './NpcImageCropDialog.vue'
 
-const NPC_IMAGE_BASE_URL = import.meta.env.VITE_NPC_IMAGE_BASE_URL.replace(/\/$/, '')
-const NPC_DEFAULT_IMAGE_URL = `${NPC_IMAGE_BASE_URL}/default.webp`
+const NPC_IMAGE_BASE_URL = (import.meta.env.VITE_NPC_IMAGE_BASE_URL ?? '').replace(/\/$/, '')
+const NPC_DEFAULT_IMAGE_URL = NPC_IMAGE_BASE_URL ? `${NPC_IMAGE_BASE_URL}/default.webp` : '/default.webp'
 
 type DialogMode = 'quest' | 'npc' | null
 

@@ -28,8 +28,12 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 builder.Services.AddSingleton(sp =>
 {
-    var connectionString = sp.GetRequiredService<IConfiguration>()["AZURE_STORAGE_CONNECTION_STRING"]
-        ?? throw new InvalidOperationException("AZURE_STORAGE_CONNECTION_STRING is not configured.");
+    var connectionString = sp.GetRequiredService<IConfiguration>()["AZURE_STORAGE_CONNECTION_STRING"];
+    if (string.IsNullOrWhiteSpace(connectionString))
+    {
+        throw new InvalidOperationException("AZURE_STORAGE_CONNECTION_STRING is not configured.");
+    }
+
     return new BlobServiceClient(connectionString);
 });
 builder.Services.AddSingleton<IQuestScriptStorage, AzureQuestScriptStorage>();

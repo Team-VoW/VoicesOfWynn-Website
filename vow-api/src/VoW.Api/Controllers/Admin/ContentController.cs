@@ -201,6 +201,7 @@ public sealed class ContentController(IContentService contentService) : Controll
     private const int NpcImageMaxSizeBytes = 8_000_000;
 
     private static readonly string[] AcceptedImageExtensions = [".png", ".jpg", ".jpeg", ".webp"];
+    private static readonly string[] AcceptedImageContentTypes = ["image/png", "image/jpeg", "image/webp"];
 
     private static bool IsAcceptedImage(IFormFile file)
     {
@@ -212,7 +213,7 @@ public sealed class ContentController(IContentService contentService) : Controll
         }
 
         return !string.IsNullOrEmpty(file.ContentType) &&
-            file.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase);
+            AcceptedImageContentTypes.Contains(file.ContentType, StringComparer.OrdinalIgnoreCase);
     }
 
     private IActionResult ProblemFrom(ContentMutationResult result)

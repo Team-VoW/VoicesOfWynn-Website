@@ -20,15 +20,12 @@ public sealed class AzureQuestScriptStorage : IQuestScriptStorage
     public async Task UploadScriptAsync(string degeneratedName, Stream content, CancellationToken cancellationToken)
     {
         var blob = containerClient.GetBlobClient(BlobKey(degeneratedName));
-        var options = new BlobUploadOptions
+        await blob.UploadAsync(content, overwrite: true, cancellationToken);
+        await blob.SetHttpHeadersAsync(new BlobHttpHeaders
         {
-            HttpHeaders = new BlobHttpHeaders
-            {
-                ContentType = ScriptContentType,
-                CacheControl = ScriptCacheControl,
-            },
-        };
-        await blob.UploadAsync(content, options, cancellationToken);
+            ContentType = ScriptContentType,
+            CacheControl = ScriptCacheControl,
+        }, cancellationToken: cancellationToken);
     }
 
     public async Task<bool> ScriptExistsAsync(string degeneratedName, CancellationToken cancellationToken)
