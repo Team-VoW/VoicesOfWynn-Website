@@ -1,8 +1,8 @@
-using VoW.Api.Contracts.Reports;
+using VoW.Api.Domain.Reports;
 
 namespace VoW.Api.Repositories;
 
 public interface IReportRepository
 {
-    Task<ReportSearchResponse> SearchAsync(ReportSearchRequest request, CancellationToken cancellationToken);
+    Task<ReportSearchPage> SearchAsync(ReportSearchCriteria criteria, CancellationToken cancellationToken);
 }

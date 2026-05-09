@@ -1,27 +1,31 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VoW.Api.Contracts.Reports;
-using VoW.Api.Domain.Reports;
-using VoW.Api.Repositories;
+using VoW.Api.Services.Reports;
 
 namespace VoW.Api.Controllers.Admin;
 
 [ApiController]
 [Authorize]
 [Route("admin/reports")]
-public sealed class ReportsController(IReportRepository reportRepository) : ControllerBase
+public sealed class ReportsController(IReportService reportService) : ControllerBase
 {
     [HttpGet("search")]
     public async Task<ActionResult<ReportSearchResponse>> Search(
         [FromQuery] ReportSearchRequest request,
         CancellationToken cancellationToken)
     {
-        if (!string.IsNullOrWhiteSpace(request.Status) && !ReportStatus.IsValid(request.Status))
+        var result = await reportService.SearchAsync(request, cancellationToken);
+        if (!result.Succeeded)
         {
-            ModelState.AddModelError(nameof(request.Status), $"Status must be one of {ReportStatus.DisplayList}.");
+            foreach (var (field, message) in result.Errors)
+            {
+                ModelState.AddModelError(field, message);
+            }
+
             return ValidationProblem(ModelState);
         }
 
-        return Ok(await reportRepository.SearchAsync(request, cancellationToken));
+        return Ok(result.Response);
     }
 }

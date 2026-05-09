@@ -1,37 +1,37 @@
 using Dapper;
 using MySqlConnector;
-using VoW.Api.Contracts.Reports;
+using VoW.Api.Domain.Reports;
 
 namespace VoW.Api.Repositories;
 
 public sealed class ReportRepository(IConfiguration configuration) : IReportRepository
 {
-    public async Task<ReportSearchResponse> SearchAsync(ReportSearchRequest request, CancellationToken cancellationToken)
+    public async Task<ReportSearchPage> SearchAsync(ReportSearchCriteria criteria, CancellationToken cancellationToken)
     {
         var where = new List<string>();
         var parameters = new DynamicParameters();
 
-        if (!string.IsNullOrWhiteSpace(request.Npc))
+        if (criteria.Npc is not null)
         {
             where.Add("npc_name LIKE @Npc");
-            parameters.Add("Npc", $"%{request.Npc}%");
+            parameters.Add("Npc", $"%{criteria.Npc}%");
         }
 
-        if (!string.IsNullOrWhiteSpace(request.Content))
+        if (criteria.Content is not null)
         {
             where.Add("chat_message LIKE @Content");
-            parameters.Add("Content", $"%{request.Content}%");
+            parameters.Add("Content", $"%{criteria.Content}%");
         }
 
-        if (!string.IsNullOrWhiteSpace(request.Status))
+        if (criteria.Status is not null)
         {
             where.Add("status = @Status");
-            parameters.Add("Status", request.Status.ToLowerInvariant());
+            parameters.Add("Status", criteria.Status);
         }
 
         var whereSql = where.Count == 0 ? string.Empty : $"WHERE {string.Join(" AND ", where)}";
-        var offset = (request.Page - 1) * request.PageSize;
-        parameters.Add("PageSize", request.PageSize);
+        var offset = (criteria.Page - 1) * criteria.PageSize;
+        parameters.Add("PageSize", criteria.PageSize);
         parameters.Add("Offset", offset);
 
         var countSql = $"SELECT COUNT(*) FROM report {whereSql};";
@@ -54,8 +54,8 @@ public sealed class ReportRepository(IConfiguration configuration) : IReportRepo
         var total = await connection.ExecuteScalarAsync<int>(command);
 
         command = new CommandDefinition(searchSql, parameters, cancellationToken: cancellationToken);
-        var results = (await connection.QueryAsync<ReportSearchResult>(command)).AsList();
+        var results = (await connection.QueryAsync<ReportSummary>(command)).AsList();
 
-        return new ReportSearchResponse(total, request.Page, results);
+        return new ReportSearchPage(total, criteria.Page, results);
     }
 }
