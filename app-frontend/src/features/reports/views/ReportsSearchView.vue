@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { refDebounced } from '@vueuse/core'
 import ReportColumnVisibility from '../components/ReportColumnVisibility.vue'
 import ReportFilters from '../components/ReportFilters.vue'
+import ReportManageDrawer from '../components/ReportManageDrawer.vue'
 import ReportTable from '../components/ReportTable.vue'
 import ReportPagination from '../components/ReportPagination.vue'
 import { useReportsSearch } from '../queries'
@@ -11,6 +12,7 @@ import {
   REPORT_SORT_FIELDS,
   REPORT_STATUSES,
   type ReportSearchRequest,
+  type ReportSearchResult,
   type ReportSortField,
   type ReportStatus,
   type SortDirection,
@@ -110,6 +112,19 @@ function onSortChange(nextSortBy: ReportSortField | undefined, nextSortDir: Sort
   sortBy.value = nextSortBy
   sortDir.value = nextSortDir
 }
+
+const selectedReportId = ref<number | null>(null)
+const drawerOpen = ref(false)
+const selectedReport = computed<ReportSearchResult | null>(() =>
+  selectedReportId.value === null
+    ? null
+    : results.value.find((r) => r.reportId === selectedReportId.value) ?? null,
+)
+
+function onManage(report: ReportSearchResult) {
+  selectedReportId.value = report.reportId
+  drawerOpen.value = true
+}
 </script>
 
 <template>
@@ -141,6 +156,7 @@ function onSortChange(nextSortBy: ReportSortField | undefined, nextSortDir: Sort
       :sort-by="sortBy"
       :sort-dir="sortDir"
       @update:sort="onSortChange"
+      @manage="onManage"
     />
 
     <ReportPagination
@@ -149,5 +165,7 @@ function onSortChange(nextSortBy: ReportSortField | undefined, nextSortDir: Sort
       :total="total"
       @update:page="(v) => (page = v)"
     />
+
+    <ReportManageDrawer v-model:open="drawerOpen" :report="selectedReport" />
   </div>
 </template>

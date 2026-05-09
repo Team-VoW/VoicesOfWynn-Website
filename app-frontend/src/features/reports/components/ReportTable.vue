@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { ChevronDown, ChevronUp, ChevronsUpDown } from 'lucide-vue-next'
+import { ChevronDown, ChevronUp, ChevronsUpDown, Settings2 } from 'lucide-vue-next'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
   Table,
@@ -20,6 +21,7 @@ import type {
 } from '@/api/types'
 import TruncatedCell from './TruncatedCell.vue'
 import { useReportColumnVisibility } from '../composables/useReportColumnVisibility'
+import { useReportsManageColumn } from '../composables/useReportsManageColumn'
 
 const props = defineProps<{
   results: ReportSearchResult[]
@@ -30,6 +32,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'update:sort', sortBy: ReportSortField | undefined, sortDir: SortDirection | undefined): void
+  (e: 'manage', report: ReportSearchResult): void
 }>()
 
 interface Column {
@@ -48,7 +51,9 @@ const columns: Column[] = [
 ]
 
 const { visibility } = useReportColumnVisibility()
+const { visible: manageVisible } = useReportsManageColumn()
 const visibleColumns = computed(() => columns.filter((c) => visibility.value[c.key]))
+const totalColumns = computed(() => visibleColumns.value.length + (manageVisible.value ? 1 : 0))
 
 const statusVariant: Record<ReportStatus, 'default' | 'secondary' | 'destructive' | 'outline'> = {
   unprocessed: 'secondary',
@@ -108,6 +113,7 @@ const skeletonClassFor: Record<ReportSortField, string> = {
               <ChevronsUpDown v-else class="size-3.5 text-muted-foreground/60" />
             </button>
           </TableHead>
+          <TableHead v-if="manageVisible" class="w-[140px] pr-4 text-right">Manage</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -120,9 +126,12 @@ const skeletonClassFor: Record<ReportSortField, string> = {
             >
               <Skeleton :class="skeletonClassFor[col.key]" />
             </TableCell>
+            <TableCell v-if="manageVisible" class="pr-4 text-right">
+              <Skeleton class="ml-auto h-8 w-24" />
+            </TableCell>
           </TableRow>
         </template>
-        <TableEmpty v-else-if="results.length === 0" :colspan="visibleColumns.length || 1">No reports match the filters.</TableEmpty>
+        <TableEmpty v-else-if="results.length === 0" :colspan="totalColumns || 1">No reports match the filters.</TableEmpty>
         <TableRow v-for="r in results" v-else :key="r.reportId" :class="loading && 'opacity-60'">
           <template v-for="col in visibleColumns" :key="col.key">
             <TableCell v-if="col.key === 'npcName'" class="max-w-[180px] font-medium">
@@ -141,6 +150,12 @@ const skeletonClassFor: Record<ReportSortField, string> = {
               {{ formatDate(r.timeSubmitted) }}
             </TableCell>
           </template>
+          <TableCell v-if="manageVisible" class="pr-4 text-right">
+            <Button variant="outline" size="sm" @click="emit('manage', r)">
+              <Settings2 class="size-4" />
+              Manage
+            </Button>
+          </TableCell>
         </TableRow>
       </TableBody>
     </Table>
