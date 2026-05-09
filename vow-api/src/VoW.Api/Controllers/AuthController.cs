@@ -155,10 +155,16 @@ public sealed class AuthController(
         Secure = !environment.IsDevelopment(),
         // Lax (not Strict) so the cookie is sent on the top-level redirect back from the OAuth provider.
         SameSite = SameSiteMode.Lax,
-        Path = $"{HttpContext.Request.PathBase}/auth",
+        Path = $"{GetConfiguredPathBase()}/auth",
         MaxAge = lifetime,
         IsEssential = true
     };
+
+    private string GetConfiguredPathBase()
+    {
+        var pathBase = configuration["PATH_BASE"]?.TrimEnd('/');
+        return string.IsNullOrEmpty(pathBase) ? string.Empty : pathBase;
+    }
 
     private string GetSpaCallbackUrl()
     {
