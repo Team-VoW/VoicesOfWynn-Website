@@ -67,9 +67,40 @@ export interface ContentOption {
 
 export interface ContentOptionsResponse {
   quests: ContentOption[]
+  npcs: ContentOption[]
   writers: ContentOption[]
   voiceActors: ContentOption[]
   soundEditors: ContentOption[]
+}
+
+export interface ContentSearchRequest {
+  quest?: string
+  npc?: string
+  page: number
+  pageSize: number
+}
+
+export interface ContentSearchNpc {
+  npcId: number
+  npcName: string
+  npcDegeneratedName: string
+  voiceActorId: number | null
+  voiceActorName: string | null
+  recordingCount: number
+}
+
+export interface ContentSearchQuest {
+  questId: number
+  questName: string
+  questDegeneratedName: string
+  npcs: ContentSearchNpc[]
+}
+
+export interface ContentSearchResponse {
+  total: number
+  page: number
+  pageSize: number
+  results: ContentSearchQuest[]
 }
 
 export interface CreateQuestRequest {
@@ -90,4 +121,16 @@ export interface CreateNpcRequest {
 
 export interface CreateContentResponse {
   id: number
+}
+
+export interface UpdateContentNameRequest {
+  name: string
+}
+
+export interface UpdateNpcVoiceActorRequest {
+  voiceActorUserId?: number
+}
+
+export interface LinkQuestNpcRequest {
+  npcId: number
 }

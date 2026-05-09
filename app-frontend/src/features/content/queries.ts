@@ -1,6 +1,25 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
-import { createNpc, createQuest, getContentOptions } from '@/api/content'
-import type { CreateNpcRequest, CreateQuestRequest } from '@/api/types'
+import { computed, type ComputedRef, type Ref } from 'vue'
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import {
+  createNpc,
+  createQuest,
+  deleteQuest,
+  getContentOptions,
+  linkQuestNpc,
+  searchContent,
+  unlinkQuestNpc,
+  updateNpc,
+  updateNpcVoiceActor,
+  updateQuest,
+} from '@/api/content'
+import type {
+  ContentSearchRequest,
+  CreateNpcRequest,
+  CreateQuestRequest,
+  LinkQuestNpcRequest,
+  UpdateContentNameRequest,
+  UpdateNpcVoiceActorRequest,
+} from '@/api/types'
 
 export function useContentOptions() {
   return useQuery({
@@ -10,18 +29,87 @@ export function useContentOptions() {
   })
 }
 
+export function useContentSearch(params: Ref<ContentSearchRequest> | ComputedRef<ContentSearchRequest>) {
+  return useQuery({
+    queryKey: computed(() => ['content', 'search', params.value] as const),
+    queryFn: ({ signal }) => searchContent(params.value, signal),
+    placeholderData: keepPreviousData,
+    staleTime: 15_000,
+  })
+}
+
 export function useCreateQuest() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (request: CreateQuestRequest) => createQuest(request),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['content', 'options'] })
+      invalidateContent(queryClient)
     },
   })
 }
 
 export function useCreateNpc() {
+  const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (request: CreateNpcRequest) => createNpc(request),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['content'] })
+    },
+  })
+}
+
+function invalidateContent(queryClient: ReturnType<typeof useQueryClient>) {
+  queryClient.invalidateQueries({ queryKey: ['content'] })
+}
+
+export function useUpdateQuest() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ questId, request }: { questId: number; request: UpdateContentNameRequest }) =>
+      updateQuest(questId, request),
+    onSuccess: () => invalidateContent(queryClient),
+  })
+}
+
+export function useDeleteQuest() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (questId: number) => deleteQuest(questId),
+    onSuccess: () => invalidateContent(queryClient),
+  })
+}
+
+export function useUpdateNpc() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ npcId, request }: { npcId: number; request: UpdateContentNameRequest }) =>
+      updateNpc(npcId, request),
+    onSuccess: () => invalidateContent(queryClient),
+  })
+}
+
+export function useUpdateNpcVoiceActor() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ npcId, request }: { npcId: number; request: UpdateNpcVoiceActorRequest }) =>
+      updateNpcVoiceActor(npcId, request),
+    onSuccess: () => invalidateContent(queryClient),
+  })
+}
+
+export function useLinkQuestNpc() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ questId, request }: { questId: number; request: LinkQuestNpcRequest }) =>
+      linkQuestNpc(questId, request),
+    onSuccess: () => invalidateContent(queryClient),
+  })
+}
+
+export function useUnlinkQuestNpc() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ questId, npcId }: { questId: number; npcId: number }) => unlinkQuestNpc(questId, npcId),
+    onSuccess: () => invalidateContent(queryClient),
   })
 }

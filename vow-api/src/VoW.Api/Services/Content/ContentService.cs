@@ -10,19 +10,52 @@ namespace VoW.Api.Services.Content;
 public sealed partial class ContentService(IContentRepository contentRepository) : IContentService
 {
     private const int ContentNameMaxLength = 63;
+    private static readonly int[] AllowedPageSizes = [10, 25, 50, 100];
 
     public async Task<ContentOptionsResponse> GetOptionsAsync(CancellationToken cancellationToken)
     {
         var quests = await contentRepository.GetQuestsAsync(cancellationToken);
+        var npcs = await contentRepository.GetNpcsAsync(cancellationToken);
         var writers = await GetUsersByRoleAsync(ContentUserRole.Writer, cancellationToken);
         var voiceActors = await GetUsersByRoleAsync(ContentUserRole.VoiceActor, cancellationToken);
         var soundEditors = await GetUsersByRoleAsync(ContentUserRole.SoundEditor, cancellationToken);
 
         return new ContentOptionsResponse(
             ToResponse(quests),
+            ToResponse(npcs),
             ToResponse(writers),
             ToResponse(voiceActors),
             ToResponse(soundEditors));
+    }
+
+    public async Task<ContentSearchServiceResult> SearchAsync(
+        ContentSearchRequest request,
+        CancellationToken cancellationToken)
+    {
+        var pageSize = AllowedPageSizes.Contains(request.PageSize) ? request.PageSize : 25;
+        var page = Math.Max(1, request.Page);
+        var criteria = new ContentSearchCriteria(
+            NormalizeFilter(request.Quest),
+            NormalizeFilter(request.Npc),
+            page,
+            pageSize);
+
+        var resultPage = await contentRepository.SearchAsync(criteria, cancellationToken);
+        return ContentSearchServiceResult.Success(new ContentSearchResponse(
+            resultPage.Total,
+            resultPage.Page,
+            resultPage.PageSize,
+            resultPage.Results.Select(quest => new QuestContentResult(
+                quest.QuestId,
+                quest.QuestName,
+                quest.QuestDegeneratedName,
+                quest.Npcs.Select(npc => new NpcContentResult(
+                    npc.NpcId,
+                    npc.NpcName,
+                    npc.NpcDegeneratedName,
+                    npc.VoiceActorId,
+                    npc.VoiceActorName,
+                    npc.RecordingCount)).ToArray())).ToArray()));
     }
 
     public async Task<ContentMutationResult> CreateQuestAsync(
@@ -132,6 +165,168 @@ public sealed partial class ContentService(IContentRepository contentRepository)
         return ContentMutationResult.Success(created.Id);
     }
 
+    public async Task<ContentMutationResult> UpdateQuestAsync(
+        int questId,
+        UpdateContentNameRequest request,
+        CancellationToken cancellationToken)
+    {
+        var name = NormalizeName(request.Name);
+        var nameError = ValidateName(name, "Quest name");
+        if (nameError is not null)
+        {
+            return ContentMutationResult.Invalid(nameof(request.Name), nameError);
+        }
+
+        var degeneratedName = DegenerateName(name!);
+        if (degeneratedName is null)
+        {
+            return ContentMutationResult.Invalid(nameof(request.Name), "Quest name must contain at least one alphanumeric character.");
+        }
+
+        if (!await contentRepository.QuestExistsAsync(questId, cancellationToken))
+        {
+            return ContentMutationResult.NotFound();
+        }
+
+        if (await contentRepository.QuestDegeneratedNameExistsAsync(questId, degeneratedName, cancellationToken))
+        {
+            return ContentMutationResult.Invalid(nameof(request.Name), "A quest with this name or a similar degenerated name already exists.");
+        }
+
+        try
+        {
+            return await contentRepository.UpdateQuestAsync(questId, name!, degeneratedName, cancellationToken)
+                ? ContentMutationResult.Success()
+                : ContentMutationResult.NotFound();
+        }
+        catch (MySqlException ex) when (ex.Number == 1062)
+        {
+            return ContentMutationResult.Invalid(nameof(request.Name), "A quest with this name or a similar degenerated name already exists.");
+        }
+    }
+
+    public async Task<ContentMutationResult> DeleteQuestAsync(int questId, CancellationToken cancellationToken)
+    {
+        if (!await contentRepository.QuestExistsAsync(questId, cancellationToken))
+        {
+            return ContentMutationResult.NotFound();
+        }
+
+        if (await contentRepository.QuestHasNpcsAsync(questId, cancellationToken))
+        {
+            return ContentMutationResult.Invalid(nameof(questId), "Quest cannot be deleted while NPCs are linked to it.");
+        }
+
+        return await contentRepository.DeleteQuestAsync(questId, cancellationToken)
+            ? ContentMutationResult.Success()
+            : ContentMutationResult.NotFound();
+    }
+
+    public async Task<ContentMutationResult> UpdateNpcAsync(
+        int npcId,
+        UpdateContentNameRequest request,
+        CancellationToken cancellationToken)
+    {
+        var name = NormalizeName(request.Name);
+        var nameError = ValidateName(name, "NPC name");
+        if (nameError is not null)
+        {
+            return ContentMutationResult.Invalid(nameof(request.Name), nameError);
+        }
+
+        var degeneratedName = DegenerateName(name!);
+        if (degeneratedName is null)
+        {
+            return ContentMutationResult.Invalid(nameof(request.Name), "NPC name must contain at least one alphanumeric character.");
+        }
+
+        if (!await contentRepository.NpcExistsAsync(npcId, cancellationToken))
+        {
+            return ContentMutationResult.NotFound();
+        }
+
+        if (await contentRepository.NpcDegeneratedNameConflictsForLinkedQuestsAsync(npcId, degeneratedName, cancellationToken))
+        {
+            return ContentMutationResult.Invalid(nameof(request.Name), "An NPC with this name or a similar degenerated name is already linked to one of this NPC's quests.");
+        }
+
+        return await contentRepository.UpdateNpcAsync(npcId, name!, degeneratedName, cancellationToken)
+            ? ContentMutationResult.Success()
+            : ContentMutationResult.NotFound();
+    }
+
+    public async Task<ContentMutationResult> UpdateNpcVoiceActorAsync(
+        int npcId,
+        UpdateNpcVoiceActorRequest request,
+        CancellationToken cancellationToken)
+    {
+        if (!await contentRepository.NpcExistsAsync(npcId, cancellationToken))
+        {
+            return ContentMutationResult.NotFound();
+        }
+
+        if (request.VoiceActorUserId is not null &&
+            !await OptionExistsAsync(ContentUserRole.VoiceActor, request.VoiceActorUserId.Value, cancellationToken))
+        {
+            return ContentMutationResult.Invalid(nameof(request.VoiceActorUserId), "Voice actor must be an existing actor user.");
+        }
+
+        return await contentRepository.UpdateNpcVoiceActorAsync(npcId, request.VoiceActorUserId, cancellationToken)
+            ? ContentMutationResult.Success()
+            : ContentMutationResult.NotFound();
+    }
+
+    public async Task<ContentMutationResult> LinkNpcToQuestAsync(
+        int questId,
+        LinkQuestNpcRequest request,
+        CancellationToken cancellationToken)
+    {
+        if (!await contentRepository.QuestExistsAsync(questId, cancellationToken))
+        {
+            return ContentMutationResult.NotFound();
+        }
+
+        var degeneratedName = await contentRepository.GetNpcDegeneratedNameAsync(request.NpcId, cancellationToken);
+        if (degeneratedName is null)
+        {
+            return ContentMutationResult.Invalid(nameof(request.NpcId), "NPC must exist.");
+        }
+
+        if (await contentRepository.QuestNpcLinkExistsAsync(questId, request.NpcId, cancellationToken))
+        {
+            return ContentMutationResult.Invalid(nameof(request.NpcId), "NPC is already linked to this quest.");
+        }
+
+        if (await contentRepository.NpcDegeneratedNameConflictsInQuestAsync(questId, request.NpcId, degeneratedName, cancellationToken))
+        {
+            return ContentMutationResult.Invalid(nameof(request.NpcId), "An NPC with this name or a similar degenerated name is already linked to this quest.");
+        }
+
+        return await contentRepository.LinkNpcToQuestAsync(questId, request.NpcId, cancellationToken)
+            ? ContentMutationResult.Success()
+            : ContentMutationResult.NotFound();
+    }
+
+    public async Task<ContentMutationResult> UnlinkNpcFromQuestAsync(
+        int questId,
+        int npcId,
+        CancellationToken cancellationToken)
+    {
+        if (!await contentRepository.QuestNpcLinkExistsAsync(questId, npcId, cancellationToken))
+        {
+            return ContentMutationResult.NotFound();
+        }
+
+        if (await contentRepository.QuestNpcHasRecordingsAsync(questId, npcId, cancellationToken))
+        {
+            return ContentMutationResult.Invalid(nameof(npcId), "NPC cannot be unlinked from this quest while recordings exist.");
+        }
+
+        return await contentRepository.UnlinkNpcFromQuestAsync(questId, npcId, cancellationToken)
+            ? ContentMutationResult.Success()
+            : ContentMutationResult.NotFound();
+    }
+
     private async Task<bool> OptionExistsAsync(
         ContentUserRole role,
         int id,
@@ -151,6 +346,9 @@ public sealed partial class ContentService(IContentRepository contentRepository)
 
     private static string? NormalizeName(string? name) =>
         string.IsNullOrWhiteSpace(name) ? null : name.Trim();
+
+    private static string? NormalizeFilter(string? value) =>
+        string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 
     private static string? ValidateName(string? name, string label)
     {
