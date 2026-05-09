@@ -57,6 +57,23 @@ watch(
   { immediate: false },
 )
 
+// Re-seed local state when only the query changes (e.g. browser back/forward).
+// Vue Router reuses the component instance, so without this the inputs stay stale.
+watch(
+  () => route.query,
+  (q) => {
+    const nextNpc = stringFromQuery(q.npc)
+    const nextContent = stringFromQuery(q.content)
+    const nextStatus = statusFromQuery(q.status)
+    const nextPage = Number(q.page) > 0 ? Number(q.page) : 1
+
+    if (nextNpc !== npc.value) npc.value = nextNpc
+    if (nextContent !== content.value) content.value = nextContent
+    if (nextStatus !== status.value) status.value = nextStatus
+    if (nextPage !== page.value) page.value = nextPage
+  },
+)
+
 const { data, isLoading, isFetching, isError, error } = useReportsSearch(params)
 const results = computed(() => data.value?.results ?? [])
 const total = computed(() => data.value?.total ?? 0)
