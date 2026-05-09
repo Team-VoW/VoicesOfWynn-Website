@@ -15,9 +15,9 @@ public sealed class ReportsController(IReportRepository reportRepository) : Cont
         [FromQuery] ReportSearchRequest request,
         CancellationToken cancellationToken)
     {
-        if (!string.IsNullOrWhiteSpace(request.Status) && !ReportRepository.IsValidStatus(request.Status))
+        if (!string.IsNullOrWhiteSpace(request.Status) && !ReportStatus.IsValid(request.Status))
         {
-            ModelState.AddModelError(nameof(request.Status), "Status must be one of unprocessed, forwarded, rejected, accepted, fixed.");
+            ModelState.AddModelError(nameof(request.Status), $"Status must be one of {ReportStatus.DisplayList}.");
             return ValidationProblem(ModelState);
         }
 

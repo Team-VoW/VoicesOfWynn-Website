@@ -6,17 +6,6 @@ namespace VoW.Api.Repositories;
 
 public sealed class ReportRepository(IConfiguration configuration) : IReportRepository
 {
-    private static readonly HashSet<string> ValidStatuses = new(StringComparer.OrdinalIgnoreCase)
-    {
-        "unprocessed",
-        "forwarded",
-        "rejected",
-        "accepted",
-        "fixed"
-    };
-
-    public static bool IsValidStatus(string status) => ValidStatuses.Contains(status);
-
     public async Task<ReportSearchResponse> SearchAsync(ReportSearchRequest request, CancellationToken cancellationToken)
     {
         var where = new List<string>();
