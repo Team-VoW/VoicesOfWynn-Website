@@ -28,7 +28,7 @@ public static class DatabaseSettings
             Database = string.IsNullOrWhiteSpace(database) ? defaultDatabase : database,
             UserID = string.IsNullOrWhiteSpace(user) ? "root" : user,
             Password = password ?? string.Empty,
-            SslMode = MySqlSslMode.Disabled,
+            SslMode = MySqlSslMode.Preferred,
             AllowUserVariables = true
         };
 

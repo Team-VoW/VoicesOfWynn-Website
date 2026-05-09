@@ -10,7 +10,7 @@ public sealed class DiscordAuthService(HttpClient httpClient, IConfiguration con
 {
     public string Name => "discord";
 
-    public string BuildLoginUrl()
+    public string BuildLoginUrl(string state)
     {
         var clientId = GetRequired("DISCORD_CLIENT_ID");
         var redirectUri = GetRequired("DISCORD_REDIRECT_URI");
@@ -20,7 +20,8 @@ public sealed class DiscordAuthService(HttpClient httpClient, IConfiguration con
             ["client_id"] = clientId,
             ["redirect_uri"] = redirectUri,
             ["response_type"] = "code",
-            ["scope"] = "identify"
+            ["scope"] = "identify",
+            ["state"] = state
         });
     }
 

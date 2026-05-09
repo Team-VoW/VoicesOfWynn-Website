@@ -10,10 +10,6 @@ public sealed record AuthTokenResponse(
 public sealed record RefreshTokenRequest(
     [Required] string RefreshToken);
 
-public sealed record RefreshTokenResponse(
-    string AccessToken,
-    DateTimeOffset ExpiresAt);
-
 public sealed record AuthHandoffRequest(
     [Required] string Code);
 

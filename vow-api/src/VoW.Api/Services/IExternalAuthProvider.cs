@@ -6,7 +6,7 @@ public interface IExternalAuthProvider
 {
     string Name { get; }
 
-    string BuildLoginUrl();
+    string BuildLoginUrl(string state);
 
     Task<ExternalUserIdentity> ExchangeCodeForIdentityAsync(string code, CancellationToken cancellationToken);
 }

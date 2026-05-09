@@ -1,4 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Cryptography;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.IdentityModel.Tokens;
@@ -16,25 +17,51 @@ public sealed class AuthController(
     IJwtService jwtService,
     IAuthHandoffService handoffService,
     IConfiguration configuration,
+    IHostEnvironment environment,
     ILogger<AuthController> logger) : ControllerBase
 {
+    private const string OAuthStateCookie = "vow_oauth_state";
+    private static readonly TimeSpan OAuthStateLifetime = TimeSpan.FromMinutes(10);
+
     [HttpGet("login/{provider}")]
     public IActionResult Login(string provider)
     {
         var authProvider = FindProvider(provider);
-        return authProvider is null ? NotFound() : Redirect(authProvider.BuildLoginUrl());
+        if (authProvider is null)
+        {
+            return NotFound();
+        }
+
+        var state = WebEncoders.Base64UrlEncode(RandomNumberGenerator.GetBytes(32));
+        Response.Cookies.Append(OAuthStateCookie, state, BuildStateCookieOptions(OAuthStateLifetime));
+        return Redirect(authProvider.BuildLoginUrl(state));
     }
 
     [HttpGet("callback/{provider}")]
     public async Task<IActionResult> Callback(
         string provider,
         [FromQuery] string? code,
+        [FromQuery] string? state,
         CancellationToken cancellationToken)
     {
         var authProvider = FindProvider(provider);
         if (authProvider is null)
         {
             return NotFound();
+        }
+
+        var expectedState = Request.Cookies[OAuthStateCookie];
+        // Always clear the cookie — it's single-use either way.
+        Response.Cookies.Delete(OAuthStateCookie, BuildStateCookieOptions(TimeSpan.Zero));
+
+        if (string.IsNullOrEmpty(state)
+            || string.IsNullOrEmpty(expectedState)
+            || !CryptographicOperations.FixedTimeEquals(
+                System.Text.Encoding.ASCII.GetBytes(state),
+                System.Text.Encoding.ASCII.GetBytes(expectedState)))
+        {
+            logger.LogWarning("OAuth state mismatch on {Provider} callback.", provider);
+            return BadRequest(new ProblemDetails { Title = "Invalid OAuth state." });
         }
 
         if (string.IsNullOrWhiteSpace(code))
@@ -73,7 +100,7 @@ public sealed class AuthController(
     }
 
     [HttpPost("refresh")]
-    public async Task<ActionResult<RefreshTokenResponse>> Refresh(
+    public async Task<ActionResult<AuthTokenResponse>> Refresh(
         [FromBody] RefreshTokenRequest request,
         CancellationToken cancellationToken)
     {
@@ -88,7 +115,11 @@ public sealed class AuthController(
             }
 
             var user = await userRepository.GetAdminByUserIdAsync(userId, cancellationToken);
-            return user is null ? Unauthorized() : Ok(jwtService.CreateAccessToken(user));
+            // Rotate the refresh token alongside the access token (RFC 9700 §4.14).
+            // Note: without server-side revocation, the previous refresh token is still
+            // technically replayable until it expires; full reuse-detection requires
+            // persisted token state.
+            return user is null ? Unauthorized() : Ok(jwtService.CreateTokenPair(user));
         }
         catch (SecurityTokenException)
         {
@@ -99,6 +130,17 @@ public sealed class AuthController(
     private IExternalAuthProvider? FindProvider(string provider) =>
         authProviders.FirstOrDefault(candidate =>
             string.Equals(candidate.Name, provider, StringComparison.OrdinalIgnoreCase));
+
+    private CookieOptions BuildStateCookieOptions(TimeSpan lifetime) => new()
+    {
+        HttpOnly = true,
+        Secure = !environment.IsDevelopment(),
+        // Lax (not Strict) so the cookie is sent on the top-level redirect back from the OAuth provider.
+        SameSite = SameSiteMode.Lax,
+        Path = "/auth",
+        MaxAge = lifetime,
+        IsEssential = true
+    };
 
     private string GetSpaCallbackUrl()
     {

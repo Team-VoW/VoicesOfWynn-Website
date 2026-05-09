@@ -17,19 +17,18 @@ public sealed class JwtService(IConfiguration configuration, IHostEnvironment en
     public AuthTokenResponse CreateTokenPair(User user)
     {
         var access = CreateAccessToken(user);
-        var refreshToken = CreateToken(
+        var refresh = CreateToken(
             [
                 new Claim("type", RefreshTokenType),
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserId.ToString())
             ],
             TimeSpan.FromDays(30));
 
-        return new AuthTokenResponse(access.AccessToken, refreshToken.token, access.ExpiresAt);
+        return new AuthTokenResponse(access.token, refresh.token, access.expiresAt);
     }
 
-    public RefreshTokenResponse CreateAccessToken(User user)
-    {
-        var token = CreateToken(
+    private (string token, DateTimeOffset expiresAt) CreateAccessToken(User user) =>
+        CreateToken(
             [
                 new Claim("type", AccessTokenType),
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
@@ -37,9 +36,6 @@ public sealed class JwtService(IConfiguration configuration, IHostEnvironment en
                 new Claim("display_name", user.DisplayName)
             ],
             TimeSpan.FromHours(1));
-
-        return new RefreshTokenResponse(token.token, token.expiresAt);
-    }
 
     public ClaimsPrincipal ValidateRefreshToken(string token)
     {

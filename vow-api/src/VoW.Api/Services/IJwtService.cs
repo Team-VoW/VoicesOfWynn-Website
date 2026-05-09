@@ -7,7 +7,5 @@ public interface IJwtService
 {
     AuthTokenResponse CreateTokenPair(User user);
 
-    RefreshTokenResponse CreateAccessToken(User user);
-
     ClaimsPrincipal ValidateRefreshToken(string token);
 }
