@@ -139,7 +139,15 @@ class DiscordManager
                 // Upload to storage
                 $storage = Storage::get();
                 $picture = $userId . '.png';
-                $storage->upload($tempFile, Account::AVATAR_PATH_PREFIX . $picture, 'image/png');
+                try {
+                    $uploaded = $storage->upload($tempFile, Account::AVATAR_PATH_PREFIX . $picture, 'image/png');
+                } catch (\Throwable $e) {
+                    $uploaded = false;
+                }
+
+                if (!$uploaded) {
+                    return false;
+                }
                 return (new Db('Website/DbInfo.ini'))->executeQuery(
                     'UPDATE user SET picture = ?, picture_type = ? WHERE user_id = ?',
                     array($picture, User::PICTURE_TYPE_DISCORD, $userId)

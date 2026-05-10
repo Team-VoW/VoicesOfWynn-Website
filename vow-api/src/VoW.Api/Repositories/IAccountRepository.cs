@@ -28,7 +28,7 @@ public interface IAccountRepository
 
     Task<bool> ReplaceRolesAsync(int userId, IReadOnlyCollection<int> roleIds, CancellationToken cancellationToken);
 
-    Task<bool> SetAvatarAsync(int userId, string picture, CancellationToken cancellationToken);
+    Task<bool> SetAvatarAsync(int userId, string picture, PictureType pictureType, CancellationToken cancellationToken);
 
     Task<bool> ClearAvatarAsync(int userId, CancellationToken cancellationToken);
 

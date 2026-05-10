@@ -170,18 +170,35 @@ class Account extends WebpageController
         if (empty($validator->errors)) {
             $pictureType = null;
             if ($_FILES['avatar']['error'] !== UPLOAD_ERR_NO_FILE) {
-                //Delete old avatars
                 $storage = Storage::get();
-                $storage->deleteByPrefix(self::AVATAR_PATH_PREFIX . $this->user->getId() . '.');
+                $oldAvatar = $this->user->getAvatar();
 
                 //Save changes
-                $storage->upload($_FILES['avatar']['tmp_name'], self::AVATAR_PATH_PREFIX . $avatar);
-                $pictureType = User::PICTURE_TYPE_MANUAL;
+                try {
+                    $uploaded = $storage->upload($_FILES['avatar']['tmp_name'], self::AVATAR_PATH_PREFIX . $avatar);
+                } catch (\Throwable $e) {
+                    $uploaded = false;
+                }
+
+                if ($uploaded) {
+                    if ($oldAvatar !== $avatar && $this->user->getPictureType() !== User::PICTURE_TYPE_DEFAULT) {
+                        try {
+                            $storage->delete(self::AVATAR_PATH_PREFIX . $oldAvatar);
+                        } catch (\Throwable $e) {
+                            // The new avatar is already stored; a stale old file should not block the account update.
+                        }
+                    }
+                    $pictureType = User::PICTURE_TYPE_MANUAL;
+                } else {
+                    $validator->errors[] = 'An unknown error occurred while saving the profile image – try again or ping shady_medic on Discord.';
+                }
             } else {
                 $avatar = $this->user->getAvatar();
             }
 
-            $this->user->update($email, $password, $displayName, $avatar, $bio, $discord, $youtube, $twitter, $castingcallclub, $publicEmail, $pictureType);
+            if (empty($validator->errors)) {
+                $this->user->update($email, $password, $displayName, $avatar, $bio, $discord, $youtube, $twitter, $castingcallclub, $publicEmail, $pictureType);
+            }
         }
 
         $result = $this->get(array());

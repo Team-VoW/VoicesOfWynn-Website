@@ -356,13 +356,13 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
         }
     }
 
-    public async Task<bool> SetAvatarAsync(int userId, string picture, CancellationToken cancellationToken)
+    public async Task<bool> SetAvatarAsync(int userId, string picture, PictureType pictureType, CancellationToken cancellationToken)
     {
         const string sql = "UPDATE user SET picture = @Picture, picture_type = @PictureType WHERE user_id = @UserId;";
         await using var connection = new MySqlConnection(DatabaseSettings.GetWebsiteConnectionString(configuration));
         var command = new CommandDefinition(
             sql,
-            new { UserId = userId, Picture = picture, PictureType = ToDatabaseValue(PictureType.Manual) },
+            new { UserId = userId, Picture = picture, PictureType = ToDatabaseValue(pictureType) },
             cancellationToken: cancellationToken);
         return await connection.ExecuteAsync(command) > 0;
     }

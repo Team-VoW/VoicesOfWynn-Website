@@ -286,24 +286,26 @@ class User implements JsonSerializable
     
     public function update($email, string $password, string $displayName, string $avatarLink, $bio, $discord, $youtube, $twitter, $castingcallclub, bool $publicEmail, ?string $pictureType = null): bool
     {
-        if (empty($password)) {
-            if (is_null($pictureType)) {
-                $parameters = array($email, $displayName, $avatarLink, $bio, $discord, $youtube, $twitter, $castingcallclub, (int)$publicEmail, $this->id);
-                $query = 'UPDATE user SET email = ?, display_name = ?, picture = ?, bio = ?, discord = ?, youtube = ?, twitter = ?, castingcallclub = ?, public_email = ? WHERE user_id = ?';
-            } else {
-                $parameters = array($email, $displayName, $avatarLink, $pictureType, $bio, $discord, $youtube, $twitter, $castingcallclub, (int)$publicEmail, $this->id);
-                $query = 'UPDATE user SET email = ?, display_name = ?, picture = ?, picture_type = ?, bio = ?, discord = ?, youtube = ?, twitter = ?, castingcallclub = ?, public_email = ? WHERE user_id = ?';
-            }
-        } else {
+        $setParts = ['email = ?'];
+        $parameters = [$email];
+
+        if (!empty($password)) {
             $hash = password_hash($password, PASSWORD_DEFAULT);
-            if (is_null($pictureType)) {
-                $parameters = array($email, $hash, $displayName, $avatarLink, $bio, $discord, $youtube, $twitter, $castingcallclub, (int)$publicEmail, $this->id);
-                $query = 'UPDATE user SET email = ?, password = ?, display_name = ?, picture = ?, bio = ?, discord = ?, youtube = ?, twitter = ?, castingcallclub = ?, public_email = ? WHERE user_id = ?';
-            } else {
-                $parameters = array($email, $hash, $displayName, $avatarLink, $pictureType, $bio, $discord, $youtube, $twitter, $castingcallclub, (int)$publicEmail, $this->id);
-                $query = 'UPDATE user SET email = ?, password = ?, display_name = ?, picture = ?, picture_type = ?, bio = ?, discord = ?, youtube = ?, twitter = ?, castingcallclub = ?, public_email = ? WHERE user_id = ?';
-            }
+            $setParts[] = 'password = ?';
+            $parameters[] = $hash;
         }
+
+        $setParts = array_merge($setParts, ['display_name = ?', 'picture = ?']);
+        array_push($parameters, $displayName, $avatarLink);
+
+        if (!is_null($pictureType)) {
+            $setParts[] = 'picture_type = ?';
+            $parameters[] = $pictureType;
+        }
+
+        $setParts = array_merge($setParts, ['bio = ?', 'discord = ?', 'youtube = ?', 'twitter = ?', 'castingcallclub = ?', 'public_email = ?']);
+        array_push($parameters, $bio, $discord, $youtube, $twitter, $castingcallclub, (int)$publicEmail, $this->id);
+        $query = 'UPDATE user SET ' . implode(', ', $setParts) . ' WHERE user_id = ?';
 
         try {
             $result = (new Db('Website/DbInfo.ini'))->executeQuery($query, $parameters);
@@ -399,9 +401,9 @@ class User implements JsonSerializable
      * Method returning link of avatar image that should be displayed.
      * If the user has a manually uploaded or Discord-synced avatar, it is served from the avatars folder.
      * Otherwise, the default avatar is returned.
-     * @param bool $appendRandom Should a random number in range 0–31 be appended to the file name, to prevent caching?
+     * @param bool $cacheBust Should a random number in range 0–31 be appended to the file name, to prevent caching?
      * @return string Link of the profile picture (a random number is appended to the end to prevent caching if
-     * the avatar isn't the default one) and the argument $appendRandom is set to TRUE.
+     * the avatar isn't the default one) and the argument $cacheBust is set to TRUE.
      */
     public function getAvatarLink(bool $cacheBust = true): string
     {
