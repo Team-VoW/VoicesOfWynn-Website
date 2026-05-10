@@ -482,7 +482,7 @@ async function unlinkNpc() {
           </div>
 
           <div class="space-y-2">
-            <Label for="dialog-link-npc">Link existing NPC</Label>
+            <Label for="dialog-link-npc">Add NPC to quest</Label>
             <div class="flex gap-2">
               <Select v-model="linkNpcId" :disabled="isLoading">
                 <SelectTrigger id="dialog-link-npc" class="w-full">
