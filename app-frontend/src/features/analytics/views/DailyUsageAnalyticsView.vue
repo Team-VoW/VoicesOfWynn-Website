@@ -204,7 +204,7 @@ const latestPoint = computed(() => points.value.at(-1) ?? null)
 const changePercent = computed(() => data.value?.previousPeriodChangePercent ?? null)
 const isPositiveChange = computed(() => (changePercent.value ?? 0) >= 0)
 
-function updateRange(value: string | string[]) {
+function updateRange(value: unknown) {
   if (typeof value === 'string' && value) {
     range.value = value as DailyUsageRange
   }
