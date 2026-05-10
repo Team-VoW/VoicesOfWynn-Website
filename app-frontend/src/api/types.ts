@@ -216,3 +216,15 @@ export interface UpdateAccountRolesRequest {
 export interface ResetPasswordResponse {
   temporaryPassword: string
 }
+
+export interface CreateAccountRequest {
+  displayName: string
+  discordId?: string
+  discord?: string
+  castingCallClub?: string
+}
+
+export interface CreateAccountResponse {
+  userId: number
+  temporaryPassword: string
+}

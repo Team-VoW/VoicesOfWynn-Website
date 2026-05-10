@@ -274,6 +274,29 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
         return await connection.ExecuteAsync(definition) > 0;
     }
 
+    public async Task<int> InsertAsync(CreateAccountCommand command, CancellationToken cancellationToken)
+    {
+        const string sql = """
+            INSERT INTO user (display_name, password, discord_id, discord, castingcallclub, force_password_change)
+            VALUES (@DisplayName, @PasswordHash, @DiscordId, @Discord, @CastingCallClub, 1);
+            SELECT LAST_INSERT_ID();
+            """;
+
+        await using var connection = new MySqlConnection(DatabaseSettings.GetWebsiteConnectionString(configuration));
+        var definition = new CommandDefinition(
+            sql,
+            new
+            {
+                command.DisplayName,
+                command.PasswordHash,
+                command.DiscordId,
+                command.Discord,
+                command.CastingCallClub,
+            },
+            cancellationToken: cancellationToken);
+        return await connection.ExecuteScalarAsync<int>(definition);
+    }
+
     public async Task<bool> ReplaceRolesAsync(int userId, IReadOnlyCollection<int> roleIds, CancellationToken cancellationToken)
     {
         await using var connection = new MySqlConnection(DatabaseSettings.GetWebsiteConnectionString(configuration));

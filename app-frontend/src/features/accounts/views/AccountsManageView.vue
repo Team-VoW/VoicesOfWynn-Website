@@ -9,13 +9,19 @@ import {
   DialogRoot,
   DialogTitle,
 } from 'reka-ui'
-import { Edit, KeyRound, Search, Trash2, Upload, X } from 'lucide-vue-next'
+import { Edit, KeyRound, Search, Trash2, Upload, UserPlus, X } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import type { AccountDetails, AccountRole, AccountSearchRequest, UpdateAccountRequest } from '@/api/types'
+import type {
+  AccountDetails,
+  AccountRole,
+  AccountSearchRequest,
+  CreateAccountRequest,
+  UpdateAccountRequest,
+} from '@/api/types'
 import { messageFromContentError } from '@/features/content/contentUtils'
 import AccountAvatarCropDialog from '../components/AccountAvatarCropDialog.vue'
 import {
@@ -23,6 +29,7 @@ import {
   useAccountRoles,
   useAccountsSearch,
   useClearAccountAvatar,
+  useCreateAccount,
   useDeleteAccount,
   useResetAccountPassword,
   useUpdateAccount,
@@ -80,6 +87,18 @@ const updateRolesMutation = useUpdateAccountRoles()
 const clearAvatarMutation = useClearAccountAvatar()
 const resetPasswordMutation = useResetAccountPassword()
 const deleteAccountMutation = useDeleteAccount()
+const createAccountMutation = useCreateAccount()
+
+const createOpen = ref(false)
+const createError = ref('')
+const newAccountPassword = ref('')
+const newAccountUserId = ref<number | null>(null)
+const createForm = reactive({
+  displayName: '',
+  discordId: '',
+  discord: '',
+  castingCallClub: '',
+})
 
 const results = computed(() => searchData.value?.results ?? [])
 const roleMap = computed(() => {
@@ -235,6 +254,44 @@ function onAvatarPicked(event: Event) {
   cropOpen.value = true
 }
 
+function openCreate() {
+  createForm.displayName = ''
+  createForm.discordId = ''
+  createForm.discord = ''
+  createForm.castingCallClub = ''
+  createError.value = ''
+  newAccountPassword.value = ''
+  newAccountUserId.value = null
+  createOpen.value = true
+}
+
+function closeCreate(value: boolean) {
+  createOpen.value = value
+  if (!value) {
+    createError.value = ''
+    newAccountPassword.value = ''
+    newAccountUserId.value = null
+  }
+}
+
+async function submitCreate() {
+  createError.value = ''
+  const request: CreateAccountRequest = {
+    displayName: createForm.displayName.trim(),
+    discordId: optional(createForm.discordId),
+    discord: optional(createForm.discord),
+    castingCallClub: optional(createForm.castingCallClub),
+  }
+  try {
+    const response = await createAccountMutation.mutateAsync(request)
+    newAccountUserId.value = response.userId
+    newAccountPassword.value = response.temporaryPassword
+    toast.success('Account created.')
+  } catch (err) {
+    createError.value = messageFromContentError(err)
+  }
+}
+
 function toggleRole(roleId: number, checked: boolean) {
   if (checked && !form.roleIds.includes(roleId)) {
     form.roleIds = [...form.roleIds, roleId]
@@ -270,6 +327,10 @@ function toggleRole(roleId: number, checked: boolean) {
               {{ size }} per page
             </option>
           </select>
+          <Button class="gap-2" @click="openCreate">
+            <UserPlus class="size-4" />
+            New account
+          </Button>
         </div>
 
         <div
@@ -567,6 +628,102 @@ function toggleRole(roleId: number, checked: boolean) {
               </div>
             </div>
           </div>
+        </DialogContent>
+      </DialogPortal>
+    </DialogRoot>
+
+    <DialogRoot :open="createOpen" @update:open="closeCreate">
+      <DialogPortal>
+        <DialogOverlay class="fixed inset-0 z-50 bg-black/45" />
+        <DialogContent
+          class="fixed left-1/2 top-1/2 z-50 max-h-[90vh] w-[calc(100vw-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-auto rounded-md border bg-background p-5 shadow-lg"
+        >
+          <div class="mb-4 flex items-start justify-between gap-4">
+            <DialogTitle class="text-lg font-semibold">Create new account</DialogTitle>
+            <DialogClose
+              aria-label="Close"
+              class="rounded-md p-1 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+            >
+              <X class="size-4" />
+            </DialogClose>
+          </div>
+
+          <div v-if="newAccountPassword" class="space-y-4">
+            <div class="rounded-md border bg-muted/40 px-3 py-2 text-sm">
+              Account #{{ newAccountUserId }} created. Temporary password:
+              <code class="font-mono">{{ newAccountPassword }}</code>
+              <p class="mt-1 text-xs text-muted-foreground">
+                This password is shown only once. Share it with the user securely.
+              </p>
+            </div>
+            <div class="flex justify-end">
+              <Button @click="closeCreate(false)">Done</Button>
+            </div>
+          </div>
+
+          <form v-else class="space-y-4" @submit.prevent="submitCreate">
+            <div
+              v-if="createError"
+              class="rounded-md border border-destructive/50 bg-destructive/5 p-3 text-sm text-destructive"
+            >
+              {{ createError }}
+            </div>
+
+            <div class="space-y-2">
+              <Label for="create-display-name">Display name</Label>
+              <Input
+                id="create-display-name"
+                v-model="createForm.displayName"
+                maxlength="31"
+                required
+                autocomplete="off"
+              />
+            </div>
+            <div class="space-y-2">
+              <Label for="create-discord-id">Discord ID</Label>
+              <Input
+                id="create-discord-id"
+                v-model="createForm.discordId"
+                maxlength="19"
+                inputmode="numeric"
+                autocomplete="off"
+              />
+            </div>
+            <div class="space-y-2">
+              <Label for="create-discord">Discord username</Label>
+              <Input
+                id="create-discord"
+                v-model="createForm.discord"
+                maxlength="37"
+                autocomplete="off"
+              />
+            </div>
+            <div class="space-y-2">
+              <Label for="create-ccc">Casting Call Club</Label>
+              <Input
+                id="create-ccc"
+                v-model="createForm.castingCallClub"
+                maxlength="64"
+                autocomplete="off"
+              />
+            </div>
+
+            <p class="text-xs text-muted-foreground">
+              A temporary password will be generated and shown once after the account is created.
+            </p>
+
+            <div class="flex justify-end gap-2">
+              <Button type="button" variant="outline" @click="closeCreate(false)">Cancel</Button>
+              <Button
+                type="submit"
+                class="gap-2"
+                :disabled="createAccountMutation.isPending.value || !createForm.displayName.trim()"
+              >
+                <UserPlus class="size-4" />
+                Create
+              </Button>
+            </div>
+          </form>
         </DialogContent>
       </DialogPortal>
     </DialogRoot>

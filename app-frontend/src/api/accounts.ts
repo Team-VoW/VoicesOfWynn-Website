@@ -4,6 +4,8 @@ import type {
   AccountRole,
   AccountSearchRequest,
   AccountSearchResponse,
+  CreateAccountRequest,
+  CreateAccountResponse,
   ResetPasswordResponse,
   UpdateAccountRequest,
   UpdateAccountRolesRequest,
@@ -76,5 +78,12 @@ export function resetAccountPassword(userId: number): Promise<ResetPasswordRespo
 export function deleteAccount(userId: number): Promise<void> {
   return apiFetch<void>(`/admin/accounts/${userId}`, {
     method: 'DELETE',
+  })
+}
+
+export function createAccount(request: CreateAccountRequest): Promise<CreateAccountResponse> {
+  return apiFetch<CreateAccountResponse>('/admin/accounts', {
+    method: 'POST',
+    body: request,
   })
 }

@@ -2,6 +2,7 @@ import { computed, type ComputedRef, type Ref } from 'vue'
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import {
   clearAccountAvatar,
+  createAccount,
   deleteAccount,
   getAccount,
   getAccountRoles,
@@ -11,7 +12,12 @@ import {
   updateAccountRoles,
   uploadAccountAvatar,
 } from '@/api/accounts'
-import type { AccountSearchRequest, UpdateAccountRequest, UpdateAccountRolesRequest } from '@/api/types'
+import type {
+  AccountSearchRequest,
+  CreateAccountRequest,
+  UpdateAccountRequest,
+  UpdateAccountRolesRequest,
+} from '@/api/types'
 
 export function useAccountRoles() {
   return useQuery({
@@ -77,6 +83,14 @@ export function useClearAccountAvatar() {
 export function useResetAccountPassword() {
   return useMutation({
     mutationFn: (userId: number) => resetAccountPassword(userId),
+  })
+}
+
+export function useCreateAccount() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (request: CreateAccountRequest) => createAccount(request),
+    onSuccess: () => invalidateAccounts(queryClient),
   })
 }
 

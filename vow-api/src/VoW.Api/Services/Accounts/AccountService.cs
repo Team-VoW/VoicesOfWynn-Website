@@ -28,6 +28,8 @@ public sealed partial class AccountService(
     private const int LoreMaxLength = 63;
     private static readonly int[] AllowedPageSizes = [10, 25, 50, 100];
 
+    private sealed record FieldError(string Field, string Message);
+
     public async Task<IReadOnlyCollection<AccountRoleResponse>> GetRolesAsync(CancellationToken cancellationToken)
     {
         var roles = await accountRepository.GetRolesAsync(cancellationToken);
@@ -90,15 +92,10 @@ public sealed partial class AccountService(
         }
 
         var displayName = NormalizeRequired(request.DisplayName);
-        var displayNameError = ValidateLength(displayName, "Display name", DisplayNameMinLength, DisplayNameMaxLength);
+        var displayNameError = await ValidateDisplayNameAsync(userId, displayName, cancellationToken);
         if (displayNameError is not null)
         {
-            return AccountMutationResult.Invalid(nameof(request.DisplayName), displayNameError);
-        }
-
-        if (await accountRepository.DisplayNameExistsAsync(userId, displayName!, cancellationToken))
-        {
-            return AccountMutationResult.Invalid(nameof(request.DisplayName), "This display name is already in use.");
+            return AccountMutationResult.Invalid(displayNameError.Field, displayNameError.Message);
         }
 
         var password = NormalizeOptional(request.Password);
@@ -108,17 +105,10 @@ public sealed partial class AccountService(
         }
 
         var discordId = NormalizeOptional(request.DiscordId);
-        if (discordId is not null)
+        var discordIdError = await ValidateDiscordIdAsync(userId, discordId, cancellationToken);
+        if (discordIdError is not null)
         {
-            if (discordId.Length > DiscordIdMaxLength || !DiscordIdRegex().IsMatch(discordId) || !long.TryParse(discordId, out var parsedDiscordId) || parsedDiscordId <= 0)
-            {
-                return AccountMutationResult.Invalid(nameof(request.DiscordId), "Discord ID must be a positive numeric Discord user ID.");
-            }
-
-            if (await accountRepository.DiscordIdExistsAsync(userId, discordId, cancellationToken))
-            {
-                return AccountMutationResult.Invalid(nameof(request.DiscordId), "This Discord ID is already linked by another user.");
-            }
+            return AccountMutationResult.Invalid(discordIdError.Field, discordIdError.Message);
         }
 
         var email = NormalizeOptional(request.Email);
@@ -141,23 +131,10 @@ public sealed partial class AccountService(
         }
 
         var discord = NormalizeOptional(request.Discord);
-        var discordError = await ValidateSocialAsync(
-            userId,
-            discord,
-            "discord",
-            nameof(request.Discord),
-            "Discord username",
-            DiscordMinLength,
-            DiscordMaxLength,
-            cancellationToken);
+        var discordError = await ValidateDiscordHandleAsync(userId, discord, cancellationToken);
         if (discordError is not null)
         {
-            return discordError;
-        }
-
-        if (discord is not null && (!DiscordRegex().IsMatch(discord) || discord.Contains("..", StringComparison.Ordinal)))
-        {
-            return AccountMutationResult.Invalid(nameof(request.Discord), "Discord username is in incorrect format.");
+            return AccountMutationResult.Invalid(discordError.Field, discordError.Message);
         }
 
         var youtube = NormalizeOptional(request.Youtube);
@@ -172,7 +149,7 @@ public sealed partial class AccountService(
             cancellationToken);
         if (youtubeError is not null)
         {
-            return youtubeError;
+            return AccountMutationResult.Invalid(youtubeError.Field, youtubeError.Message);
         }
 
         var twitter = NormalizeOptional(request.Twitter);
@@ -187,22 +164,14 @@ public sealed partial class AccountService(
             cancellationToken);
         if (twitterError is not null)
         {
-            return twitterError;
+            return AccountMutationResult.Invalid(twitterError.Field, twitterError.Message);
         }
 
         var castingCallClub = NormalizeOptional(request.CastingCallClub);
-        var cccError = await ValidateSocialAsync(
-            userId,
-            castingCallClub,
-            "castingcallclub",
-            nameof(request.CastingCallClub),
-            "Casting Call Club name",
-            null,
-            CastingCallClubMaxLength,
-            cancellationToken);
+        var cccError = await ValidateCastingCallClubAsync(userId, castingCallClub, cancellationToken);
         if (cccError is not null)
         {
-            return cccError;
+            return AccountMutationResult.Invalid(cccError.Field, cccError.Message);
         }
 
         var bio = NormalizeOptional(request.Bio);
@@ -241,6 +210,57 @@ public sealed partial class AccountService(
         catch (MySqlException ex) when (ex.Number == 1062)
         {
             return AccountMutationResult.Invalid(nameof(request.DisplayName), "Account update conflicts with existing account data.");
+        }
+    }
+
+    public async Task<CreateAccountServiceResult> CreateAsync(
+        CreateAccountRequest request,
+        CancellationToken cancellationToken)
+    {
+        var displayName = NormalizeRequired(request.DisplayName);
+        var displayNameError = await ValidateDisplayNameAsync(0, displayName, cancellationToken);
+        if (displayNameError is not null)
+        {
+            return CreateAccountServiceResult.Invalid(displayNameError.Field, displayNameError.Message);
+        }
+
+        var discordId = NormalizeOptional(request.DiscordId);
+        var discordIdError = await ValidateDiscordIdAsync(0, discordId, cancellationToken);
+        if (discordIdError is not null)
+        {
+            return CreateAccountServiceResult.Invalid(discordIdError.Field, discordIdError.Message);
+        }
+
+        var discord = NormalizeOptional(request.Discord);
+        var discordError = await ValidateDiscordHandleAsync(0, discord, cancellationToken);
+        if (discordError is not null)
+        {
+            return CreateAccountServiceResult.Invalid(discordError.Field, discordError.Message);
+        }
+
+        var castingCallClub = NormalizeOptional(request.CastingCallClub);
+        var cccError = await ValidateCastingCallClubAsync(0, castingCallClub, cancellationToken);
+        if (cccError is not null)
+        {
+            return CreateAccountServiceResult.Invalid(cccError.Field, cccError.Message);
+        }
+
+        var temporaryPassword = GenerateTemporaryPassword();
+        try
+        {
+            var userId = await accountRepository.InsertAsync(
+                new CreateAccountCommand(
+                    displayName!,
+                    HashPassword(temporaryPassword),
+                    discordId,
+                    discord,
+                    castingCallClub),
+                cancellationToken);
+            return CreateAccountServiceResult.Success(userId, temporaryPassword);
+        }
+        catch (MySqlException ex) when (ex.Number == 1062)
+        {
+            return CreateAccountServiceResult.Invalid(nameof(request.DisplayName), "Account creation conflicts with existing account data.");
         }
     }
 
@@ -359,7 +379,87 @@ public sealed partial class AccountService(
             : AccountMutationResult.NotFound();
     }
 
-    private async Task<AccountMutationResult?> ValidateSocialAsync(
+    private async Task<FieldError?> ValidateDisplayNameAsync(
+        int exceptUserId,
+        string? displayName,
+        CancellationToken cancellationToken)
+    {
+        var lengthError = ValidateLength(displayName, "Display name", DisplayNameMinLength, DisplayNameMaxLength);
+        if (lengthError is not null)
+        {
+            return new FieldError("DisplayName", lengthError);
+        }
+
+        return await accountRepository.DisplayNameExistsAsync(exceptUserId, displayName!, cancellationToken)
+            ? new FieldError("DisplayName", "This display name is already in use.")
+            : null;
+    }
+
+    private async Task<FieldError?> ValidateDiscordIdAsync(
+        int exceptUserId,
+        string? discordId,
+        CancellationToken cancellationToken)
+    {
+        if (discordId is null)
+        {
+            return null;
+        }
+
+        if (discordId.Length > DiscordIdMaxLength
+            || !DiscordIdRegex().IsMatch(discordId)
+            || !long.TryParse(discordId, out var parsedDiscordId)
+            || parsedDiscordId <= 0)
+        {
+            return new FieldError("DiscordId", "Discord ID must be a positive numeric Discord user ID.");
+        }
+
+        return await accountRepository.DiscordIdExistsAsync(exceptUserId, discordId, cancellationToken)
+            ? new FieldError("DiscordId", "This Discord ID is already linked by another user.")
+            : null;
+    }
+
+    private async Task<FieldError?> ValidateDiscordHandleAsync(
+        int exceptUserId,
+        string? discord,
+        CancellationToken cancellationToken)
+    {
+        var socialError = await ValidateSocialAsync(
+            exceptUserId,
+            discord,
+            "discord",
+            "Discord",
+            "Discord username",
+            DiscordMinLength,
+            DiscordMaxLength,
+            cancellationToken);
+        if (socialError is not null)
+        {
+            return socialError;
+        }
+
+        if (discord is not null && (!DiscordRegex().IsMatch(discord) || discord.Contains("..", StringComparison.Ordinal)))
+        {
+            return new FieldError("Discord", "Discord username is in incorrect format.");
+        }
+
+        return null;
+    }
+
+    private Task<FieldError?> ValidateCastingCallClubAsync(
+        int exceptUserId,
+        string? castingCallClub,
+        CancellationToken cancellationToken) =>
+        ValidateSocialAsync(
+            exceptUserId,
+            castingCallClub,
+            "castingcallclub",
+            "CastingCallClub",
+            "Casting Call Club name",
+            null,
+            CastingCallClubMaxLength,
+            cancellationToken);
+
+    private async Task<FieldError?> ValidateSocialAsync(
         int userId,
         string? value,
         string column,
@@ -377,11 +477,11 @@ public sealed partial class AccountService(
         var lengthError = ValidateLength(value, label, minLength, maxLength);
         if (lengthError is not null)
         {
-            return AccountMutationResult.Invalid(field, lengthError);
+            return new FieldError(field, lengthError);
         }
 
         return await accountRepository.SocialExistsAsync(userId, column, value, cancellationToken)
-            ? AccountMutationResult.Invalid(field, $"{label} is already linked by another user.")
+            ? new FieldError(field, $"{label} is already linked by another user.")
             : null;
     }
 

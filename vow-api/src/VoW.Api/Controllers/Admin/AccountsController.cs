@@ -47,6 +47,24 @@ public sealed class AccountsController(IAccountService accountService) : Control
         return result.Succeeded ? NoContent() : ProblemFrom(result);
     }
 
+    [HttpPost("")]
+    public async Task<ActionResult<CreateAccountResponse>> Create(
+        [FromBody] CreateAccountRequest request,
+        CancellationToken cancellationToken)
+    {
+        var result = await accountService.CreateAsync(request, cancellationToken);
+        if (result.Succeeded)
+        {
+            return CreatedAtAction(
+                nameof(Get),
+                new { userId = result.UserId },
+                new CreateAccountResponse(result.UserId!.Value, result.TemporaryPassword!));
+        }
+
+        AddErrors(result.Errors);
+        return ValidationProblem(ModelState);
+    }
+
     [HttpPut("{userId:int}/roles")]
     public async Task<IActionResult> ReplaceRoles(
         int userId,

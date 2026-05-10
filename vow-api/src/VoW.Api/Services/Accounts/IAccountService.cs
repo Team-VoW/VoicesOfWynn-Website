@@ -12,6 +12,8 @@ public interface IAccountService
 
     Task<AccountMutationResult> UpdateAsync(int userId, UpdateAccountRequest request, CancellationToken cancellationToken);
 
+    Task<CreateAccountServiceResult> CreateAsync(CreateAccountRequest request, CancellationToken cancellationToken);
+
     Task<AccountMutationResult> ReplaceRolesAsync(int userId, UpdateAccountRolesRequest request, CancellationToken cancellationToken);
 
     Task<AccountMutationResult> UploadAvatarAsync(int userId, Stream image, CancellationToken cancellationToken);
