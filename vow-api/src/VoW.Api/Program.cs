@@ -42,6 +42,7 @@ builder.Services.AddSingleton(sp =>
 builder.Services.AddSingleton<IQuestScriptStorage, AzureQuestScriptStorage>();
 builder.Services.AddSingleton<INpcImageStorage, AzureNpcImageStorage>();
 builder.Services.AddSingleton<IAccountAvatarStorage, AzureAccountAvatarStorage>();
+builder.Services.AddSingleton<INpcRecordingStorage, AzureNpcRecordingStorage>();
 
 builder.Services.AddCors(options =>
 {

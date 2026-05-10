@@ -1,9 +1,4 @@
-export type ReportStatus =
-  | 'unprocessed'
-  | 'forwarded'
-  | 'rejected'
-  | 'accepted'
-  | 'fixed'
+export type ReportStatus = 'unprocessed' | 'forwarded' | 'rejected' | 'accepted' | 'fixed'
 
 export const REPORT_STATUSES: ReportStatus[] = [
   'unprocessed',
@@ -21,7 +16,7 @@ export const REPORT_SORT_FIELDS = [
   'timeSubmitted',
 ] as const
 
-export type ReportSortField = typeof REPORT_SORT_FIELDS[number]
+export type ReportSortField = (typeof REPORT_SORT_FIELDS)[number]
 
 export type SortDirection = 'asc' | 'desc'
 
@@ -227,4 +222,23 @@ export interface CreateAccountRequest {
 export interface CreateAccountResponse {
   userId: number
   temporaryPassword: string
+}
+
+export interface UploadNpcRecordingResult {
+  fileName: string
+  code: number
+  message: string
+  description: string
+  storedFileName: string | null
+}
+
+export interface UploadNpcRecordingsResponse {
+  results: UploadNpcRecordingResult[]
+}
+
+export interface NpcRecording {
+  recordingId: number
+  line: number
+  fileName: string
+  url: string
 }

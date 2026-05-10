@@ -197,8 +197,107 @@ public sealed class ContentController(IContentService contentService) : Controll
         return result.Succeeded ? NoContent() : ProblemFrom(result);
     }
 
+    [HttpPut("quests/{questId:int}/npcs/{npcId:int}/recordings")]
+    [RequestSizeLimit(NpcRecordingsMaxSizeBytes)]
+    public async Task<IActionResult> UploadNpcRecordings(
+        int questId,
+        int npcId,
+        [FromForm] List<IFormFile>? recordings,
+        [FromForm] bool overwrite,
+        CancellationToken cancellationToken)
+    {
+        if (recordings is null || recordings.Count == 0)
+        {
+            ModelState.AddModelError(nameof(recordings), "At least one recording file is required.");
+            return ValidationProblem(ModelState);
+        }
+
+        var uploads = recordings
+            .Select(file => new NpcRecordingUpload(
+                file.FileName,
+                file.ContentType,
+                file.Length,
+                file.OpenReadStream))
+            .ToArray();
+
+        var result = await contentService.UploadNpcRecordingsAsync(
+            questId,
+            npcId,
+            uploads,
+            overwrite,
+            cancellationToken);
+
+        if (!result.Found)
+        {
+            return NotFound();
+        }
+
+        AddErrors(result.Errors);
+        return result.Succeeded ? Ok(result.Response) : ValidationProblem(ModelState);
+    }
+
+    [HttpPut("recordings/mass")]
+    [RequestSizeLimit(NpcRecordingsMaxSizeBytes)]
+    public async Task<IActionResult> UploadMassNpcRecordings(
+        [FromForm] List<IFormFile>? recordings,
+        [FromForm] bool overwrite,
+        [FromForm] int? questId,
+        [FromForm] int? npcId,
+        CancellationToken cancellationToken)
+    {
+        if (recordings is null || recordings.Count == 0)
+        {
+            ModelState.AddModelError(nameof(recordings), "At least one recording file is required.");
+            return ValidationProblem(ModelState);
+        }
+
+        var uploads = recordings
+            .Select(file => new NpcRecordingUpload(
+                file.FileName,
+                file.ContentType,
+                file.Length,
+                file.OpenReadStream))
+            .ToArray();
+
+        var result = await contentService.UploadMassNpcRecordingsAsync(
+            uploads,
+            overwrite,
+            questId,
+            npcId,
+            cancellationToken);
+
+        AddErrors(result.Errors);
+        return result.Succeeded ? Ok(result.Response) : ValidationProblem(ModelState);
+    }
+
+    [HttpGet("quests/{questId:int}/npcs/{npcId:int}/recordings")]
+    public async Task<ActionResult<IReadOnlyCollection<NpcRecordingResponse>>> GetNpcRecordings(
+        int questId,
+        int npcId,
+        CancellationToken cancellationToken)
+    {
+        var result = await contentService.GetNpcRecordingsAsync(questId, npcId, cancellationToken);
+        return result.Found ? Ok(result.Recordings) : NotFound();
+    }
+
+    [HttpDelete("quests/{questId:int}/npcs/{npcId:int}/recordings/{recordingId:int}")]
+    public async Task<IActionResult> DeleteNpcRecording(
+        int questId,
+        int npcId,
+        int recordingId,
+        CancellationToken cancellationToken)
+    {
+        var result = await contentService.DeleteNpcRecordingAsync(
+            questId,
+            npcId,
+            recordingId,
+            cancellationToken);
+        return result.Succeeded ? NoContent() : ProblemFrom(result);
+    }
+
     private const int QuestScriptMaxSizeBytes = 2_000_000;
     private const int NpcImageMaxSizeBytes = 8_000_000;
+    private const int NpcRecordingsMaxSizeBytes = 500_000_000;
 
     private static readonly string[] AcceptedImageExtensions = [".png", ".jpg", ".jpeg", ".webp"];
     private static readonly string[] AcceptedImageContentTypes = ["image/png", "image/jpeg", "image/webp"];

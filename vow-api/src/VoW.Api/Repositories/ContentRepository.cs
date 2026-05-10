@@ -108,6 +108,41 @@ public sealed class ContentRepository(IConfiguration configuration) : IContentRe
         return await connection.ExecuteScalarAsync<string?>(command);
     }
 
+    public async Task<int?> GetQuestIdByDegeneratedNameAsync(
+        string degeneratedName,
+        CancellationToken cancellationToken)
+    {
+        const string sql = """
+            SELECT quest_id
+            FROM quest
+            WHERE degenerated_name = @DegeneratedName
+            LIMIT 1;
+            """;
+        await using var connection = new MySqlConnection(DatabaseSettings.GetWebsiteConnectionString(configuration));
+        var command = new CommandDefinition(sql, new { DegeneratedName = degeneratedName }, cancellationToken: cancellationToken);
+        return await connection.ExecuteScalarAsync<int?>(command);
+    }
+
+    public async Task<int?> GetQuestNpcIdByDegeneratedNameAsync(
+        int questId,
+        string degeneratedName,
+        CancellationToken cancellationToken)
+    {
+        const string sql = """
+            SELECT n.npc_id
+            FROM npc n
+            JOIN npc_quest nq ON nq.npc_id = n.npc_id
+            WHERE nq.quest_id = @QuestId AND n.degenerated_name = @DegeneratedName
+            LIMIT 1;
+            """;
+        await using var connection = new MySqlConnection(DatabaseSettings.GetWebsiteConnectionString(configuration));
+        var command = new CommandDefinition(
+            sql,
+            new { QuestId = questId, DegeneratedName = degeneratedName },
+            cancellationToken: cancellationToken);
+        return await connection.ExecuteScalarAsync<int?>(command);
+    }
+
     public async Task<bool> NpcDegeneratedNameConflictsForLinkedQuestsAsync(
         int npcId,
         string degeneratedName,
@@ -168,6 +203,135 @@ public sealed class ContentRepository(IConfiguration configuration) : IContentRe
         await using var connection = new MySqlConnection(DatabaseSettings.GetWebsiteConnectionString(configuration));
         var command = new CommandDefinition(sql, new { QuestId = questId, NpcId = npcId }, cancellationToken: cancellationToken);
         return await connection.ExecuteScalarAsync<int>(command) > 0;
+    }
+
+    public async Task<IReadOnlyCollection<NpcRecording>> GetQuestNpcRecordingsAsync(
+        int questId,
+        int npcId,
+        CancellationToken cancellationToken)
+    {
+        const string sql = """
+            SELECT recording_id AS RecordingId, line AS Line, file AS FileName
+            FROM recording
+            WHERE quest_id = @QuestId AND npc_id = @NpcId
+            ORDER BY line, recording_id;
+            """;
+        await using var connection = new MySqlConnection(DatabaseSettings.GetWebsiteConnectionString(configuration));
+        var command = new CommandDefinition(sql, new { QuestId = questId, NpcId = npcId }, cancellationToken: cancellationToken);
+        return (await connection.QueryAsync<NpcRecording>(command)).AsList();
+    }
+
+    public async Task<RecordingFile?> GetQuestNpcRecordingFileAsync(
+        int questId,
+        int npcId,
+        int recordingId,
+        CancellationToken cancellationToken)
+    {
+        const string sql = """
+            SELECT recording_id AS RecordingId, file AS File
+            FROM recording
+            WHERE quest_id = @QuestId AND npc_id = @NpcId AND recording_id = @RecordingId
+            LIMIT 1;
+            """;
+        await using var connection = new MySqlConnection(DatabaseSettings.GetWebsiteConnectionString(configuration));
+        var command = new CommandDefinition(
+            sql,
+            new { QuestId = questId, NpcId = npcId, RecordingId = recordingId },
+            cancellationToken: cancellationToken);
+        return await connection.QuerySingleOrDefaultAsync<RecordingFile>(command);
+    }
+
+    public async Task<RecordingFile?> GetRecordingByFileAsync(string fileName, CancellationToken cancellationToken)
+    {
+        const string sql = """
+            SELECT recording_id AS RecordingId, file AS File
+            FROM recording
+            WHERE file = @FileName
+            ORDER BY recording_id
+            LIMIT 1;
+            """;
+        await using var connection = new MySqlConnection(DatabaseSettings.GetWebsiteConnectionString(configuration));
+        var command = new CommandDefinition(sql, new { FileName = fileName }, cancellationToken: cancellationToken);
+        return await connection.QuerySingleOrDefaultAsync<RecordingFile>(command);
+    }
+
+    public async Task<bool> RecordingFileBelongsToDifferentRecordingAsync(
+        string fileName,
+        int questId,
+        int npcId,
+        int line,
+        CancellationToken cancellationToken)
+    {
+        const string sql = """
+            SELECT COUNT(*)
+            FROM recording
+            WHERE file = @FileName
+              AND (quest_id <> @QuestId OR npc_id <> @NpcId OR line <> @Line);
+            """;
+        await using var connection = new MySqlConnection(DatabaseSettings.GetWebsiteConnectionString(configuration));
+        var command = new CommandDefinition(
+            sql,
+            new { FileName = fileName, QuestId = questId, NpcId = npcId, Line = line },
+            cancellationToken: cancellationToken);
+        return await connection.ExecuteScalarAsync<int>(command) > 0;
+    }
+
+    public async Task<bool> UpdateRecordingFileAsync(
+        int recordingId,
+        string fileName,
+        CancellationToken cancellationToken)
+    {
+        const string sql = """
+            UPDATE recording
+            SET file = @FileName
+            WHERE recording_id = @RecordingId;
+            """;
+        await using var connection = new MySqlConnection(DatabaseSettings.GetWebsiteConnectionString(configuration));
+        var command = new CommandDefinition(
+            sql,
+            new { RecordingId = recordingId, FileName = fileName },
+            cancellationToken: cancellationToken);
+        return await connection.ExecuteAsync(command) > 0;
+    }
+
+    public async Task<CreatedContent> InsertRecordingAsync(
+        int questId,
+        int npcId,
+        int line,
+        string fileName,
+        CancellationToken cancellationToken)
+    {
+        const string sql = """
+            INSERT INTO recording (npc_id, quest_id, line, file)
+            VALUES (@NpcId, @QuestId, @Line, @FileName);
+            SELECT LAST_INSERT_ID();
+            """;
+        await using var connection = new MySqlConnection(DatabaseSettings.GetWebsiteConnectionString(configuration));
+        var command = new CommandDefinition(
+            sql,
+            new { QuestId = questId, NpcId = npcId, Line = line, FileName = fileName },
+            cancellationToken: cancellationToken);
+        var id = await connection.ExecuteScalarAsync<int>(command);
+        return new CreatedContent(id);
+    }
+
+    public async Task<bool> DeleteQuestNpcRecordingAsync(
+        int questId,
+        int npcId,
+        int recordingId,
+        CancellationToken cancellationToken)
+    {
+        const string sql = """
+            DELETE FROM recording
+            WHERE quest_id = @QuestId AND npc_id = @NpcId AND recording_id = @RecordingId
+            LIMIT 1;
+            """;
+        await using var connection = new MySqlConnection(DatabaseSettings.GetWebsiteConnectionString(configuration));
+        var command = new CommandDefinition(
+            sql,
+            new { QuestId = questId, NpcId = npcId, RecordingId = recordingId },
+            cancellationToken: cancellationToken);
+        return await connection.ExecuteAsync(command) > 0;
     }
 
     public async Task<ContentSearchPage> SearchAsync(ContentSearchCriteria criteria, CancellationToken cancellationToken)

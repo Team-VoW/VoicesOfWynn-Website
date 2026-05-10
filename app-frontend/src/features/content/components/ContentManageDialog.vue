@@ -5,6 +5,7 @@ import {
   FileUp,
   Headphones,
   LinkIcon,
+  Loader2,
   Trash2,
   Unlink,
   UserRound,
@@ -30,22 +31,28 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import type { ContentOption, ContentSearchNpc, ContentSearchQuest } from '@/api/types'
+import type { UploadNpcRecordingResult } from '@/api/types'
 import { CONTENT_NONE, messageFromContentError, optionalContentId } from '../contentUtils'
 import {
+  useDeleteNpcRecording,
   useDeleteQuest,
   useLinkQuestNpc,
+  useNpcRecordings,
   useUnlinkQuestNpc,
   useUpdateNpc,
   useUpdateNpcVoiceActor,
   useUpdateQuest,
   useUpdateQuestNpcSoundEditor,
   useUpdateQuestWriter,
+  useUploadNpcRecordings,
   useUploadQuestScript,
 } from '../queries'
 import NpcImageCropDialog from './NpcImageCropDialog.vue'
 
 const NPC_IMAGE_BASE_URL = (import.meta.env.VITE_NPC_IMAGE_BASE_URL ?? '').replace(/\/$/, '')
-const NPC_DEFAULT_IMAGE_URL = NPC_IMAGE_BASE_URL ? `${NPC_IMAGE_BASE_URL}/default.webp` : '/default.webp'
+const NPC_DEFAULT_IMAGE_URL = NPC_IMAGE_BASE_URL
+  ? `${NPC_IMAGE_BASE_URL}/default.webp`
+  : '/default.webp'
 
 type DialogMode = 'quest' | 'npc' | null
 
@@ -74,6 +81,8 @@ const updateQuestNpcSoundEditorMutation = useUpdateQuestNpcSoundEditor()
 const linkQuestNpcMutation = useLinkQuestNpc()
 const unlinkQuestNpcMutation = useUnlinkQuestNpc()
 const uploadQuestScriptMutation = useUploadQuestScript()
+const uploadNpcRecordingsMutation = useUploadNpcRecordings()
+const deleteNpcRecordingMutation = useDeleteNpcRecording()
 
 const editName = ref('')
 const editWriter = ref(CONTENT_NONE)
@@ -84,9 +93,30 @@ const dialogError = ref('')
 const scriptFile = ref<File | null>(null)
 const scriptInput = useTemplateRef<HTMLInputElement>('scriptInput')
 const imageInput = useTemplateRef<HTMLInputElement>('imageInput')
+const recordingsInput = useTemplateRef<HTMLInputElement>('recordingsInput')
 const pendingImageFile = ref<File | null>(null)
 const cropDialogOpen = ref(false)
 const imageBusters = ref<Map<number, number>>(new Map())
+const recordingFiles = ref<File[]>([])
+const recordingOverwrite = ref(false)
+const recordingResults = ref<UploadNpcRecordingResult[]>([])
+const isDraggingRecordings = ref(false)
+const deletingRecordingId = ref<number | null>(null)
+
+const selectedQuestId = computed(() => props.selectedQuest?.questId ?? null)
+const selectedNpcId = computed(() => props.selectedNpc?.npcId ?? null)
+const shouldLoadNpcRecordings = computed(
+  () =>
+    props.open &&
+    props.mode === 'npc' &&
+    selectedQuestId.value !== null &&
+    selectedNpcId.value !== null,
+)
+const npcRecordingsQuery = useNpcRecordings(selectedQuestId, selectedNpcId, shouldLoadNpcRecordings)
+const npcRecordings = computed(() => npcRecordingsQuery.data.value ?? [])
+const selectedNpcRecordingCount = computed(
+  () => npcRecordingsQuery.data.value?.length ?? props.selectedNpc?.recordingCount ?? 0,
+)
 
 const npcImageSrc = computed(() => {
   if (!props.selectedNpc) return NPC_DEFAULT_IMAGE_URL
@@ -127,6 +157,10 @@ watch(
     linkNpcId.value = CONTENT_NONE
     scriptFile.value = null
     if (scriptInput.value) scriptInput.value.value = ''
+    recordingFiles.value = []
+    recordingOverwrite.value = false
+    recordingResults.value = []
+    if (recordingsInput.value) recordingsInput.value.value = ''
     pendingImageFile.value = null
     cropDialogOpen.value = false
     if (imageInput.value) imageInput.value.value = ''
@@ -257,6 +291,73 @@ function onScriptFilePicked(event: Event) {
   scriptFile.value = target.files?.[0] ?? null
 }
 
+function addRecordingFiles(files: FileList | File[]) {
+  const nextFiles = Array.from(files)
+  const accepted = nextFiles.filter((file) => file.name.toLowerCase().endsWith('.ogg'))
+  const rejected = nextFiles.length - accepted.length
+
+  if (rejected > 0) {
+    dialogError.value = 'Only .ogg recording files can be selected.'
+  }
+
+  if (accepted.length === 0) return
+
+  dialogError.value = ''
+  const existingKeys = new Set(recordingFiles.value.map((file) => `${file.name}:${file.size}`))
+  recordingFiles.value = [
+    ...recordingFiles.value,
+    ...accepted.filter((file) => !existingKeys.has(`${file.name}:${file.size}`)),
+  ]
+}
+
+function onRecordingFilesPicked(event: Event) {
+  const target = event.target as HTMLInputElement
+  if (target.files) addRecordingFiles(target.files)
+  target.value = ''
+}
+
+function onRecordingsDrop(event: DragEvent) {
+  isDraggingRecordings.value = false
+  if (event.dataTransfer?.files) addRecordingFiles(event.dataTransfer.files)
+}
+
+function removeRecordingFile(index: number) {
+  recordingFiles.value = recordingFiles.value.filter((_, i) => i !== index)
+}
+
+async function uploadRecordings() {
+  if (!props.selectedQuest || !props.selectedNpc || recordingFiles.value.length === 0) return
+  const recordings = [...recordingFiles.value]
+  await runDialogAction(async () => {
+    const response = await uploadNpcRecordingsMutation.mutateAsync({
+      questId: props.selectedQuest!.questId,
+      npcId: props.selectedNpc!.npcId,
+      recordings,
+      overwrite: recordingOverwrite.value,
+    })
+    recordingResults.value = response.results
+    recordingFiles.value = []
+    if (recordingsInput.value) recordingsInput.value.value = ''
+    await npcRecordingsQuery.refetch()
+  }, 'Recordings processed.')
+}
+
+async function deleteRecording(recordingId: number) {
+  if (!props.selectedQuest || !props.selectedNpc) return
+  if (!window.confirm('Do you really want to delete this recording?')) return
+
+  deletingRecordingId.value = recordingId
+  await runDialogAction(async () => {
+    await deleteNpcRecordingMutation.mutateAsync({
+      questId: props.selectedQuest!.questId,
+      npcId: props.selectedNpc!.npcId,
+      recordingId,
+    })
+    await npcRecordingsQuery.refetch()
+  }, 'Recording deleted.')
+  deletingRecordingId.value = null
+}
+
 async function uploadScript() {
   if (!props.selectedQuest || !scriptFile.value) return
   const file = scriptFile.value
@@ -287,7 +388,7 @@ async function unlinkNpc() {
     <DialogPortal>
       <DialogOverlay class="fixed inset-0 z-50 bg-black/45" />
       <DialogContent
-        class="fixed left-1/2 top-1/2 z-50 max-h-[90vh] w-[calc(100vw-2rem)] max-w-xl -translate-x-1/2 -translate-y-1/2 overflow-auto rounded-md border bg-background p-5 shadow-lg"
+        class="fixed left-1/2 top-1/2 z-50 max-h-[90vh] w-[calc(100vw-2rem)] max-w-6xl -translate-x-1/2 -translate-y-1/2 overflow-auto rounded-md border bg-background p-5 shadow-lg"
       >
         <div class="mb-4 flex items-start justify-between gap-4">
           <DialogTitle class="text-lg font-semibold">
@@ -333,11 +434,7 @@ async function unlinkNpc() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem :value="CONTENT_NONE">None</SelectItem>
-                  <SelectItem
-                    v-for="writer in writers"
-                    :key="writer.id"
-                    :value="String(writer.id)"
-                  >
+                  <SelectItem v-for="writer in writers" :key="writer.id" :value="String(writer.id)">
                     {{ writer.name }}
                   </SelectItem>
                 </SelectContent>
@@ -377,12 +474,7 @@ async function unlinkNpc() {
             </div>
             <p v-if="selectedQuest.scriptUrl" class="text-sm text-muted-foreground">
               Current:
-              <a
-                :href="selectedQuest.scriptUrl"
-                target="_blank"
-                rel="noopener"
-                class="underline"
-              >
+              <a :href="selectedQuest.scriptUrl" target="_blank" rel="noopener" class="underline">
                 View current script
               </a>
             </p>
@@ -541,20 +633,196 @@ async function unlinkNpc() {
             </div>
           </div>
 
+          <div class="space-y-3 border-t pt-4">
+            <div class="flex items-center justify-between gap-3">
+              <Label for="dialog-npc-recordings">Recordings (.ogg)</Label>
+              <label class="flex items-center gap-2 text-sm text-muted-foreground">
+                <input
+                  v-model="recordingOverwrite"
+                  type="checkbox"
+                  class="size-4 rounded border-input"
+                />
+                Overwrite existing files
+              </label>
+            </div>
+
+            <div
+              class="rounded-md border border-dashed p-4 transition-colors"
+              :class="isDraggingRecordings ? 'border-primary bg-primary/5' : 'border-input'"
+              @dragenter.prevent="isDraggingRecordings = true"
+              @dragover.prevent="isDraggingRecordings = true"
+              @dragleave.prevent="isDraggingRecordings = false"
+              @drop.prevent="onRecordingsDrop"
+            >
+              <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p class="text-sm font-medium">Drop .ogg files here</p>
+                  <p class="text-xs text-muted-foreground">
+                    Filenames must end with the line number, such as 1.ogg or quest-npc-42.ogg.
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  class="gap-2 self-start sm:self-auto"
+                  @click="recordingsInput?.click()"
+                >
+                  <FileUp class="size-4" />
+                  Choose files
+                </Button>
+              </div>
+              <input
+                id="dialog-npc-recordings"
+                ref="recordingsInput"
+                type="file"
+                multiple
+                accept=".ogg,audio/ogg"
+                class="sr-only"
+                @change="onRecordingFilesPicked"
+              />
+            </div>
+
+            <div v-if="recordingFiles.length > 0" class="grid gap-2 md:grid-cols-2 xl:grid-cols-3">
+              <div
+                v-for="(file, index) in recordingFiles"
+                :key="`${file.name}-${file.size}-${index}`"
+                class="flex min-w-0 items-center justify-between gap-3 rounded-md border px-3 py-2 text-sm"
+              >
+                <span class="min-w-0 truncate">{{ file.name }}</span>
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="ghost"
+                  aria-label="Remove recording"
+                  @click="removeRecordingFile(index)"
+                >
+                  <X class="size-4" />
+                </Button>
+              </div>
+            </div>
+
+            <div class="flex justify-end">
+              <Button
+                class="gap-2"
+                :disabled="
+                  recordingFiles.length === 0 || uploadNpcRecordingsMutation.isPending.value
+                "
+                @click="uploadRecordings"
+              >
+                <FileUp class="size-4" />
+                Upload recordings
+              </Button>
+            </div>
+
+            <div v-if="recordingResults.length > 0" class="grid gap-2 lg:grid-cols-2">
+              <div
+                v-for="result in recordingResults"
+                :key="`${result.fileName}-${result.code}`"
+                class="min-w-0 rounded-md border px-3 py-2 text-sm"
+              >
+                <div class="flex items-center justify-between gap-3">
+                  <span class="min-w-0 truncate font-medium">{{ result.fileName }}</span>
+                  <span
+                    class="shrink-0 rounded-sm px-2 py-0.5 text-xs font-medium"
+                    :class="
+                      result.code >= 200 && result.code < 300
+                        ? 'bg-emerald-500/10 text-emerald-700'
+                        : 'bg-destructive/10 text-destructive'
+                    "
+                  >
+                    {{ result.code }} {{ result.message }}
+                  </span>
+                </div>
+                <p class="mt-1 text-xs text-muted-foreground">{{ result.description }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-3 border-t pt-4">
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <p class="text-sm font-medium">Existing recordings</p>
+                <p class="text-xs text-muted-foreground">
+                  Recordings linked to this quest and NPC.
+                </p>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                :disabled="npcRecordingsQuery.isFetching.value"
+                @click="npcRecordingsQuery.refetch()"
+              >
+                Refresh
+              </Button>
+            </div>
+
+            <div
+              v-if="npcRecordingsQuery.isLoading.value"
+              class="flex items-center gap-2 rounded-md border px-3 py-2 text-sm text-muted-foreground"
+            >
+              <Loader2 class="size-4 animate-spin" />
+              Loading recordings...
+            </div>
+            <div
+              v-else-if="npcRecordingsQuery.isError.value"
+              class="rounded-md border border-destructive/50 bg-destructive/5 px-3 py-2 text-sm text-destructive"
+            >
+              Existing recordings could not be loaded.
+            </div>
+            <div
+              v-else-if="npcRecordings.length === 0"
+              class="rounded-md border px-3 py-2 text-sm text-muted-foreground"
+            >
+              No recordings uploaded for this NPC in this quest.
+            </div>
+            <div v-else class="grid gap-2 xl:grid-cols-2">
+              <div
+                v-for="recording in npcRecordings"
+                :key="recording.recordingId"
+                class="grid min-w-0 gap-2 rounded-md border px-3 py-2 text-sm sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"
+              >
+                <div class="min-w-0 space-y-2">
+                  <div class="flex items-center gap-2">
+                    <span class="font-medium">Line {{ recording.line }}</span>
+                    <span class="min-w-0 truncate text-muted-foreground">
+                      {{ recording.fileName }}
+                    </span>
+                  </div>
+                  <audio controls preload="none" :src="recording.url" class="h-9 w-full min-w-0" />
+                </div>
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="destructive"
+                  aria-label="Delete recording"
+                  :disabled="deletingRecordingId === recording.recordingId"
+                  @click="deleteRecording(recording.recordingId)"
+                >
+                  <Loader2
+                    v-if="deletingRecordingId === recording.recordingId"
+                    class="size-4 animate-spin"
+                  />
+                  <Trash2 v-else class="size-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+
           <div
             class="flex flex-col gap-3 border-t pt-4 sm:flex-row sm:items-center sm:justify-between"
           >
-            <p v-if="selectedNpc.recordingCount > 0" class="text-sm text-muted-foreground">
+            <p v-if="selectedNpcRecordingCount > 0" class="text-sm text-muted-foreground">
               Unlinking is blocked because this NPC has
-              {{ selectedNpc.recordingCount }}
-              {{ selectedNpc.recordingCount === 1 ? 'recording' : 'recordings' }}
+              {{ selectedNpcRecordingCount }}
+              {{ selectedNpcRecordingCount === 1 ? 'recording' : 'recordings' }}
               in this quest.
             </p>
             <div v-else />
             <Button
               variant="destructive"
               class="gap-2 self-start sm:self-auto"
-              :disabled="selectedNpc.recordingCount > 0 || unlinkQuestNpcMutation.isPending.value"
+              :disabled="selectedNpcRecordingCount > 0 || unlinkQuestNpcMutation.isPending.value"
               @click="unlinkNpc"
             >
               <Unlink class="size-4" />

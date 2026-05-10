@@ -25,6 +25,13 @@ public interface IContentRepository
 
     Task<string?> GetNpcDegeneratedNameAsync(int npcId, CancellationToken cancellationToken);
 
+    Task<int?> GetQuestIdByDegeneratedNameAsync(string degeneratedName, CancellationToken cancellationToken);
+
+    Task<int?> GetQuestNpcIdByDegeneratedNameAsync(
+        int questId,
+        string degeneratedName,
+        CancellationToken cancellationToken);
+
     Task<bool> NpcDegeneratedNameConflictsForLinkedQuestsAsync(
         int npcId,
         string degeneratedName,
@@ -41,6 +48,44 @@ public interface IContentRepository
     Task<bool> QuestNpcLinkExistsAsync(int questId, int npcId, CancellationToken cancellationToken);
 
     Task<bool> QuestNpcHasRecordingsAsync(int questId, int npcId, CancellationToken cancellationToken);
+
+    Task<IReadOnlyCollection<NpcRecording>> GetQuestNpcRecordingsAsync(
+        int questId,
+        int npcId,
+        CancellationToken cancellationToken);
+
+    Task<RecordingFile?> GetQuestNpcRecordingFileAsync(
+        int questId,
+        int npcId,
+        int recordingId,
+        CancellationToken cancellationToken);
+
+    Task<RecordingFile?> GetRecordingByFileAsync(string fileName, CancellationToken cancellationToken);
+
+    Task<bool> RecordingFileBelongsToDifferentRecordingAsync(
+        string fileName,
+        int questId,
+        int npcId,
+        int line,
+        CancellationToken cancellationToken);
+
+    Task<bool> UpdateRecordingFileAsync(
+        int recordingId,
+        string fileName,
+        CancellationToken cancellationToken);
+
+    Task<CreatedContent> InsertRecordingAsync(
+        int questId,
+        int npcId,
+        int line,
+        string fileName,
+        CancellationToken cancellationToken);
+
+    Task<bool> DeleteQuestNpcRecordingAsync(
+        int questId,
+        int npcId,
+        int recordingId,
+        CancellationToken cancellationToken);
 
     Task<ContentSearchPage> SearchAsync(ContentSearchCriteria criteria, CancellationToken cancellationToken);
 
