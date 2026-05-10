@@ -12,7 +12,6 @@ class Account extends WebpageController
 {
 
     public const AVATAR_PATH_PREFIX = 'avatars/';
-    public const DISCORD_AVATAR_PATH_PREFIX = 'discord-avatars/';
 
     /**
      * @var User The user object that we're editing
@@ -169,6 +168,7 @@ class Account extends WebpageController
         }
 
         if (empty($validator->errors)) {
+            $pictureType = null;
             if ($_FILES['avatar']['error'] !== UPLOAD_ERR_NO_FILE) {
                 //Delete old avatars
                 $storage = Storage::get();
@@ -176,11 +176,12 @@ class Account extends WebpageController
 
                 //Save changes
                 $storage->upload($_FILES['avatar']['tmp_name'], self::AVATAR_PATH_PREFIX . $avatar);
+                $pictureType = User::PICTURE_TYPE_MANUAL;
             } else {
                 $avatar = $this->user->getAvatar();
             }
 
-            $this->user->update($email, $password, $displayName, $avatar, $bio, $discord, $youtube, $twitter, $castingcallclub, $publicEmail);
+            $this->user->update($email, $password, $displayName, $avatar, $bio, $discord, $youtube, $twitter, $castingcallclub, $publicEmail, $pictureType);
         }
 
         $result = $this->get(array());
@@ -199,4 +200,3 @@ class Account extends WebpageController
         return $result;
     }
 }
-

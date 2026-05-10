@@ -3,6 +3,7 @@
 namespace VoicesOfWynn\Models\Api\DiscordIntegration;
 
 use VoicesOfWynn\Controllers\Website\Account\Account;
+use VoicesOfWynn\Models\Db;
 use VoicesOfWynn\Models\Website\AccountManager;
 use VoicesOfWynn\Models\Website\DiscordRole;
 use VoicesOfWynn\Models\Website\User;
@@ -94,7 +95,7 @@ class DiscordManager
 
         $result = true;
 
-        if (!is_null($avatarUrl)) {
+        if (!is_null($avatarUrl) && $user->getPictureType() !== User::PICTURE_TYPE_MANUAL) {
             $result = $this->updateDiscordAvatar($user->getId(), $avatarUrl);
         }
 
@@ -137,8 +138,12 @@ class DiscordManager
             if ($error === 0) {
                 // Upload to storage
                 $storage = Storage::get();
-                $storage->upload($tempFile, Account::DISCORD_AVATAR_PATH_PREFIX . $userId . '.png', 'image/png');
-                return true;
+                $picture = $userId . '.png';
+                $storage->upload($tempFile, Account::AVATAR_PATH_PREFIX . $picture, 'image/png');
+                return (new Db('Website/DbInfo.ini'))->executeQuery(
+                    'UPDATE user SET picture = ?, picture_type = ? WHERE user_id = ?',
+                    array($picture, User::PICTURE_TYPE_DISCORD, $userId)
+                );
             }
             return false;
         } finally {
@@ -149,4 +154,3 @@ class DiscordManager
         }
     }
 }
-

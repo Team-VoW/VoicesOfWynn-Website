@@ -4,6 +4,7 @@ public sealed record AccountDetails(
     int UserId,
     string DisplayName,
     string Picture,
+    PictureType PictureType,
     string AvatarUrl,
     string DefaultAvatarUrl,
     string? DiscordId,

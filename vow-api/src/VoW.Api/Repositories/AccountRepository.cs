@@ -51,6 +51,7 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
                 u.user_id AS UserId,
                 u.display_name AS DisplayName,
                 u.picture AS Picture,
+                u.picture_type AS PictureType,
                 CAST(u.discord_id AS CHAR) AS DiscordId,
                 u.email AS Email,
                 u.discord AS Discord,
@@ -83,18 +84,23 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
             total,
             criteria.Page,
             criteria.PageSize,
-            users.Select(user => new AccountSummary(
-                user.UserId,
-                user.DisplayName,
-                user.Picture,
-                AvatarUrl(user.UserId, user.Picture),
-                DefaultAvatarUrl(),
-                user.Email,
-                user.Discord,
-                user.Youtube,
-                user.Twitter,
-                user.CastingCallClub,
-                rolesByUser.GetValueOrDefault(user.UserId, []))).ToArray());
+            users.Select(user =>
+            {
+                var pictureType = ParsePictureType(user.PictureType);
+                return new AccountSummary(
+                    user.UserId,
+                    user.DisplayName,
+                    user.Picture,
+                    pictureType,
+                    AvatarUrl(user.Picture, pictureType),
+                    DefaultAvatarUrl(),
+                    user.Email,
+                    user.Discord,
+                    user.Youtube,
+                    user.Twitter,
+                    user.CastingCallClub,
+                    rolesByUser.GetValueOrDefault(user.UserId, []));
+            }).ToArray());
     }
 
     public async Task<AccountDetails?> GetAsync(int userId, CancellationToken cancellationToken)
@@ -104,6 +110,7 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
                 user_id AS UserId,
                 display_name AS DisplayName,
                 picture AS Picture,
+                picture_type AS PictureType,
                 CAST(discord_id AS CHAR) AS DiscordId,
                 email AS Email,
                 public_email AS PublicEmail,
@@ -127,11 +134,13 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
         }
 
         var rolesByUser = await GetRoleIdsByUserAsync(connection, [userId], cancellationToken);
+        var pictureType = ParsePictureType(user.PictureType);
         return new AccountDetails(
             user.UserId,
             user.DisplayName,
             user.Picture,
-            AvatarUrl(user.UserId, user.Picture),
+            pictureType,
+            AvatarUrl(user.Picture, pictureType),
             DefaultAvatarUrl(),
             user.DiscordId,
             user.Email,
@@ -349,17 +358,23 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
 
     public async Task<bool> SetAvatarAsync(int userId, string picture, CancellationToken cancellationToken)
     {
-        const string sql = "UPDATE user SET picture = @Picture WHERE user_id = @UserId;";
+        const string sql = "UPDATE user SET picture = @Picture, picture_type = @PictureType WHERE user_id = @UserId;";
         await using var connection = new MySqlConnection(DatabaseSettings.GetWebsiteConnectionString(configuration));
-        var command = new CommandDefinition(sql, new { UserId = userId, Picture = picture }, cancellationToken: cancellationToken);
+        var command = new CommandDefinition(
+            sql,
+            new { UserId = userId, Picture = picture, PictureType = ToDatabaseValue(PictureType.Manual) },
+            cancellationToken: cancellationToken);
         return await connection.ExecuteAsync(command) > 0;
     }
 
     public async Task<bool> ClearAvatarAsync(int userId, CancellationToken cancellationToken)
     {
-        const string sql = "UPDATE user SET picture = DEFAULT WHERE user_id = @UserId;";
+        const string sql = "UPDATE user SET picture = DEFAULT, picture_type = @PictureType WHERE user_id = @UserId;";
         await using var connection = new MySqlConnection(DatabaseSettings.GetWebsiteConnectionString(configuration));
-        var command = new CommandDefinition(sql, new { UserId = userId }, cancellationToken: cancellationToken);
+        var command = new CommandDefinition(
+            sql,
+            new { UserId = userId, PictureType = ToDatabaseValue(PictureType.Default) },
+            cancellationToken: cancellationToken);
         return await connection.ExecuteAsync(command) > 0;
     }
 
@@ -414,12 +429,30 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
         "castingcallclub"
     ];
 
-    private string AvatarUrl(int userId, string picture) =>
-        picture == "default.png"
-            ? $"{storageBaseUrl}discord-avatars/{userId}.png"
+    private string AvatarUrl(string picture, PictureType pictureType) =>
+        pictureType == PictureType.Default
+            ? DefaultAvatarUrl()
             : $"{storageBaseUrl}avatars/{picture}";
 
     private string DefaultAvatarUrl() => $"{storageBaseUrl}avatars/default.png";
+
+    private static PictureType ParsePictureType(string value) =>
+        value switch
+        {
+            "default" => PictureType.Default,
+            "discord" => PictureType.Discord,
+            "manual" => PictureType.Manual,
+            _ => throw new InvalidOperationException($"Unknown picture type '{value}'.")
+        };
+
+    private static string ToDatabaseValue(PictureType pictureType) =>
+        pictureType switch
+        {
+            PictureType.Default => "default",
+            PictureType.Discord => "discord",
+            PictureType.Manual => "manual",
+            _ => throw new ArgumentOutOfRangeException(nameof(pictureType), pictureType, "Unknown picture type.")
+        };
 
     private static string NormalizeStorageBaseUrl(string value) =>
         value.EndsWith("/", StringComparison.Ordinal) ? value : $"{value}/";
@@ -435,6 +468,8 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
         public string DisplayName { get; set; } = string.Empty;
 
         public string Picture { get; set; } = string.Empty;
+
+        public string PictureType { get; set; } = string.Empty;
 
         public string? DiscordId { get; set; }
 
@@ -460,6 +495,8 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
         public string DisplayName { get; set; } = string.Empty;
 
         public string Picture { get; set; } = string.Empty;
+
+        public string PictureType { get; set; } = string.Empty;
 
         public string? DiscordId { get; set; }
 
