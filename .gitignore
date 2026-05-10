@@ -18,3 +18,4 @@ composer.phar
 *nul
 vow-api/**/bin/
 vow-api/**/obj/
+.playwright-mcp/

@@ -42,7 +42,7 @@ public sealed class ContentRepository(IConfiguration configuration) : IContentRe
             FROM user u
             JOIN user_discord_role udr ON udr.user_id = u.user_id
             WHERE udr.discord_role_id IN @RoleIds
-            ORDER BY u.display_name;
+            ORDER BY u.display_name, u.user_id;
             """;
 
         await using var connection = new MySqlConnection(DatabaseSettings.GetWebsiteConnectionString(configuration));

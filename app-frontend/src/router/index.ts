@@ -44,6 +44,12 @@ const router = createRouter({
           component: () => import('@/features/content/views/ContentManageView.vue'),
           meta: { capability: Capabilities.ContentManage },
         },
+        {
+          path: 'admin/accounts',
+          name: 'accounts',
+          component: () => import('@/features/accounts/views/AccountsManageView.vue'),
+          meta: { capability: Capabilities.AccountsManage },
+        },
       ],
     },
     { path: '/:pathMatch(.*)*', redirect: { name: 'reports' } },
