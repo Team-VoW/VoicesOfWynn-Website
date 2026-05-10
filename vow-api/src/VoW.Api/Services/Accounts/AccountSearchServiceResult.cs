@@ -6,7 +6,7 @@ public sealed record AccountSearchServiceResult(
     AccountSearchResponse? Response,
     IReadOnlyDictionary<string, string> Errors)
 {
-    public bool Succeeded => Errors.Count == 0;
+    public bool Succeeded => Errors.Count == 0 && Response is not null;
 
     public static AccountSearchServiceResult Success(AccountSearchResponse response) =>
         new(response, new Dictionary<string, string>());

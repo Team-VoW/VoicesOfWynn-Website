@@ -12,9 +12,13 @@ public interface IAccountRepository
 
     Task<bool> UserExistsAsync(int userId, CancellationToken cancellationToken);
 
+    Task<bool> IsSystemAdminAsync(int userId, CancellationToken cancellationToken);
+
     Task<bool> DisplayNameExistsAsync(int exceptUserId, string displayName, CancellationToken cancellationToken);
 
     Task<bool> EmailExistsAsync(int exceptUserId, string email, CancellationToken cancellationToken);
+
+    Task<bool> DiscordIdExistsAsync(int exceptUserId, string discordId, CancellationToken cancellationToken);
 
     Task<bool> SocialExistsAsync(int exceptUserId, string column, string value, CancellationToken cancellationToken);
 

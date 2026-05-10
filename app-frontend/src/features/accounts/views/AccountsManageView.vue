@@ -46,6 +46,7 @@ const formError = ref('')
 const form = reactive({
   displayName: '',
   password: '',
+  discordId: '',
   email: '',
   publicEmail: true,
   discord: '',
@@ -95,6 +96,7 @@ watch(selectedAccount, (account) => {
 function fillForm(account: AccountDetails) {
   form.displayName = account.displayName
   form.password = ''
+  form.discordId = account.discordId ?? ''
   form.email = account.email ?? ''
   form.publicEmail = account.publicEmail
   form.discord = account.discord ?? ''
@@ -131,6 +133,7 @@ function requestFromForm(): UpdateAccountRequest {
   return {
     displayName: form.displayName,
     password: optional(form.password),
+    discordId: optional(form.discordId),
     email: optional(form.email),
     publicEmail: form.publicEmail,
     discord: optional(form.discord),
@@ -420,6 +423,10 @@ function toggleRole(roleId: number, checked: boolean) {
                 <div class="space-y-2">
                   <Label for="email">Email</Label>
                   <Input id="email" v-model="form.email" maxlength="255" />
+                </div>
+                <div class="space-y-2">
+                  <Label for="discord-id">Discord ID</Label>
+                  <Input id="discord-id" v-model="form.discordId" maxlength="19" inputmode="numeric" />
                 </div>
                 <label class="flex items-end gap-2 pb-2 text-sm">
                   <input v-model="form.publicEmail" type="checkbox" class="size-4" />

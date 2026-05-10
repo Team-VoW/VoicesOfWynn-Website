@@ -6,6 +6,7 @@ public sealed record AccountDetails(
     string Picture,
     string AvatarUrl,
     string DefaultAvatarUrl,
+    string? DiscordId,
     string? Email,
     bool PublicEmail,
     string? Discord,

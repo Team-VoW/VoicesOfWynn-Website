@@ -182,6 +182,7 @@ export interface AccountDetails {
   displayName: string
   avatarUrl: string
   defaultAvatarUrl: string
+  discordId: string | null
   email: string | null
   publicEmail: boolean
   discord: string | null
@@ -197,8 +198,9 @@ export interface AccountDetails {
 export interface UpdateAccountRequest {
   displayName: string
   password?: string
+  discordId?: string
   email?: string
-  publicEmail: boolean
+  publicEmail?: boolean | null
   discord?: string
   youtube?: string
   twitter?: string

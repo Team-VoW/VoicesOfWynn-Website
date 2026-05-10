@@ -8,15 +8,23 @@ public static class AvatarImagePipeline
 {
     private const int TargetSize = 512;
     private const int WebpQuality = 90;
+    private const int MaxBytes = 8_000_000;
+    private const int MaxDimension = 4096;
+    private const int MaxPixels = 16_777_216;
 
     public static async Task<MemoryStream> NormalizeToWebpAsync(Stream input, CancellationToken cancellationToken)
     {
-        if (input.CanSeek)
+        var imageInput = await PrepareInputAsync(input, cancellationToken);
+        await using var preparedInput = ReferenceEquals(imageInput, input) ? null : imageInput;
+
+        var info = await Image.IdentifyAsync(imageInput, cancellationToken);
+        if (info.Width > MaxDimension || info.Height > MaxDimension || info.Width * (long)info.Height > MaxPixels)
         {
-            input.Position = 0;
+            throw new InvalidImageContentException("Avatar image dimensions exceed the allowed limits.");
         }
 
-        using var image = await Image.LoadAsync(input, cancellationToken);
+        imageInput.Position = 0;
+        using var image = await Image.LoadAsync(imageInput, cancellationToken);
         image.Mutate(ctx => ctx.Resize(new ResizeOptions
         {
             Size = new Size(TargetSize, TargetSize),
@@ -28,5 +36,43 @@ public static class AvatarImagePipeline
         await image.SaveAsync(output, new WebpEncoder { Quality = WebpQuality }, cancellationToken);
         output.Position = 0;
         return output;
+    }
+
+    private static async Task<Stream> PrepareInputAsync(Stream input, CancellationToken cancellationToken)
+    {
+        if (input.CanSeek)
+        {
+            input.Position = 0;
+            if (input.Length > MaxBytes)
+            {
+                throw new InvalidImageContentException("Avatar image exceeds the allowed byte limit.");
+            }
+
+            return input;
+        }
+
+        var buffer = new MemoryStream();
+        var copyBuffer = new byte[81920];
+        var total = 0;
+        while (true)
+        {
+            var read = await input.ReadAsync(copyBuffer, cancellationToken);
+            if (read == 0)
+            {
+                break;
+            }
+
+            total += read;
+            if (total > MaxBytes)
+            {
+                await buffer.DisposeAsync();
+                throw new InvalidImageContentException("Avatar image exceeds the allowed byte limit.");
+            }
+
+            await buffer.WriteAsync(copyBuffer.AsMemory(0, read), cancellationToken);
+        }
+
+        buffer.Position = 0;
+        return buffer;
     }
 }

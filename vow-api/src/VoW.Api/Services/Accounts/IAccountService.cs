@@ -20,5 +20,5 @@ public interface IAccountService
 
     Task<ResetPasswordServiceResult> ResetPasswordAsync(int userId, CancellationToken cancellationToken);
 
-    Task<AccountMutationResult> DeleteAsync(int userId, CancellationToken cancellationToken);
+    Task<AccountMutationResult> DeleteAsync(int userId, int callerId, CancellationToken cancellationToken);
 }

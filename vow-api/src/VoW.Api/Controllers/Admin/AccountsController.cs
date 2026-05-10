@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Mvc;
 using VoW.Api.Contracts.Accounts;
 using VoW.Api.Domain.Auth;
@@ -114,7 +115,13 @@ public sealed class AccountsController(IAccountService accountService) : Control
     [HttpDelete("{userId:int}")]
     public async Task<IActionResult> Delete(int userId, CancellationToken cancellationToken)
     {
-        var result = await accountService.DeleteAsync(userId, cancellationToken);
+        var subject = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+        if (!int.TryParse(subject, out var callerId))
+        {
+            return Unauthorized();
+        }
+
+        var result = await accountService.DeleteAsync(userId, callerId, cancellationToken);
         return result.Succeeded ? NoContent() : ProblemFrom(result);
     }
 
@@ -141,6 +148,11 @@ public sealed class AccountsController(IAccountService accountService) : Control
         if (!result.Found)
         {
             return NotFound();
+        }
+
+        if (result.IsForbidden)
+        {
+            return Forbid();
         }
 
         AddErrors(result.Errors);

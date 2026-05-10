@@ -89,5 +89,5 @@ export function useDeleteAccount() {
 }
 
 function invalidateAccounts(queryClient: ReturnType<typeof useQueryClient>) {
-  queryClient.invalidateQueries({ queryKey: ['accounts'] })
+  return queryClient.invalidateQueries({ queryKey: ['accounts'] })
 }

@@ -5,6 +5,7 @@ public sealed record AccountDetailsResponse(
     string DisplayName,
     string AvatarUrl,
     string DefaultAvatarUrl,
+    string? DiscordId,
     string? Email,
     bool PublicEmail,
     string? Discord,

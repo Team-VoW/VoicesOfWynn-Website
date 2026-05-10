@@ -11,11 +11,13 @@ namespace VoW.Api.Services.Accounts;
 
 public sealed partial class AccountService(
     IAccountRepository accountRepository,
-    IAccountAvatarStorage avatarStorage) : IAccountService
+    IAccountAvatarStorage avatarStorage,
+    ILogger<AccountService> logger) : IAccountService
 {
     private const int DisplayNameMinLength = 3;
     private const int DisplayNameMaxLength = 31;
     private const int EmailMaxLength = 255;
+    private const int DiscordIdMaxLength = 19;
     private const int PasswordMinLength = 6;
     private const int DiscordMinLength = 2;
     private const int DiscordMaxLength = 37;
@@ -64,6 +66,7 @@ public sealed partial class AccountService(
                 account.DisplayName,
                 account.AvatarUrl,
                 account.DefaultAvatarUrl,
+                account.DiscordId,
                 account.Email,
                 account.PublicEmail,
                 account.Discord,
@@ -102,6 +105,20 @@ public sealed partial class AccountService(
         if (password is not null && password.Length < PasswordMinLength)
         {
             return AccountMutationResult.Invalid(nameof(request.Password), $"Password must be at least {PasswordMinLength} characters long.");
+        }
+
+        var discordId = NormalizeOptional(request.DiscordId);
+        if (discordId is not null)
+        {
+            if (discordId.Length > DiscordIdMaxLength || !DiscordIdRegex().IsMatch(discordId) || !long.TryParse(discordId, out var parsedDiscordId) || parsedDiscordId <= 0)
+            {
+                return AccountMutationResult.Invalid(nameof(request.DiscordId), "Discord ID must be a positive numeric Discord user ID.");
+            }
+
+            if (await accountRepository.DiscordIdExistsAsync(userId, discordId, cancellationToken))
+            {
+                return AccountMutationResult.Invalid(nameof(request.DiscordId), "This Discord ID is already linked by another user.");
+            }
         }
 
         var email = NormalizeOptional(request.Email);
@@ -208,6 +225,7 @@ public sealed partial class AccountService(
                 new UpdateAccountCommand(
                     displayName!,
                     passwordHash,
+                    discordId,
                     email,
                     request.PublicEmail,
                     discord,
@@ -236,7 +254,7 @@ public sealed partial class AccountService(
             return AccountMutationResult.NotFound();
         }
 
-        var requestedRoleIds = (request.RoleIds ?? []).Distinct().ToArray();
+        var requestedRoleIds = request.RoleIds.Distinct().ToArray();
         var validRoleIds = (await accountRepository.GetRolesAsync(cancellationToken)).Select(role => role.Id).ToHashSet();
         if (requestedRoleIds.Any(roleId => !validRoleIds.Contains(roleId)))
         {
@@ -258,12 +276,35 @@ public sealed partial class AccountService(
             return AccountMutationResult.NotFound();
         }
 
-        await using var webp = await AvatarImagePipeline.NormalizeToWebpAsync(image, cancellationToken);
+        MemoryStream webp;
+        try
+        {
+            webp = await AvatarImagePipeline.NormalizeToWebpAsync(image, cancellationToken);
+        }
+        catch (SixLabors.ImageSharp.UnknownImageFormatException)
+        {
+            return AccountMutationResult.Invalid("file", "The uploaded file is not a recognized image.");
+        }
+        catch (SixLabors.ImageSharp.InvalidImageContentException)
+        {
+            return AccountMutationResult.Invalid("file", "The uploaded image is corrupted or could not be decoded.");
+        }
+
+        await using var normalized = webp;
         await avatarStorage.DeleteCustomAvatarsAsync(userId, cancellationToken);
-        await avatarStorage.UploadAvatarAsync(userId, webp, cancellationToken);
-        return await accountRepository.SetAvatarAsync(userId, $"{userId}.webp", cancellationToken)
-            ? AccountMutationResult.Success()
-            : AccountMutationResult.NotFound();
+        logger.LogInformation("Deleted existing custom avatars for user {UserId}.", userId);
+        await avatarStorage.UploadAvatarAsync(userId, normalized, cancellationToken);
+        logger.LogInformation("Uploaded replacement avatar for user {UserId}.", userId);
+        if (await accountRepository.SetAvatarAsync(userId, $"{userId}.webp", cancellationToken))
+        {
+            logger.LogInformation("Set avatar database value for user {UserId}.", userId);
+            return AccountMutationResult.Success();
+        }
+
+        logger.LogWarning(
+            "Uploaded avatar for user {UserId}, but the database avatar update did not affect an account.",
+            userId);
+        return AccountMutationResult.NotFound();
     }
 
     public async Task<AccountMutationResult> ClearAvatarAsync(int userId, CancellationToken cancellationToken)
@@ -301,11 +342,16 @@ public sealed partial class AccountService(
             : ResetPasswordServiceResult.NotFound();
     }
 
-    public async Task<AccountMutationResult> DeleteAsync(int userId, CancellationToken cancellationToken)
+    public async Task<AccountMutationResult> DeleteAsync(int userId, int callerId, CancellationToken cancellationToken)
     {
         if (!await accountRepository.UserExistsAsync(userId, cancellationToken))
         {
             return AccountMutationResult.NotFound();
+        }
+
+        if (userId == callerId || await accountRepository.IsSystemAdminAsync(userId, cancellationToken))
+        {
+            return AccountMutationResult.Forbidden();
         }
 
         return await accountRepository.DeleteAsync(userId, cancellationToken)
@@ -400,4 +446,7 @@ public sealed partial class AccountService(
 
     [GeneratedRegex(@"^[0-9a-z_.]*$", RegexOptions.CultureInvariant)]
     private static partial Regex DiscordRegex();
+
+    [GeneratedRegex(@"^[0-9]+$", RegexOptions.CultureInvariant)]
+    private static partial Regex DiscordIdRegex();
 }

@@ -6,6 +6,9 @@ namespace VoW.Api.Repositories;
 
 public sealed class AccountRepository(IConfiguration configuration) : IAccountRepository
 {
+    private readonly string storageBaseUrl = NormalizeStorageBaseUrl(
+        configuration["Storage:BaseUrl"] ?? "https://vow.blob.core.windows.net/vow-dynamic/");
+
     public async Task<IReadOnlyCollection<AccountRole>> GetRolesAsync(CancellationToken cancellationToken)
     {
         const string sql = """
@@ -32,6 +35,7 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
                    OR u.youtube LIKE @Query
                    OR u.twitter LIKE @Query
                    OR u.castingcallclub LIKE @Query
+                   OR CAST(u.discord_id AS CHAR) = @ExactQuery
                    OR CAST(u.user_id AS CHAR) = @ExactQuery
                 """;
             parameters.Add("Query", $"%{criteria.Query}%");
@@ -47,6 +51,7 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
                 u.user_id AS UserId,
                 u.display_name AS DisplayName,
                 u.picture AS Picture,
+                CAST(u.discord_id AS CHAR) AS DiscordId,
                 u.email AS Email,
                 u.discord AS Discord,
                 u.youtube AS Youtube,
@@ -99,6 +104,7 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
                 user_id AS UserId,
                 display_name AS DisplayName,
                 picture AS Picture,
+                CAST(discord_id AS CHAR) AS DiscordId,
                 email AS Email,
                 public_email AS PublicEmail,
                 discord AS Discord,
@@ -127,6 +133,7 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
             user.Picture,
             AvatarUrl(user.UserId, user.Picture),
             DefaultAvatarUrl(),
+            user.DiscordId,
             user.Email,
             user.PublicEmail != 0,
             user.Discord,
@@ -142,6 +149,14 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
     public async Task<bool> UserExistsAsync(int userId, CancellationToken cancellationToken)
     {
         const string sql = "SELECT COUNT(*) FROM user WHERE user_id = @UserId;";
+        await using var connection = new MySqlConnection(DatabaseSettings.GetWebsiteConnectionString(configuration));
+        var command = new CommandDefinition(sql, new { UserId = userId }, cancellationToken: cancellationToken);
+        return await connection.ExecuteScalarAsync<int>(command) > 0;
+    }
+
+    public async Task<bool> IsSystemAdminAsync(int userId, CancellationToken cancellationToken)
+    {
+        const string sql = "SELECT COUNT(*) FROM user WHERE user_id = @UserId AND system_admin <> 0;";
         await using var connection = new MySqlConnection(DatabaseSettings.GetWebsiteConnectionString(configuration));
         var command = new CommandDefinition(sql, new { UserId = userId }, cancellationToken: cancellationToken);
         return await connection.ExecuteScalarAsync<int>(command) > 0;
@@ -173,6 +188,19 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
         return await connection.ExecuteScalarAsync<int>(command) > 0;
     }
 
+    public async Task<bool> DiscordIdExistsAsync(int exceptUserId, string discordId, CancellationToken cancellationToken)
+    {
+        const string sql = """
+            SELECT COUNT(*)
+            FROM user
+            WHERE CAST(discord_id AS CHAR) = @DiscordId
+              AND user_id <> @ExceptUserId;
+            """;
+        await using var connection = new MySqlConnection(DatabaseSettings.GetWebsiteConnectionString(configuration));
+        var command = new CommandDefinition(sql, new { ExceptUserId = exceptUserId, DiscordId = discordId }, cancellationToken: cancellationToken);
+        return await connection.ExecuteScalarAsync<int>(command) > 0;
+    }
+
     public async Task<bool> SocialExistsAsync(int exceptUserId, string column, string value, CancellationToken cancellationToken)
     {
         if (!AllowedSocialColumns.Contains(column))
@@ -196,7 +224,8 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
         var sql = command.PasswordHash is null
             ? """
                 UPDATE user
-                SET email = @Email,
+                SET discord_id = @DiscordId,
+                    email = @Email,
                     display_name = @DisplayName,
                     bio = @Bio,
                     lore = @Lore,
@@ -204,12 +233,13 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
                     youtube = @Youtube,
                     twitter = @Twitter,
                     castingcallclub = @CastingCallClub,
-                    public_email = @PublicEmail
+                    public_email = COALESCE(@PublicEmail, public_email)
                 WHERE user_id = @UserId;
                 """
             : """
                 UPDATE user
-                SET email = @Email,
+                SET discord_id = @DiscordId,
+                    email = @Email,
                     password = @PasswordHash,
                     display_name = @DisplayName,
                     bio = @Bio,
@@ -218,7 +248,7 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
                     youtube = @Youtube,
                     twitter = @Twitter,
                     castingcallclub = @CastingCallClub,
-                    public_email = @PublicEmail
+                    public_email = COALESCE(@PublicEmail, public_email)
                 WHERE user_id = @UserId;
                 """;
 
@@ -230,8 +260,9 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
                 UserId = userId,
                 command.DisplayName,
                 command.PasswordHash,
+                command.DiscordId,
                 command.Email,
-                PublicEmail = command.PublicEmail ? 1 : 0,
+                PublicEmail = command.PublicEmail is null ? (int?)null : command.PublicEmail.Value ? 1 : 0,
                 command.Discord,
                 command.Youtube,
                 command.Twitter,
@@ -352,8 +383,6 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
                 group => (IReadOnlyCollection<int>)group.Select(row => row.RoleId).Distinct().ToArray());
     }
 
-    private const string StorageBaseUrl = "https://voicesofwynn.blob.core.windows.net/vow-dynamic/";
-
     private static readonly HashSet<string> AllowedSocialColumns =
     [
         "discord",
@@ -362,12 +391,15 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
         "castingcallclub"
     ];
 
-    private static string AvatarUrl(int userId, string picture) =>
+    private string AvatarUrl(int userId, string picture) =>
         picture == "default.png"
-            ? $"{StorageBaseUrl}discord-avatars/{userId}.png"
-            : $"{StorageBaseUrl}avatars/{picture}";
+            ? $"{storageBaseUrl}discord-avatars/{userId}.png"
+            : $"{storageBaseUrl}avatars/{picture}";
 
-    private static string DefaultAvatarUrl() => $"{StorageBaseUrl}avatars/default.png";
+    private string DefaultAvatarUrl() => $"{storageBaseUrl}avatars/default.png";
+
+    private static string NormalizeStorageBaseUrl(string value) =>
+        value.EndsWith("/", StringComparison.Ordinal) ? value : $"{value}/";
 
     private sealed class AccountRow
     {
@@ -380,6 +412,8 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
         public string DisplayName { get; set; } = string.Empty;
 
         public string Picture { get; set; } = string.Empty;
+
+        public string? DiscordId { get; set; }
 
         public string? Email { get; set; }
 
@@ -403,6 +437,8 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
         public string DisplayName { get; set; } = string.Empty;
 
         public string Picture { get; set; } = string.Empty;
+
+        public string? DiscordId { get; set; }
 
         public string? Email { get; set; }
 

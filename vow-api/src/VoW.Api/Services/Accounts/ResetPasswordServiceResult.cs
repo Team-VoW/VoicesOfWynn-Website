@@ -5,7 +5,7 @@ public sealed record ResetPasswordServiceResult(
     IReadOnlyDictionary<string, string> Errors,
     bool Found = true)
 {
-    public bool Succeeded => Found && Errors.Count == 0;
+    public bool Succeeded => Found && Errors.Count == 0 && TemporaryPassword is not null;
 
     public static ResetPasswordServiceResult Success(string temporaryPassword) =>
         new(temporaryPassword, new Dictionary<string, string>());
