@@ -14,7 +14,8 @@ import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import type { AccountDetails, AccountSearchRequest, UpdateAccountRequest } from '@/api/types'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import type { AccountDetails, AccountRole, AccountSearchRequest, UpdateAccountRequest } from '@/api/types'
 import { messageFromContentError } from '@/features/content/contentUtils'
 import AccountAvatarCropDialog from '../components/AccountAvatarCropDialog.vue'
 import {
@@ -81,6 +82,18 @@ const resetPasswordMutation = useResetAccountPassword()
 const deleteAccountMutation = useDeleteAccount()
 
 const results = computed(() => searchData.value?.results ?? [])
+const roleMap = computed(() => {
+  const map = new Map<number, AccountRole>()
+  for (const role of roles.value ?? []) map.set(role.id, role)
+  return map
+})
+
+function rolesFor(roleIds: number[]): AccountRole[] {
+  return roleIds
+    .map((id) => roleMap.value.get(id))
+    .filter((role): role is AccountRole => role !== undefined)
+    .sort((a, b) => b.weight - a.weight)
+}
 const total = computed(() => searchData.value?.total ?? 0)
 const pageCount = computed(() => Math.max(1, Math.ceil(total.value / pageSize.value)))
 
@@ -294,7 +307,27 @@ function toggleRole(roleId: number, checked: boolean) {
                 </td>
                 <td class="px-3 py-2">
                   <div class="font-medium">{{ account.displayName }}</div>
-                  <div class="text-xs text-muted-foreground">#{{ account.userId }}</div>
+                  <div class="flex items-center gap-2 text-xs text-muted-foreground">
+                    <span>#{{ account.userId }}</span>
+                    <span
+                      v-if="account.roleIds.length"
+                      class="flex items-center gap-1"
+                    >
+                      <Tooltip
+                        v-for="role in rolesFor(account.roleIds)"
+                        :key="role.id"
+                      >
+                        <TooltipTrigger as-child>
+                          <span
+                            :aria-label="role.name"
+                            class="size-2 rounded-full ring-1 ring-black/10"
+                            :style="{ backgroundColor: `#${role.color}` }"
+                          />
+                        </TooltipTrigger>
+                        <TooltipContent>{{ role.name }}</TooltipContent>
+                      </Tooltip>
+                    </span>
+                  </div>
                 </td>
                 <td class="hidden max-w-md truncate px-3 py-2 text-muted-foreground md:table-cell">
                   {{ account.socialSummary || 'No profile links' }}
