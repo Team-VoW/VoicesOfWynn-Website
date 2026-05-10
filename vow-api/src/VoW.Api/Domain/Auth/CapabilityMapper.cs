@@ -5,6 +5,7 @@ public static class CapabilityMapper
     public const string ClaimType = "capability";
     public const string ReportsViewClaim = "reports.view";
     public const string ReportsManageClaim = "reports.manage";
+    public const string AnalyticsViewClaim = "analytics.view";
     public const string ContentManageClaim = "content.manage";
     public const string AccountsManageClaim = "accounts.manage";
 
@@ -12,6 +13,7 @@ public static class CapabilityMapper
     [
         Capability.ReportsView,
         Capability.ReportsManage,
+        Capability.AnalyticsView,
         Capability.ContentManage,
         Capability.AccountsManage
     ];
@@ -44,6 +46,7 @@ public static class CapabilityMapper
         if (roleSet.Overlaps(ReportViewRoles))
         {
             capabilities.Add(Capability.ReportsView);
+            capabilities.Add(Capability.AnalyticsView);
         }
 
         return capabilities;
@@ -53,6 +56,7 @@ public static class CapabilityMapper
     {
         Capability.ReportsView => ReportsViewClaim,
         Capability.ReportsManage => ReportsManageClaim,
+        Capability.AnalyticsView => AnalyticsViewClaim,
         Capability.ContentManage => ContentManageClaim,
         Capability.AccountsManage => AccountsManageClaim,
         _ => throw new ArgumentOutOfRangeException(nameof(capability), capability, null)

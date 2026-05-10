@@ -39,6 +39,12 @@ const router = createRouter({
           meta: { capability: Capabilities.ReportsView },
         },
         {
+          path: 'admin/analytics',
+          name: 'analytics',
+          component: () => import('@/features/analytics/views/DailyUsageAnalyticsView.vue'),
+          meta: { capability: Capabilities.AnalyticsView },
+        },
+        {
           path: 'admin/content',
           name: 'content',
           component: () => import('@/features/content/views/ContentManageView.vue'),

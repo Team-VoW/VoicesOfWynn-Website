@@ -45,6 +45,23 @@ export interface ReportSearchResponse {
   results: ReportSearchResult[]
 }
 
+export type DailyUsageRange = '30' | '90' | '365' | 'all'
+
+export interface DailyUsagePoint {
+  date: string
+  bootups: number
+  rollingAverage7Day: number
+}
+
+export interface DailyUsageResponse {
+  range: DailyUsageRange
+  totalBootups: number
+  averageBootupsPerDay: number
+  peakDay: DailyUsagePoint | null
+  previousPeriodChangePercent: number | null
+  points: DailyUsagePoint[]
+}
+
 export interface AuthTokenResponse {
   accessToken: string
   refreshToken: string

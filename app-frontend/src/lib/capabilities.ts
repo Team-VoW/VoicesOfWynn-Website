@@ -3,6 +3,7 @@
 export const Capabilities = {
   ReportsView: 'reports.view',
   ReportsManage: 'reports.manage',
+  AnalyticsView: 'analytics.view',
   ContentManage: 'content.manage',
   AccountsManage: 'accounts.manage',
 } as const
