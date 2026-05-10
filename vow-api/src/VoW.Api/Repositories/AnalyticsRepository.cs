@@ -14,7 +14,7 @@ public sealed class AnalyticsRepository(IConfiguration configuration) : IAnalyti
         int? days,
         CancellationToken cancellationToken)
     {
-        var whereSql = days is null ? string.Empty : "WHERE date >= DATE_SUB(CURRENT_DATE(), INTERVAL @Days DAY)";
+        var whereSql = days is null ? string.Empty : "WHERE date >= DATE_SUB(CURRENT_DATE(), INTERVAL (@Days - 1) DAY)";
         var sql = $"""
             SELECT
                 date AS Date,

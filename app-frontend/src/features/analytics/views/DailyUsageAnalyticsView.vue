@@ -14,6 +14,7 @@ import {
   type ChartOptions,
 } from 'chart.js'
 import { Activity, ArrowDownRight, ArrowUpRight, CalendarDays, Flame, TrendingUp } from 'lucide-vue-next'
+import type { AcceptableValue } from 'reka-ui'
 import { Bar, Line } from 'vue-chartjs'
 import { computed, ref } from 'vue'
 import { useDailyUsage } from '../queries'
@@ -107,11 +108,12 @@ const lineChartData = computed<ChartData<'line'>>(() => ({
 }))
 
 const weekdayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+type WeekdayIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6
 const weekdayData = computed(() => {
-  const totals = Array.from({ length: 7 }, () => 0)
+  const totals: [number, number, number, number, number, number, number] = [0, 0, 0, 0, 0, 0, 0]
   for (const point of points.value) {
-    const weekday = parseDate(point.date).getDay()
-    totals[weekday] = (totals[weekday] ?? 0) + point.bootups
+    const weekday = parseDate(point.date).getDay() as WeekdayIndex
+    totals[weekday] += point.bootups
   }
   return totals
 })
@@ -204,7 +206,7 @@ const latestPoint = computed(() => points.value.at(-1) ?? null)
 const changePercent = computed(() => data.value?.previousPeriodChangePercent ?? null)
 const isPositiveChange = computed(() => (changePercent.value ?? 0) >= 0)
 
-function updateRange(value: unknown) {
+function updateRange(value: AcceptableValue | AcceptableValue[]) {
   if (typeof value === 'string' && value) {
     range.value = value as DailyUsageRange
   }
