@@ -4,6 +4,7 @@ public enum Capability
 {
     ReportsView,
     ReportsManage,
+    AnalyticsView,
     ContentManage,
     AccountsManage
 }
