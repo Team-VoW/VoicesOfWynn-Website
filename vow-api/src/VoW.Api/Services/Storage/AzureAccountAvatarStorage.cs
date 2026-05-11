@@ -8,7 +8,8 @@ public sealed class AzureAccountAvatarStorage : IAccountAvatarStorage
 {
     private const string ContainerName = "vow-dynamic";
     private const string AvatarKeyPrefix = "avatars/";
-    private const string ImageContentType = "image/webp";
+    private const string WebpImageContentType = "image/webp";
+    private const string PngImageContentType = "image/png";
     private const string ImageCacheControl = "public, max-age=3600";
 
     private readonly BlobContainerClient containerClient;
@@ -20,11 +21,22 @@ public sealed class AzureAccountAvatarStorage : IAccountAvatarStorage
 
     public async Task UploadAvatarAsync(int userId, Stream webpContent, CancellationToken cancellationToken)
     {
-        var blob = containerClient.GetBlobClient(BlobKey(userId));
+        var blob = containerClient.GetBlobClient(WebpBlobKey(userId));
         await blob.UploadAsync(webpContent, overwrite: true, cancellationToken);
         await blob.SetHttpHeadersAsync(new BlobHttpHeaders
         {
-            ContentType = ImageContentType,
+            ContentType = WebpImageContentType,
+            CacheControl = ImageCacheControl,
+        }, cancellationToken: cancellationToken);
+    }
+
+    public async Task UploadDiscordAvatarAsync(int userId, Stream pngContent, CancellationToken cancellationToken)
+    {
+        var blob = containerClient.GetBlobClient(PngBlobKey(userId));
+        await blob.UploadAsync(pngContent, overwrite: true, cancellationToken);
+        await blob.SetHttpHeadersAsync(new BlobHttpHeaders
+        {
+            ContentType = PngImageContentType,
             CacheControl = ImageCacheControl,
         }, cancellationToken: cancellationToken);
     }
@@ -38,6 +50,9 @@ public sealed class AzureAccountAvatarStorage : IAccountAvatarStorage
         }
     }
 
-    private static string BlobKey(int userId) =>
+    private static string WebpBlobKey(int userId) =>
         $"{AvatarKeyPrefix}{userId.ToString(CultureInfo.InvariantCulture)}.webp";
+
+    private static string PngBlobKey(int userId) =>
+        $"{AvatarKeyPrefix}{userId.ToString(CultureInfo.InvariantCulture)}.png";
 }
