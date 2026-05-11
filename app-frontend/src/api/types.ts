@@ -9,6 +9,7 @@ export const REPORT_STATUSES: ReportStatus[] = [
 ]
 
 export const REPORT_SORT_FIELDS = [
+  'reportId',
   'npcName',
   'chatMessage',
   'status',

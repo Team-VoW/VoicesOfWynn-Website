@@ -43,6 +43,7 @@ interface Column {
 }
 
 const columns: Column[] = [
+  { key: 'reportId', label: 'Report ID', headClass: 'w-[120px]', align: 'right' },
   { key: 'npcName', label: 'NPC', headClass: 'w-[180px]' },
   { key: 'chatMessage', label: 'Message' },
   { key: 'status', label: 'Status', headClass: 'w-[120px]' },
@@ -81,6 +82,7 @@ function cycleSort(key: ReportSortField) {
 }
 
 const skeletonClassFor: Record<ReportSortField, string> = {
+  reportId: 'ml-auto h-4 w-12',
   npcName: 'h-4 w-24',
   chatMessage: 'h-4 w-full',
   status: 'h-5 w-16',
@@ -134,7 +136,10 @@ const skeletonClassFor: Record<ReportSortField, string> = {
         <TableEmpty v-else-if="results.length === 0" :colspan="totalColumns || 1">No reports match the filters.</TableEmpty>
         <TableRow v-for="r in results" v-else :key="r.reportId" :class="loading && 'opacity-60'">
           <template v-for="col in visibleColumns" :key="col.key">
-            <TableCell v-if="col.key === 'npcName'" class="max-w-[180px] font-medium">
+            <TableCell v-if="col.key === 'reportId'" class="text-right font-mono tabular-nums text-muted-foreground">
+              {{ r.reportId }}
+            </TableCell>
+            <TableCell v-else-if="col.key === 'npcName'" class="max-w-[180px] font-medium">
               <TruncatedCell :text="r.npcName ?? '—'" />
             </TableCell>
             <TableCell v-else-if="col.key === 'chatMessage'">

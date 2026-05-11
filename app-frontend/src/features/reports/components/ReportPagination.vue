@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
   Select,
@@ -34,6 +35,7 @@ const canPrev = computed(() => currentPage.value > 1)
 const canNext = computed(() => currentPage.value < totalPages.value)
 const rangeStart = computed(() => (safeTotal.value === 0 ? 0 : (currentPage.value - 1) * safePageSize.value + 1))
 const rangeEnd = computed(() => Math.min(safeTotal.value, currentPage.value * safePageSize.value))
+const pageInput = ref(String(currentPage.value))
 const pageSizeValue = computed({
   get: () => String(props.pageSize),
   set: (value: string) => {
@@ -43,6 +45,26 @@ const pageSizeValue = computed({
     }
   },
 })
+
+watch(currentPage, (value) => {
+  pageInput.value = String(value)
+})
+
+function commitPageInput() {
+  const requestedPage = Number(pageInput.value)
+
+  if (!Number.isFinite(requestedPage)) {
+    pageInput.value = String(currentPage.value)
+    return
+  }
+
+  const nextPage = Math.min(Math.max(1, Math.trunc(requestedPage)), totalPages.value)
+  pageInput.value = String(nextPage)
+
+  if (nextPage !== props.page) {
+    emit('update:page', nextPage)
+  }
+}
 </script>
 
 <template>
@@ -73,6 +95,22 @@ const pageSizeValue = computed({
           Previous
         </Button>
         <span class="tabular-nums">Page {{ currentPage }} / {{ totalPages }}</span>
+        <div class="flex items-center gap-2">
+          <Label for="reports-page-jump" class="sr-only">Go to page</Label>
+          <Input
+            id="reports-page-jump"
+            v-model="pageInput"
+            type="number"
+            inputmode="numeric"
+            min="1"
+            :max="totalPages"
+            class="h-8 w-20 tabular-nums"
+            aria-label="Go to page"
+            @blur="commitPageInput"
+            @keydown.enter.prevent="commitPageInput"
+          />
+          <Button variant="outline" size="sm" @click="commitPageInput">Go</Button>
+        </div>
         <Button variant="outline" size="sm" :disabled="!canNext" @click="emit('update:page', currentPage + 1)">
           Next
         </Button>

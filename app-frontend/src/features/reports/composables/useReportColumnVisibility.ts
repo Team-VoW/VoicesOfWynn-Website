@@ -6,6 +6,7 @@ type Visibility = Record<ReportSortField, boolean>
 const STORAGE_KEY = 'vow.reports.columnVisibility'
 
 const DEFAULTS: Visibility = {
+  reportId: false,
   npcName: true,
   chatMessage: true,
   status: false,
@@ -14,6 +15,7 @@ const DEFAULTS: Visibility = {
 }
 
 export const REPORT_COLUMN_LABELS: Record<ReportSortField, string> = {
+  reportId: 'Report ID',
   npcName: 'NPC',
   chatMessage: 'Message',
   status: 'Status',

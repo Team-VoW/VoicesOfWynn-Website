@@ -8,6 +8,7 @@ public sealed class ReportRepository(IConfiguration configuration) : IReportRepo
 {
     private static string ColumnFor(ReportSortField field) => field switch
     {
+        ReportSortField.ReportId => "report_id",
         ReportSortField.NpcName => "npc_name",
         ReportSortField.ChatMessage => "chat_message",
         ReportSortField.Status => "status",
