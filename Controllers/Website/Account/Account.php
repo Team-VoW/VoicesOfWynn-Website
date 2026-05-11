@@ -182,14 +182,14 @@ class Account extends WebpageController
                 }
 
                 if ($uploaded) {
-                    if ($oldAvatar !== $avatar && $this->user->getPictureType() !== UserPictureType::Default) {
+                    if ($oldAvatar !== $avatar && $this->user->getPictureType() !== UserPictureType::DEFAULT) {
                         try {
                             $storage->delete(self::AVATAR_PATH_PREFIX . $oldAvatar);
                         } catch (\Throwable $e) {
                             // The new avatar is already stored; a stale old file should not block the account update.
                         }
                     }
-                    $pictureType = UserPictureType::Manual;
+                    $pictureType = UserPictureType::MANUAL;
                 } else {
                     $validator->errors[] = 'An unknown error occurred while saving the profile image – try again or ping shady_medic on Discord.';
                 }

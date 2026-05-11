@@ -46,7 +46,7 @@ class User implements JsonSerializable
     private bool $systemAdmin = false;
     private string $displayName = '';
     private string $avatarLink = '';
-    private UserPictureType|string $pictureType = UserPictureType::Default;
+    private UserPictureType|string $pictureType = UserPictureType::DEFAULT;
     private bool $pictureTypeKnown = false;
     private $bio = '';
     private $lore = '';
@@ -390,7 +390,7 @@ class User implements JsonSerializable
 
         $storage = Storage::get();
 
-        if ($this->getPictureType() !== UserPictureType::Default) {
+        if ($this->getPictureType() !== UserPictureType::DEFAULT) {
             return $storage->getUrl(Account::AVATAR_PATH_PREFIX . $this->avatarLink, $cacheBust);
         }
 
@@ -791,9 +791,9 @@ class User implements JsonSerializable
     public function clearAvatar(): bool
     {
         $this->avatarLink = 'default.png';
-        $this->pictureType = UserPictureType::Default;
+        $this->pictureType = UserPictureType::DEFAULT;
         $this->pictureTypeKnown = true;
-        $result = (new Db('Website/DbInfo.ini'))->executeQuery('UPDATE user SET picture = DEFAULT, picture_type = ? WHERE user_id = ?', array(UserPictureType::Default->value, $this->id));
+        $result = (new Db('Website/DbInfo.ini'))->executeQuery('UPDATE user SET picture = DEFAULT, picture_type = ? WHERE user_id = ?', array(UserPictureType::DEFAULT->value, $this->id));
         if ($result) {
             Storage::get()->deleteByPrefix(Account::AVATAR_PATH_PREFIX . $this->getId() . '.');
         }
@@ -806,7 +806,7 @@ class User implements JsonSerializable
             return $pictureType;
         }
 
-        return UserPictureType::tryFrom($pictureType ?? '') ?? UserPictureType::Default;
+        return UserPictureType::tryFrom($pictureType ?? '') ?? UserPictureType::DEFAULT;
     }
     
     /**

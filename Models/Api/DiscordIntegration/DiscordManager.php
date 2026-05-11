@@ -96,7 +96,7 @@ class DiscordManager
 
         $result = true;
 
-        if (!is_null($avatarUrl) && $user->getPictureType() !== UserPictureType::Manual) {
+        if (!is_null($avatarUrl) && $user->getPictureType() !== UserPictureType::MANUAL) {
             $result = $this->updateDiscordAvatar($user->getId(), $avatarUrl);
         }
 
@@ -151,7 +151,7 @@ class DiscordManager
                 }
                 return (new Db('Website/DbInfo.ini'))->executeQuery(
                     'UPDATE user SET picture = ?, picture_type = ? WHERE user_id = ?',
-                    array($picture, UserPictureType::Discord->value, $userId)
+                    array($picture, UserPictureType::DISCORD->value, $userId)
                 );
             }
             return false;
