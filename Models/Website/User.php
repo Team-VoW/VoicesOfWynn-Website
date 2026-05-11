@@ -46,6 +46,8 @@ class User implements JsonSerializable
     private bool $systemAdmin = false;
     private string $displayName = '';
     private string $avatarLink = '';
+    private UserPictureType|string $pictureType = UserPictureType::DEFAULT;
+    private bool $pictureTypeKnown = false;
     private $bio = '';
     private $lore = '';
 	private $discord = '';
@@ -88,19 +90,7 @@ class User implements JsonSerializable
         }
         $userInfo = (new Db('Website/DbInfo.ini'))->fetchQuery('SELECT * FROM user WHERE user_id = ?', array($this->id));
 
-        $this->id = $userInfo['user_id'];
-        $this->discordId = $userInfo['discord_id'];
-        $this->email = $userInfo['email'];
-        $this->hash = $userInfo['password'];
-        $this->systemAdmin = $userInfo['system_admin'];
-        $this->displayName = $userInfo['display_name'];
-        $this->avatarLink = $userInfo['picture'];
-        $this->bio = $userInfo['bio'];
-        $this->discord = $userInfo['discord'];
-        $this->youtube = $userInfo['youtube'];
-        $this->twitter = $userInfo['twitter'];
-        $this->castingcallclub = $userInfo['castingcallclub'];
-        $this->publicEmail = $userInfo['public_email'];
+        $this->setData($userInfo);
 
         $this->loaded = true;
     }
@@ -213,18 +203,7 @@ class User implements JsonSerializable
             return false;
         }
 
-        $this->id = $userInfo['user_id'];
-        $this->email = $userInfo['email'];
-        $this->hash = $userInfo['password'];
-        $this->systemAdmin = $userInfo['system_admin'];
-        $this->displayName = $userInfo['display_name'];
-        $this->avatarLink = $userInfo['picture'];
-        $this->bio = $userInfo['bio'];
-		$this->discord = $userInfo['discord'];
-		$this->youtube = $userInfo['youtube'];
-		$this->twitter = $userInfo['twitter'];
-		$this->castingcallclub = $userInfo['castingcallclub'];
-        $this->publicEmail = $userInfo['public_email'];
+        $this->setData($userInfo);
         
         $_SESSION['user'] = $this;
 
@@ -276,39 +255,32 @@ class User implements JsonSerializable
     }
     
     /**
-     * Logout the user by deleting its instance from the session and setting all of its properties to zero values
-     * This instance should be destroyed with unset() after calling this method
+     * Logout the user by deleting its instance from the session.
      */
     public function logout(): void
     {
         unset($_SESSION['user']);
-        
-        $this->id = 0;
-        $this->email = '';
-        $this->hash = '';
-        $this->systemAdmin = false;
-        $this->displayName = '';
-        $this->avatarLink = '';
-        $this->bio = '';
-        $this->lore = '';
-	    $this->discord = '';
-	    $this->youtube = '';
-	    $this->twitter = '';
-	    $this->castingcallclub = '';
-        $this->publicEmail = false;
-
-        $this->loaded = false;
     }
     
-    public function update($email, string $password, string $displayName, string $avatarLink, $bio, $discord, $youtube, $twitter, $castingcallclub, bool $publicEmail): bool
+    public function update($email, string $password, string $displayName, string $avatarLink, $bio, $discord, $youtube, $twitter, $castingcallclub, bool $publicEmail, ?UserPictureType $pictureType = null): bool
     {
         if (empty($password)) {
-            $parameters = array($email, $displayName, $avatarLink, $bio, $discord, $youtube, $twitter, $castingcallclub, (int)$publicEmail, $this->id);
-            $query = 'UPDATE user SET email = ?, display_name = ?, picture = ?, bio = ?, discord = ?, youtube = ?, twitter = ?, castingcallclub = ?, public_email = ? WHERE user_id = ?';
+            if (!is_null($pictureType)) {
+                $parameters = [$email, $displayName, $avatarLink, $pictureType->value, $bio, $discord, $youtube, $twitter, $castingcallclub, (int)$publicEmail, $this->id];
+                $query = 'UPDATE user SET email = ?, display_name = ?, picture = ?, picture_type = ?, bio = ?, discord = ?, youtube = ?, twitter = ?, castingcallclub = ?, public_email = ? WHERE user_id = ?';
+            } else {
+                $parameters = [$email, $displayName, $avatarLink, $bio, $discord, $youtube, $twitter, $castingcallclub, (int)$publicEmail, $this->id];
+                $query = 'UPDATE user SET email = ?, display_name = ?, picture = ?, bio = ?, discord = ?, youtube = ?, twitter = ?, castingcallclub = ?, public_email = ? WHERE user_id = ?';
+            }
         } else {
             $hash = password_hash($password, PASSWORD_DEFAULT);
-            $parameters = array($email, $hash, $displayName, $avatarLink, $bio, $discord, $youtube, $twitter, $castingcallclub, (int)$publicEmail, $this->id);
-            $query = 'UPDATE user SET email = ?, password = ?, display_name = ?, picture = ?, bio = ?, discord = ?, youtube = ?, twitter = ?, castingcallclub = ?, public_email = ? WHERE user_id = ?';
+            if (!is_null($pictureType)) {
+                $parameters = [$email, $hash, $displayName, $avatarLink, $pictureType->value, $bio, $discord, $youtube, $twitter, $castingcallclub, (int)$publicEmail, $this->id];
+                $query = 'UPDATE user SET email = ?, password = ?, display_name = ?, picture = ?, picture_type = ?, bio = ?, discord = ?, youtube = ?, twitter = ?, castingcallclub = ?, public_email = ? WHERE user_id = ?';
+            } else {
+                $parameters = [$email, $hash, $displayName, $avatarLink, $bio, $discord, $youtube, $twitter, $castingcallclub, (int)$publicEmail, $this->id];
+                $query = 'UPDATE user SET email = ?, password = ?, display_name = ?, picture = ?, bio = ?, discord = ?, youtube = ?, twitter = ?, castingcallclub = ?, public_email = ? WHERE user_id = ?';
+            }
         }
 
         try {
@@ -323,6 +295,10 @@ class User implements JsonSerializable
         }
         $this->displayName = $displayName;
         $this->avatarLink = $avatarLink;
+        if (!is_null($pictureType)) {
+            $this->pictureType = $pictureType;
+            $this->pictureTypeKnown = true;
+        }
         $this->bio = $bio;
 		$this->discord = $discord;
 		$this->youtube = $youtube;
@@ -388,33 +364,37 @@ class User implements JsonSerializable
         }
         return $this->avatarLink;
     }
+
+    public function getPictureType(): UserPictureType
+    {
+        if (!$this->loaded && !$this->pictureTypeKnown) {
+            $this->load();
+        }
+        $this->pictureType = $this->normalizePictureType($this->pictureType);
+        return $this->pictureType;
+    }
 	
     /**
      * Method returning link of avatar image that should be displayed.
-     * By defualt, the avatar set manually by the user in their account settings is used. If none has been set, the one
-     * fetched from Discord (downloaded during account creation via API) is returned (if such avatar exists).
-     * If none of the avatars mentioned above is present, the default (empty) one is returned.
-     * @param bool $appendRandom Should a random number in range 0–31 be appended to the file name, to prevent caching?
+     * If the user has a manually uploaded or Discord-synced avatar, it is served from the avatars folder.
+     * Otherwise, the default avatar is returned.
+     * @param bool $cacheBust Should a random number in range 0–31 be appended to the file name, to prevent caching?
      * @return string Link of the profile picture (a random number is appended to the end to prevent caching if
-     * the avatar isn't the default one) and the argument $appendRandom is set to TRUE.
+     * the avatar isn't the default one) and the argument $cacheBust is set to TRUE.
      */
     public function getAvatarLink(bool $cacheBust = true): string
     {
-        if (!$this->loaded && empty($this->avatarLink)) {
+        if (!$this->loaded && (empty($this->avatarLink) || !$this->pictureTypeKnown)) {
             $this->load();
         }
 
         $storage = Storage::get();
 
-        // Custom avatar takes priority
-        if ($this->avatarLink !== 'default.png') {
+        if ($this->getPictureType() !== UserPictureType::DEFAULT) {
             return $storage->getUrl(Account::AVATAR_PATH_PREFIX . $this->avatarLink, $cacheBust);
         }
 
-        // Try Discord avatar (browser will fallback to default via onerror if 404)
-        // Note: We don't check exists() to avoid API calls on every page load
-        $discordAvatarPath = Account::DISCORD_AVATAR_PATH_PREFIX . $this->id . '.png';
-        return $storage->getUrl($discordAvatarPath, false);
+        return $storage->getUrl(Account::AVATAR_PATH_PREFIX . 'default.png', false);
     }
 
     /**
@@ -577,17 +557,21 @@ class User implements JsonSerializable
                     $this->id = $value;
                     break;
                 case 'discordId':
+                case 'discordid':
                 case 'discord_id':
                 case 'dId':
+                case 'did':
                     $this->discordId = $value;
                     break;
                 case 'email':
                     $this->email = $value;
                     break;
                 case 'hash':
+                case 'password':
                     $this->hash = $value;
                     break;
                 case 'systemadmin':
+                case 'system_admin':
                 case 'admin':
                     $this->systemAdmin = $value;
                     break;
@@ -611,6 +595,11 @@ class User implements JsonSerializable
                 case 'va_picture':
                 case 'se_picture':
                     $this->avatarLink = $value;
+                    break;
+                case 'picturetype':
+                case 'picture_type':
+                    $this->pictureType = $this->normalizePictureType($value);
+                    $this->pictureTypeKnown = true;
                     break;
                 case 'bio':
                 case 'description':
@@ -802,11 +791,22 @@ class User implements JsonSerializable
     public function clearAvatar(): bool
     {
         $this->avatarLink = 'default.png';
-        $result = (new Db('Website/DbInfo.ini'))->executeQuery('UPDATE user SET picture = DEFAULT WHERE user_id = ?', array($this->id));
+        $this->pictureType = UserPictureType::DEFAULT;
+        $this->pictureTypeKnown = true;
+        $result = (new Db('Website/DbInfo.ini'))->executeQuery('UPDATE user SET picture = DEFAULT, picture_type = ? WHERE user_id = ?', array(UserPictureType::DEFAULT->value, $this->id));
         if ($result) {
             Storage::get()->deleteByPrefix(Account::AVATAR_PATH_PREFIX . $this->getId() . '.');
         }
         return $result;
+    }
+
+    private function normalizePictureType(UserPictureType|string|null $pictureType): UserPictureType
+    {
+        if ($pictureType instanceof UserPictureType) {
+            return $pictureType;
+        }
+
+        return UserPictureType::tryFrom($pictureType ?? '') ?? UserPictureType::DEFAULT;
     }
     
     /**
@@ -819,4 +819,3 @@ class User implements JsonSerializable
         return (new Db('Website/DbInfo.ini'))->executeQuery('DELETE FROM user WHERE user_id = ?', array($this->id));
     }
 }
-

@@ -72,7 +72,7 @@ class ContentManager
 	{
 		$db = new Db('Website/DbInfo.ini');
 		$query = '
-		SELECT npc.npc_id, npc.name, user.user_id, user.display_name, user.picture, npc.archived, npc.upvotes, npc.downvotes,
+		SELECT npc.npc_id, npc.name, user.user_id, user.display_name, user.picture, user.picture_type, npc.archived, npc.upvotes, npc.downvotes,
 		(SELECT COUNT(*) FROM comment WHERE comment.npc_id = npc.npc_id) AS comments
 		FROM npc
 		LEFT JOIN user ON npc.voice_actor_id = user.user_id
@@ -90,14 +90,14 @@ class ContentManager
 		}
 
 		$seResult = $db->fetchQuery('
-		SELECT npc_quest.quest_id, user.user_id AS se_id, user.display_name AS se_name, user.picture AS se_picture
+		SELECT npc_quest.quest_id, user.user_id AS se_id, user.display_name AS se_name, user.picture AS se_picture, user.picture_type AS se_picture_type
 		FROM npc_quest
 		JOIN user ON user.user_id = npc_quest.editor
 		WHERE npc_quest.npc_id = ?;', array($id), true);
 		if ($seResult) {
 			foreach ($seResult as $seRow) {
 				$se = new User();
-				$se->setData(['id' => $seRow['se_id'], 'name' => $seRow['se_name'], 'avatar' => $seRow['se_picture']]);
+				$se->setData(['id' => $seRow['se_id'], 'name' => $seRow['se_name'], 'avatar' => $seRow['se_picture'], 'picture_type' => $seRow['se_picture_type']]);
 				$npc->setSoundEditor(new Quest(['quest_id' => $seRow['quest_id']]), $se);
 			}
 		}
@@ -126,7 +126,7 @@ class ContentManager
 	public function getContributors(): array
 	{
 		$query = '
-		SELECT `user`.user_id, `user`.display_name, `user`.picture, `user`.lore,
+		SELECT `user`.user_id, `user`.display_name, `user`.picture, `user`.picture_type, `user`.lore,
 		GROUP_CONCAT(discord_role.name ORDER BY weight DESC) AS `roles`,
 		GROUP_CONCAT(discord_role.color ORDER BY weight DESC) AS `role_colors`,
 		GROUP_CONCAT(discord_role.weight ORDER BY weight DESC) AS `role_weights`, (
@@ -158,6 +158,7 @@ class ContentManager
 				'id' => $userData['user_id'],
 				'name' => $userData['display_name'],
 				'avatar' => $userData['picture'],
+				'picture_type' => $userData['picture_type'],
 				'lore' => $userData['lore']
 			));
 

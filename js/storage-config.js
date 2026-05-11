@@ -7,8 +7,7 @@ window.VoWStorage = (function() {
         paths: {
             recordings: 'recordings/',
             avatars: 'avatars/',
-            npcs: 'npcs/',
-            discordAvatars: 'discord-avatars/'
+            npcs: 'npcs/'
         }
     };
 

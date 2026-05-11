@@ -14,7 +14,7 @@ class AccountManager
     {
         $db = new Db('Website/DbInfo.ini');
         $userData = $db->fetchQuery(
-            'SELECT user_id,picture,display_name,bio,discord_id FROM user ORDER BY user_id ASC',
+            'SELECT user_id,picture,picture_type,display_name,bio,discord_id FROM user ORDER BY user_id ASC',
             array(),
             true
         );
@@ -68,6 +68,7 @@ class AccountManager
                     'id' => $userInfo['user_id'],
                     'displayName' => $userInfo['display_name'],
                     'avatarLink' => $userInfo['picture'],
+                    'picture_type' => $userInfo['picture_type'],
                     'bio' => $userInfo['bio'],
                     'discordId' => $userInfo['discord_id']
                 )
@@ -138,4 +139,3 @@ class AccountManager
         return $result;
     }
 }
-

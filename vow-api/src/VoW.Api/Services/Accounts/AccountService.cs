@@ -315,7 +315,7 @@ public sealed partial class AccountService(
         logger.LogInformation("Deleted existing custom avatars for user {UserId}.", userId);
         await avatarStorage.UploadAvatarAsync(userId, normalized, cancellationToken);
         logger.LogInformation("Uploaded replacement avatar for user {UserId}.", userId);
-        if (await accountRepository.SetAvatarAsync(userId, $"{userId}.webp", cancellationToken))
+        if (await accountRepository.SetAvatarAsync(userId, $"{userId}.webp", PictureType.Manual, cancellationToken))
         {
             logger.LogInformation("Set avatar database value for user {UserId}.", userId);
             return AccountMutationResult.Success();
