@@ -264,26 +264,24 @@ class User implements JsonSerializable
     
     public function update($email, string $password, string $displayName, string $avatarLink, $bio, $discord, $youtube, $twitter, $castingcallclub, bool $publicEmail, ?UserPictureType $pictureType = null): bool
     {
-        $setParts = ['email = ?'];
-        $parameters = [$email];
-
-        if (!empty($password)) {
+        if (empty($password)) {
+            if (!is_null($pictureType)) {
+                $parameters = [$email, $displayName, $avatarLink, $pictureType->value, $bio, $discord, $youtube, $twitter, $castingcallclub, (int)$publicEmail, $this->id];
+                $query = 'UPDATE user SET email = ?, display_name = ?, picture = ?, picture_type = ?, bio = ?, discord = ?, youtube = ?, twitter = ?, castingcallclub = ?, public_email = ? WHERE user_id = ?';
+            } else {
+                $parameters = [$email, $displayName, $avatarLink, $bio, $discord, $youtube, $twitter, $castingcallclub, (int)$publicEmail, $this->id];
+                $query = 'UPDATE user SET email = ?, display_name = ?, picture = ?, bio = ?, discord = ?, youtube = ?, twitter = ?, castingcallclub = ?, public_email = ? WHERE user_id = ?';
+            }
+        } else {
             $hash = password_hash($password, PASSWORD_DEFAULT);
-            $setParts[] = 'password = ?';
-            $parameters[] = $hash;
+            if (!is_null($pictureType)) {
+                $parameters = [$email, $hash, $displayName, $avatarLink, $pictureType->value, $bio, $discord, $youtube, $twitter, $castingcallclub, (int)$publicEmail, $this->id];
+                $query = 'UPDATE user SET email = ?, password = ?, display_name = ?, picture = ?, picture_type = ?, bio = ?, discord = ?, youtube = ?, twitter = ?, castingcallclub = ?, public_email = ? WHERE user_id = ?';
+            } else {
+                $parameters = [$email, $hash, $displayName, $avatarLink, $bio, $discord, $youtube, $twitter, $castingcallclub, (int)$publicEmail, $this->id];
+                $query = 'UPDATE user SET email = ?, password = ?, display_name = ?, picture = ?, bio = ?, discord = ?, youtube = ?, twitter = ?, castingcallclub = ?, public_email = ? WHERE user_id = ?';
+            }
         }
-
-        $setParts = array_merge($setParts, ['display_name = ?', 'picture = ?']);
-        array_push($parameters, $displayName, $avatarLink);
-
-        if (!is_null($pictureType)) {
-            $setParts[] = 'picture_type = ?';
-            $parameters[] = $pictureType->value;
-        }
-
-        $setParts = array_merge($setParts, ['bio = ?', 'discord = ?', 'youtube = ?', 'twitter = ?', 'castingcallclub = ?', 'public_email = ?']);
-        array_push($parameters, $bio, $discord, $youtube, $twitter, $castingcallclub, (int)$publicEmail, $this->id);
-        $query = 'UPDATE user SET ' . implode(', ', $setParts) . ' WHERE user_id = ?';
 
         try {
             $result = (new Db('Website/DbInfo.ini'))->executeQuery($query, $parameters);
