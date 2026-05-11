@@ -35,9 +35,6 @@ class User implements JsonSerializable
 {
     private const DEFAULT_PASSWORD_CHARACTERS = 'abcdefghijklmnopqrstuvwxyz0123456789';
     public const DEFAULT_PASSWORD_LENGTH = 12;
-    public const PICTURE_TYPE_DEFAULT = 'default';
-    public const PICTURE_TYPE_DISCORD = 'discord';
-    public const PICTURE_TYPE_MANUAL = 'manual';
     private const LOG_PASSWORDS = false; //Turn this on when mass-creating user accounts, so you can message the temporary passwords to users all at once
 
     private bool $loaded = false;
@@ -49,7 +46,7 @@ class User implements JsonSerializable
     private bool $systemAdmin = false;
     private string $displayName = '';
     private string $avatarLink = '';
-    private string $pictureType = self::PICTURE_TYPE_DEFAULT;
+    private UserPictureType|string $pictureType = UserPictureType::Default;
     private bool $pictureTypeKnown = false;
     private $bio = '';
     private $lore = '';
@@ -265,7 +262,7 @@ class User implements JsonSerializable
         unset($_SESSION['user']);
     }
     
-    public function update($email, string $password, string $displayName, string $avatarLink, $bio, $discord, $youtube, $twitter, $castingcallclub, bool $publicEmail, ?string $pictureType = null): bool
+    public function update($email, string $password, string $displayName, string $avatarLink, $bio, $discord, $youtube, $twitter, $castingcallclub, bool $publicEmail, ?UserPictureType $pictureType = null): bool
     {
         $setParts = ['email = ?'];
         $parameters = [$email];
@@ -281,7 +278,7 @@ class User implements JsonSerializable
 
         if (!is_null($pictureType)) {
             $setParts[] = 'picture_type = ?';
-            $parameters[] = $pictureType;
+            $parameters[] = $pictureType->value;
         }
 
         $setParts = array_merge($setParts, ['bio = ?', 'discord = ?', 'youtube = ?', 'twitter = ?', 'castingcallclub = ?', 'public_email = ?']);
@@ -370,11 +367,12 @@ class User implements JsonSerializable
         return $this->avatarLink;
     }
 
-    public function getPictureType(): string
+    public function getPictureType(): UserPictureType
     {
         if (!$this->loaded && !$this->pictureTypeKnown) {
             $this->load();
         }
+        $this->pictureType = $this->normalizePictureType($this->pictureType);
         return $this->pictureType;
     }
 	
@@ -394,7 +392,7 @@ class User implements JsonSerializable
 
         $storage = Storage::get();
 
-        if ($this->pictureType !== self::PICTURE_TYPE_DEFAULT) {
+        if ($this->getPictureType() !== UserPictureType::Default) {
             return $storage->getUrl(Account::AVATAR_PATH_PREFIX . $this->avatarLink, $cacheBust);
         }
 
@@ -602,7 +600,7 @@ class User implements JsonSerializable
                     break;
                 case 'picturetype':
                 case 'picture_type':
-                    $this->pictureType = $value ?? self::PICTURE_TYPE_DEFAULT;
+                    $this->pictureType = $this->normalizePictureType($value);
                     $this->pictureTypeKnown = true;
                     break;
                 case 'bio':
@@ -795,13 +793,22 @@ class User implements JsonSerializable
     public function clearAvatar(): bool
     {
         $this->avatarLink = 'default.png';
-        $this->pictureType = self::PICTURE_TYPE_DEFAULT;
+        $this->pictureType = UserPictureType::Default;
         $this->pictureTypeKnown = true;
-        $result = (new Db('Website/DbInfo.ini'))->executeQuery('UPDATE user SET picture = DEFAULT, picture_type = ? WHERE user_id = ?', array(self::PICTURE_TYPE_DEFAULT, $this->id));
+        $result = (new Db('Website/DbInfo.ini'))->executeQuery('UPDATE user SET picture = DEFAULT, picture_type = ? WHERE user_id = ?', array(UserPictureType::Default->value, $this->id));
         if ($result) {
             Storage::get()->deleteByPrefix(Account::AVATAR_PATH_PREFIX . $this->getId() . '.');
         }
         return $result;
+    }
+
+    private function normalizePictureType(UserPictureType|string|null $pictureType): UserPictureType
+    {
+        if ($pictureType instanceof UserPictureType) {
+            return $pictureType;
+        }
+
+        return UserPictureType::tryFrom($pictureType ?? '') ?? UserPictureType::Default;
     }
     
     /**

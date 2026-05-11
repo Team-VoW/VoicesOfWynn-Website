@@ -6,6 +6,7 @@ namespace VoicesOfWynn\Controllers\Website\Account;
 use VoicesOfWynn\Controllers\Website\WebpageController;
 use VoicesOfWynn\Models\Website\AccountDataValidator;
 use VoicesOfWynn\Models\Website\User;
+use VoicesOfWynn\Models\Website\UserPictureType;
 use VoicesOfWynn\Models\Storage\Storage;
 
 class Account extends WebpageController
@@ -181,14 +182,14 @@ class Account extends WebpageController
                 }
 
                 if ($uploaded) {
-                    if ($oldAvatar !== $avatar && $this->user->getPictureType() !== User::PICTURE_TYPE_DEFAULT) {
+                    if ($oldAvatar !== $avatar && $this->user->getPictureType() !== UserPictureType::Default) {
                         try {
                             $storage->delete(self::AVATAR_PATH_PREFIX . $oldAvatar);
                         } catch (\Throwable $e) {
                             // The new avatar is already stored; a stale old file should not block the account update.
                         }
                     }
-                    $pictureType = User::PICTURE_TYPE_MANUAL;
+                    $pictureType = UserPictureType::Manual;
                 } else {
                     $validator->errors[] = 'An unknown error occurred while saving the profile image – try again or ping shady_medic on Discord.';
                 }

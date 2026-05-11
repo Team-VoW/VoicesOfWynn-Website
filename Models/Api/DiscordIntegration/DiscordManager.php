@@ -8,6 +8,7 @@ use VoicesOfWynn\Models\Website\AccountManager;
 use VoicesOfWynn\Models\Website\DiscordRole;
 use VoicesOfWynn\Models\Website\User;
 use VoicesOfWynn\Models\Website\UserException;
+use VoicesOfWynn\Models\Website\UserPictureType;
 use VoicesOfWynn\Models\Storage\Storage;
 
 class DiscordManager
@@ -95,7 +96,7 @@ class DiscordManager
 
         $result = true;
 
-        if (!is_null($avatarUrl) && $user->getPictureType() !== User::PICTURE_TYPE_MANUAL) {
+        if (!is_null($avatarUrl) && $user->getPictureType() !== UserPictureType::Manual) {
             $result = $this->updateDiscordAvatar($user->getId(), $avatarUrl);
         }
 
@@ -150,7 +151,7 @@ class DiscordManager
                 }
                 return (new Db('Website/DbInfo.ini'))->executeQuery(
                     'UPDATE user SET picture = ?, picture_type = ? WHERE user_id = ?',
-                    array($picture, User::PICTURE_TYPE_DISCORD, $userId)
+                    array($picture, UserPictureType::Discord->value, $userId)
                 );
             }
             return false;
