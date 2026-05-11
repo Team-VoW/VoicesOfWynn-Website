@@ -25,6 +25,8 @@ public sealed partial class DiscordIntegrationService(
     private const int DiscordIdMaxLength = 19;
     private const int AvatarUrlMaxLength = 2048;
     private const int AvatarMaxBytes = 8_000_000;
+    private const string PngImageContentType = "image/png";
+    private static readonly byte[] PngSignature = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
 
     private readonly string storageBaseUrl = NormalizeStorageBaseUrl(
         configuration["Storage:BaseUrl"] ?? "https://vow.blob.core.windows.net/vow-dynamic/");
@@ -47,18 +49,19 @@ public sealed partial class DiscordIntegrationService(
         SyncDiscordUserRequest request,
         CancellationToken cancellationToken)
     {
+        var errors = new Dictionary<string, string>();
         var discordId = NormalizeOptional(request.DiscordId);
         var discordIdError = ValidateDiscordId(discordId);
         if (discordIdError is not null)
         {
-            return SyncDiscordUserServiceResult.Invalid(nameof(request.DiscordId), discordIdError);
+            errors[nameof(request.DiscordId)] = discordIdError;
         }
 
         var discordName = NormalizeDiscordName(request.DiscordName);
         var discordNameError = ValidateDiscordName(discordName);
         if (discordNameError is not null)
         {
-            return SyncDiscordUserServiceResult.Invalid(nameof(request.DiscordName), discordNameError);
+            errors[nameof(request.DiscordName)] = discordNameError;
         }
 
         var displayName = NormalizeOptional(request.DisplayName);
@@ -67,14 +70,19 @@ public sealed partial class DiscordIntegrationService(
             var displayNameError = ValidateLength(displayName, "Display name", DisplayNameMinLength, DisplayNameMaxLength);
             if (displayNameError is not null)
             {
-                return SyncDiscordUserServiceResult.Invalid(nameof(request.DisplayName), displayNameError);
+                errors[nameof(request.DisplayName)] = displayNameError;
             }
         }
 
         var avatarUrl = NormalizeOptional(request.AvatarUrl);
         if (avatarUrl is not null && !IsAllowedAvatarUrl(avatarUrl))
         {
-            return SyncDiscordUserServiceResult.Invalid(nameof(request.AvatarUrl), "Avatar URL must be an absolute HTTP or HTTPS URL.");
+            errors[nameof(request.AvatarUrl)] = "Avatar URL must be an absolute HTTP or HTTPS URL.";
+        }
+
+        if (errors.Count > 0)
+        {
+            return SyncDiscordUserServiceResult.Invalid(errors);
         }
 
         var roleIdsResult = await ResolveRoleIdsAsync(request.RoleNames, cancellationToken);
@@ -148,10 +156,20 @@ public sealed partial class DiscordIntegrationService(
 
         if (avatarUrl is not null && user.PictureType != PictureType.Manual)
         {
-            var avatarResult = await UpdateDiscordAvatarAsync(user.UserId, avatarUrl, cancellationToken);
-            if (!avatarResult.Succeeded)
+            try
             {
-                return avatarResult.Result!;
+                var avatarResult = await UpdateDiscordAvatarAsync(user.UserId, avatarUrl, cancellationToken);
+                if (!avatarResult.Succeeded)
+                {
+                    logger.LogWarning(
+                        "Discord avatar update for user {UserId} was skipped: {Errors}.",
+                        user.UserId,
+                        string.Join("; ", avatarResult.Result!.Errors.Select(error => $"{error.Key}: {error.Value}")));
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex, "Discord avatar update for user {UserId} failed.", user.UserId);
             }
         }
 
@@ -228,6 +246,13 @@ public sealed partial class DiscordIntegrationService(
             }
 
             await limited.WriteAsync(buffer.AsMemory(0, read), cancellationToken);
+        }
+
+        limited.Position = 0;
+        var contentType = response.Content.Headers.ContentType?.MediaType;
+        if (!IsPng(contentType, limited))
+        {
+            return AvatarUpdateResult.Invalid(nameof(SyncDiscordUserRequest.AvatarUrl), "Avatar image must be PNG.");
         }
 
         limited.Position = 0;
@@ -334,6 +359,26 @@ public sealed partial class DiscordIntegrationService(
 
     private static string NormalizeStorageBaseUrl(string value) =>
         value.EndsWith("/", StringComparison.Ordinal) ? value : $"{value}/";
+
+    private static bool IsPng(string? contentType, Stream content)
+    {
+        if (contentType is not null && !string.Equals(contentType, PngImageContentType, StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        if (content.Length < PngSignature.Length)
+        {
+            return false;
+        }
+
+        Span<byte> signature = stackalloc byte[PngSignature.Length];
+        var originalPosition = content.Position;
+        content.Position = 0;
+        var read = content.Read(signature);
+        content.Position = originalPosition;
+        return read == PngSignature.Length && signature.SequenceEqual(PngSignature);
+    }
 
     [GeneratedRegex(@"^[0-9]+$", RegexOptions.CultureInvariant)]
     private static partial Regex DiscordIdRegex();
