@@ -258,30 +258,11 @@ class User implements JsonSerializable
     }
     
     /**
-     * Logout the user by deleting its instance from the session and setting all of its properties to zero values
-     * This instance should be destroyed with unset() after calling this method
+     * Logout the user by deleting its instance from the session.
      */
     public function logout(): void
     {
         unset($_SESSION['user']);
-        
-        $this->id = 0;
-        $this->email = '';
-        $this->hash = '';
-        $this->systemAdmin = false;
-        $this->displayName = '';
-        $this->avatarLink = '';
-        $this->pictureType = self::PICTURE_TYPE_DEFAULT;
-        $this->pictureTypeKnown = false;
-        $this->bio = '';
-        $this->lore = '';
-	    $this->discord = '';
-	    $this->youtube = '';
-	    $this->twitter = '';
-	    $this->castingcallclub = '';
-        $this->publicEmail = false;
-
-        $this->loaded = false;
     }
     
     public function update($email, string $password, string $displayName, string $avatarLink, $bio, $discord, $youtube, $twitter, $castingcallclub, bool $publicEmail, ?string $pictureType = null): bool
