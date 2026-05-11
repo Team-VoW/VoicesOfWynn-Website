@@ -10,6 +10,7 @@ using VoW.Api.Services.Accounts;
 using VoW.Api.Services.Analytics;
 using VoW.Api.Services.Auth;
 using VoW.Api.Services.Content;
+using VoW.Api.Services.DiscordIntegration;
 using VoW.Api.Services.Reports;
 using VoW.Api.Services.Storage;
 
@@ -25,10 +26,12 @@ builder.Services.AddScoped<IUserAccessService, UserAccessService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
 builder.Services.AddScoped<IContentService, ContentService>();
+builder.Services.AddScoped<IDiscordIntegrationService, DiscordIntegrationService>();
 builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IAnalyticsRepository, AnalyticsRepository>();
 builder.Services.AddScoped<IContentRepository, ContentRepository>();
+builder.Services.AddScoped<IDiscordIntegrationRepository, DiscordIntegrationRepository>();
 builder.Services.AddScoped<IReportRepository, ReportRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
