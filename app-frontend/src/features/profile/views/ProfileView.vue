@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
-import { Edit, KeyRound, Upload, X } from 'lucide-vue-next'
+import { Edit, ExternalLink, KeyRound, Upload, X } from 'lucide-vue-next'
 import {
   DialogClose,
   DialogContent,
@@ -10,6 +10,7 @@ import {
   DialogTitle,
 } from 'reka-ui'
 import { toast } from 'vue-sonner'
+import { WEBSITE_BASE_URL } from '@/api/config'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -17,7 +18,12 @@ import AccountAvatarCropDialog from '@/features/accounts/components/AccountAvata
 import { messageFromContentError } from '@/features/content/contentUtils'
 import { ProfileLimits } from '@/lib/profileLimits'
 import { useAuthStore } from '@/stores/auth'
-import { useClearSelfAvatar, useSelfProfile, useSetSelfPassword, useUpdateSelfProfile } from '../queries'
+import {
+  useClearSelfAvatar,
+  useSelfProfile,
+  useSetSelfPassword,
+  useUpdateSelfProfile,
+} from '../queries'
 
 const auth = useAuthStore()
 const cropOpen = ref(false)
@@ -49,6 +55,10 @@ const { data: profile, isLoading, isError, error } = useSelfProfile()
 const updateMutation = useUpdateSelfProfile()
 const passwordMutation = useSetSelfPassword()
 const clearAvatarMutation = useClearSelfAvatar()
+
+const publicProfileUrl = computed(() =>
+  profile.value ? `${WEBSITE_BASE_URL}/cast/${profile.value.userId}` : '',
+)
 
 const canSubmitPassword = computed(
   () =>
@@ -218,6 +228,17 @@ function onAvatarPicked(event: Event) {
           <KeyRound class="size-4" />
           Reset password
         </Button>
+        <Button
+          as="a"
+          variant="outline"
+          class="w-full gap-2"
+          :href="publicProfileUrl"
+          target="_blank"
+          rel="noopener"
+        >
+          <ExternalLink class="size-4" />
+          View public profile
+        </Button>
       </div>
 
       <form class="space-y-5" @submit.prevent="saveProfile">
@@ -240,7 +261,12 @@ function onAvatarPicked(event: Event) {
           </div>
           <div class="space-y-2">
             <Label for="profile-email">Email</Label>
-            <Input id="profile-email" v-model="form.email" :maxlength="ProfileLimits.email" type="email" />
+            <Input
+              id="profile-email"
+              v-model="form.email"
+              :maxlength="ProfileLimits.email"
+              type="email"
+            />
           </div>
           <label class="flex items-end gap-2 pb-2 text-sm">
             <input v-model="form.publicEmail" type="checkbox" class="size-4" />
@@ -260,7 +286,11 @@ function onAvatarPicked(event: Event) {
           </div>
           <div class="space-y-2">
             <Label for="profile-ccc">Casting Call Club</Label>
-            <Input id="profile-ccc" v-model="form.castingCallClub" :maxlength="ProfileLimits.castingCallClub" />
+            <Input
+              id="profile-ccc"
+              v-model="form.castingCallClub"
+              :maxlength="ProfileLimits.castingCallClub"
+            />
           </div>
           <div class="space-y-2 sm:col-span-2">
             <Label for="profile-lore">Lore</Label>
