@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using VoW.Api.Controllers;
 using VoW.Api.Contracts.Analytics;
 using VoW.Api.Domain.Auth;
 using VoW.Api.Services.Analytics;
@@ -18,11 +19,7 @@ public sealed class AnalyticsController(IAnalyticsService analyticsService) : Co
         var result = await analyticsService.GetDailyUsageAsync(request, cancellationToken);
         if (!result.Succeeded)
         {
-            foreach (var (field, message) in result.Errors)
-            {
-                ModelState.AddModelError(field, message);
-            }
-
+            ModelState.AddErrors(result.Errors);
             return ValidationProblem(ModelState);
         }
 

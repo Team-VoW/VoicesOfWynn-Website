@@ -1,11 +1,10 @@
-namespace VoW.Api.Contracts.Accounts;
+namespace VoW.Api.Contracts.Profile;
 
-public sealed record AccountDetailsResponse(
+public sealed record SelfProfileResponse(
     int UserId,
     string DisplayName,
     string AvatarUrl,
     string DefaultAvatarUrl,
-    string? DiscordId,
     string? Email,
     bool PublicEmail,
     string? Discord,
@@ -14,6 +13,4 @@ public sealed record AccountDetailsResponse(
     string? CastingCallClub,
     string? Bio,
     string? Lore,
-    bool ForcePasswordChange,
-    bool SystemAdmin,
-    IReadOnlyCollection<int> RoleIds);
+    bool ForcePasswordChange);

@@ -23,7 +23,7 @@ public sealed class DiscordIntegrationController(IDiscordIntegrationService disc
         var result = await discordIntegrationService.SyncUserAsync(request, cancellationToken);
         if (!result.Succeeded)
         {
-            AddErrors(result.Errors);
+            ModelState.AddErrors(result.Errors);
             return ValidationProblem(ModelState);
         }
 
@@ -32,11 +32,4 @@ public sealed class DiscordIntegrationController(IDiscordIntegrationService disc
             : Ok(result.Response);
     }
 
-    private void AddErrors(IReadOnlyDictionary<string, string> errors)
-    {
-        foreach (var (field, message) in errors)
-        {
-            ModelState.AddModelError(field, message);
-        }
-    }
 }

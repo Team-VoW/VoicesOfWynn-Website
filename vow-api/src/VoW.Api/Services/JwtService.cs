@@ -35,9 +35,13 @@ public sealed class JwtService(IConfiguration configuration, IHostEnvironment en
         {
             new("type", AccessTokenType),
             new(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
-            new("discord_id", user.DiscordId),
             new("display_name", user.DisplayName)
         };
+
+        if (!string.IsNullOrWhiteSpace(user.DiscordId))
+        {
+            claims.Add(new Claim("discord_id", user.DiscordId));
+        }
 
         claims.AddRange(user.Capabilities
             .Select(CapabilityMapper.ToClaimValue)

@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { exchangeHandoffCode } from '@/api/auth'
+import { firstAccessibleAdminRoute } from '@/lib/adminRoutes'
 import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
@@ -36,7 +37,7 @@ onMounted(async () => {
     const tokens = await exchangeHandoffCode(code)
     auth.setTokens(tokens.accessToken, tokens.refreshToken, tokens.expiresAt)
     history.replaceState(null, '', window.location.pathname)
-    void router.replace({ name: 'reports' })
+    void router.replace(firstAccessibleAdminRoute(auth.hasCapability) ?? { name: 'profile' })
     return
   } catch {
     error.value = 'Sign-in handoff expired or was rejected.'

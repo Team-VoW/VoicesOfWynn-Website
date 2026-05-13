@@ -96,7 +96,7 @@ public sealed class DiscordIntegrationRepository(IConfiguration configuration) :
         const string sql = """
             SELECT COUNT(*)
             FROM user
-            WHERE UPPER(display_name) = UPPER(@DisplayName)
+            WHERE display_name = @DisplayName
               AND user_id <> @ExceptUserId;
             """;
 

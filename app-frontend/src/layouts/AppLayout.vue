@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import { ChartLine, FileText, LayoutDashboard, Users } from 'lucide-vue-next'
+import { ChartLine, FileText, LayoutDashboard, User, Users } from 'lucide-vue-next'
 import { computed } from 'vue'
 import { RouterView, useRoute, useRouter } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { Capabilities, type Capability } from '@/lib/capabilities'
+import { firstAccessibleAdminRoute } from '@/lib/adminRoutes'
 import { useAuthStore } from '@/stores/auth'
 import { useSilentRefresh } from '@/features/auth/useSilentRefresh'
 
@@ -20,9 +21,15 @@ const navItems: {
   label: string
   to: string
   routeName: string
-  capability: Capability
+  capability?: Capability
   icon: typeof LayoutDashboard
 }[] = [
+  {
+    label: 'Profile',
+    to: '/profile',
+    routeName: 'profile',
+    icon: User,
+  },
   {
     label: 'Reports',
     to: '/admin/reports',
@@ -53,7 +60,14 @@ const navItems: {
   },
 ]
 
-const visibleNavItems = computed(() => navItems.filter((item) => auth.hasCapability(item.capability)))
+const visibleNavItems = computed(() =>
+  navItems.filter((item) => !item.capability || auth.hasCapability(item.capability)),
+)
+const homeRoute = computed(() => {
+  if (auth.forcePasswordChange) return '/profile'
+  const route = firstAccessibleAdminRoute(auth.hasCapability)
+  return route?.name ? router.resolve(route).fullPath : '/profile'
+})
 
 async function logout() {
   auth.clear()
@@ -66,9 +80,9 @@ async function logout() {
     <div class="min-h-screen bg-background text-foreground">
       <div class="flex min-h-screen">
         <aside class="sticky top-0 hidden h-screen w-64 shrink-0 border-r bg-muted/20 md:flex md:flex-col">
-          <RouterLink to="/admin/reports" class="flex items-center gap-2 px-5 py-4 text-base font-semibold">
+          <RouterLink :to="homeRoute" class="flex items-center gap-2 px-5 py-4 text-base font-semibold">
             <img src="/wynnvplogo.svg" alt="Voices of Wynn logo" class="size-8 shrink-0" />
-            <span>VoW Admin</span>
+            <span>Voices of Wynn</span>
           </RouterLink>
           <nav class="flex flex-1 flex-col gap-1 overflow-y-auto px-3 py-2">
             <RouterLink
@@ -91,9 +105,9 @@ async function logout() {
         <div class="flex min-w-0 flex-1 flex-col">
           <header class="sticky top-0 z-20 border-b bg-background md:hidden">
             <div class="flex items-center justify-between px-4 py-3">
-              <RouterLink to="/admin/reports" class="flex items-center gap-2 text-base font-semibold">
+              <RouterLink :to="homeRoute" class="flex items-center gap-2 text-base font-semibold">
                 <img src="/wynnvplogo.svg" alt="Voices of Wynn logo" class="size-8 shrink-0" />
-                <span>VoW Admin</span>
+                <span>Voices of Wynn</span>
               </RouterLink>
               <Button variant="ghost" size="sm" @click="logout">Logout</Button>
             </div>
