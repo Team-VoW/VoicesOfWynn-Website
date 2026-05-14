@@ -249,6 +249,7 @@ export interface SelfProfile {
   bio: string | null
   lore: string | null
   forcePasswordChange: boolean
+  passwordChangeRequiresCurrentPassword: boolean
 }
 
 export interface UpdateSelfProfileRequest {
@@ -264,7 +265,7 @@ export interface UpdateSelfProfileRequest {
 }
 
 export interface SetSelfPasswordRequest {
-  oldPassword: string
+  oldPassword: string | null
   newPassword: string
   confirmNewPassword: string
 }

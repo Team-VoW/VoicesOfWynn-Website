@@ -326,12 +326,18 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
         return await connection.ExecuteAsync(definition) > 0;
     }
 
-    public async Task<string?> GetPasswordHashAsync(int userId, CancellationToken cancellationToken)
+    public async Task<AccountPasswordState?> GetPasswordStateAsync(int userId, CancellationToken cancellationToken)
     {
-        const string sql = "SELECT password FROM user WHERE user_id = @UserId;";
+        const string sql = """
+            SELECT
+                password AS PasswordHash,
+                force_password_change AS ForcePasswordChange
+            FROM user
+            WHERE user_id = @UserId;
+            """;
         await using var connection = new MySqlConnection(DatabaseSettings.GetWebsiteConnectionString(configuration));
         var command = new CommandDefinition(sql, new { UserId = userId }, cancellationToken: cancellationToken);
-        return await connection.ExecuteScalarAsync<string?>(command);
+        return await connection.QuerySingleOrDefaultAsync<AccountPasswordState>(command);
     }
 
     public async Task<bool> SetPasswordAsync(int userId, string passwordHash, CancellationToken cancellationToken)

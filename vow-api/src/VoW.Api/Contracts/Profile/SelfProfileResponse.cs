@@ -13,4 +13,5 @@ public sealed record SelfProfileResponse(
     string? CastingCallClub,
     string? Bio,
     string? Lore,
-    bool ForcePasswordChange);
+    bool ForcePasswordChange,
+    bool PasswordChangeRequiresCurrentPassword);

@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label'
 import { discordLoginUrl, loginWithPassword } from '@/api/auth'
 import { messageFromContentError } from '@/features/content/contentUtils'
 import { firstAccessibleAdminRoute } from '@/lib/adminRoutes'
+import { queryClient } from '@/lib/queryClient'
 import { useAuthStore } from '@/stores/auth'
 
 const auth = useAuthStore()
@@ -32,6 +33,7 @@ async function submitPasswordLogin() {
       username: credentials.username.trim(),
       password: credentials.password,
     })
+    queryClient.clear()
     auth.setTokens(
       response.accessToken,
       response.refreshToken,

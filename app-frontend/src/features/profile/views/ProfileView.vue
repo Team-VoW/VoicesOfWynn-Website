@@ -68,10 +68,13 @@ const clearAvatarMutation = useClearSelfAvatar()
 const publicProfileUrl = computed(() =>
   profile.value ? `${WEBSITE_BASE_URL}/cast/${profile.value.userId}` : '',
 )
+const passwordChangeRequiresCurrentPassword = computed(
+  () => profile.value?.passwordChangeRequiresCurrentPassword ?? true,
+)
 
 const canSubmitPassword = computed(
   () =>
-    passwordForm.oldPassword.length > 0 &&
+    (!passwordChangeRequiresCurrentPassword.value || passwordForm.oldPassword.length > 0) &&
     passwordForm.newPassword.length >= ProfileLimits.passwordMin &&
     passwordForm.confirmNewPassword.length > 0 &&
     passwordForm.newPassword === passwordForm.confirmNewPassword,
@@ -149,7 +152,7 @@ async function setPassword() {
 
   try {
     await passwordMutation.mutateAsync({
-      oldPassword: passwordForm.oldPassword,
+      oldPassword: passwordChangeRequiresCurrentPassword.value ? passwordForm.oldPassword : null,
       newPassword: passwordForm.newPassword,
       confirmNewPassword: passwordForm.confirmNewPassword,
     })
@@ -361,7 +364,7 @@ function onAvatarPicked(event: Event) {
               {{ passwordError }}
             </div>
 
-            <div class="space-y-2">
+            <div v-if="passwordChangeRequiresCurrentPassword" class="space-y-2">
               <Label for="current-password">Current password</Label>
               <Input
                 id="current-password"

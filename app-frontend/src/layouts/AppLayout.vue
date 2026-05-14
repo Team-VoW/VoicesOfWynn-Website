@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { Capabilities, type Capability } from '@/lib/capabilities'
 import { firstAccessibleAdminRoute } from '@/lib/adminRoutes'
+import { queryClient } from '@/lib/queryClient'
 import { useAuthStore } from '@/stores/auth'
 import { useSilentRefresh } from '@/features/auth/useSilentRefresh'
 
@@ -71,6 +72,7 @@ const homeRoute = computed(() => {
 
 async function logout() {
   auth.clear()
+  queryClient.clear()
   await router.replace({ name: 'login' })
 }
 </script>

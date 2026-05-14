@@ -89,7 +89,7 @@ public sealed class AuthController(
 
             if (user is null)
             {
-                return RedirectToSpaCallbackError("insufficient_permissions");
+                return RedirectToSpaCallbackError("account_not_found");
             }
 
             var handoffCode = handoffService.Create(jwtService.CreateTokenPair(user));

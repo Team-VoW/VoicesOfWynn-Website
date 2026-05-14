@@ -14,22 +14,27 @@ internal sealed class SelfProfileService(
     public async Task<SelfProfileResponse?> GetAsync(int userId, CancellationToken cancellationToken)
     {
         var account = await accountRepository.GetAsync(userId, cancellationToken);
-        return account is null
-            ? null
-            : new SelfProfileResponse(
-                account.UserId,
-                account.DisplayName,
-                account.AvatarUrl,
-                account.DefaultAvatarUrl,
-                account.Email,
-                account.PublicEmail,
-                account.Discord,
-                account.Youtube,
-                account.Twitter,
-                account.CastingCallClub,
-                account.Bio,
-                account.Lore,
-                account.ForcePasswordChange);
+        if (account is null)
+        {
+            return null;
+        }
+
+        var passwordState = await accountRepository.GetPasswordStateAsync(userId, cancellationToken);
+        return new SelfProfileResponse(
+            account.UserId,
+            account.DisplayName,
+            account.AvatarUrl,
+            account.DefaultAvatarUrl,
+            account.Email,
+            account.PublicEmail,
+            account.Discord,
+            account.Youtube,
+            account.Twitter,
+            account.CastingCallClub,
+            account.Bio,
+            account.Lore,
+            account.ForcePasswordChange,
+            RequiresCurrentPassword(passwordState));
     }
 
     public async Task<AccountMutationResult> UpdateAsync(
@@ -127,20 +132,23 @@ internal sealed class SelfProfileService(
         SetSelfPasswordRequest request,
         CancellationToken cancellationToken)
     {
-        var currentHash = await accountRepository.GetPasswordHashAsync(userId, cancellationToken);
-        if (currentHash is null)
+        var passwordState = await accountRepository.GetPasswordStateAsync(userId, cancellationToken);
+        if (passwordState is null)
         {
             return AccountMutationResult.NotFound();
         }
 
-        if (string.IsNullOrEmpty(request.OldPassword))
+        if (RequiresCurrentPassword(passwordState))
         {
-            return AccountMutationResult.Invalid(nameof(request.OldPassword), "Current password is required.");
-        }
+            if (string.IsNullOrEmpty(request.OldPassword))
+            {
+                return AccountMutationResult.Invalid(nameof(request.OldPassword), "Current password is required.");
+            }
 
-        if (!AccountPasswordHasher.Verify(request.OldPassword, currentHash))
-        {
-            return AccountMutationResult.Invalid(nameof(request.OldPassword), "Current password is incorrect.");
+            if (!AccountPasswordHasher.Verify(request.OldPassword, passwordState.PasswordHash!))
+            {
+                return AccountMutationResult.Invalid(nameof(request.OldPassword), "Current password is incorrect.");
+            }
         }
 
         if (string.IsNullOrEmpty(request.NewPassword) || request.NewPassword.Length < AccountProfileValidator.PasswordMinLength)
@@ -177,4 +185,7 @@ internal sealed class SelfProfileService(
     }
 
     private static string? NormalizeRequired(string? value) => value?.Trim();
+
+    private static bool RequiresCurrentPassword(AccountPasswordState? passwordState) =>
+        passwordState is { ForcePasswordChange: false } && !string.IsNullOrEmpty(passwordState.PasswordHash);
 }

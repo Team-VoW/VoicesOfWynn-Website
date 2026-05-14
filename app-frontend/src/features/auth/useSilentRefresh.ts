@@ -3,6 +3,7 @@ import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/stores/auth'
 import { refreshAccessToken } from '@/api/auth'
 import { ApiError } from '@/api/client'
+import { queryClient } from '@/lib/queryClient'
 
 const REFRESH_LEEWAY_MS = 60_000
 const RETRY_DELAY_MS = 30_000
@@ -32,6 +33,7 @@ export function useSilentRefresh() {
       // (network, 5xx) leave the session intact and we'll retry shortly.
       if (err instanceof ApiError && (err.status === 400 || err.status === 401)) {
         auth.clear()
+        queryClient.clear()
         return
       }
       timer = window.setTimeout(() => void doRefresh(), RETRY_DELAY_MS)

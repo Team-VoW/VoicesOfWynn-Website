@@ -26,7 +26,7 @@ public interface IAccountRepository
 
     Task<bool> UpdateSelfProfileAsync(int userId, UpdateSelfProfileCommand command, CancellationToken cancellationToken);
 
-    Task<string?> GetPasswordHashAsync(int userId, CancellationToken cancellationToken);
+    Task<AccountPasswordState?> GetPasswordStateAsync(int userId, CancellationToken cancellationToken);
 
     Task<bool> SetPasswordAsync(int userId, string passwordHash, CancellationToken cancellationToken);
 
