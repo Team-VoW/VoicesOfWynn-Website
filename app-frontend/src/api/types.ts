@@ -88,6 +88,7 @@ export interface AuthHandoffRequest {
 export interface ContentOption {
   id: number
   name: string
+  voiceActorName?: string | null
 }
 
 export interface ContentOptionsResponse {

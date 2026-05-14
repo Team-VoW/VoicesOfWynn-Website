@@ -1,3 +1,3 @@
 namespace VoW.Api.Contracts.Content;
 
-public sealed record ContentOptionResponse(int Id, string Name);
+public sealed record ContentOptionResponse(int Id, string Name, string? VoiceActorName = null);

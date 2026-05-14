@@ -117,6 +117,9 @@ const npcRecordings = computed(() => npcRecordingsQuery.data.value ?? [])
 const selectedNpcRecordingCount = computed(
   () => npcRecordingsQuery.data.value?.length ?? props.selectedNpc?.recordingCount ?? 0,
 )
+const selectedLinkNpc = computed(
+  () => props.npcs.find((npc) => String(npc.id) === linkNpcId.value) ?? null,
+)
 
 const npcImageSrc = computed(() => {
   if (!props.selectedNpc) return NPC_DEFAULT_IMAGE_URL
@@ -146,6 +149,14 @@ function onImageUploaded() {
     imageBusters.value.set(props.selectedNpc.npcId, Date.now())
   }
   pendingImageFile.value = null
+}
+
+function npcVoiceActorLabel(npc: ContentOption) {
+  return npc.voiceActorName ? `Voice actor: ${npc.voiceActorName}` : 'No voice actor'
+}
+
+function npcOptionLabel(npc: ContentOption) {
+  return `${npc.name} (${npc.id})`
 }
 
 watch(
@@ -486,12 +497,29 @@ async function unlinkNpc() {
             <div class="flex gap-2">
               <Select v-model="linkNpcId" :disabled="isLoading">
                 <SelectTrigger id="dialog-link-npc" class="w-full">
-                  <SelectValue placeholder="Select NPC" />
+                  <SelectValue placeholder="Select NPC">
+                    <span v-if="selectedLinkNpc" class="truncate">
+                      {{ npcOptionLabel(selectedLinkNpc) }}
+                      <span class="text-muted-foreground">
+                        ({{ npcVoiceActorLabel(selectedLinkNpc) }})
+                      </span>
+                    </span>
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem :value="CONTENT_NONE">Select NPC</SelectItem>
-                  <SelectItem v-for="npc in npcs" :key="npc.id" :value="String(npc.id)">
-                    {{ npc.name }}
+                  <SelectItem
+                    v-for="npc in npcs"
+                    :key="npc.id"
+                    :value="String(npc.id)"
+                    class="py-2"
+                  >
+                    <span class="flex min-w-0 flex-col items-start gap-0.5">
+                      <span class="max-w-full truncate">{{ npcOptionLabel(npc) }}</span>
+                      <span class="max-w-full truncate text-xs text-muted-foreground">
+                        {{ npcVoiceActorLabel(npc) }}
+                      </span>
+                    </span>
                   </SelectItem>
                 </SelectContent>
               </Select>

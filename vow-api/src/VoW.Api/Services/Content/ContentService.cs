@@ -874,7 +874,10 @@ public sealed partial class ContentService(
         contentRepository.GetUsersByRolesAsync(ContentRolePolicy.RolesFor(role), cancellationToken);
 
     private static IReadOnlyCollection<ContentOptionResponse> ToResponse(IEnumerable<ContentOption> options) =>
-        options.Select(option => new ContentOptionResponse(option.Id, option.Name)).ToArray();
+        options.Select(option => new ContentOptionResponse(
+            option.Id,
+            option.Name,
+            option.VoiceActorName)).ToArray();
 
     private static string? NormalizeName(string? name) =>
         string.IsNullOrWhiteSpace(name) ? null : name.Trim();

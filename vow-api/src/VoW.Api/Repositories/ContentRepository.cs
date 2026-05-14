@@ -10,7 +10,7 @@ public sealed class ContentRepository(IConfiguration configuration) : IContentRe
     public async Task<IReadOnlyCollection<ContentOption>> GetQuestsAsync(CancellationToken cancellationToken)
     {
         const string sql = """
-            SELECT quest_id AS Id, name AS Name
+            SELECT quest_id AS Id, name AS Name, CAST(NULL AS CHAR) AS VoiceActorName
             FROM quest
             ORDER BY name;
             """;
@@ -23,9 +23,11 @@ public sealed class ContentRepository(IConfiguration configuration) : IContentRe
     public async Task<IReadOnlyCollection<ContentOption>> GetNpcsAsync(CancellationToken cancellationToken)
     {
         const string sql = """
-            SELECT npc_id AS Id, name AS Name
-            FROM npc
-            ORDER BY name;
+            SELECT n.npc_id AS Id, n.name AS Name, u.display_name AS VoiceActorName
+            FROM npc n
+            LEFT JOIN user u ON u.user_id = n.voice_actor_id
+            WHERE n.archived = 0
+            ORDER BY n.name, n.npc_id;
             """;
 
         await using var connection = new MySqlConnection(DatabaseSettings.GetWebsiteConnectionString(configuration));
@@ -38,7 +40,7 @@ public sealed class ContentRepository(IConfiguration configuration) : IContentRe
         CancellationToken cancellationToken)
     {
         const string sql = """
-            SELECT DISTINCT u.user_id AS Id, u.display_name AS Name
+            SELECT DISTINCT u.user_id AS Id, u.display_name AS Name, CAST(NULL AS CHAR) AS VoiceActorName
             FROM user u
             JOIN user_discord_role udr ON udr.user_id = u.user_id
             WHERE udr.discord_role_id IN @RoleIds
