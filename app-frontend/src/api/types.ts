@@ -69,6 +69,18 @@ export interface AuthTokenResponse {
   expiresAt: string
 }
 
+export interface PasswordLoginRequest {
+  username: string
+  password: string
+}
+
+export interface PasswordLoginResponse {
+  accessToken: string
+  refreshToken: string
+  expiresAt: string
+  forcePasswordChange: boolean
+}
+
 export interface AuthHandoffRequest {
   code: string
 }
@@ -204,6 +216,7 @@ export interface AccountDetails {
   castingCallClub: string | null
   bio: string | null
   lore: string | null
+  forcePasswordChange: boolean
   systemAdmin: boolean
   roleIds: number[]
 }
@@ -220,6 +233,41 @@ export interface UpdateAccountRequest {
   castingCallClub?: string
   bio?: string
   lore?: string
+}
+
+export interface SelfProfile {
+  userId: number
+  displayName: string
+  avatarUrl: string
+  defaultAvatarUrl: string
+  email: string | null
+  publicEmail: boolean
+  discord: string | null
+  youtube: string | null
+  twitter: string | null
+  castingCallClub: string | null
+  bio: string | null
+  lore: string | null
+  forcePasswordChange: boolean
+  passwordChangeRequiresCurrentPassword: boolean
+}
+
+export interface UpdateSelfProfileRequest {
+  displayName: string
+  email: string | null
+  publicEmail: boolean
+  discord: string | null
+  youtube: string | null
+  twitter: string | null
+  castingCallClub: string | null
+  bio: string | null
+  lore: string | null
+}
+
+export interface SetSelfPasswordRequest {
+  oldPassword: string | null
+  newPassword: string
+  confirmNewPassword: string
 }
 
 export interface UpdateAccountRolesRequest {

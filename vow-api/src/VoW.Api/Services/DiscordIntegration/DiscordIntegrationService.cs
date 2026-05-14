@@ -29,7 +29,7 @@ public sealed partial class DiscordIntegrationService(
     private static readonly byte[] PngSignature = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
 
     private readonly string storageBaseUrl = NormalizeStorageBaseUrl(
-        configuration["Storage:BaseUrl"] ?? "https://vow.blob.core.windows.net/vow-dynamic/");
+        StorageConfiguration.GetBaseUrl(configuration));
 
     public async Task<IReadOnlyCollection<DiscordIntegrationUserResponse>> GetUsersAsync(
         CancellationToken cancellationToken)

@@ -1,13 +1,14 @@
 using Dapper;
 using MySqlConnector;
 using VoW.Api.Domain.Accounts;
+using VoW.Api.Services.Storage;
 
 namespace VoW.Api.Repositories;
 
 public sealed class AccountRepository(IConfiguration configuration) : IAccountRepository
 {
     private readonly string storageBaseUrl = NormalizeStorageBaseUrl(
-        configuration["Storage:BaseUrl"] ?? "https://vow.blob.core.windows.net/vow-dynamic/");
+        StorageConfiguration.GetBaseUrl(configuration));
 
     public async Task<IReadOnlyCollection<AccountRole>> GetRolesAsync(CancellationToken cancellationToken)
     {
@@ -120,6 +121,7 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
                 castingcallclub AS CastingCallClub,
                 bio AS Bio,
                 lore AS Lore,
+                force_password_change AS ForcePasswordChange,
                 system_admin AS SystemAdmin
             FROM user
             WHERE user_id = @UserId;
@@ -151,6 +153,7 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
             user.CastingCallClub,
             user.Bio,
             user.Lore,
+            user.ForcePasswordChange != 0,
             user.SystemAdmin != 0,
             rolesByUser.GetValueOrDefault(userId, []));
     }
@@ -176,7 +179,7 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
         const string sql = """
             SELECT COUNT(*)
             FROM user
-            WHERE UPPER(display_name) = UPPER(@DisplayName)
+            WHERE display_name = @DisplayName
               AND user_id <> @ExceptUserId;
             """;
         await using var connection = new MySqlConnection(DatabaseSettings.GetWebsiteConnectionString(configuration));
@@ -257,7 +260,8 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
                     youtube = @Youtube,
                     twitter = @Twitter,
                     castingcallclub = @CastingCallClub,
-                    public_email = COALESCE(@PublicEmail, public_email)
+                    public_email = COALESCE(@PublicEmail, public_email),
+                    force_password_change = 0
                 WHERE user_id = @UserId;
                 """;
 
@@ -281,6 +285,72 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
             },
             cancellationToken: cancellationToken);
         return await connection.ExecuteAsync(definition) > 0;
+    }
+
+    public async Task<bool> UpdateSelfProfileAsync(
+        int userId,
+        UpdateSelfProfileCommand command,
+        CancellationToken cancellationToken)
+    {
+        const string sql = """
+            UPDATE user
+            SET email = @Email,
+                display_name = @DisplayName,
+                bio = @Bio,
+                lore = @Lore,
+                discord = @Discord,
+                youtube = @Youtube,
+                twitter = @Twitter,
+                castingcallclub = @CastingCallClub,
+                public_email = @PublicEmail
+            WHERE user_id = @UserId;
+            """;
+
+        await using var connection = new MySqlConnection(DatabaseSettings.GetWebsiteConnectionString(configuration));
+        var definition = new CommandDefinition(
+            sql,
+            new
+            {
+                UserId = userId,
+                command.DisplayName,
+                command.Email,
+                PublicEmail = command.PublicEmail ? 1 : 0,
+                command.Discord,
+                command.Youtube,
+                command.Twitter,
+                command.CastingCallClub,
+                command.Bio,
+                command.Lore,
+            },
+            cancellationToken: cancellationToken);
+        return await connection.ExecuteAsync(definition) > 0;
+    }
+
+    public async Task<AccountPasswordState?> GetPasswordStateAsync(int userId, CancellationToken cancellationToken)
+    {
+        const string sql = """
+            SELECT
+                password AS PasswordHash,
+                force_password_change AS ForcePasswordChange
+            FROM user
+            WHERE user_id = @UserId;
+            """;
+        await using var connection = new MySqlConnection(DatabaseSettings.GetWebsiteConnectionString(configuration));
+        var command = new CommandDefinition(sql, new { UserId = userId }, cancellationToken: cancellationToken);
+        return await connection.QuerySingleOrDefaultAsync<AccountPasswordState>(command);
+    }
+
+    public async Task<bool> SetPasswordAsync(int userId, string passwordHash, CancellationToken cancellationToken)
+    {
+        const string sql = """
+            UPDATE user
+            SET password = @PasswordHash,
+                force_password_change = 0
+            WHERE user_id = @UserId;
+            """;
+        await using var connection = new MySqlConnection(DatabaseSettings.GetWebsiteConnectionString(configuration));
+        var command = new CommandDefinition(sql, new { UserId = userId, PasswordHash = passwordHash }, cancellationToken: cancellationToken);
+        return await connection.ExecuteAsync(command) > 0;
     }
 
     public async Task<int> InsertAsync(CreateAccountCommand command, CancellationToken cancellationToken)
@@ -515,6 +585,8 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
         public string? Bio { get; set; }
 
         public string? Lore { get; set; }
+
+        public sbyte ForcePasswordChange { get; set; }
 
         public sbyte SystemAdmin { get; set; }
     }

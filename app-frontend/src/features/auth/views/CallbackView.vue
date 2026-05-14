@@ -2,6 +2,8 @@
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { exchangeHandoffCode } from '@/api/auth'
+import { firstAccessibleAdminRoute } from '@/lib/adminRoutes'
+import { queryClient } from '@/lib/queryClient'
 import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
@@ -11,7 +13,8 @@ const error = ref<string>('')
 
 const errorMessages: Record<string, string> = {
   access_denied: 'Sign-in was cancelled.',
-  insufficient_permissions: 'Your account does not have permission to access this admin area.',
+  account_not_found: 'No Voices of Wynn account is linked to this Discord account.',
+  insufficient_permissions: 'No Voices of Wynn account is linked to this Discord account.',
   external_oauth_failed: 'The sign-in provider did not respond successfully.',
   invalid_oauth_state: 'Sign-in state expired or was rejected.',
   invalid_provider: 'Unknown sign-in provider.',
@@ -34,9 +37,10 @@ onMounted(async () => {
 
   try {
     const tokens = await exchangeHandoffCode(code)
+    queryClient.clear()
     auth.setTokens(tokens.accessToken, tokens.refreshToken, tokens.expiresAt)
     history.replaceState(null, '', window.location.pathname)
-    void router.replace({ name: 'reports' })
+    void router.replace(firstAccessibleAdminRoute(auth.hasCapability) ?? { name: 'profile' })
     return
   } catch {
     error.value = 'Sign-in handoff expired or was rejected.'

@@ -11,6 +11,7 @@ interface PersistedAuth {
   accessToken: string
   refreshToken: string
   expiresAt: string
+  forcePasswordChange?: boolean
 }
 
 interface AccessTokenClaims {
@@ -40,6 +41,7 @@ export const useAuthStore = defineStore('auth', () => {
   const accessToken = ref<string>(initial?.accessToken ?? '')
   const refreshToken = ref<string>(initial?.refreshToken ?? '')
   const expiresAt = ref<string>(initial?.expiresAt ?? '')
+  const forcePasswordChange = ref<boolean>(initial?.forcePasswordChange ?? false)
 
   const isAuthenticated = computed(() => {
     if (!accessToken.value) return false
@@ -75,16 +77,25 @@ export const useAuthStore = defineStore('auth', () => {
         accessToken: accessToken.value,
         refreshToken: refreshToken.value,
         expiresAt: expiresAt.value,
+        forcePasswordChange: forcePasswordChange.value,
       })
     } else {
       save(null)
     }
   }
 
-  function setTokens(access: string, refresh: string, expiresAtIso: string) {
+  function setTokens(access: string, refresh: string, expiresAtIso: string, forceChange?: boolean) {
     accessToken.value = access
     refreshToken.value = refresh
     expiresAt.value = expiresAtIso
+    if (forceChange !== undefined) {
+      forcePasswordChange.value = forceChange
+    }
+    persist()
+  }
+
+  function setForcePasswordChange(value: boolean) {
+    forcePasswordChange.value = value
     persist()
   }
 
@@ -92,6 +103,7 @@ export const useAuthStore = defineStore('auth', () => {
     accessToken.value = ''
     refreshToken.value = ''
     expiresAt.value = ''
+    forcePasswordChange.value = false
     persist()
   }
 
@@ -102,8 +114,10 @@ export const useAuthStore = defineStore('auth', () => {
     isAuthenticated,
     displayName,
     capabilities,
+    forcePasswordChange,
     hasCapability,
     setTokens,
+    setForcePasswordChange,
     clear,
   }
 })

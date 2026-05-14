@@ -14,6 +14,7 @@ namespace VoW.Api.Controllers;
 public sealed class AuthController(
     IEnumerable<IExternalAuthProvider> authProviders,
     IUserAccessService userAccessService,
+    IPasswordAuthService passwordAuthService,
     IJwtService jwtService,
     IAuthHandoffService handoffService,
     IConfiguration configuration,
@@ -88,7 +89,7 @@ public sealed class AuthController(
 
             if (user is null)
             {
-                return RedirectToSpaCallbackError("insufficient_permissions");
+                return RedirectToSpaCallbackError("account_not_found");
             }
 
             var handoffCode = handoffService.Create(jwtService.CreateTokenPair(user));
@@ -107,6 +108,20 @@ public sealed class AuthController(
     {
         var tokens = handoffService.Consume(request.Code);
         return tokens is null ? Unauthorized() : Ok(tokens);
+    }
+
+    [HttpPost("login/password")]
+    public async Task<ActionResult<PasswordLoginResponse>> PasswordLogin(
+        [FromBody] PasswordLoginRequest request,
+        CancellationToken cancellationToken)
+    {
+        var result = await passwordAuthService.LoginAsync(request, cancellationToken);
+        if (!result.Succeeded)
+        {
+            return Unauthorized();
+        }
+
+        return Ok(PasswordLoginResponse.From(result.Tokens!, result.ForcePasswordChange));
     }
 
     [HttpPost("refresh")]
@@ -177,4 +192,5 @@ public sealed class AuthController(
         var origin = configuration["CORS_ORIGIN"] ?? "https://app.voicesofwynn.com";
         return $"{origin.TrimEnd('/')}/auth/callback";
     }
+
 }

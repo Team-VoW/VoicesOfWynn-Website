@@ -14,5 +14,6 @@ public sealed record AccountDetailsResponse(
     string? CastingCallClub,
     string? Bio,
     string? Lore,
+    bool ForcePasswordChange,
     bool SystemAdmin,
     IReadOnlyCollection<int> RoleIds);

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using VoW.Api.Controllers;
 using VoW.Api.Contracts.Reports;
 using VoW.Api.Domain.Auth;
 using VoW.Api.Services.Reports;
@@ -18,11 +19,7 @@ public sealed class ReportsController(IReportService reportService) : Controller
         var result = await reportService.SearchAsync(request, cancellationToken);
         if (!result.Succeeded)
         {
-            foreach (var (field, message) in result.Errors)
-            {
-                ModelState.AddModelError(field, message);
-            }
-
+            ModelState.AddErrors(result.Errors);
             return ValidationProblem(ModelState);
         }
 
@@ -39,11 +36,7 @@ public sealed class ReportsController(IReportService reportService) : Controller
         var result = await reportService.UpdateStatusAsync(reportId, request.Status, cancellationToken);
         if (result.Errors.Count > 0)
         {
-            foreach (var (field, message) in result.Errors)
-            {
-                ModelState.AddModelError(field, message);
-            }
-
+            ModelState.AddErrors(result.Errors);
             return ValidationProblem(ModelState);
         }
 

@@ -4,7 +4,7 @@ namespace VoW.Api.Domain.Users;
 
 public sealed record User(
     int UserId,
-    string DiscordId,
+    string? DiscordId,
     string DisplayName,
     IReadOnlyCollection<DiscordRoleId> Roles,
     IReadOnlyCollection<Capability> Capabilities);

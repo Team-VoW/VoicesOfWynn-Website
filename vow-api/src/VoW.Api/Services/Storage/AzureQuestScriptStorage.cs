@@ -5,16 +5,15 @@ namespace VoW.Api.Services.Storage;
 
 public sealed class AzureQuestScriptStorage : IQuestScriptStorage
 {
-    private const string ContainerName = "vow-dynamic";
     private const string ScriptKeyPrefix = "scripts/";
     private const string ScriptContentType = "text/plain";
     private const string ScriptCacheControl = "public, max-age=3600";
 
     private readonly BlobContainerClient containerClient;
 
-    public AzureQuestScriptStorage(BlobServiceClient blobServiceClient)
+    public AzureQuestScriptStorage(BlobServiceClient blobServiceClient, IConfiguration configuration)
     {
-        containerClient = blobServiceClient.GetBlobContainerClient(ContainerName);
+        containerClient = blobServiceClient.GetBlobContainerClient(StorageConfiguration.GetContainerName(configuration));
     }
 
     public async Task UploadScriptAsync(string degeneratedName, Stream content, CancellationToken cancellationToken)

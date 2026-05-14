@@ -1,6 +1,10 @@
 import { apiFetch } from './client'
 import { API_BASE_URL } from './config'
-import type { AuthTokenResponse } from './types'
+import type {
+  AuthTokenResponse,
+  PasswordLoginRequest,
+  PasswordLoginResponse,
+} from './types'
 
 export function discordLoginUrl(): string {
   return `${API_BASE_URL}/auth/login/discord`
@@ -19,5 +23,13 @@ export function refreshAccessToken(refreshToken: string): Promise<AuthTokenRespo
     method: 'POST',
     auth: false,
     body: { refreshToken },
+  })
+}
+
+export function loginWithPassword(request: PasswordLoginRequest): Promise<PasswordLoginResponse> {
+  return apiFetch<PasswordLoginResponse>('/auth/login/password', {
+    method: 'POST',
+    auth: false,
+    body: request,
   })
 }

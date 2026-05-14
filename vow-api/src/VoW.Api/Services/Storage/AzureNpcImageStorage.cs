@@ -6,16 +6,15 @@ namespace VoW.Api.Services.Storage;
 
 public sealed class AzureNpcImageStorage : INpcImageStorage
 {
-    private const string ContainerName = "vow-dynamic";
     private const string ImageKeyPrefix = "npcs/";
     private const string ImageContentType = "image/webp";
     private const string ImageCacheControl = "public, max-age=3600";
 
     private readonly BlobContainerClient containerClient;
 
-    public AzureNpcImageStorage(BlobServiceClient blobServiceClient)
+    public AzureNpcImageStorage(BlobServiceClient blobServiceClient, IConfiguration configuration)
     {
-        containerClient = blobServiceClient.GetBlobContainerClient(ContainerName);
+        containerClient = blobServiceClient.GetBlobContainerClient(StorageConfiguration.GetContainerName(configuration));
     }
 
     public async Task UploadImageAsync(int npcId, Stream webpContent, CancellationToken cancellationToken)

@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory, type RouteLocationNormalized } from 'vue-router'
 import { Capabilities, type Capability } from '@/lib/capabilities'
+import { firstAccessibleAdminRoute } from '@/lib/adminRoutes'
 import { useAuthStore } from '@/stores/auth'
 
 declare module 'vue-router' {
@@ -31,6 +32,11 @@ const router = createRouter({
         {
           path: '',
           redirect: { name: 'reports' },
+        },
+        {
+          path: 'profile',
+          name: 'profile',
+          component: () => import('@/features/profile/views/ProfileView.vue'),
         },
         {
           path: 'admin/reports',
@@ -67,14 +73,17 @@ router.beforeEach((to: RouteLocationNormalized) => {
   if (!to.meta.public && !auth.isAuthenticated) {
     return { name: 'login', query: { redirect: to.fullPath } }
   }
-  if (to.meta.capability && !auth.hasCapability(to.meta.capability)) {
-    if (auth.hasCapability(Capabilities.ReportsView)) {
-      return { name: 'reports' }
-    }
-    return { name: 'login' }
+  if (!to.meta.public && auth.forcePasswordChange && to.name !== 'profile') {
+    return { name: 'profile' }
   }
-  if (to.name === 'login' && auth.isAuthenticated && auth.hasCapability(Capabilities.ReportsView)) {
-    return { name: 'reports' }
+  if (to.meta.capability && !auth.hasCapability(to.meta.capability)) {
+    return firstAccessibleAdminRoute(auth.hasCapability) ?? { name: 'profile' }
+  }
+  if (to.name === 'login' && auth.isAuthenticated) {
+    if (auth.forcePasswordChange) {
+      return { name: 'profile' }
+    }
+    return firstAccessibleAdminRoute(auth.hasCapability) ?? { name: 'profile' }
   }
   return true
 })

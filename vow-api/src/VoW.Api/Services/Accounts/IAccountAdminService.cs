@@ -2,7 +2,7 @@ using VoW.Api.Contracts.Accounts;
 
 namespace VoW.Api.Services.Accounts;
 
-public interface IAccountService
+public interface IAccountAdminService
 {
     Task<IReadOnlyCollection<AccountRoleResponse>> GetRolesAsync(CancellationToken cancellationToken);
 

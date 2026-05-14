@@ -14,12 +14,14 @@ import 'vue-advanced-cropper/dist/style.css'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import { messageFromContentError } from '@/features/content/contentUtils'
+import { useUploadSelfAvatar } from '@/features/profile/queries'
 import { useUploadAccountAvatar } from '../queries'
 
 const props = defineProps<{
   userId: number | null
   open: boolean
   source: File | null
+  self?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -28,6 +30,7 @@ const emit = defineEmits<{
 }>()
 
 const uploadMutation = useUploadAccountAvatar()
+const uploadSelfMutation = useUploadSelfAvatar()
 const cropperRef = useTemplateRef<InstanceType<typeof Cropper>>('cropperRef')
 const sourceUrl = ref<string | null>(null)
 const error = ref('')
@@ -52,7 +55,7 @@ function setOpen(value: boolean) {
 }
 
 async function save() {
-  if (!props.userId || !cropperRef.value) return
+  if ((!props.self && !props.userId) || !cropperRef.value) return
   error.value = ''
 
   const result = cropperRef.value.getResult() as CropperResult
@@ -71,7 +74,11 @@ async function save() {
   }
 
   try {
-    await uploadMutation.mutateAsync({ userId: props.userId, file: blob })
+    if (props.self) {
+      await uploadSelfMutation.mutateAsync(blob)
+    } else {
+      await uploadMutation.mutateAsync({ userId: props.userId!, file: blob })
+    }
     toast.success('Avatar updated.')
     emit('uploaded')
     setOpen(false)
@@ -125,7 +132,7 @@ async function save() {
           </DialogClose>
           <Button
             class="gap-2"
-            :disabled="!sourceUrl || uploadMutation.isPending.value"
+            :disabled="!sourceUrl || uploadMutation.isPending.value || uploadSelfMutation.isPending.value"
             @click="save"
           >
             <Check class="size-4" />

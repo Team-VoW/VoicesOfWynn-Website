@@ -6,6 +6,8 @@ namespace VoW.Api.Services.Auth;
 
 public sealed class UserAccessService(IUserRepository userRepository) : IUserAccessService
 {
+    // Resolves authenticated website users and maps their roles to capability claims.
+    // Endpoint-level authorization is handled by policies and RequireCapability.
     public async Task<User?> GetAccessibleUserByDiscordIdAsync(string discordId, CancellationToken cancellationToken)
     {
         var user = await userRepository.GetByDiscordIdAsync(discordId, cancellationToken);
@@ -26,8 +28,6 @@ public sealed class UserAccessService(IUserRepository userRepository) : IUserAcc
         }
 
         var capabilities = CapabilityMapper.Map(user.Roles).ToArray();
-        return capabilities.Length == 0
-            ? null
-            : new User(user.UserId, user.DiscordId, user.DisplayName, user.Roles, capabilities);
+        return new User(user.UserId, user.DiscordId, user.DisplayName, user.Roles, capabilities);
     }
 }

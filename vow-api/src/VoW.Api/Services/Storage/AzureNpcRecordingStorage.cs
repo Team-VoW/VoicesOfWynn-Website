@@ -5,16 +5,15 @@ namespace VoW.Api.Services.Storage;
 
 public sealed class AzureNpcRecordingStorage : INpcRecordingStorage
 {
-    private const string ContainerName = "vow-dynamic";
     private const string RecordingKeyPrefix = "recordings/";
     private const string RecordingContentType = "audio/ogg";
     private const string RecordingCacheControl = "public, max-age=3600";
 
     private readonly BlobContainerClient containerClient;
 
-    public AzureNpcRecordingStorage(BlobServiceClient blobServiceClient)
+    public AzureNpcRecordingStorage(BlobServiceClient blobServiceClient, IConfiguration configuration)
     {
-        containerClient = blobServiceClient.GetBlobContainerClient(ContainerName);
+        containerClient = blobServiceClient.GetBlobContainerClient(StorageConfiguration.GetContainerName(configuration));
     }
 
     public Uri GetRecordingUrl(string fileName)

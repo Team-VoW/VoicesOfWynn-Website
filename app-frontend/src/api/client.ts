@@ -1,4 +1,5 @@
 import { useAuthStore } from '@/stores/auth'
+import { queryClient } from '@/lib/queryClient'
 import { API_BASE_URL } from './config'
 import type { AuthTokenResponse } from './types'
 
@@ -39,6 +40,7 @@ async function refreshAccessToken(): Promise<string | null> {
         // Other failures (5xx, network/CORS) are transient — keep the session and let the caller retry.
         if (res.status === 400 || res.status === 401) {
           auth.clear()
+          queryClient.clear()
         }
         return null
       }

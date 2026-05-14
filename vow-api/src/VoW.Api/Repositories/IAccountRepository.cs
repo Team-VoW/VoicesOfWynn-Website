@@ -24,6 +24,12 @@ public interface IAccountRepository
 
     Task<bool> UpdateAsync(int userId, UpdateAccountCommand command, CancellationToken cancellationToken);
 
+    Task<bool> UpdateSelfProfileAsync(int userId, UpdateSelfProfileCommand command, CancellationToken cancellationToken);
+
+    Task<AccountPasswordState?> GetPasswordStateAsync(int userId, CancellationToken cancellationToken);
+
+    Task<bool> SetPasswordAsync(int userId, string passwordHash, CancellationToken cancellationToken);
+
     Task<int> InsertAsync(CreateAccountCommand command, CancellationToken cancellationToken);
 
     Task<bool> ReplaceRolesAsync(int userId, IReadOnlyCollection<int> roleIds, CancellationToken cancellationToken);

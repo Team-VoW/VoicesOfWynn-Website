@@ -6,7 +6,6 @@ namespace VoW.Api.Services.Storage;
 
 public sealed class AzureAccountAvatarStorage : IAccountAvatarStorage
 {
-    private const string ContainerName = "vow-dynamic";
     private const string AvatarKeyPrefix = "avatars/";
     private const string WebpImageContentType = "image/webp";
     private const string PngImageContentType = "image/png";
@@ -14,9 +13,9 @@ public sealed class AzureAccountAvatarStorage : IAccountAvatarStorage
 
     private readonly BlobContainerClient containerClient;
 
-    public AzureAccountAvatarStorage(BlobServiceClient blobServiceClient)
+    public AzureAccountAvatarStorage(BlobServiceClient blobServiceClient, IConfiguration configuration)
     {
-        containerClient = blobServiceClient.GetBlobContainerClient(ContainerName);
+        containerClient = blobServiceClient.GetBlobContainerClient(StorageConfiguration.GetContainerName(configuration));
     }
 
     public async Task UploadAvatarAsync(int userId, Stream webpContent, CancellationToken cancellationToken)

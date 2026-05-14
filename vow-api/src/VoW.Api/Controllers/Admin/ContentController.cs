@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using VoW.Api.Controllers;
 using VoW.Api.Contracts.Content;
 using VoW.Api.Domain.Auth;
 using VoW.Api.Services.Content;
@@ -22,7 +23,7 @@ public sealed class ContentController(IContentService contentService) : Controll
         var result = await contentService.SearchAsync(request, cancellationToken);
         if (!result.Succeeded)
         {
-            AddErrors(result.Errors);
+            ModelState.AddErrors(result.Errors);
             return ValidationProblem(ModelState);
         }
 
@@ -37,7 +38,7 @@ public sealed class ContentController(IContentService contentService) : Controll
         var result = await contentService.CreateQuestAsync(request, cancellationToken);
         if (!result.Succeeded)
         {
-            AddErrors(result.Errors);
+            ModelState.AddErrors(result.Errors);
             return ValidationProblem(ModelState);
         }
 
@@ -52,7 +53,7 @@ public sealed class ContentController(IContentService contentService) : Controll
         var result = await contentService.CreateNpcAsync(request, cancellationToken);
         if (!result.Succeeded)
         {
-            AddErrors(result.Errors);
+            ModelState.AddErrors(result.Errors);
             return ValidationProblem(ModelState);
         }
 
@@ -232,8 +233,13 @@ public sealed class ContentController(IContentService contentService) : Controll
             return NotFound();
         }
 
-        AddErrors(result.Errors);
-        return result.Succeeded ? Ok(result.Response) : ValidationProblem(ModelState);
+        if (result.Succeeded)
+        {
+            return Ok(result.Response);
+        }
+
+        ModelState.AddErrors(result.Errors);
+        return ValidationProblem(ModelState);
     }
 
     [HttpPut("recordings/mass")]
@@ -266,8 +272,13 @@ public sealed class ContentController(IContentService contentService) : Controll
             npcId,
             cancellationToken);
 
-        AddErrors(result.Errors);
-        return result.Succeeded ? Ok(result.Response) : ValidationProblem(ModelState);
+        if (result.Succeeded)
+        {
+            return Ok(result.Response);
+        }
+
+        ModelState.AddErrors(result.Errors);
+        return ValidationProblem(ModelState);
     }
 
     [HttpGet("quests/{questId:int}/npcs/{npcId:int}/recordings")]
@@ -322,15 +333,7 @@ public sealed class ContentController(IContentService contentService) : Controll
             return NotFound();
         }
 
-        AddErrors(result.Errors);
+        ModelState.AddErrors(result.Errors);
         return ValidationProblem(ModelState);
-    }
-
-    private void AddErrors(IReadOnlyDictionary<string, string> errors)
-    {
-        foreach (var (field, message) in errors)
-        {
-            ModelState.AddModelError(field, message);
-        }
     }
 }
