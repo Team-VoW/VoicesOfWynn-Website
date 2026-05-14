@@ -233,8 +233,13 @@ public sealed class ContentController(IContentService contentService) : Controll
             return NotFound();
         }
 
+        if (result.Succeeded)
+        {
+            return Ok(result.Response);
+        }
+
         ModelState.AddErrors(result.Errors);
-        return result.Succeeded ? Ok(result.Response) : ValidationProblem(ModelState);
+        return ValidationProblem(ModelState);
     }
 
     [HttpPut("recordings/mass")]
@@ -267,8 +272,13 @@ public sealed class ContentController(IContentService contentService) : Controll
             npcId,
             cancellationToken);
 
+        if (result.Succeeded)
+        {
+            return Ok(result.Response);
+        }
+
         ModelState.AddErrors(result.Errors);
-        return result.Succeeded ? Ok(result.Response) : ValidationProblem(ModelState);
+        return ValidationProblem(ModelState);
     }
 
     [HttpGet("quests/{questId:int}/npcs/{npcId:int}/recordings")]

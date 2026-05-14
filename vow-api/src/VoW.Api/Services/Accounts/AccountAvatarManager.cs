@@ -59,7 +59,9 @@ internal sealed class AccountAvatarManager(
 
         if (!await accountRepository.ClearAvatarAsync(userId, cancellationToken))
         {
-            return AccountMutationResult.NotFound();
+            logger.LogWarning(
+                "Clearing avatar for user {UserId} affected no database rows; proceeding to purge storage.",
+                userId);
         }
 
         await avatarStorage.DeleteCustomAvatarsAsync(userId, cancellationToken);

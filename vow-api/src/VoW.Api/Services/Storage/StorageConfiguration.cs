@@ -6,8 +6,11 @@ public static class StorageConfiguration
 {
     private const string DefaultContainerName = "vow-dynamic";
 
-    public static string GetContainerName(IConfiguration configuration) =>
-        configuration["Storage:ContainerName"] ?? DefaultContainerName;
+    public static string GetContainerName(IConfiguration configuration)
+    {
+        var value = configuration["Storage:ContainerName"];
+        return string.IsNullOrWhiteSpace(value) ? DefaultContainerName : value;
+    }
 
     public static string GetBaseUrl(IConfiguration configuration)
     {

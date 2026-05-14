@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from 'vue'
+import { computed, nextTick, reactive, ref, watch } from 'vue'
 import { Edit, ExternalLink, KeyRound, Upload, X } from 'lucide-vue-next'
 import {
   DialogClose,
@@ -44,6 +44,15 @@ const form = reactive({
   bio: '',
   lore: '',
 })
+const hasLocalEdits = ref(false)
+let suppressDirty = false
+watch(
+  form,
+  () => {
+    if (!suppressDirty) hasLocalEdits.value = true
+  },
+  { deep: true },
+)
 
 const passwordForm = reactive({
   oldPassword: '',
@@ -72,15 +81,21 @@ watch(
   profile,
   (value) => {
     if (!value) return
-    form.displayName = value.displayName
-    form.email = value.email ?? ''
-    form.publicEmail = value.publicEmail
-    form.discord = value.discord ?? ''
-    form.youtube = value.youtube ?? ''
-    form.twitter = value.twitter ?? ''
-    form.castingCallClub = value.castingCallClub ?? ''
-    form.bio = value.bio ?? ''
-    form.lore = value.lore ?? ''
+    if (!hasLocalEdits.value) {
+      suppressDirty = true
+      form.displayName = value.displayName
+      form.email = value.email ?? ''
+      form.publicEmail = value.publicEmail
+      form.discord = value.discord ?? ''
+      form.youtube = value.youtube ?? ''
+      form.twitter = value.twitter ?? ''
+      form.castingCallClub = value.castingCallClub ?? ''
+      form.bio = value.bio ?? ''
+      form.lore = value.lore ?? ''
+      nextTick(() => {
+        suppressDirty = false
+      })
+    }
     auth.setForcePasswordChange(value.forcePasswordChange)
     formError.value = ''
   },
@@ -106,6 +121,7 @@ async function saveProfile() {
       bio: optional(form.bio),
       lore: optional(form.lore),
     })
+    hasLocalEdits.value = false
     toast.success('Profile saved.')
   } catch (err) {
     formError.value = messageFromContentError(err)

@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { discordLoginUrl, loginWithPassword } from '@/api/auth'
 import { messageFromContentError } from '@/features/content/contentUtils'
-import { canAccessRedirect, firstAccessibleAdminRoute } from '@/lib/adminRoutes'
+import { firstAccessibleAdminRoute } from '@/lib/adminRoutes'
 import { useAuthStore } from '@/stores/auth'
 
 const auth = useAuthStore()
@@ -53,7 +53,7 @@ async function goAfterLogin() {
   }
 
   const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : ''
-  if (redirect && canAccessRedirect(router, redirect, auth.hasCapability)) {
+  if (redirect) {
     await router.replace(redirect)
     return
   }

@@ -1,9 +1,12 @@
-import type { Router } from 'vue-router'
 import { Capabilities, type Capability } from '@/lib/capabilities'
 
 const adminRouteOrder = ['reports', 'analytics', 'content', 'accounts'] as const
 
-export function firstAccessibleAdminRoute(hasCapability: (capability: Capability) => boolean) {
+type AdminRouteName = (typeof adminRouteOrder)[number]
+
+export function firstAccessibleAdminRoute(
+  hasCapability: (capability: Capability) => boolean,
+): { name: AdminRouteName } | undefined {
   return adminRouteOrder
     .map((name) => ({ name }))
     .find((route) => {
@@ -12,21 +15,7 @@ export function firstAccessibleAdminRoute(hasCapability: (capability: Capability
     })
 }
 
-export function canAccessRedirect(
-  router: Router,
-  redirect: string,
-  hasCapability: (capability: Capability) => boolean,
-) {
-  if (!redirect.startsWith('/admin/')) {
-    return false
-  }
-
-  const target = router.resolve(redirect)
-  const capability = target.matched.find((match) => match.meta.capability)?.meta.capability
-  return capability ? hasCapability(capability) : false
-}
-
-const routeCapabilityByName: Record<(typeof adminRouteOrder)[number], Capability> = {
+const routeCapabilityByName: Record<AdminRouteName, Capability> = {
   reports: Capabilities.ReportsView,
   analytics: Capabilities.AnalyticsView,
   content: Capabilities.ContentManage,
