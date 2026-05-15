@@ -29,9 +29,11 @@ const auth = useAuthStore()
 const cropOpen = ref(false)
 const cropSource = ref<File | null>(null)
 const avatarInputRef = ref<HTMLInputElement | null>(null)
+const isAvatarDropActive = ref(false)
 const formError = ref('')
 const passwordDialogOpen = ref(false)
 const passwordError = ref('')
+const acceptedAvatarTypes = new Set(['image/png', 'image/jpeg', 'image/webp'])
 
 const form = reactive({
   displayName: '',
@@ -180,13 +182,30 @@ function onAvatarError(event: Event, fallback: string) {
   if (img.src !== fallback) img.src = fallback
 }
 
+function openAvatarCrop(file: File) {
+  if (!acceptedAvatarTypes.has(file.type)) {
+    formError.value = 'Use a PNG, JPEG, or WebP image for your avatar.'
+    return
+  }
+
+  formError.value = ''
+  cropSource.value = file
+  cropOpen.value = true
+}
+
 function onAvatarPicked(event: Event) {
   const input = event.target as HTMLInputElement
   const file = input.files?.[0] ?? null
   input.value = ''
   if (!file) return
-  cropSource.value = file
-  cropOpen.value = true
+  openAvatarCrop(file)
+}
+
+function onAvatarDrop(event: DragEvent) {
+  isAvatarDropActive.value = false
+  const file = event.dataTransfer?.files?.[0] ?? null
+  if (!file) return
+  openAvatarCrop(file)
 }
 </script>
 
@@ -217,13 +236,31 @@ function onAvatarPicked(event: Event) {
 
     <section v-else-if="profile" class="grid gap-6 md:grid-cols-[12rem_1fr]">
       <div class="space-y-3">
-        <img
-          :key="profile.avatarUrl"
-          :src="profile.avatarUrl"
-          alt="Profile picture"
-          class="size-44 rounded-md border bg-muted object-cover"
-          @error="onAvatarError($event, profile.defaultAvatarUrl)"
-        />
+        <div
+          class="relative flex size-44 items-center justify-center rounded-md border border-dashed bg-muted transition-colors"
+          :class="isAvatarDropActive ? 'border-primary bg-primary/10' : 'border-border'"
+          @dragenter.prevent="isAvatarDropActive = true"
+          @dragover.prevent="isAvatarDropActive = true"
+          @dragleave.prevent="isAvatarDropActive = false"
+          @drop.prevent="onAvatarDrop"
+        >
+          <img
+            :key="profile.avatarUrl"
+            :src="profile.avatarUrl"
+            alt="Profile picture"
+            class="size-full rounded-md object-cover"
+            @error="onAvatarError($event, profile.defaultAvatarUrl)"
+          />
+          <div
+            v-if="isAvatarDropActive"
+            class="absolute inset-0 flex items-center justify-center rounded-md bg-background/80 px-4 text-center text-sm font-medium text-foreground"
+          >
+            Drop image to upload
+          </div>
+        </div>
+        <p class="text-xs text-muted-foreground">
+          Drop a PNG, JPEG, or WebP image onto your avatar.
+        </p>
         <Button variant="outline" class="w-full gap-2" @click="avatarInputRef?.click()">
           <Upload class="size-4" />
           Upload
