@@ -343,6 +343,19 @@ function onAvatarDrop(event: DragEvent) {
               :maxlength="ProfileLimits.castingCallClub"
             />
           </div>
+          <div v-if="profile.roles.length" class="space-y-2 sm:col-span-2">
+            <Label>Titles</Label>
+            <div class="flex flex-wrap gap-2">
+              <span
+                v-for="role in profile.roles"
+                :key="role.id"
+                class="rounded-full border px-3 py-1 text-sm font-medium"
+                :style="{ color: `#${role.color}`, borderColor: `#${role.color}` }"
+              >
+                {{ role.name }}
+              </span>
+            </div>
+          </div>
           <div class="space-y-2 sm:col-span-2">
             <Label for="profile-lore">Lore</Label>
             <Input id="profile-lore" v-model="form.lore" :maxlength="ProfileLimits.lore" />

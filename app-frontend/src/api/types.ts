@@ -251,6 +251,7 @@ export interface SelfProfile {
   lore: string | null
   forcePasswordChange: boolean
   passwordChangeRequiresCurrentPassword: boolean
+  roles: AccountRole[]
 }
 
 export interface UpdateSelfProfileRequest {

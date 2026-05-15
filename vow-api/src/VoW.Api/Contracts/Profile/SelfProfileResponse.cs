@@ -1,3 +1,5 @@
+using VoW.Api.Contracts.Accounts;
+
 namespace VoW.Api.Contracts.Profile;
 
 public sealed record SelfProfileResponse(
@@ -14,4 +16,5 @@ public sealed record SelfProfileResponse(
     string? Bio,
     string? Lore,
     bool ForcePasswordChange,
-    bool PasswordChangeRequiresCurrentPassword);
+    bool PasswordChangeRequiresCurrentPassword,
+    IReadOnlyCollection<AccountRoleResponse> Roles);

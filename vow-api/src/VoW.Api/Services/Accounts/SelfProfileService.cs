@@ -1,4 +1,5 @@
 using MySqlConnector;
+using VoW.Api.Contracts.Accounts;
 using VoW.Api.Contracts.Profile;
 using VoW.Api.Domain.Accounts;
 using VoW.Api.Repositories;
@@ -20,6 +21,16 @@ internal sealed class SelfProfileService(
         }
 
         var passwordState = await accountRepository.GetPasswordStateAsync(userId, cancellationToken);
+        var roleIds = account.RoleIds.ToHashSet();
+        var roles = roleIds.Count == 0
+            ? Array.Empty<AccountRoleResponse>()
+            : (await accountRepository.GetRolesAsync(cancellationToken))
+                .Where(role => roleIds.Contains(role.Id))
+                .OrderByDescending(role => role.Weight)
+                .ThenBy(role => role.Name)
+                .Select(role => new AccountRoleResponse(role.Id, role.Name, role.Color, role.Weight))
+                .ToArray();
+
         return new SelfProfileResponse(
             account.UserId,
             account.DisplayName,
@@ -34,7 +45,8 @@ internal sealed class SelfProfileService(
             account.Bio,
             account.Lore,
             account.ForcePasswordChange,
-            RequiresCurrentPassword(passwordState));
+            RequiresCurrentPassword(passwordState),
+            roles);
     }
 
     public async Task<AccountMutationResult> UpdateAsync(
