@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { LogIn } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -8,12 +8,10 @@ import { Label } from '@/components/ui/label'
 import { discordLoginUrl, loginWithPassword } from '@/api/auth'
 import { WEBSITE_BASE_URL } from '@/api/config'
 import { messageFromContentError } from '@/features/content/contentUtils'
-import { firstAccessibleAdminRoute } from '@/lib/adminRoutes'
 import { queryClient } from '@/lib/queryClient'
 import { useAuthStore } from '@/stores/auth'
 
 const auth = useAuthStore()
-const route = useRoute()
 const router = useRouter()
 const loading = ref(false)
 const error = ref('')
@@ -50,18 +48,7 @@ async function submitPasswordLogin() {
 }
 
 async function goAfterLogin() {
-  if (auth.forcePasswordChange) {
-    await router.replace({ name: 'profile' })
-    return
-  }
-
-  const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : ''
-  if (redirect) {
-    await router.replace(redirect)
-    return
-  }
-
-  await router.replace(firstAccessibleAdminRoute(auth.hasCapability) ?? { name: 'profile' })
+  await router.replace({ name: 'profile' })
 }
 </script>
 

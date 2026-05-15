@@ -80,10 +80,7 @@ router.beforeEach((to: RouteLocationNormalized) => {
     return firstAccessibleAdminRoute(auth.hasCapability) ?? { name: 'profile' }
   }
   if (to.name === 'login' && auth.isAuthenticated) {
-    if (auth.forcePasswordChange) {
-      return { name: 'profile' }
-    }
-    return firstAccessibleAdminRoute(auth.hasCapability) ?? { name: 'profile' }
+    return { name: 'profile' }
   }
   return true
 })
