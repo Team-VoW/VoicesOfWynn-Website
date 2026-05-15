@@ -14,6 +14,7 @@ import { WEBSITE_BASE_URL } from '@/api/config'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { ProfileAvatar } from '@/components/ui/profile-avatar'
 import AccountAvatarCropDialog from '@/features/accounts/components/AccountAvatarCropDialog.vue'
 import { messageFromContentError } from '@/features/content/contentUtils'
 import { ProfileLimits } from '@/lib/profileLimits'
@@ -177,11 +178,6 @@ async function clearAvatar() {
   }
 }
 
-function onAvatarError(event: Event, fallback: string) {
-  const img = event.target as HTMLImageElement
-  if (img.src !== fallback) img.src = fallback
-}
-
 function openAvatarCrop(file: File) {
   if (!acceptedAvatarTypes.has(file.type)) {
     formError.value = 'Use a PNG, JPEG, or WebP image for your avatar.'
@@ -212,7 +208,7 @@ function onAvatarDrop(event: DragEvent) {
 <template>
   <div class="mx-auto max-w-5xl space-y-6">
     <header class="space-y-1">
-      <h1 class="text-xl font-semibold tracking-tight">Profile</h1>
+      <h1 class="font-display text-2xl">Profile</h1>
       <p class="text-sm text-muted-foreground">Manage your public account details and avatar.</p>
     </header>
 
@@ -234,26 +230,25 @@ function onAvatarDrop(event: DragEvent) {
       Loading profile...
     </div>
 
-    <section v-else-if="profile" class="grid gap-6 md:grid-cols-[12rem_1fr]">
+    <section v-else-if="profile" class="overflow-hidden rounded-xl border bg-card shadow-sm">
+      <div class="grid gap-6 p-6 md:grid-cols-[12rem_1fr]">
       <div class="space-y-3">
         <div
-          class="relative flex size-44 items-center justify-center rounded-md border border-dashed bg-muted transition-colors"
-          :class="isAvatarDropActive ? 'border-primary bg-primary/10' : 'border-border'"
+          class="relative inline-flex"
+          :class="isAvatarDropActive ? 'ring-2 ring-offset-2 ring-[--brand-violet] rounded-full' : ''"
           @dragenter.prevent="isAvatarDropActive = true"
           @dragover.prevent="isAvatarDropActive = true"
           @dragleave.prevent="isAvatarDropActive = false"
           @drop.prevent="onAvatarDrop"
         >
-          <img
-            :key="profile.avatarUrl"
+          <ProfileAvatar
             :src="profile.avatarUrl"
-            alt="Profile picture"
-            class="size-full rounded-md object-cover"
-            @error="onAvatarError($event, profile.defaultAvatarUrl)"
+            :fallback-src="profile.defaultAvatarUrl"
+            size="xl"
           />
           <div
             v-if="isAvatarDropActive"
-            class="absolute inset-0 flex items-center justify-center rounded-md bg-background/80 px-4 text-center text-sm font-medium text-foreground"
+            class="pointer-events-none absolute inset-0 flex items-center justify-center rounded-full bg-background/80 px-4 text-center text-sm font-medium text-foreground"
           >
             Drop image to upload
           </div>
@@ -365,6 +360,7 @@ function onAvatarDrop(event: DragEvent) {
         <div class="flex justify-end">
           <Button
             type="submit"
+            variant="brand"
             class="gap-2"
             :disabled="updateMutation.isPending.value || !form.displayName.trim()"
           >
@@ -373,6 +369,7 @@ function onAvatarDrop(event: DragEvent) {
           </Button>
         </div>
       </form>
+      </div>
     </section>
 
     <AccountAvatarCropDialog v-model:open="cropOpen" :source="cropSource" :user-id="null" self />
@@ -384,7 +381,7 @@ function onAvatarDrop(event: DragEvent) {
           class="fixed left-1/2 top-1/2 z-50 max-h-[90vh] w-[calc(100vw-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 overflow-auto rounded-md border bg-background p-5 shadow-lg"
         >
           <div class="mb-4 flex items-start justify-between gap-4">
-            <DialogTitle class="text-lg font-semibold">Reset password</DialogTitle>
+            <DialogTitle class="font-display text-lg">Reset password</DialogTitle>
             <DialogClose
               aria-label="Close"
               class="rounded-md p-1 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
@@ -449,6 +446,7 @@ function onAvatarDrop(event: DragEvent) {
               </DialogClose>
               <Button
                 type="submit"
+                variant="brand"
                 class="gap-2"
                 :disabled="passwordMutation.isPending.value || !canSubmitPassword"
               >

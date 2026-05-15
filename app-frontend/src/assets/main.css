@@ -3,6 +3,22 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@font-face {
+  font-family: 'Minecraftia';
+  src: url('/fonts/Minecraftia-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Outfit';
+  src: url('/fonts/Outfit-ExtraLight.ttf') format('truetype');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);
@@ -10,20 +26,29 @@
   --card-foreground: oklch(0.141 0.005 285.823);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.141 0.005 285.823);
-  --primary: oklch(0.21 0.006 285.885);
+  --primary: oklch(0.42 0.22 305);
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.967 0.001 286.375);
-  --secondary-foreground: oklch(0.21 0.006 285.885);
-  --muted: oklch(0.967 0.001 286.375);
-  --muted-foreground: oklch(0.552 0.016 285.938);
-  --accent: oklch(0.967 0.001 286.375);
-  --accent-foreground: oklch(0.21 0.006 285.885);
+  --secondary: oklch(0.965 0.012 305);
+  --secondary-foreground: oklch(0.32 0.18 305);
+  --muted: oklch(0.97 0.008 305);
+  --muted-foreground: oklch(0.5 0.03 305);
+  --accent: oklch(0.95 0.025 310);
+  --accent-foreground: oklch(0.32 0.18 305);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(0.92 0.004 286.32);
-  --input: oklch(0.92 0.004 286.32);
-  --ring: oklch(0.705 0.015 286.067);
+  --border: oklch(0.9 0.015 305);
+  --input: oklch(0.9 0.015 305);
+  --ring: oklch(0.62 0.22 310);
   --radius: 0.625rem;
+
+  --brand-purple-deep: #7b1a9b;
+  --brand-purple: #7c00b4;
+  --brand-violet: #a340c4;
+  --brand-pink: #ff6b9d;
+  --brand-gold: #fbd057;
+  --brand-gradient: linear-gradient(135deg, #a340c4, #ff6b9d);
+  --brand-gradient-hero: linear-gradient(135deg, #7b1a9b, #a340c4 45%, #ff6b9d);
+  --brand-gradient-soft: linear-gradient(180deg, rgba(163, 64, 196, 0.08), rgba(255, 107, 157, 0.06));
 }
 
 .dark {
@@ -72,6 +97,7 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --font-family-display: 'Minecraftia', ui-monospace, 'SF Mono', monospace;
 }
 
 @layer base {
@@ -81,11 +107,19 @@
   body {
     @apply bg-background text-foreground;
     font-family:
+      'Outfit',
       ui-sans-serif,
       system-ui,
       -apple-system,
       'Segoe UI',
       Roboto,
       sans-serif;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: 'Minecraftia', ui-monospace, 'SF Mono', monospace;
+    letter-spacing: 0.02em;
   }
 }
