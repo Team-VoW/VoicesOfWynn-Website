@@ -131,7 +131,7 @@ internal sealed class AccountAdminService(
             return AccountMutationResult.Invalid(cccError.Field, cccError.Message);
         }
 
-        var bio = NormalizeOptional(request.Bio);
+        var bio = AccountBioSanitizer.Sanitize(NormalizeOptional(request.Bio));
         var bioError = validator.ValidateBio(bio);
         if (bioError is not null)
         {

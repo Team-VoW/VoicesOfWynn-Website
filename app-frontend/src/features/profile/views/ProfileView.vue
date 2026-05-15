@@ -19,6 +19,7 @@ import AccountAvatarCropDialog from '@/features/accounts/components/AccountAvata
 import { messageFromContentError } from '@/features/content/contentUtils'
 import { ProfileLimits } from '@/lib/profileLimits'
 import { useAuthStore } from '@/stores/auth'
+import ProfileBioEditor from '../components/ProfileBioEditor.vue'
 import {
   useClearSelfAvatar,
   useSelfProfile,
@@ -232,156 +233,170 @@ function onAvatarDrop(event: DragEvent) {
 
     <section v-else-if="profile" class="overflow-hidden rounded-xl border bg-card shadow-sm">
       <div class="grid gap-6 p-6 md:grid-cols-[12rem_1fr]">
-      <div class="space-y-3">
-        <div
-          class="relative inline-flex"
-          :class="isAvatarDropActive ? 'ring-2 ring-offset-2 ring-[--brand-violet] rounded-full' : ''"
-          @dragenter.prevent="isAvatarDropActive = true"
-          @dragover.prevent="isAvatarDropActive = true"
-          @dragleave.prevent="isAvatarDropActive = false"
-          @drop.prevent="onAvatarDrop"
-        >
-          <ProfileAvatar
-            :src="profile.avatarUrl"
-            :fallback-src="profile.defaultAvatarUrl"
-            size="xl"
-          />
+        <div class="space-y-3">
           <div
-            v-if="isAvatarDropActive"
-            class="pointer-events-none absolute inset-0 flex items-center justify-center rounded-full bg-background/80 px-4 text-center text-sm font-medium text-foreground"
+            class="relative inline-flex"
+            :class="
+              isAvatarDropActive ? 'ring-2 ring-offset-2 ring-[--brand-violet] rounded-full' : ''
+            "
+            @dragenter.prevent="isAvatarDropActive = true"
+            @dragover.prevent="isAvatarDropActive = true"
+            @dragleave.prevent="isAvatarDropActive = false"
+            @drop.prevent="onAvatarDrop"
           >
-            Drop image to upload
-          </div>
-        </div>
-        <p class="text-xs text-muted-foreground">
-          Drop a PNG, JPEG, or WebP image onto your avatar.
-        </p>
-        <Button variant="outline" class="w-full gap-2" @click="avatarInputRef?.click()">
-          <Upload class="size-4" />
-          Upload
-        </Button>
-        <input
-          ref="avatarInputRef"
-          type="file"
-          accept="image/png,image/jpeg,image/webp"
-          class="hidden"
-          @change="onAvatarPicked"
-        />
-        <Button
-          variant="outline"
-          class="w-full"
-          :disabled="clearAvatarMutation.isPending.value"
-          @click="clearAvatar"
-        >
-          Clear avatar
-        </Button>
-        <Button variant="outline" class="w-full gap-2" @click="setPasswordDialogOpen(true)">
-          <KeyRound class="size-4" />
-          Reset password
-        </Button>
-        <Button
-          as="a"
-          variant="outline"
-          class="w-full gap-2"
-          :href="publicProfileUrl"
-          target="_blank"
-          rel="noopener"
-        >
-          <ExternalLink class="size-4" />
-          View public profile
-        </Button>
-      </div>
-
-      <form class="space-y-5" @submit.prevent="saveProfile">
-        <div
-          v-if="formError"
-          class="rounded-md border border-destructive/50 bg-destructive/5 p-3 text-sm text-destructive"
-        >
-          {{ formError }}
-        </div>
-
-        <div class="grid gap-4 sm:grid-cols-2">
-          <div class="space-y-2">
-            <Label for="profile-display-name">Display name</Label>
-            <Input
-              id="profile-display-name"
-              v-model="form.displayName"
-              :maxlength="ProfileLimits.displayName"
-              required
+            <ProfileAvatar
+              :src="profile.avatarUrl"
+              :fallback-src="profile.defaultAvatarUrl"
+              size="xl"
             />
-          </div>
-          <div class="space-y-2">
-            <Label for="profile-email">Email</Label>
-            <Input
-              id="profile-email"
-              v-model="form.email"
-              :maxlength="ProfileLimits.email"
-              type="email"
-            />
-          </div>
-          <label class="flex items-end gap-2 pb-2 text-sm">
-            <input v-model="form.publicEmail" type="checkbox" class="size-4" />
-            Public email
-          </label>
-          <div class="space-y-2">
-            <Label for="profile-discord">Discord username</Label>
-            <Input id="profile-discord" v-model="form.discord" :maxlength="ProfileLimits.discord" />
-          </div>
-          <div class="space-y-2">
-            <Label for="profile-youtube">YouTube</Label>
-            <Input id="profile-youtube" v-model="form.youtube" :maxlength="ProfileLimits.youtube" />
-          </div>
-          <div class="space-y-2">
-            <Label for="profile-twitter">Twitter</Label>
-            <Input id="profile-twitter" v-model="form.twitter" :maxlength="ProfileLimits.twitter" />
-          </div>
-          <div class="space-y-2">
-            <Label for="profile-ccc">Casting Call Club</Label>
-            <Input
-              id="profile-ccc"
-              v-model="form.castingCallClub"
-              :maxlength="ProfileLimits.castingCallClub"
-            />
-          </div>
-          <div v-if="profile.roles.length" class="space-y-2 sm:col-span-2">
-            <Label>Titles</Label>
-            <div class="flex flex-wrap gap-2">
-              <span
-                v-for="role in profile.roles"
-                :key="role.id"
-                class="rounded-full border px-3 py-1 text-sm font-medium"
-                :style="{ color: `#${role.color}`, borderColor: `#${role.color}` }"
-              >
-                {{ role.name }}
-              </span>
+            <div
+              v-if="isAvatarDropActive"
+              class="pointer-events-none absolute inset-0 flex items-center justify-center rounded-full bg-background/80 px-4 text-center text-sm font-medium text-foreground"
+            >
+              Drop image to upload
             </div>
           </div>
-          <div class="space-y-2 sm:col-span-2">
-            <Label for="profile-lore">Lore</Label>
-            <Input id="profile-lore" v-model="form.lore" :maxlength="ProfileLimits.lore" />
-          </div>
-          <div class="space-y-2 sm:col-span-2">
-            <Label for="profile-bio">Bio</Label>
-            <textarea
-              id="profile-bio"
-              v-model="form.bio"
-              class="border-input min-h-36 w-full rounded-md border bg-transparent px-3 py-2 text-sm"
-            />
-          </div>
-        </div>
-
-        <div class="flex justify-end">
+          <p class="text-xs text-muted-foreground">
+            Drop a PNG, JPEG, or WebP image onto your avatar.
+          </p>
+          <Button variant="outline" class="w-full gap-2" @click="avatarInputRef?.click()">
+            <Upload class="size-4" />
+            Upload
+          </Button>
+          <input
+            ref="avatarInputRef"
+            type="file"
+            accept="image/png,image/jpeg,image/webp"
+            class="hidden"
+            @change="onAvatarPicked"
+          />
           <Button
-            type="submit"
-            variant="brand"
-            class="gap-2"
-            :disabled="updateMutation.isPending.value || !form.displayName.trim()"
+            variant="outline"
+            class="w-full"
+            :disabled="clearAvatarMutation.isPending.value"
+            @click="clearAvatar"
           >
-            <Edit class="size-4" />
-            Save profile
+            Clear avatar
+          </Button>
+          <Button variant="outline" class="w-full gap-2" @click="setPasswordDialogOpen(true)">
+            <KeyRound class="size-4" />
+            Reset password
+          </Button>
+          <Button
+            as="a"
+            variant="outline"
+            class="w-full gap-2"
+            :href="publicProfileUrl"
+            target="_blank"
+            rel="noopener"
+          >
+            <ExternalLink class="size-4" />
+            View public profile
           </Button>
         </div>
-      </form>
+
+        <form class="space-y-5" @submit.prevent="saveProfile">
+          <div
+            v-if="formError"
+            class="rounded-md border border-destructive/50 bg-destructive/5 p-3 text-sm text-destructive"
+          >
+            {{ formError }}
+          </div>
+
+          <div class="grid gap-4 sm:grid-cols-2">
+            <div class="space-y-2">
+              <Label for="profile-display-name">Display name</Label>
+              <Input
+                id="profile-display-name"
+                v-model="form.displayName"
+                :maxlength="ProfileLimits.displayName"
+                required
+              />
+            </div>
+            <div class="space-y-2">
+              <Label for="profile-email">Email</Label>
+              <Input
+                id="profile-email"
+                v-model="form.email"
+                :maxlength="ProfileLimits.email"
+                type="email"
+              />
+            </div>
+            <label class="flex items-end gap-2 pb-2 text-sm">
+              <input v-model="form.publicEmail" type="checkbox" class="size-4" />
+              Public email
+            </label>
+            <div class="space-y-2">
+              <Label for="profile-discord">Discord username</Label>
+              <Input
+                id="profile-discord"
+                v-model="form.discord"
+                :maxlength="ProfileLimits.discord"
+              />
+            </div>
+            <div class="space-y-2">
+              <Label for="profile-youtube">YouTube</Label>
+              <Input
+                id="profile-youtube"
+                v-model="form.youtube"
+                :maxlength="ProfileLimits.youtube"
+              />
+            </div>
+            <div class="space-y-2">
+              <Label for="profile-twitter">Twitter</Label>
+              <Input
+                id="profile-twitter"
+                v-model="form.twitter"
+                :maxlength="ProfileLimits.twitter"
+              />
+            </div>
+            <div class="space-y-2">
+              <Label for="profile-ccc">Casting Call Club</Label>
+              <Input
+                id="profile-ccc"
+                v-model="form.castingCallClub"
+                :maxlength="ProfileLimits.castingCallClub"
+              />
+            </div>
+            <div v-if="profile.roles.length" class="space-y-2 sm:col-span-2">
+              <Label>Titles</Label>
+              <div class="flex flex-wrap gap-2">
+                <span
+                  v-for="role in profile.roles"
+                  :key="role.id"
+                  class="rounded-full border px-3 py-1 text-sm font-medium"
+                  :style="{ color: `#${role.color}`, borderColor: `#${role.color}` }"
+                >
+                  {{ role.name }}
+                </span>
+              </div>
+            </div>
+            <div class="space-y-2 sm:col-span-2">
+              <Label for="profile-lore">Lore</Label>
+              <Input id="profile-lore" v-model="form.lore" :maxlength="ProfileLimits.lore" />
+              <p class="text-xs text-muted-foreground">
+                A short tagline shown on the credits page when browsing credits. Max
+                {{ ProfileLimits.lore }} characters.
+              </p>
+            </div>
+            <div class="space-y-2 sm:col-span-2">
+              <Label for="profile-bio">Bio</Label>
+              <ProfileBioEditor id="profile-bio" v-model="form.bio" />
+            </div>
+          </div>
+
+          <div class="flex justify-end">
+            <Button
+              type="submit"
+              variant="brand"
+              class="gap-2"
+              :disabled="updateMutation.isPending.value || !form.displayName.trim()"
+            >
+              <Edit class="size-4" />
+              Save profile
+            </Button>
+          </div>
+        </form>
       </div>
     </section>
 
