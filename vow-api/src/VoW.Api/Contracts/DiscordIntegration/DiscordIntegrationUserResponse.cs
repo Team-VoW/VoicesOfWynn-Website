@@ -1,3 +1,5 @@
+using VoW.Api.Domain.Accounts;
+
 namespace VoW.Api.Contracts.DiscordIntegration;
 
 public sealed record DiscordIntegrationUserResponse(
@@ -6,5 +8,5 @@ public sealed record DiscordIntegrationUserResponse(
     string DiscordId,
     string DiscordName,
     string AvatarUrl,
-    string DefaultAvatarUrl,
+    PictureType AvatarType,
     IReadOnlyCollection<string> RoleNames);

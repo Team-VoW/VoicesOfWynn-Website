@@ -22,7 +22,5 @@ public interface IDiscordIntegrationRepository
 
     Task<bool> UpdateDiscordFieldsAsync(int userId, string discordId, string discordName, CancellationToken cancellationToken);
 
-    Task<bool> SetDiscordAvatarAsync(int userId, string picture, CancellationToken cancellationToken);
-
     Task<bool> ReplaceRolesAsync(int userId, IReadOnlyCollection<int> roleIds, CancellationToken cancellationToken);
 }
