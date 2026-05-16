@@ -1,6 +1,6 @@
 import { Capabilities, type Capability } from '@/lib/capabilities'
 
-const adminRouteOrder = ['reports', 'analytics', 'content', 'accounts'] as const
+const adminRouteOrder = ['reports', 'analytics', 'script-tools', 'content', 'accounts'] as const
 
 type AdminRouteName = (typeof adminRouteOrder)[number]
 
@@ -18,6 +18,7 @@ export function firstAccessibleAdminRoute(
 const routeCapabilityByName: Record<AdminRouteName, Capability> = {
   reports: Capabilities.ReportsView,
   analytics: Capabilities.AnalyticsView,
+  'script-tools': Capabilities.ToolsScripts,
   content: Capabilities.ContentManage,
   accounts: Capabilities.AccountsManage,
 }

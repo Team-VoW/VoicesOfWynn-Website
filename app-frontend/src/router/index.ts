@@ -51,6 +51,12 @@ const router = createRouter({
           meta: { capability: Capabilities.AnalyticsView },
         },
         {
+          path: 'tools/scripts',
+          name: 'script-tools',
+          component: () => import('@/features/tools/views/ScriptToolsView.vue'),
+          meta: { capability: Capabilities.ToolsScripts },
+        },
+        {
           path: 'admin/content',
           name: 'content',
           component: () => import('@/features/content/views/ContentManageView.vue'),

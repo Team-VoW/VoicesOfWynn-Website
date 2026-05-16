@@ -6,6 +6,7 @@ public static class CapabilityMapper
     public const string ReportsViewClaim = "reports.view";
     public const string ReportsManageClaim = "reports.manage";
     public const string AnalyticsViewClaim = "analytics.view";
+    public const string ToolsScriptsClaim = "tools.scripts";
     public const string ContentManageClaim = "content.manage";
     public const string AccountsManageClaim = "accounts.manage";
 
@@ -14,6 +15,7 @@ public static class CapabilityMapper
         Capability.ReportsView,
         Capability.ReportsManage,
         Capability.AnalyticsView,
+        Capability.ToolsScripts,
         Capability.ContentManage,
         Capability.AccountsManage
     ];
@@ -25,6 +27,16 @@ public static class CapabilityMapper
     ];
 
     private static readonly HashSet<DiscordRoleId> ReportViewRoles =
+    [
+        DiscordRoleId.Moderator,
+        DiscordRoleId.CastManager,
+        DiscordRoleId.VoiceManager,
+        DiscordRoleId.Developer,
+        DiscordRoleId.Writer,
+        DiscordRoleId.SoundEditor
+    ];
+
+    private static readonly HashSet<DiscordRoleId> CurrentStaffRoles =
     [
         DiscordRoleId.Moderator,
         DiscordRoleId.CastManager,
@@ -49,6 +61,11 @@ public static class CapabilityMapper
             capabilities.Add(Capability.AnalyticsView);
         }
 
+        if (roleSet.Overlaps(CurrentStaffRoles))
+        {
+            capabilities.Add(Capability.ToolsScripts);
+        }
+
         return capabilities;
     }
 
@@ -57,6 +74,7 @@ public static class CapabilityMapper
         Capability.ReportsView => ReportsViewClaim,
         Capability.ReportsManage => ReportsManageClaim,
         Capability.AnalyticsView => AnalyticsViewClaim,
+        Capability.ToolsScripts => ToolsScriptsClaim,
         Capability.ContentManage => ContentManageClaim,
         Capability.AccountsManage => AccountsManageClaim,
         _ => throw new ArgumentOutOfRangeException(nameof(capability), capability, null)

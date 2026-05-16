@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import { ChartLine, FileText, LayoutDashboard, User, Users } from 'lucide-vue-next'
+import { ChartLine, FileText, LayoutDashboard, ScrollText, User, Users } from 'lucide-vue-next'
 import { computed } from 'vue'
 import { RouterView, useRoute, useRouter } from 'vue-router'
 import { Button } from '@/components/ui/button'
@@ -44,6 +44,13 @@ const navItems: {
     routeName: 'analytics',
     capability: Capabilities.AnalyticsView,
     icon: ChartLine,
+  },
+  {
+    label: 'Script tool',
+    to: '/tools/scripts',
+    routeName: 'script-tools',
+    capability: Capabilities.ToolsScripts,
+    icon: ScrollText,
   },
   {
     label: 'Manage content',
