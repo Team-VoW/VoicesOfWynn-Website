@@ -8,7 +8,6 @@ public sealed class AzureAccountAvatarStorage : IAccountAvatarStorage
 {
     private const string AvatarKeyPrefix = "avatars/";
     private const string WebpImageContentType = "image/webp";
-    private const string PngImageContentType = "image/png";
     private const string ImageCacheControl = "public, max-age=3600";
 
     private readonly BlobContainerClient containerClient;
@@ -29,17 +28,6 @@ public sealed class AzureAccountAvatarStorage : IAccountAvatarStorage
         }, cancellationToken: cancellationToken);
     }
 
-    public async Task UploadDiscordAvatarAsync(int userId, Stream pngContent, CancellationToken cancellationToken)
-    {
-        var blob = containerClient.GetBlobClient(PngBlobKey(userId));
-        await blob.UploadAsync(pngContent, overwrite: true, cancellationToken);
-        await blob.SetHttpHeadersAsync(new BlobHttpHeaders
-        {
-            ContentType = PngImageContentType,
-            CacheControl = ImageCacheControl,
-        }, cancellationToken: cancellationToken);
-    }
-
     public async Task DeleteCustomAvatarsAsync(int userId, CancellationToken cancellationToken)
     {
         var prefix = $"{AvatarKeyPrefix}{userId.ToString(CultureInfo.InvariantCulture)}.";
@@ -52,6 +40,4 @@ public sealed class AzureAccountAvatarStorage : IAccountAvatarStorage
     private static string WebpBlobKey(int userId) =>
         $"{AvatarKeyPrefix}{userId.ToString(CultureInfo.InvariantCulture)}.webp";
 
-    private static string PngBlobKey(int userId) =>
-        $"{AvatarKeyPrefix}{userId.ToString(CultureInfo.InvariantCulture)}.png";
 }

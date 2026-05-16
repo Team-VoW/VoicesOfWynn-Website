@@ -177,23 +177,6 @@ public sealed class DiscordIntegrationRepository(IConfiguration configuration) :
         return await connection.ExecuteAsync(command) > 0;
     }
 
-    public async Task<bool> SetDiscordAvatarAsync(int userId, string picture, CancellationToken cancellationToken)
-    {
-        const string sql = """
-            UPDATE user
-            SET picture = @Picture,
-                picture_type = @PictureType
-            WHERE user_id = @UserId;
-            """;
-
-        await using var connection = new MySqlConnection(DatabaseSettings.GetWebsiteConnectionString(configuration));
-        var command = new CommandDefinition(
-            sql,
-            new { UserId = userId, Picture = picture, PictureType = ToDatabaseValue(PictureType.Discord) },
-            cancellationToken: cancellationToken);
-        return await connection.ExecuteAsync(command) > 0;
-    }
-
     public async Task<bool> ReplaceRolesAsync(int userId, IReadOnlyCollection<int> roleIds, CancellationToken cancellationToken)
     {
         await using var connection = new MySqlConnection(DatabaseSettings.GetWebsiteConnectionString(configuration));
@@ -290,12 +273,4 @@ public sealed class DiscordIntegrationRepository(IConfiguration configuration) :
             _ => throw new InvalidOperationException($"Unknown picture type '{value}'.")
         };
 
-    private static string ToDatabaseValue(PictureType pictureType) =>
-        pictureType switch
-        {
-            PictureType.Default => "default",
-            PictureType.Discord => "discord",
-            PictureType.Manual => "manual",
-            _ => throw new ArgumentOutOfRangeException(nameof(pictureType), pictureType, "Unknown picture type.")
-        };
 }
