@@ -5,6 +5,7 @@ public sealed record AudioAnalysisOutcome(
     double? IntegratedLufs,
     double? LeadingSilenceSeconds,
     double? TrailingSilenceSeconds,
+    string? ChannelMode,
     string? Error);
 
 public interface IAudioAnalysisService

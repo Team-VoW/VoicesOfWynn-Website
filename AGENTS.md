@@ -14,3 +14,11 @@ PHP website for the Voices of Wynn project — a Wynncraft mod that adds voiced 
 - Validate IDs against the database, not with `is_numeric()` / `> 0` checks alone. Those pass values like `42069` that don't correspond to real records. Either validate against the actual list of IDs from the DB, or skip numeric validation and let the DB query return no results naturally.
 - Validate string inputs against the DB column length (check the schema). Use `mb_strlen()` for multi-byte safety.
 - Shared logic between models (`Quest`, `Npc`, etc.) belongs in `ContentModel`, the abstract base class both extend.
+
+
+After making any changes in the vow-api, do
+docker-compose -f docker-compose.dev.yml build vow-api
+docker-compose -f docker-compose.dev.yml up -d vow-api
+
+If `up -d vow-api` fails because an existing container name is already in use, run
+docker-compose -f docker-compose.dev.yml up -d --force-recreate vow-api

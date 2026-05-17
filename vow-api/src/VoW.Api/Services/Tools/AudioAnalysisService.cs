@@ -26,6 +26,7 @@ public sealed partial class AudioAnalysisService(IConfiguration configuration, I
             }
 
             var duration = await GetDurationAsync(tempPath, cancellationToken);
+            var channelMode = await GetChannelModeAsync(tempPath, cancellationToken);
             var integratedLufs = await GetIntegratedLufsAsync(tempPath, cancellationToken);
             var silence = await GetHeadAndTailSilenceAsync(tempPath, duration, cancellationToken);
 
@@ -34,21 +35,22 @@ public sealed partial class AudioAnalysisService(IConfiguration configuration, I
                 IntegratedLufs: integratedLufs,
                 LeadingSilenceSeconds: silence.LeadingSeconds,
                 TrailingSilenceSeconds: silence.TrailingSeconds,
+                ChannelMode: channelMode,
                 Error: null);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
-            return new AudioAnalysisOutcome(false, null, null, null, "Analysis was cancelled.");
+            return new AudioAnalysisOutcome(false, null, null, null, null, "Analysis was cancelled.");
         }
         catch (TimeoutException ex)
         {
             logger.LogWarning(ex, "Audio analysis timed out.");
-            return new AudioAnalysisOutcome(false, null, null, null, ex.Message);
+            return new AudioAnalysisOutcome(false, null, null, null, null, ex.Message);
         }
         catch (Exception ex) when (ex is InvalidOperationException or FileNotFoundException or System.ComponentModel.Win32Exception)
         {
             logger.LogWarning(ex, "Audio analysis failed.");
-            return new AudioAnalysisOutcome(false, null, null, null, ex.Message);
+            return new AudioAnalysisOutcome(false, null, null, null, null, ex.Message);
         }
         finally
         {
@@ -75,6 +77,26 @@ public sealed partial class AudioAnalysisService(IConfiguration configuration, I
         }
 
         return duration;
+    }
+
+    private async Task<string> GetChannelModeAsync(string path, CancellationToken cancellationToken)
+    {
+        var result = await RunProcessAsync(
+            ffprobePath,
+            ["-v", "error", "-select_streams", "a:0", "-show_entries", "stream=channels", "-of", "default=noprint_wrappers=1:nokey=1", path],
+            cancellationToken);
+
+        if (result.ExitCode != 0)
+        {
+            throw new InvalidOperationException($"ffprobe failed while reading channel count: {TrimForError(result.Error)}");
+        }
+
+        return result.Output.Trim() switch
+        {
+            "1" => "mono",
+            "2" => "stereo",
+            _ => "unknown",
+        };
     }
 
     private async Task<double> GetIntegratedLufsAsync(string path, CancellationToken cancellationToken)

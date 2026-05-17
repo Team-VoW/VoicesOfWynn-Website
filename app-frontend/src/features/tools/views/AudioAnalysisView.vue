@@ -25,7 +25,7 @@ const fileInput = ref<HTMLInputElement | null>(null)
 let nextId = 1
 
 const summary = computed(() => {
-  if (rows.value.length === 0) return 'Drop .wav files to analyze loudness and silence.'
+  if (rows.value.length === 0) return 'Drop .wav files to analyze loudness, silence, and channels.'
   const done = rows.value.filter((r) => r.status === 'done').length
   const errored = rows.value.filter((r) => r.status === 'error').length
   if (isAnalyzing.value) return `Analyzing ${rows.value.length} file(s)…`
@@ -69,7 +69,15 @@ async function submit(allFiles: File[]) {
       const result = response.results[i]
       if (!result) {
         row.status = 'error'
-        row.result = { fileName: row.fileName, success: false, integratedLufs: null, leadingSilenceSeconds: null, trailingSilenceSeconds: null, error: 'No result returned.' }
+        row.result = {
+          fileName: row.fileName,
+          success: false,
+          integratedLufs: null,
+          leadingSilenceSeconds: null,
+          trailingSilenceSeconds: null,
+          channelMode: null,
+          error: 'No result returned.',
+        }
         continue
       }
       row.status = result.success ? 'done' : 'error'
@@ -80,7 +88,15 @@ async function submit(allFiles: File[]) {
     toast.error(message)
     for (const row of pendingRows) {
       row.status = 'error'
-      row.result = { fileName: row.fileName, success: false, integratedLufs: null, leadingSilenceSeconds: null, trailingSilenceSeconds: null, error: message }
+      row.result = {
+        fileName: row.fileName,
+        success: false,
+        integratedLufs: null,
+        leadingSilenceSeconds: null,
+        trailingSilenceSeconds: null,
+        channelMode: null,
+        error: message,
+      }
     }
   } finally {
     isAnalyzing.value = false
@@ -98,7 +114,7 @@ interface LufsVerdict {
 }
 
 function lufsVerdict(lufs: number): LufsVerdict {
-  if (lufs < -25) return { label: 'way too quiet — likely a recording problem', tone: 'danger' }
+  if (lufs < -25) return { label: 'very quiet — review unless intentionally subtle', tone: 'danger' }
   if (lufs < -22) return { label: 'whispering — on the quiet side', tone: 'info' }
   if (lufs < -20) return { label: 'whispering — perfect (~-23)', tone: 'success' }
   if (lufs < -19) return { label: 'speaking — a touch quiet', tone: 'info' }
@@ -115,6 +131,12 @@ function formatLufs(value: number) {
 
 function formatSeconds(value: number) {
   return `${value.toFixed(3)} s`
+}
+
+function formatChannelMode(value: AudioAnalysisItem['channelMode']) {
+  if (value === 'mono') return 'Mono'
+  if (value === 'stereo') return 'Stereo'
+  return 'Unknown'
 }
 
 function leadingOverLimit(seconds: number | null) {
@@ -138,7 +160,7 @@ const toneClass: Record<LufsVerdict['tone'], string> = {
     <header class="space-y-1">
       <h1 class="text-xl font-semibold tracking-tight">Audio check</h1>
       <p class="text-sm text-muted-foreground">
-        Drop WAV recordings to measure integrated loudness (LUFS) and flag leading/trailing silence.
+        Drop WAV recordings to measure integrated loudness (LUFS), flag leading/trailing silence, and check mono/stereo channels.
       </p>
     </header>
 
@@ -162,7 +184,7 @@ const toneClass: Record<LufsVerdict['tone'], string> = {
           <AudioLines class="mx-auto size-10 text-primary" />
           <p class="mt-3 text-sm font-medium">Drag .wav files here</p>
           <p class="mt-1 text-xs text-muted-foreground">
-            Targets: −23 LUFS whispering, −18 speaking, −13 shouting. Anything below −25 LUFS gets flagged.
+            Targets: −23 LUFS whispering, −18 speaking, −13 shouting. Anything below −25 LUFS or stereo gets flagged.
           </p>
           <input
             ref="fileInput"
@@ -202,7 +224,7 @@ const toneClass: Record<LufsVerdict['tone'], string> = {
               </div>
             </div>
 
-            <div v-if="row.status === 'done' && row.result" class="mt-4 grid gap-3 sm:grid-cols-3">
+            <div v-if="row.status === 'done' && row.result" class="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
               <div
                 v-if="row.result.integratedLufs !== null"
                 class="rounded-md border p-3 text-sm"
@@ -215,7 +237,20 @@ const toneClass: Record<LufsVerdict['tone'], string> = {
 
               <div
                 class="rounded-md border p-3 text-sm"
-                :class="leadingOverLimit(row.result.leadingSilenceSeconds) ? toneClass.danger : 'border-border bg-muted/30 text-foreground'"
+                :class="row.result.channelMode === 'stereo' ? toneClass.danger : row.result.channelMode === 'mono' ? toneClass.success : 'border-border bg-muted/30 text-foreground'"
+              >
+                <div class="text-xs uppercase tracking-wide opacity-70">Channels</div>
+                <div class="mt-0.5 text-base font-semibold">{{ formatChannelMode(row.result.channelMode) }}</div>
+                <div class="mt-1 text-xs">
+                  <template v-if="row.result.channelMode === 'stereo'">stereo detected</template>
+                  <template v-else-if="row.result.channelMode === 'mono'">correct mono format</template>
+                  <template v-else>channel count unavailable</template>
+                </div>
+              </div>
+
+              <div
+                class="rounded-md border p-3 text-sm"
+                :class="leadingOverLimit(row.result.leadingSilenceSeconds) ? toneClass.danger : toneClass.success"
               >
                 <div class="text-xs uppercase tracking-wide opacity-70">Leading silence</div>
                 <div class="mt-0.5 text-base font-semibold">
@@ -231,7 +266,7 @@ const toneClass: Record<LufsVerdict['tone'], string> = {
 
               <div
                 class="rounded-md border p-3 text-sm"
-                :class="trailingOverLimit(row.result.trailingSilenceSeconds) ? toneClass.danger : 'border-border bg-muted/30 text-foreground'"
+                :class="trailingOverLimit(row.result.trailingSilenceSeconds) ? toneClass.danger : toneClass.success"
               >
                 <div class="text-xs uppercase tracking-wide opacity-70">Trailing silence</div>
                 <div class="mt-0.5 text-base font-semibold">
@@ -251,7 +286,15 @@ const toneClass: Record<LufsVerdict['tone'], string> = {
               class="mt-3 flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive"
             >
               <AlertTriangle class="mt-0.5 size-4 shrink-0" />
-              <span>This clip is under −25 LUFS — almost certainly a recording problem (mic too far, gain too low, or wrong source).</span>
+              <span>This clip is under −25 LUFS. Usually that means the recording is too quiet, but short intentional sounds like “hm”, breaths, or murmurs may be okay if they sound right in-game.</span>
+            </div>
+
+            <div
+              v-if="row.status === 'done' && row.result?.channelMode === 'stereo'"
+              class="mt-3 flex items-start gap-3 rounded-md border border-destructive/50 bg-destructive/15 p-4 text-base font-semibold text-destructive"
+            >
+              <AlertTriangle class="mt-0.5 size-5 shrink-0" />
+              <span>This file is stereo. Voices of Wynn recordings should be mono.</span>
             </div>
           </li>
         </ul>
@@ -271,7 +314,7 @@ const toneClass: Record<LufsVerdict['tone'], string> = {
           <li class="flex items-center gap-2"><Badge variant="secondary">−23 LUFS</Badge> whispering</li>
           <li class="flex items-center gap-2"><Badge variant="secondary">−18 LUFS</Badge> speaking (default target)</li>
           <li class="flex items-center gap-2"><Badge variant="secondary">−13 LUFS</Badge> shouting</li>
-          <li class="flex items-center gap-2"><Badge variant="destructive">&lt; −25 LUFS</Badge> almost certainly broken</li>
+          <li class="flex items-center gap-2"><Badge variant="destructive">&lt; −25 LUFS</Badge> review quiet clips</li>
         </ul>
       </CardContent>
     </Card>

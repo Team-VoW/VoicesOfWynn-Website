@@ -6,6 +6,7 @@ export interface AudioAnalysisItem {
   integratedLufs: number | null
   leadingSilenceSeconds: number | null
   trailingSilenceSeconds: number | null
+  channelMode: 'mono' | 'stereo' | 'unknown' | null
   error: string | null
 }
 

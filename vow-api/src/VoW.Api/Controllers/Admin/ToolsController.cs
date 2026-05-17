@@ -47,6 +47,7 @@ public sealed class ToolsController(IAudioAnalysisService audioAnalysisService) 
                 IntegratedLufs: outcome.IntegratedLufs,
                 LeadingSilenceSeconds: outcome.LeadingSilenceSeconds,
                 TrailingSilenceSeconds: outcome.TrailingSilenceSeconds,
+                ChannelMode: outcome.ChannelMode,
                 Error: outcome.Error));
         }
 
@@ -54,7 +55,14 @@ public sealed class ToolsController(IAudioAnalysisService audioAnalysisService) 
     }
 
     private static AudioAnalysisItem Error(string fileName, string message) =>
-        new(fileName, Success: false, IntegratedLufs: null, LeadingSilenceSeconds: null, TrailingSilenceSeconds: null, Error: message);
+        new(
+            fileName,
+            Success: false,
+            IntegratedLufs: null,
+            LeadingSilenceSeconds: null,
+            TrailingSilenceSeconds: null,
+            ChannelMode: null,
+            Error: message);
 
     private static bool IsWavFile(IFormFile file)
     {

@@ -6,6 +6,7 @@ public sealed record AudioAnalysisItem(
     double? IntegratedLufs,
     double? LeadingSilenceSeconds,
     double? TrailingSilenceSeconds,
+    string? ChannelMode,
     string? Error);
 
 public sealed record AudioAnalysisBatchResponse(IReadOnlyList<AudioAnalysisItem> Results);
