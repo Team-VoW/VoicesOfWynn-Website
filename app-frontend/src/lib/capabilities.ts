@@ -5,6 +5,7 @@ export const Capabilities = {
   ReportsManage: 'reports.manage',
   AnalyticsView: 'analytics.view',
   ToolsScripts: 'tools.scripts',
+  ToolsAudioAnalysis: 'tools.audio-analysis',
   ContentManage: 'content.manage',
   AccountsManage: 'accounts.manage',
 } as const

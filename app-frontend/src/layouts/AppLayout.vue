@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import { ChartLine, FileText, LayoutDashboard, ScrollText, User, Users } from 'lucide-vue-next'
+import { AudioLines, ChartLine, FileText, LayoutDashboard, ScrollText, User, Users } from 'lucide-vue-next'
 import { computed } from 'vue'
 import { RouterView, useRoute, useRouter } from 'vue-router'
 import { Button } from '@/components/ui/button'
@@ -51,6 +51,13 @@ const navItems: {
     routeName: 'script-tools',
     capability: Capabilities.ToolsScripts,
     icon: ScrollText,
+  },
+  {
+    label: 'Audio check',
+    to: '/tools/audio',
+    routeName: 'audio-tools',
+    capability: Capabilities.ToolsAudioAnalysis,
+    icon: AudioLines,
   },
   {
     label: 'Manage content',

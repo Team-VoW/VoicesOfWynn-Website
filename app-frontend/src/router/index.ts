@@ -57,6 +57,12 @@ const router = createRouter({
           meta: { capability: Capabilities.ToolsScripts },
         },
         {
+          path: 'tools/audio',
+          name: 'audio-tools',
+          component: () => import('@/features/tools/views/AudioAnalysisView.vue'),
+          meta: { capability: Capabilities.ToolsAudioAnalysis },
+        },
+        {
           path: 'admin/content',
           name: 'content',
           component: () => import('@/features/content/views/ContentManageView.vue'),
