@@ -10,6 +10,7 @@ import { ApiError } from '@/api/client'
 
 const LEADING_SILENCE_LIMIT = 0.1
 const TRAILING_SILENCE_LIMIT = 0.4
+const TRUE_PEAK_LIMIT = -1
 
 interface Row {
   id: number
@@ -25,7 +26,7 @@ const fileInput = ref<HTMLInputElement | null>(null)
 let nextId = 1
 
 const summary = computed(() => {
-  if (rows.value.length === 0) return 'Drop .wav files to analyze loudness, silence, and channels.'
+  if (rows.value.length === 0) return 'Drop .wav files to analyze loudness, peak, silence, and channels.'
   const done = rows.value.filter((r) => r.status === 'done').length
   const errored = rows.value.filter((r) => r.status === 'error').length
   if (isAnalyzing.value) return `Analyzing ${rows.value.length} file(s)…`
@@ -73,6 +74,7 @@ async function submit(allFiles: File[]) {
           fileName: row.fileName,
           success: false,
           integratedLufs: null,
+          maxTruePeakDbtp: null,
           leadingSilenceSeconds: null,
           trailingSilenceSeconds: null,
           channelMode: null,
@@ -92,6 +94,7 @@ async function submit(allFiles: File[]) {
         fileName: row.fileName,
         success: false,
         integratedLufs: null,
+        maxTruePeakDbtp: null,
         leadingSilenceSeconds: null,
         trailingSilenceSeconds: null,
         channelMode: null,
@@ -129,6 +132,10 @@ function formatLufs(value: number) {
   return `${value.toFixed(1)} LUFS`
 }
 
+function formatDbtp(value: number) {
+  return `${value.toFixed(1)} dBTP`
+}
+
 function formatSeconds(value: number) {
   return `${value.toFixed(3)} s`
 }
@@ -147,6 +154,10 @@ function trailingOverLimit(seconds: number | null) {
   return seconds !== null && seconds > TRAILING_SILENCE_LIMIT
 }
 
+function truePeakOverLimit(dbtp: number | null) {
+  return dbtp !== null && dbtp > TRUE_PEAK_LIMIT
+}
+
 const toneClass: Record<LufsVerdict['tone'], string> = {
   danger: 'border-destructive/40 bg-destructive/10 text-destructive',
   warning: 'border-amber-300 bg-amber-50 text-amber-900',
@@ -160,7 +171,7 @@ const toneClass: Record<LufsVerdict['tone'], string> = {
     <header class="space-y-1">
       <h1 class="text-xl font-semibold tracking-tight">Audio check</h1>
       <p class="text-sm text-muted-foreground">
-        Drop WAV recordings to measure integrated loudness (LUFS), flag leading/trailing silence, and check mono/stereo channels.
+        Drop WAV recordings to measure loudness, true peak, leading/trailing silence, and mono/stereo channels.
       </p>
     </header>
 
@@ -184,7 +195,7 @@ const toneClass: Record<LufsVerdict['tone'], string> = {
           <AudioLines class="mx-auto size-10 text-primary" />
           <p class="mt-3 text-sm font-medium">Drag .wav files here</p>
           <p class="mt-1 text-xs text-muted-foreground">
-            Targets: −23 LUFS whispering, −18 speaking, −13 shouting. Anything below −25 LUFS or stereo gets flagged.
+            Targets: −23 LUFS whispering, −18 speaking, −13 shouting, max −1 dBTP. Quiet clips, hot peaks, or stereo get flagged.
           </p>
           <input
             ref="fileInput"
@@ -224,7 +235,7 @@ const toneClass: Record<LufsVerdict['tone'], string> = {
               </div>
             </div>
 
-            <div v-if="row.status === 'done' && row.result" class="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <div v-if="row.status === 'done' && row.result" class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
               <div
                 v-if="row.result.integratedLufs !== null"
                 class="rounded-md border p-3 text-sm"
@@ -233,6 +244,21 @@ const toneClass: Record<LufsVerdict['tone'], string> = {
                 <div class="text-xs uppercase tracking-wide opacity-70">Integrated loudness</div>
                 <div class="mt-0.5 text-base font-semibold">{{ formatLufs(row.result.integratedLufs) }}</div>
                 <div class="mt-1 text-xs">{{ lufsVerdict(row.result.integratedLufs).label }}</div>
+              </div>
+
+              <div
+                v-if="row.result.maxTruePeakDbtp !== null"
+                class="rounded-md border p-3 text-sm"
+                :class="truePeakOverLimit(row.result.maxTruePeakDbtp) ? toneClass.danger : toneClass.success"
+              >
+                <div class="text-xs uppercase tracking-wide opacity-70">True peak</div>
+                <div class="mt-0.5 text-base font-semibold">{{ formatDbtp(row.result.maxTruePeakDbtp) }}</div>
+                <div class="mt-1 text-xs">
+                  <template v-if="truePeakOverLimit(row.result.maxTruePeakDbtp)">
+                    above max {{ formatDbtp(TRUE_PEAK_LIMIT) }} — reduce peak level
+                  </template>
+                  <template v-else>within max {{ formatDbtp(TRUE_PEAK_LIMIT) }}</template>
+                </div>
               </div>
 
               <div
@@ -290,6 +316,14 @@ const toneClass: Record<LufsVerdict['tone'], string> = {
             </div>
 
             <div
+              v-if="row.status === 'done' && truePeakOverLimit(row.result?.maxTruePeakDbtp ?? null)"
+              class="mt-3 flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive"
+            >
+              <AlertTriangle class="mt-0.5 size-4 shrink-0" />
+              <span>This clip peaks above {{ formatDbtp(TRUE_PEAK_LIMIT) }}. Lower the gain or limiter ceiling so the exported file stays below the mod import target.</span>
+            </div>
+
+            <div
               v-if="row.status === 'done' && row.result?.channelMode === 'stereo'"
               class="mt-3 flex items-start gap-3 rounded-md border border-destructive/50 bg-destructive/15 p-4 text-base font-semibold text-destructive"
             >
@@ -314,6 +348,7 @@ const toneClass: Record<LufsVerdict['tone'], string> = {
           <li class="flex items-center gap-2"><Badge variant="secondary">−23 LUFS</Badge> whispering</li>
           <li class="flex items-center gap-2"><Badge variant="secondary">−18 LUFS</Badge> speaking (default target)</li>
           <li class="flex items-center gap-2"><Badge variant="secondary">−13 LUFS</Badge> shouting</li>
+          <li class="flex items-center gap-2"><Badge variant="secondary">≤ −1 dBTP</Badge> max true peak</li>
           <li class="flex items-center gap-2"><Badge variant="destructive">&lt; −25 LUFS</Badge> review quiet clips</li>
         </ul>
       </CardContent>

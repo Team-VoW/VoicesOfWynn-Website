@@ -4,6 +4,7 @@ public sealed record AudioAnalysisItem(
     string FileName,
     bool Success,
     double? IntegratedLufs,
+    double? MaxTruePeakDbtp,
     double? LeadingSilenceSeconds,
     double? TrailingSilenceSeconds,
     string? ChannelMode,

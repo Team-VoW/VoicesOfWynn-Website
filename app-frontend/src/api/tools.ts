@@ -4,6 +4,7 @@ export interface AudioAnalysisItem {
   fileName: string
   success: boolean
   integratedLufs: number | null
+  maxTruePeakDbtp: number | null
   leadingSilenceSeconds: number | null
   trailingSilenceSeconds: number | null
   channelMode: 'mono' | 'stereo' | 'unknown' | null

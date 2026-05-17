@@ -27,12 +27,13 @@ public sealed partial class AudioAnalysisService(IConfiguration configuration, I
 
             var duration = await GetDurationAsync(tempPath, cancellationToken);
             var channelMode = await GetChannelModeAsync(tempPath, cancellationToken);
-            var integratedLufs = await GetIntegratedLufsAsync(tempPath, cancellationToken);
+            var loudness = await GetLoudnessAsync(tempPath, cancellationToken);
             var silence = await GetHeadAndTailSilenceAsync(tempPath, duration, cancellationToken);
 
             return new AudioAnalysisOutcome(
                 Success: true,
-                IntegratedLufs: integratedLufs,
+                IntegratedLufs: loudness.IntegratedLufs,
+                MaxTruePeakDbtp: loudness.MaxTruePeakDbtp,
                 LeadingSilenceSeconds: silence.LeadingSeconds,
                 TrailingSilenceSeconds: silence.TrailingSeconds,
                 ChannelMode: channelMode,
@@ -40,17 +41,17 @@ public sealed partial class AudioAnalysisService(IConfiguration configuration, I
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
-            return new AudioAnalysisOutcome(false, null, null, null, null, "Analysis was cancelled.");
+            return new AudioAnalysisOutcome(false, null, null, null, null, null, "Analysis was cancelled.");
         }
         catch (TimeoutException ex)
         {
             logger.LogWarning(ex, "Audio analysis timed out.");
-            return new AudioAnalysisOutcome(false, null, null, null, null, ex.Message);
+            return new AudioAnalysisOutcome(false, null, null, null, null, null, ex.Message);
         }
         catch (Exception ex) when (ex is InvalidOperationException or FileNotFoundException or System.ComponentModel.Win32Exception)
         {
             logger.LogWarning(ex, "Audio analysis failed.");
-            return new AudioAnalysisOutcome(false, null, null, null, null, ex.Message);
+            return new AudioAnalysisOutcome(false, null, null, null, null, null, ex.Message);
         }
         finally
         {
@@ -99,28 +100,31 @@ public sealed partial class AudioAnalysisService(IConfiguration configuration, I
         };
     }
 
-    private async Task<double> GetIntegratedLufsAsync(string path, CancellationToken cancellationToken)
+    private async Task<(double IntegratedLufs, double MaxTruePeakDbtp)> GetLoudnessAsync(string path, CancellationToken cancellationToken)
     {
         var result = await RunProcessAsync(
             ffmpegPath,
-            ["-hide_banner", "-nostdin", "-i", path, "-filter_complex", "ebur128", "-f", "null", "-"],
+            ["-hide_banner", "-nostdin", "-i", path, "-filter_complex", "ebur128=peak=true", "-f", "null", "-"],
             cancellationToken);
 
         if (result.ExitCode != 0)
         {
-            throw new InvalidOperationException($"ffmpeg failed while measuring loudness: {TrimForError(result.Error)}");
+            throw new InvalidOperationException($"ffmpeg failed while measuring loudness and true peak: {TrimForError(result.Error)}");
         }
 
-        var matches = IntegratedLufsRegex().Matches(result.Error);
-        foreach (Match match in matches.Cast<Match>().Reverse())
+        var integratedLufs = TryParseLastDouble(IntegratedLufsRegex(), result.Error);
+        if (integratedLufs is null)
         {
-            if (double.TryParse(match.Groups["value"].Value, NumberStyles.Float, CultureInfo.InvariantCulture, out var lufs))
-            {
-                return lufs;
-            }
+            throw new InvalidOperationException("ffmpeg did not return an integrated LUFS value.");
         }
 
-        throw new InvalidOperationException("ffmpeg did not return an integrated LUFS value.");
+        var maxTruePeakDbtp = TryParseLastDouble(TruePeakRegex(), result.Error);
+        if (maxTruePeakDbtp is null)
+        {
+            throw new InvalidOperationException("ffmpeg did not return a true peak value.");
+        }
+
+        return (integratedLufs.Value, maxTruePeakDbtp.Value);
     }
 
     private async Task<(double? LeadingSeconds, double? TrailingSeconds)> GetHeadAndTailSilenceAsync(
@@ -263,6 +267,20 @@ public sealed partial class AudioAnalysisService(IConfiguration configuration, I
         return trimmed.Length <= maxLength ? trimmed : trimmed[..maxLength];
     }
 
+    private static double? TryParseLastDouble(Regex regex, string text)
+    {
+        var matches = regex.Matches(text);
+        foreach (Match match in matches.Cast<Match>().Reverse())
+        {
+            if (double.TryParse(match.Groups["value"].Value, NumberStyles.Float, CultureInfo.InvariantCulture, out var value))
+            {
+                return value;
+            }
+        }
+
+        return null;
+    }
+
     private static void TryKill(Process process)
     {
         try
@@ -295,6 +313,9 @@ public sealed partial class AudioAnalysisService(IConfiguration configuration, I
 
     [GeneratedRegex(@"I:\s*(?<value>-?\d+(?:\.\d+)?)\s*LUFS", RegexOptions.CultureInvariant)]
     private static partial Regex IntegratedLufsRegex();
+
+    [GeneratedRegex(@"Peak:\s*(?<value>-?\d+(?:\.\d+)?)\s*dB", RegexOptions.CultureInvariant)]
+    private static partial Regex TruePeakRegex();
 
     [GeneratedRegex(@"silence_start:\s*(?<value>-?\d+(?:\.\d+)?)", RegexOptions.CultureInvariant)]
     private static partial Regex SilenceStartRegex();
