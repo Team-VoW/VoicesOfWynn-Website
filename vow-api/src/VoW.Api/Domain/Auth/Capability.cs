@@ -6,6 +6,7 @@ public enum Capability
     ReportsManage,
     AnalyticsView,
     ToolsScripts,
+    ToolsAudioAnalysis,
     ContentManage,
     AccountsManage
 }

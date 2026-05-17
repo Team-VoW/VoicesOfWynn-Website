@@ -14,6 +14,7 @@ using VoW.Api.Services.Content;
 using VoW.Api.Services.DiscordIntegration;
 using VoW.Api.Services.Reports;
 using VoW.Api.Services.Storage;
+using VoW.Api.Services.Tools;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,6 +38,7 @@ builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
 builder.Services.AddScoped<IContentService, ContentService>();
 builder.Services.AddScoped<IDiscordIntegrationService, DiscordIntegrationService>();
 builder.Services.AddScoped<IReportService, ReportService>();
+builder.Services.AddScoped<IAudioAnalysisService, AudioAnalysisService>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IAnalyticsRepository, AnalyticsRepository>();
 builder.Services.AddScoped<IContentRepository, ContentRepository>();
