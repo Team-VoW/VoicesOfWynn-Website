@@ -47,7 +47,9 @@ jobs:
           target: runtime
           platforms: linux/arm64
           push: true
-          tags: ghcr.io/${{ steps.owner.outputs.name }}/vow-api:latest
+          tags: |
+            ghcr.io/${{ steps.owner.outputs.name }}/vow-api:latest
+            ghcr.io/${{ steps.owner.outputs.name }}/vow-api:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 

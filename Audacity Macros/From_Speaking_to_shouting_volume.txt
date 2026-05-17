@@ -1,2 +1,0 @@
-Amplify:Ratio="1.778279"
-Limiter:gain-L="0" gain-R="0" hold="10" makeup="No" thresh="-1.0" type="SoftLimit"

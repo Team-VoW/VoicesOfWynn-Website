@@ -22,6 +22,8 @@ after having run it once you do not need to include the --build in future startu
 
 this will create all the containers (databases and everything) for you.
 
+The API build requires the .NET 10 SDK on the host with `dotnet` available on your PATH. Install the .NET 10 SDK before running `dotnet build src/VoW.Api/VoW.Api.csproj`.
+
 The .NET API container runs the locally built API DLL from `vow-api/src/VoW.Api/bin/Debug/net10.0/`. Build it before starting the stack for the first time, and rebuild it after changing API code:
 
 ```bash

@@ -164,6 +164,11 @@ function onFileInput(event: Event) {
 }
 
 async function submit(allFiles: File[]) {
+  if (isAnalyzing.value) {
+    toast.warning('Audio analysis is already running.')
+    return
+  }
+
   const wavs = allFiles.filter((f) => f.name.toLowerCase().endsWith('.wav'))
   if (allFiles.length === 0) return
   if (wavs.length === 0) {
@@ -456,7 +461,9 @@ const toneClass: Record<LufsVerdict['tone'], string> = {
               <div
                 class="rounded-md border p-3 text-sm"
                 :class="
-                  leadingOverLimit(row.result.leadingSilenceSeconds)
+                  row.result.leadingSilenceSeconds === null
+                    ? 'border-border bg-muted/30 text-foreground'
+                    : leadingOverLimit(row.result.leadingSilenceSeconds)
                     ? toneClass.danger
                     : toneClass.success
                 "
@@ -466,11 +473,14 @@ const toneClass: Record<LufsVerdict['tone'], string> = {
                   {{
                     row.result.leadingSilenceSeconds !== null
                       ? formatSeconds(row.result.leadingSilenceSeconds)
-                      : '—'
+                      : 'Unavailable'
                   }}
                 </div>
                 <div class="mt-1 text-xs">
-                  <template v-if="leadingOverLimit(row.result.leadingSilenceSeconds)">
+                  <template v-if="row.result.leadingSilenceSeconds === null">
+                    measurement unavailable
+                  </template>
+                  <template v-else-if="leadingOverLimit(row.result.leadingSilenceSeconds)">
                     over the {{ LEADING_SILENCE_LIMIT.toFixed(2) }} s limit — trim the head
                   </template>
                   <template v-else
@@ -482,7 +492,9 @@ const toneClass: Record<LufsVerdict['tone'], string> = {
               <div
                 class="rounded-md border p-3 text-sm"
                 :class="
-                  trailingOverLimit(row.result.trailingSilenceSeconds)
+                  row.result.trailingSilenceSeconds === null
+                    ? 'border-border bg-muted/30 text-foreground'
+                    : trailingOverLimit(row.result.trailingSilenceSeconds)
                     ? toneClass.danger
                     : toneClass.success
                 "
@@ -492,11 +504,14 @@ const toneClass: Record<LufsVerdict['tone'], string> = {
                   {{
                     row.result.trailingSilenceSeconds !== null
                       ? formatSeconds(row.result.trailingSilenceSeconds)
-                      : '—'
+                      : 'Unavailable'
                   }}
                 </div>
                 <div class="mt-1 text-xs">
-                  <template v-if="trailingOverLimit(row.result.trailingSilenceSeconds)">
+                  <template v-if="row.result.trailingSilenceSeconds === null">
+                    measurement unavailable
+                  </template>
+                  <template v-else-if="trailingOverLimit(row.result.trailingSilenceSeconds)">
                     over the {{ TRAILING_SILENCE_LIMIT.toFixed(2) }} s limit — trim the tail
                   </template>
                   <template v-else

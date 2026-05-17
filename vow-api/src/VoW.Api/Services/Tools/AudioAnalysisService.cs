@@ -7,6 +7,7 @@ namespace VoW.Api.Services.Tools;
 
 public sealed partial class AudioAnalysisService(IConfiguration configuration, ILogger<AudioAnalysisService> logger) : IAudioAnalysisService
 {
+    private const int ProcessOutputMaxCharacters = 64 * 1024;
     private const double TailDurationToleranceSeconds = 0.05;
 
     private readonly string ffmpegPath = configuration["AudioAnalysis:FFmpegPath"] ?? "ffmpeg";
@@ -215,8 +216,8 @@ public sealed partial class AudioAnalysisService(IConfiguration configuration, I
             process.StartInfo.ArgumentList.Add(argument);
         }
 
-        var output = new StringBuilder();
-        var error = new StringBuilder();
+        var output = new BoundedStringBuilder(ProcessOutputMaxCharacters);
+        var error = new BoundedStringBuilder(ProcessOutputMaxCharacters);
         process.OutputDataReceived += (_, e) =>
         {
             if (e.Data is not null) output.AppendLine(e.Data);
@@ -250,6 +251,32 @@ public sealed partial class AudioAnalysisService(IConfiguration configuration, I
         }
 
         return new ProcessResult(process.ExitCode, output.ToString(), error.ToString());
+    }
+
+    private sealed class BoundedStringBuilder(int maxCharacters)
+    {
+        private readonly StringBuilder builder = new();
+        private readonly object gate = new();
+
+        public void AppendLine(string value)
+        {
+            lock (gate)
+            {
+                builder.AppendLine(value);
+                if (builder.Length > maxCharacters)
+                {
+                    builder.Remove(0, builder.Length - maxCharacters);
+                }
+            }
+        }
+
+        public override string ToString()
+        {
+            lock (gate)
+            {
+                return builder.ToString();
+            }
+        }
     }
 
     private static double GetDouble(IConfiguration configuration, string key, double defaultValue)

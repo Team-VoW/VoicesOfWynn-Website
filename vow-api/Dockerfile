@@ -23,8 +23,12 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends ffmpeg \
+    && groupadd --system vow \
+    && useradd --system --gid vow --home-dir /app --shell /usr/sbin/nologin vow \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 COPY --from=build /app/publish .
+RUN chown -R vow:vow /app
+USER vow
 ENTRYPOINT ["dotnet", "VoW.Api.dll"]

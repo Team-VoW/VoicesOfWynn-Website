@@ -1,5 +1,0 @@
-StereoToMono:
-High-PassFilter:frequency="80" rolloff="dB24"
-Compressor:AttackTime="0.2" ... (Your compressor settings)
-LoudnessNormalization:DualMono="1" LUFSLevel="-18" NormalizeTo="0" RMSLevel="-20" StereoIndependent="0"
-Limiter:gain-L="0" gain-R="0" hold="10" makeup="No" thresh="-1.5" type="SoftLimit"

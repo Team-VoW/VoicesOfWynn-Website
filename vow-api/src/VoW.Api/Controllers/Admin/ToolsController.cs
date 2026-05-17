@@ -46,19 +46,26 @@ public sealed class ToolsController(IAudioAnalysisService audioAnalysisService) 
                 continue;
             }
 
-            await using var stream = file.OpenReadStream();
-            var outcome = await audioAnalysisService.AnalyzeAsync(stream, cancellationToken);
-            results.Add(new AudioAnalysisItem(
-                FileName: fileName,
-                Success: outcome.Success,
-                FileNameValid: fileNameError is null,
-                FileNameError: fileNameError,
-                IntegratedLufs: outcome.IntegratedLufs,
-                MaxTruePeakDbtp: outcome.MaxTruePeakDbtp,
-                LeadingSilenceSeconds: outcome.LeadingSilenceSeconds,
-                TrailingSilenceSeconds: outcome.TrailingSilenceSeconds,
-                ChannelMode: outcome.ChannelMode,
-                Error: outcome.Error));
+            try
+            {
+                await using var stream = file.OpenReadStream();
+                var outcome = await audioAnalysisService.AnalyzeAsync(stream, cancellationToken);
+                results.Add(new AudioAnalysisItem(
+                    FileName: fileName,
+                    Success: outcome.Success,
+                    FileNameValid: fileNameError is null,
+                    FileNameError: fileNameError,
+                    IntegratedLufs: outcome.IntegratedLufs,
+                    MaxTruePeakDbtp: outcome.MaxTruePeakDbtp,
+                    LeadingSilenceSeconds: outcome.LeadingSilenceSeconds,
+                    TrailingSilenceSeconds: outcome.TrailingSilenceSeconds,
+                    ChannelMode: outcome.ChannelMode,
+                    Error: outcome.Error));
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                results.Add(Error(fileName, fileNameError, ex.Message));
+            }
         }
 
         return Ok(new AudioAnalysisBatchResponse(results));
