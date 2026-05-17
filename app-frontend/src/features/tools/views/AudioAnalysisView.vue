@@ -11,6 +11,8 @@ import { ApiError } from '@/api/client'
 const LEADING_SILENCE_LIMIT = 0.1
 const TRAILING_SILENCE_LIMIT = 0.4
 const TRUE_PEAK_LIMIT = -1
+const AUDIO_FILE_NAME_PATTERN = /^[a-z0-9]+-[a-z0-9]+-[1-9][0-9]*\.wav$/
+const AUDIO_FILE_NAME_ERROR = 'Filename must be questname-npcname-number.wav with only lowercase letters, numbers, exactly two hyphens, and no leading zeros in the number.'
 
 interface Row {
   id: number
@@ -26,7 +28,7 @@ const fileInput = ref<HTMLInputElement | null>(null)
 let nextId = 1
 
 const summary = computed(() => {
-  if (rows.value.length === 0) return 'Drop .wav files to analyze loudness, peak, silence, and channels.'
+  if (rows.value.length === 0) return 'Drop .wav files to analyze filenames, loudness, peak, silence, and channels.'
   const done = rows.value.filter((r) => r.status === 'done').length
   const errored = rows.value.filter((r) => r.status === 'error').length
   if (isAnalyzing.value) return `Analyzing ${rows.value.length} file(s)…`
@@ -69,10 +71,13 @@ async function submit(allFiles: File[]) {
       if (!row) continue
       const result = response.results[i]
       if (!result) {
+        const fileNameError = validateAudioFileName(row.fileName)
         row.status = 'error'
         row.result = {
           fileName: row.fileName,
           success: false,
+          fileNameValid: fileNameError === null,
+          fileNameError,
           integratedLufs: null,
           maxTruePeakDbtp: null,
           leadingSilenceSeconds: null,
@@ -89,10 +94,13 @@ async function submit(allFiles: File[]) {
     const message = err instanceof ApiError ? `Analysis failed (HTTP ${err.status}).` : 'Analysis failed.'
     toast.error(message)
     for (const row of pendingRows) {
+      const fileNameError = validateAudioFileName(row.fileName)
       row.status = 'error'
       row.result = {
         fileName: row.fileName,
         success: false,
+        fileNameValid: fileNameError === null,
+        fileNameError,
         integratedLufs: null,
         maxTruePeakDbtp: null,
         leadingSilenceSeconds: null,
@@ -146,6 +154,10 @@ function formatChannelMode(value: AudioAnalysisItem['channelMode']) {
   return 'Unknown'
 }
 
+function validateAudioFileName(fileName: string) {
+  return AUDIO_FILE_NAME_PATTERN.test(fileName) ? null : AUDIO_FILE_NAME_ERROR
+}
+
 function leadingOverLimit(seconds: number | null) {
   return seconds !== null && seconds > LEADING_SILENCE_LIMIT
 }
@@ -171,7 +183,7 @@ const toneClass: Record<LufsVerdict['tone'], string> = {
     <header class="space-y-1">
       <h1 class="text-xl font-semibold tracking-tight">Audio check</h1>
       <p class="text-sm text-muted-foreground">
-        Drop WAV recordings to measure loudness, true peak, leading/trailing silence, and mono/stereo channels.
+        Drop WAV recordings to measure filenames, loudness, true peak, leading/trailing silence, and mono/stereo channels.
       </p>
     </header>
 
@@ -195,7 +207,7 @@ const toneClass: Record<LufsVerdict['tone'], string> = {
           <AudioLines class="mx-auto size-10 text-primary" />
           <p class="mt-3 text-sm font-medium">Drag .wav files here</p>
           <p class="mt-1 text-xs text-muted-foreground">
-            Targets: −23 LUFS whispering, −18 speaking, −13 shouting, max −1 dBTP. Quiet clips, hot peaks, or stereo get flagged.
+            Targets: questname-npcname-number.wav, −23/−18/−13 LUFS, max −1 dBTP, mono.
           </p>
           <input
             ref="fileInput"
@@ -235,7 +247,19 @@ const toneClass: Record<LufsVerdict['tone'], string> = {
               </div>
             </div>
 
-            <div v-if="row.status === 'done' && row.result" class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+            <div v-if="row.status === 'done' && row.result" class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+              <div
+                class="rounded-md border p-3 text-sm"
+                :class="row.result.fileNameValid ? toneClass.success : toneClass.danger"
+              >
+                <div class="text-xs uppercase tracking-wide opacity-70">Filename</div>
+                <div class="mt-0.5 text-base font-semibold">{{ row.result.fileNameValid ? 'Valid' : 'Invalid' }}</div>
+                <div class="mt-1 text-xs">
+                  <template v-if="row.result.fileNameValid">matches questname-npcname-number.wav</template>
+                  <template v-else>{{ row.result.fileNameError }}</template>
+                </div>
+              </div>
+
               <div
                 v-if="row.result.integratedLufs !== null"
                 class="rounded-md border p-3 text-sm"
@@ -308,6 +332,14 @@ const toneClass: Record<LufsVerdict['tone'], string> = {
             </div>
 
             <div
+              v-if="row.result?.fileNameValid === false"
+              class="mt-3 flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive"
+            >
+              <AlertTriangle class="mt-0.5 size-4 shrink-0" />
+              <span>{{ row.result.fileNameError }}</span>
+            </div>
+
+            <div
               v-if="row.status === 'done' && row.result?.integratedLufs !== null && row.result!.integratedLufs! < -25"
               class="mt-3 flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive"
             >
@@ -343,14 +375,36 @@ const toneClass: Record<LufsVerdict['tone'], string> = {
       <CardHeader>
         <CardTitle>Reference</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent class="space-y-5">
         <ul class="grid gap-2 text-sm sm:grid-cols-2">
+          <li class="flex items-center gap-2"><Badge variant="secondary">questname-npcname-number.wav</Badge> required filename</li>
           <li class="flex items-center gap-2"><Badge variant="secondary">−23 LUFS</Badge> whispering</li>
           <li class="flex items-center gap-2"><Badge variant="secondary">−18 LUFS</Badge> speaking (default target)</li>
           <li class="flex items-center gap-2"><Badge variant="secondary">−13 LUFS</Badge> shouting</li>
           <li class="flex items-center gap-2"><Badge variant="secondary">≤ −1 dBTP</Badge> max true peak</li>
+          <li class="flex items-center gap-2"><Badge variant="secondary">Mono</Badge> required channel format</li>
           <li class="flex items-center gap-2"><Badge variant="destructive">&lt; −25 LUFS</Badge> review quiet clips</li>
         </ul>
+        <div class="grid gap-3 text-sm lg:grid-cols-3">
+          <div class="rounded-md border bg-muted/30 p-4">
+            <h2 class="font-medium">Filename format</h2>
+            <p class="mt-1 text-muted-foreground">
+              Export files as <span class="font-mono text-foreground">questname-npcname-number.wav</span>. The base name must use lowercase letters and numbers only, with exactly two hyphens separating quest, NPC, and line number. Use <span class="font-mono text-foreground">1</span>, <span class="font-mono text-foreground">2</span>, <span class="font-mono text-foreground">3</span>, not <span class="font-mono text-foreground">001</span>.
+            </p>
+          </div>
+          <div class="rounded-md border bg-muted/30 p-4">
+            <h2 class="font-medium">Loudness and peak</h2>
+            <p class="mt-1 text-muted-foreground">
+              LUFS is the perceived average loudness target: quieter whispers near −23, normal speech near −18, and shouting near −13. True peak catches short peaks between samples; keep it at or below −1 dBTP so exported audio has headroom.
+            </p>
+          </div>
+          <div class="rounded-md border bg-muted/30 p-4">
+            <h2 class="font-medium">Mono audio</h2>
+            <p class="mt-1 text-muted-foreground">
+              Voice lines should be mono. Stereo files add unnecessary size and can behave differently in-game, so convert the export to one channel before submitting.
+            </p>
+          </div>
+        </div>
       </CardContent>
     </Card>
   </div>

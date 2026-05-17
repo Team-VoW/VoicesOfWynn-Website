@@ -3,6 +3,8 @@ import { apiFetch } from './client'
 export interface AudioAnalysisItem {
   fileName: string
   success: boolean
+  fileNameValid: boolean
+  fileNameError: string | null
   integratedLufs: number | null
   maxTruePeakDbtp: number | null
   leadingSilenceSeconds: number | null

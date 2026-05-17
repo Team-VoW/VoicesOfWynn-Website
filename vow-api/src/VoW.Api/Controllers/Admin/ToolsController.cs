@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using System.Text.RegularExpressions;
 using VoW.Api.Contracts.Tools;
 using VoW.Api.Domain.Auth;
 using VoW.Api.Services.Tools;
@@ -10,6 +11,9 @@ namespace VoW.Api.Controllers.Admin;
 public sealed class ToolsController(IAudioAnalysisService audioAnalysisService) : ControllerBase
 {
     private const long AudioAnalysisMaxSizeBytes = 100L * 1024 * 1024;
+    private static readonly Regex AudioFileNamePattern = new(
+        "^[a-z0-9]+-[a-z0-9]+-[1-9][0-9]*$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     [HttpPost("audio-analysis")]
     [RequireCapability(Capability.ToolsAudioAnalysis)]
@@ -27,23 +31,28 @@ public sealed class ToolsController(IAudioAnalysisService audioAnalysisService) 
         var results = new List<AudioAnalysisItem>(files.Count);
         foreach (var file in files)
         {
+            var fileName = file?.FileName ?? "(unknown)";
+            var fileNameError = ValidateAudioFileName(fileName);
+
             if (file is null || file.Length == 0)
             {
-                results.Add(Error(file?.FileName ?? "(unknown)", "File is empty."));
+                results.Add(Error(fileName, fileNameError, "File is empty."));
                 continue;
             }
 
             if (!IsWavFile(file))
             {
-                results.Add(Error(file.FileName, "Only .wav files are accepted."));
+                results.Add(Error(fileName, fileNameError, "Only .wav files are accepted."));
                 continue;
             }
 
             await using var stream = file.OpenReadStream();
             var outcome = await audioAnalysisService.AnalyzeAsync(stream, cancellationToken);
             results.Add(new AudioAnalysisItem(
-                FileName: file.FileName,
+                FileName: fileName,
                 Success: outcome.Success,
+                FileNameValid: fileNameError is null,
+                FileNameError: fileNameError,
                 IntegratedLufs: outcome.IntegratedLufs,
                 MaxTruePeakDbtp: outcome.MaxTruePeakDbtp,
                 LeadingSilenceSeconds: outcome.LeadingSilenceSeconds,
@@ -55,10 +64,12 @@ public sealed class ToolsController(IAudioAnalysisService audioAnalysisService) 
         return Ok(new AudioAnalysisBatchResponse(results));
     }
 
-    private static AudioAnalysisItem Error(string fileName, string message) =>
+    private static AudioAnalysisItem Error(string fileName, string? fileNameError, string message) =>
         new(
             fileName,
             Success: false,
+            FileNameValid: fileNameError is null,
+            FileNameError: fileNameError,
             IntegratedLufs: null,
             MaxTruePeakDbtp: null,
             LeadingSilenceSeconds: null,
@@ -79,5 +90,16 @@ public sealed class ToolsController(IAudioAnalysisService audioAnalysisService) 
             || contentType == "audio/x-wav"
             || contentType == "audio/vnd.wave"
             || contentType == "application/octet-stream";
+    }
+
+    private static string? ValidateAudioFileName(string fileName)
+    {
+        var baseName = Path.GetFileNameWithoutExtension(fileName);
+        if (AudioFileNamePattern.IsMatch(baseName))
+        {
+            return null;
+        }
+
+        return "Filename must be questname-npcname-number.wav, using only lowercase letters, numbers, exactly two hyphens, and no leading zeros in the number.";
     }
 }
