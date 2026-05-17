@@ -1,6 +1,6 @@
 # Voices of Wynn Website
 
-PHP website for the Voices of Wynn project — a Wynncraft mod that adds voiced NPC dialogue. Custom MVC framework: routes defined in `routes.ini`, controllers in `Controllers/`, models in `Models/`, views as `.phtml` files in `Views/`.
+PHP website for the Voices of Wynn project — a Wynncraft mod that adds voiced NPC dialogue. Custom MVC framework under `website/`: routes defined in `website/routes.ini`, controllers in `website/Controllers/`, models in `website/Models/`, views as `.phtml` files in `website/Views/`.
 
 ## Guidelines
 

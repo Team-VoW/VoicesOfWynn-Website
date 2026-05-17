@@ -127,7 +127,7 @@ volumes:
   #   driver_opts:
   #     type: none
   #     o: bind
-  #     device: ${PWD}/dynamic
+  #     device: ${PWD}/website/dynamic
 
 # Add this networks section to define the network
 networks:

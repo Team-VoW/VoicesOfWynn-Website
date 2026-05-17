@@ -66,7 +66,7 @@ after which you will have to run the docker-compose command again with --build.
 
 We use liquibase as a database schema change management tool. It allows you to manage and track database schema changes in a version-controlled manner, making it easier to deploy and maintain database changes across different environments.
 
-To change anything about the database structure you need to create a new changeset and add it at the bottom of the changelog found in the `liquibase` directory. The changset name should get a title such as:
+To change anything about the database structure you need to create a new changeset and add it at the bottom of the changelog found in the `website/liquibase` directory. The changset name should get a title such as:
 `-- changeset <name>:<yourChangesetNum>` so if your name is kmaxi and this is the first change YOU are making it should look like this:
 `-- changeset kmaxi:1`.
 
@@ -77,7 +77,7 @@ For more information on how to use Liquibase, refer to the [official documentati
 The application supports two storage backends for dynamic files (recordings, avatars, etc.):
 
 #### Local Storage (Default)
-Files are stored in the `./dynamic/` directory on the server filesystem.
+Files are stored in the `./website/dynamic/` directory on the server filesystem.
 
 **Configuration:**
 ```env

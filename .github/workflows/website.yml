@@ -6,19 +6,7 @@ on:
       - docker
       - master
     paths:
-      - 'Controllers/**'
-      - 'Models/**'
-      - 'Views/**'
-      - 'css/**'
-      - 'js/**'
-      - 'images/**'
-      - 'fonts/**'
-      - 'index.php'
-      - 'routes.ini'
-      - 'php.ini'
-      - 'composer.json'
-      - 'composer.lock'
-      - 'Dockerfile'
+      - 'website/**'
       - '.github/workflows/website.yml'
   workflow_dispatch:
 
@@ -39,13 +27,13 @@ jobs:
           ref: ${{ github.ref }}
 
       - name: Minify CSS
-        run: npx clean-css-cli --batch --batch-suffix "" css/*.css
+        run: npx clean-css-cli --batch --batch-suffix "" website/css/*.css
 
       - name: Minify JS
         run: |
-          for f in js/*.js; do
+          for f in website/js/*.js; do
             case "$f" in
-              js/jquery.js|js/md5.js) continue ;;
+              website/js/jquery.js|website/js/md5.js) continue ;;
             esac
             npx terser "$f" -o "$f" -c -m
           done
@@ -63,8 +51,8 @@ jobs:
         id: build
         uses: docker/build-push-action@v6
         with:
-          context: .
-          file: Dockerfile
+          context: ./website
+          file: ./website/Dockerfile
           platforms: linux/arm64
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/vow-website:latest
