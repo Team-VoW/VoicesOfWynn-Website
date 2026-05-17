@@ -16,5 +16,6 @@ public enum DiscordRoleId
     BeginnerActor = 15,
     SpecialThank = 16,
     TopFunder = 19,
-    SoundEditor = 21
+    SoundEditor = 21,
+    TrialSoundEditor = 22
 }

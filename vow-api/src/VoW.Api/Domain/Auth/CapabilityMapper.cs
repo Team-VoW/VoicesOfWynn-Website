@@ -50,7 +50,8 @@ public static class CapabilityMapper
 
     private static readonly HashSet<DiscordRoleId> SoundEditorRoles =
     [
-        DiscordRoleId.SoundEditor
+        DiscordRoleId.SoundEditor,
+        DiscordRoleId.TrialSoundEditor
     ];
 
     public static IReadOnlyCollection<Capability> Map(IEnumerable<DiscordRoleId> roles)
