@@ -3,7 +3,7 @@ version: "3.8"
 services:
   web:
     build:
-      context: .
+      context: ./website
       dockerfile: Dockerfile
     ports:
       - "8000:80"
@@ -33,7 +33,7 @@ services:
     env_file:
       - .env
     volumes:
-      - .:/var/www/html
+      - ./website:/var/www/html
     dns: # Add this dns option
       - 8.8.8.8 # Use Google's public DNS server
       - 8.8.4.4 # (Optional) Secondary Google DNS server
