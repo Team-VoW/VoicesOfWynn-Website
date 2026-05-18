@@ -34,6 +34,11 @@ public interface IContentService
         UpdateNpcVoiceActorRequest request,
         CancellationToken cancellationToken);
 
+    Task<ContentMutationResult> ArchiveNpcAsync(
+        int npcId,
+        ArchiveNpcRequest request,
+        CancellationToken cancellationToken);
+
     Task<ContentMutationResult> LinkNpcToQuestAsync(
         int questId,
         LinkQuestNpcRequest request,

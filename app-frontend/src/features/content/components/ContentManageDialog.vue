@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, ref, useTemplateRef, watch } from 'vue'
 import {
+  Archive,
+  ArchiveRestore,
   Edit,
   FileUp,
   Headphones,
@@ -34,6 +36,7 @@ import type { ContentOption, ContentSearchNpc, ContentSearchQuest } from '@/api/
 import type { UploadNpcRecordingResult } from '@/api/types'
 import { CONTENT_NONE, messageFromContentError, optionalContentId } from '../contentUtils'
 import {
+  useArchiveNpc,
   useDeleteNpcRecording,
   useDeleteQuest,
   useLinkQuestNpc,
@@ -69,6 +72,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
+  npcArchived: [replacementNpcId: number | null]
   'update:open': [value: boolean]
 }>()
 
@@ -77,6 +81,7 @@ const updateQuestWriterMutation = useUpdateQuestWriter()
 const deleteQuestMutation = useDeleteQuest()
 const updateNpcMutation = useUpdateNpc()
 const updateNpcVoiceActorMutation = useUpdateNpcVoiceActor()
+const archiveNpcMutation = useArchiveNpc()
 const updateQuestNpcSoundEditorMutation = useUpdateQuestNpcSoundEditor()
 const linkQuestNpcMutation = useLinkQuestNpc()
 const unlinkQuestNpcMutation = useUnlinkQuestNpc()
@@ -102,6 +107,7 @@ const recordingOverwrite = ref(false)
 const recordingResults = ref<UploadNpcRecordingResult[]>([])
 const isDraggingRecordings = ref(false)
 const deletingRecordingId = ref<number | null>(null)
+const archivingMode = ref<'replace' | 'archive-only' | null>(null)
 
 const selectedQuestId = computed(() => props.selectedQuest?.questId ?? null)
 const selectedNpcId = computed(() => props.selectedNpc?.npcId ?? null)
@@ -174,6 +180,7 @@ watch(
     if (recordingsInput.value) recordingsInput.value.value = ''
     pendingImageFile.value = null
     cropDialogOpen.value = false
+    archivingMode.value = null
     if (imageInput.value) imageInput.value.value = ''
 
     if (props.mode === 'quest' && props.selectedQuest) {
@@ -391,6 +398,28 @@ async function unlinkNpc() {
     })
     setOpen(false)
   }, 'NPC unlinked from quest.')
+}
+
+async function archiveNpc(createReplacement: boolean) {
+  if (!props.selectedNpc) return
+
+  const message = createReplacement
+    ? 'Archive this NPC and create a replacement with the same name and picture?\n\nThe original NPC will be removed from current quest content, its recordings will be renamed as archived, and the replacement will have no voice actor or recordings.'
+    : 'Archive this NPC without creating a replacement?\n\nThe NPC will be removed from all current quest content and its recordings will be renamed as archived. This cannot be undone from this page.'
+  if (!window.confirm(message)) return
+
+  archivingMode.value = createReplacement ? 'replace' : 'archive-only'
+  await runDialogAction(async () => {
+    const response = await archiveNpcMutation.mutateAsync({
+      npcId: props.selectedNpc!.npcId,
+      request: { createReplacement },
+    })
+    emit('npcArchived', response.replacementNpcId)
+    if (response.replacementNpcId === null) {
+      setOpen(false)
+    }
+  }, createReplacement ? 'NPC archived and replacement created.' : 'NPC archived.')
+  archivingMode.value = null
 }
 </script>
 
@@ -856,6 +885,43 @@ async function unlinkNpc() {
               <Unlink class="size-4" />
               Unlink NPC
             </Button>
+          </div>
+
+          <div class="space-y-3 border-t pt-4">
+            <div>
+              <p class="text-sm font-medium">Archive NPC</p>
+              <p class="text-xs text-muted-foreground">
+                Archiving removes this NPC from current content and marks its recordings as outdated.
+              </p>
+            </div>
+            <div class="flex flex-col gap-2 sm:flex-row sm:justify-end">
+              <Button
+                variant="outline"
+                class="gap-2 self-start sm:self-auto"
+                :disabled="archiveNpcMutation.isPending.value"
+                @click="archiveNpc(true)"
+              >
+                <Loader2
+                  v-if="archivingMode === 'replace'"
+                  class="size-4 animate-spin"
+                />
+                <ArchiveRestore v-else class="size-4" />
+                Archive and recreate
+              </Button>
+              <Button
+                variant="destructive"
+                class="gap-2 self-start sm:self-auto"
+                :disabled="archiveNpcMutation.isPending.value"
+                @click="archiveNpc(false)"
+              >
+                <Loader2
+                  v-if="archivingMode === 'archive-only'"
+                  class="size-4 animate-spin"
+                />
+                <Archive v-else class="size-4" />
+                Archive only
+              </Button>
+            </div>
           </div>
         </div>
       </DialogContent>

@@ -326,6 +326,63 @@ public sealed partial class ContentService(
             : ContentMutationResult.NotFound();
     }
 
+    public async Task<ContentMutationResult> ArchiveNpcAsync(
+        int npcId,
+        ArchiveNpcRequest request,
+        CancellationToken cancellationToken)
+    {
+        var archiveData = await contentRepository.GetNpcArchiveDataAsync(npcId, cancellationToken);
+        if (archiveData is null)
+        {
+            return ContentMutationResult.NotFound();
+        }
+
+        if (archiveData.Archived)
+        {
+            return ContentMutationResult.Invalid(nameof(npcId), "NPC is already archived.");
+        }
+
+        var archiveDate = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        var archivedRecordings = new List<ArchivedRecordingFile>(archiveData.Recordings.Count);
+        var deletedRecordingIds = new List<int>();
+        foreach (var recording in archiveData.Recordings)
+        {
+            var archivedFileName = CreateArchivedRecordingFileName(recording.File, recording.RecordingId, archiveDate);
+            var renamed = await npcRecordingStorage.TryRenameRecordingAsync(
+                recording.File,
+                archivedFileName,
+                cancellationToken);
+            if (renamed)
+            {
+                archivedRecordings.Add(new ArchivedRecordingFile(recording.RecordingId, archivedFileName));
+            }
+            else
+            {
+                deletedRecordingIds.Add(recording.RecordingId);
+            }
+        }
+
+        var replacementNpcId = await contentRepository.ArchiveNpcAsync(
+            npcId,
+            request.CreateReplacement,
+            archivedRecordings,
+            deletedRecordingIds,
+            cancellationToken);
+        if (replacementNpcId is null && request.CreateReplacement)
+        {
+            return ContentMutationResult.NotFound();
+        }
+
+        if (replacementNpcId is not null)
+        {
+            await npcImageStorage.CopyImageIfExistsAsync(npcId, replacementNpcId.Value, cancellationToken);
+        }
+
+        return replacementNpcId is null
+            ? ContentMutationResult.Success()
+            : ContentMutationResult.Success(replacementNpcId.Value);
+    }
+
     public async Task<ContentMutationResult> LinkNpcToQuestAsync(
         int questId,
         LinkQuestNpcRequest request,
@@ -828,6 +885,19 @@ public sealed partial class ContentService(
             : new StringInfo(stem).SubstringByTextElements(0, maxStemLength);
 
         return FormattableString.Invariant($"{safeStem}{suffix}{extension}");
+    }
+
+    private static string CreateArchivedRecordingFileName(string fileName, int recordingId, string archiveDate)
+    {
+        var stem = Path.GetFileNameWithoutExtension(fileName);
+        const string extension = ".ogg";
+        var prefix = FormattableString.Invariant($"!archived_{archiveDate}_{recordingId}_");
+        var maxStemLength = RecordingFileNameMaxLength - prefix.Length - extension.Length;
+        var safeStem = maxStemLength > 0 && new StringInfo(stem).LengthInTextElements > maxStemLength
+            ? new StringInfo(stem).SubstringByTextElements(0, maxStemLength)
+            : stem;
+
+        return FormattableString.Invariant($"{prefix}{safeStem}{extension}");
     }
 
     private static int ParseRecordingLine(string fileName)

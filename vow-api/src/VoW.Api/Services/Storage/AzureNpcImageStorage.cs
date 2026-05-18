@@ -28,6 +28,32 @@ public sealed class AzureNpcImageStorage : INpcImageStorage
         }, cancellationToken: cancellationToken);
     }
 
+    public async Task<bool> CopyImageIfExistsAsync(
+        int sourceNpcId,
+        int destinationNpcId,
+        CancellationToken cancellationToken)
+    {
+        var source = containerClient.GetBlobClient(BlobKey(sourceNpcId));
+        if (!await source.ExistsAsync(cancellationToken))
+        {
+            return false;
+        }
+
+        var destination = containerClient.GetBlobClient(BlobKey(destinationNpcId));
+        var download = await source.DownloadStreamingAsync(cancellationToken: cancellationToken);
+        await using (download.Value.Content)
+        {
+            await destination.UploadAsync(download.Value.Content, overwrite: true, cancellationToken);
+        }
+
+        await destination.SetHttpHeadersAsync(new BlobHttpHeaders
+        {
+            ContentType = ImageContentType,
+            CacheControl = ImageCacheControl,
+        }, cancellationToken: cancellationToken);
+        return true;
+    }
+
     private static string BlobKey(int npcId) =>
         $"{ImageKeyPrefix}{npcId.ToString(CultureInfo.InvariantCulture)}.webp";
 }

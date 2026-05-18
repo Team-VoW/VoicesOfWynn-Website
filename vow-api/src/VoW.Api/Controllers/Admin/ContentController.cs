@@ -107,6 +107,21 @@ public sealed class ContentController(IContentService contentService) : Controll
         return result.Succeeded ? NoContent() : ProblemFrom(result);
     }
 
+    [HttpPost("npcs/{npcId:int}/archive")]
+    public async Task<IActionResult> ArchiveNpc(
+        int npcId,
+        [FromBody] ArchiveNpcRequest request,
+        CancellationToken cancellationToken)
+    {
+        var result = await contentService.ArchiveNpcAsync(npcId, request, cancellationToken);
+        if (!result.Succeeded)
+        {
+            return ProblemFrom(result);
+        }
+
+        return Ok(new ArchiveNpcResponse(result.Id));
+    }
+
     [HttpPost("quests/{questId:int}/npcs")]
     public async Task<IActionResult> LinkNpcToQuest(
         int questId,

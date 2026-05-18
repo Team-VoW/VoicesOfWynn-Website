@@ -21,6 +21,8 @@ public interface IContentRepository
 
     Task<bool> NpcExistsAsync(int npcId, CancellationToken cancellationToken);
 
+    Task<NpcArchiveData?> GetNpcArchiveDataAsync(int npcId, CancellationToken cancellationToken);
+
     Task<string?> GetQuestDegeneratedNameAsync(int questId, CancellationToken cancellationToken);
 
     Task<string?> GetNpcDegeneratedNameAsync(int npcId, CancellationToken cancellationToken);
@@ -112,4 +114,11 @@ public interface IContentRepository
         CancellationToken cancellationToken);
 
     Task<bool> UnlinkNpcFromQuestAsync(int questId, int npcId, CancellationToken cancellationToken);
+
+    Task<int?> ArchiveNpcAsync(
+        int npcId,
+        bool createReplacement,
+        IReadOnlyCollection<ArchivedRecordingFile> archivedRecordings,
+        IReadOnlyCollection<int> deletedRecordingIds,
+        CancellationToken cancellationToken);
 }

@@ -1,6 +1,7 @@
 import { computed, type ComputedRef, type Ref } from 'vue'
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import {
+  archiveNpc,
   createNpc,
   createQuest,
   deleteNpcRecording,
@@ -21,6 +22,7 @@ import {
   uploadQuestScript,
 } from '@/api/content'
 import type {
+  ArchiveNpcRequest,
   ContentSearchRequest,
   CreateNpcRequest,
   CreateQuestRequest,
@@ -116,6 +118,15 @@ export function useUpdateNpcVoiceActor() {
   return useMutation({
     mutationFn: ({ npcId, request }: { npcId: number; request: UpdateNpcVoiceActorRequest }) =>
       updateNpcVoiceActor(npcId, request),
+    onSuccess: () => invalidateContent(queryClient),
+  })
+}
+
+export function useArchiveNpc() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ npcId, request }: { npcId: number; request: ArchiveNpcRequest }) =>
+      archiveNpc(npcId, request),
     onSuccess: () => invalidateContent(queryClient),
   })
 }
