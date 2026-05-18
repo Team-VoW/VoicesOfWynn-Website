@@ -94,6 +94,39 @@ public sealed class ContentRepository(IConfiguration configuration) : IContentRe
         return await connection.ExecuteScalarAsync<int>(command) > 0;
     }
 
+    public async Task<NpcArchiveData?> GetNpcArchiveDataAsync(int npcId, CancellationToken cancellationToken)
+    {
+        const string npcSql = """
+            SELECT
+                npc_id AS NpcId,
+                name AS Name,
+                degenerated_name AS DegeneratedName,
+                archived AS Archived
+            FROM npc
+            WHERE npc_id = @NpcId
+            LIMIT 1;
+            """;
+
+        const string recordingsSql = """
+            SELECT recording_id AS RecordingId, file AS File
+            FROM recording
+            WHERE npc_id = @NpcId AND archived = 0
+            ORDER BY recording_id;
+            """;
+
+        await using var connection = new MySqlConnection(DatabaseSettings.GetWebsiteConnectionString(configuration));
+        var command = new CommandDefinition(npcSql, new { NpcId = npcId }, cancellationToken: cancellationToken);
+        var npc = await connection.QuerySingleOrDefaultAsync<NpcArchiveRow>(command);
+        if (npc is null)
+        {
+            return null;
+        }
+
+        command = new CommandDefinition(recordingsSql, new { NpcId = npcId }, cancellationToken: cancellationToken);
+        var recordings = (await connection.QueryAsync<RecordingFile>(command)).AsList();
+        return new NpcArchiveData(npc.NpcId, npc.Name, npc.DegeneratedName, npc.Archived, recordings);
+    }
+
     public async Task<string?> GetQuestDegeneratedNameAsync(int questId, CancellationToken cancellationToken)
     {
         const string sql = "SELECT degenerated_name FROM quest WHERE quest_id = @QuestId;";
@@ -626,6 +659,124 @@ public sealed class ContentRepository(IConfiguration configuration) : IContentRe
         return await connection.ExecuteAsync(command) > 0;
     }
 
+    public async Task<int?> ArchiveNpcAsync(
+        int npcId,
+        bool createReplacement,
+        IReadOnlyCollection<ArchivedRecordingFile> archivedRecordings,
+        IReadOnlyCollection<int> deletedRecordingIds,
+        CancellationToken cancellationToken)
+    {
+        await using var connection = new MySqlConnection(DatabaseSettings.GetWebsiteConnectionString(configuration));
+        await connection.OpenAsync(cancellationToken);
+        await using var transaction = await connection.BeginTransactionAsync(cancellationToken);
+
+        try
+        {
+            const string npcSql = """
+                SELECT name AS Name, degenerated_name AS DegeneratedName, archived AS Archived
+                FROM npc
+                WHERE npc_id = @NpcId
+                FOR UPDATE;
+                """;
+
+            var npcCommand = new CommandDefinition(
+                npcSql,
+                new { NpcId = npcId },
+                transaction,
+                cancellationToken: cancellationToken);
+            var npc = await connection.QuerySingleOrDefaultAsync<NpcArchiveRow>(npcCommand);
+            if (npc is null || npc.Archived)
+            {
+                await transaction.RollbackAsync(cancellationToken);
+                return null;
+            }
+
+            int? replacementNpcId = null;
+            if (createReplacement)
+            {
+                const string createReplacementSql = """
+                    INSERT INTO npc (name, degenerated_name, voice_actor_id)
+                    VALUES (@Name, @DegeneratedName, NULL);
+                    SELECT LAST_INSERT_ID();
+                    """;
+
+                var createCommand = new CommandDefinition(
+                    createReplacementSql,
+                    new { npc.Name, npc.DegeneratedName },
+                    transaction,
+                    cancellationToken: cancellationToken);
+                replacementNpcId = await connection.ExecuteScalarAsync<int>(createCommand);
+
+                const string moveLinksSql = """
+                    UPDATE npc_quest
+                    SET npc_id = @ReplacementNpcId
+                    WHERE npc_id = @NpcId;
+                    """;
+                var moveLinksCommand = new CommandDefinition(
+                    moveLinksSql,
+                    new { NpcId = npcId, ReplacementNpcId = replacementNpcId },
+                    transaction,
+                    cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(moveLinksCommand);
+            }
+            else
+            {
+                const string deleteLinksSql = "DELETE FROM npc_quest WHERE npc_id = @NpcId;";
+                var deleteLinksCommand = new CommandDefinition(
+                    deleteLinksSql,
+                    new { NpcId = npcId },
+                    transaction,
+                    cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(deleteLinksCommand);
+            }
+
+            const string archiveRecordingSql = """
+                UPDATE recording
+                SET archived = 1, file = @FileName
+                WHERE recording_id = @RecordingId AND npc_id = @NpcId;
+                """;
+            foreach (var recording in archivedRecordings)
+            {
+                var archiveRecordingCommand = new CommandDefinition(
+                    archiveRecordingSql,
+                    new { recording.RecordingId, recording.FileName, NpcId = npcId },
+                    transaction,
+                    cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(archiveRecordingCommand);
+            }
+
+            const string deleteRecordingSql = """
+                DELETE FROM recording
+                WHERE recording_id = @RecordingId AND npc_id = @NpcId;
+                """;
+            foreach (var recordingId in deletedRecordingIds)
+            {
+                var deleteRecordingCommand = new CommandDefinition(
+                    deleteRecordingSql,
+                    new { RecordingId = recordingId, NpcId = npcId },
+                    transaction,
+                    cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(deleteRecordingCommand);
+            }
+
+            const string archiveNpcSql = "UPDATE npc SET archived = 1 WHERE npc_id = @NpcId;";
+            var archiveNpcCommand = new CommandDefinition(
+                archiveNpcSql,
+                new { NpcId = npcId },
+                transaction,
+                cancellationToken: cancellationToken);
+            await connection.ExecuteAsync(archiveNpcCommand);
+
+            await transaction.CommitAsync(cancellationToken);
+            return replacementNpcId;
+        }
+        catch
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            throw;
+        }
+    }
+
     private sealed class QuestContentRow
     {
         public int QuestId { get; init; }
@@ -646,5 +797,13 @@ public sealed class ContentRepository(IConfiguration configuration) : IContentRe
         public int? SoundEditorId { get; init; }
         public string? SoundEditorName { get; init; }
         public int RecordingCount { get; init; }
+    }
+
+    private sealed class NpcArchiveRow
+    {
+        public int NpcId { get; init; }
+        public string Name { get; init; } = string.Empty;
+        public string DegeneratedName { get; init; } = string.Empty;
+        public bool Archived { get; init; }
     }
 }

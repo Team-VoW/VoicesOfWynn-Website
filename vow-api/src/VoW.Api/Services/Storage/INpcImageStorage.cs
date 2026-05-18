@@ -18,4 +18,10 @@ public interface INpcImageStorage
     /// <exception cref="ArgumentException">May be thrown when <paramref name="npcId"/> or content is invalid.</exception>
     /// <exception cref="Azure.RequestFailedException">Thrown when the storage provider rejects or fails the upload.</exception>
     Task UploadImageAsync(int npcId, Stream webpContent, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Copies the stored WebP image from one NPC key to another when the source image exists.
+    /// </summary>
+    /// <returns>Whether a source image existed and was copied.</returns>
+    Task<bool> CopyImageIfExistsAsync(int sourceNpcId, int destinationNpcId, CancellationToken cancellationToken);
 }

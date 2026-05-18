@@ -13,5 +13,7 @@ public interface INpcRecordingStorage
 
     Task RenameRecordingAsync(string currentFileName, string newFileName, CancellationToken cancellationToken);
 
+    Task<bool> TryRenameRecordingAsync(string currentFileName, string newFileName, CancellationToken cancellationToken);
+
     Task DeleteRecordingAsync(string fileName, CancellationToken cancellationToken);
 }

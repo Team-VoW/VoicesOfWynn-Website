@@ -48,6 +48,8 @@ const dialogOpen = ref(false)
 const dialogMode = ref<DialogMode>(null)
 const selectedQuest = ref<ContentSearchQuest | null>(null)
 const selectedNpc = ref<ContentSearchNpc | null>(null)
+const pendingReplacementNpcId = ref<number | null>(null)
+let pendingReplacementTimeout: ReturnType<typeof setTimeout> | null = null
 
 const { data: options, isLoading, isError, error } = useContentOptions()
 
@@ -78,10 +80,28 @@ const {
   isFetching: searchFetching,
   isError: searchIsError,
   error: searchError,
+  refetch: refetchContentSearch,
 } = useContentSearch(searchParams)
 
 const searchResults = computed(() => searchData.value?.results ?? [])
 const total = computed(() => searchData.value?.total ?? 0)
+
+function clearPendingReplacementNpc() {
+  pendingReplacementNpcId.value = null
+  if (pendingReplacementTimeout !== null) {
+    clearTimeout(pendingReplacementTimeout)
+    pendingReplacementTimeout = null
+  }
+}
+
+function setPendingReplacementNpc(npcId: number) {
+  clearPendingReplacementNpc()
+  pendingReplacementNpcId.value = npcId
+  pendingReplacementTimeout = setTimeout(() => {
+    pendingReplacementNpcId.value = null
+    pendingReplacementTimeout = null
+  }, 3000)
+}
 
 watch(
   [activeTab, searchParams],
@@ -124,19 +144,64 @@ watch(
   },
 )
 
+watch([activeTab, searchQuest, searchNpc, page, pageSize], clearPendingReplacementNpc)
+
 function openQuestDialog(quest: ContentSearchQuest) {
+  clearPendingReplacementNpc()
   selectedQuest.value = quest
   selectedNpc.value = null
   dialogMode.value = 'quest'
   dialogOpen.value = true
 }
 
-function openNpcDialog(quest: ContentSearchQuest, npc: ContentSearchNpc) {
+function openNpcDialog(quest: ContentSearchQuest, npc: ContentSearchNpc, clearPending = true) {
+  if (clearPending) {
+    clearPendingReplacementNpc()
+  }
+
   selectedQuest.value = quest
   selectedNpc.value = npc
   dialogMode.value = 'npc'
   dialogOpen.value = true
 }
+
+function findNpcInSearchResults(npcId: number) {
+  for (const quest of searchResults.value) {
+    const npc = quest.npcs.find((candidate) => candidate.npcId === npcId)
+    if (npc) return { quest, npc }
+  }
+
+  return null
+}
+
+function openReplacementNpcIfAvailable(npcId: number) {
+  const match = findNpcInSearchResults(npcId)
+  if (!match) return false
+
+  openNpcDialog(match.quest, match.npc, false)
+  clearPendingReplacementNpc()
+  return true
+}
+
+async function onNpcArchived(replacementNpcId: number | null) {
+  if (replacementNpcId === null) {
+    selectedQuest.value = null
+    selectedNpc.value = null
+    dialogMode.value = null
+    return
+  }
+
+  setPendingReplacementNpc(replacementNpcId)
+  dialogOpen.value = false
+  await refetchContentSearch()
+  openReplacementNpcIfAvailable(replacementNpcId)
+}
+
+watch(searchResults, () => {
+  if (pendingReplacementNpcId.value !== null) {
+    openReplacementNpcIfAvailable(pendingReplacementNpcId.value)
+  }
+})
 </script>
 
 <template>
@@ -238,6 +303,7 @@ function openNpcDialog(quest: ContentSearchQuest, npc: ContentSearchNpc) {
       :sound-editors="soundEditors"
       :voice-actors="voiceActors"
       :writers="writers"
+      @npc-archived="onNpcArchived"
     />
   </div>
 </template>

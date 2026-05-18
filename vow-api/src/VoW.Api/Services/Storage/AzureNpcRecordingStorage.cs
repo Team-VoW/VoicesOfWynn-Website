@@ -1,3 +1,4 @@
+using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 
@@ -45,16 +46,47 @@ public sealed class AzureNpcRecordingStorage : INpcRecordingStorage
         string newFileName,
         CancellationToken cancellationToken)
     {
+        if (!await TryRenameRecordingAsync(currentFileName, newFileName, cancellationToken))
+        {
+            throw new FileNotFoundException("Recording blob does not exist.", currentFileName);
+        }
+    }
+
+    public async Task<bool> TryRenameRecordingAsync(
+        string currentFileName,
+        string newFileName,
+        CancellationToken cancellationToken)
+    {
+        if (BlobKey(currentFileName) == BlobKey(newFileName))
+        {
+            return true;
+        }
+
         var source = containerClient.GetBlobClient(BlobKey(currentFileName));
         var destination = containerClient.GetBlobClient(BlobKey(newFileName));
 
-        await destination.SyncCopyFromUriAsync(source.Uri, cancellationToken: cancellationToken);
+        Response<BlobDownloadStreamingResult> download;
+        try
+        {
+            download = await source.DownloadStreamingAsync(cancellationToken: cancellationToken);
+        }
+        catch (RequestFailedException ex) when (ex.Status == 404)
+        {
+            return false;
+        }
+
+        await using (download.Value.Content)
+        {
+            await destination.UploadAsync(download.Value.Content, overwrite: true, cancellationToken);
+        }
+
         await destination.SetHttpHeadersAsync(new BlobHttpHeaders
         {
             ContentType = RecordingContentType,
             CacheControl = RecordingCacheControl,
         }, cancellationToken: cancellationToken);
         await source.DeleteIfExistsAsync(cancellationToken: cancellationToken);
+        return true;
     }
 
     public async Task DeleteRecordingAsync(string fileName, CancellationToken cancellationToken)

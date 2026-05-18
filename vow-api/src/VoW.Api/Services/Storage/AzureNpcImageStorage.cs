@@ -1,4 +1,5 @@
 using System.Globalization;
+using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 
@@ -26,6 +27,36 @@ public sealed class AzureNpcImageStorage : INpcImageStorage
             ContentType = ImageContentType,
             CacheControl = ImageCacheControl,
         }, cancellationToken: cancellationToken);
+    }
+
+    public async Task<bool> CopyImageIfExistsAsync(
+        int sourceNpcId,
+        int destinationNpcId,
+        CancellationToken cancellationToken)
+    {
+        var source = containerClient.GetBlobClient(BlobKey(sourceNpcId));
+        var destination = containerClient.GetBlobClient(BlobKey(destinationNpcId));
+        Response<BlobDownloadStreamingResult> download;
+        try
+        {
+            download = await source.DownloadStreamingAsync(cancellationToken: cancellationToken);
+        }
+        catch (RequestFailedException ex) when (ex.Status == 404)
+        {
+            return false;
+        }
+
+        await using (download.Value.Content)
+        {
+            await destination.UploadAsync(download.Value.Content, overwrite: true, cancellationToken);
+        }
+
+        await destination.SetHttpHeadersAsync(new BlobHttpHeaders
+        {
+            ContentType = ImageContentType,
+            CacheControl = ImageCacheControl,
+        }, cancellationToken: cancellationToken);
+        return true;
     }
 
     private static string BlobKey(int npcId) =>

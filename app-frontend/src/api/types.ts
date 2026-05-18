@@ -154,6 +154,14 @@ export interface CreateContentResponse {
   id: number
 }
 
+export interface ArchiveNpcRequest {
+  createReplacement: boolean
+}
+
+export interface ArchiveNpcResponse {
+  replacementNpcId: number | null
+}
+
 export interface UpdateContentNameRequest {
   name: string
 }

@@ -1,5 +1,7 @@
 import { apiFetch } from './client'
 import type {
+  ArchiveNpcRequest,
+  ArchiveNpcResponse,
   ContentOptionsResponse,
   ContentSearchRequest,
   ContentSearchResponse,
@@ -84,6 +86,16 @@ export function updateNpcVoiceActor(
 ): Promise<void> {
   return apiFetch<void>(`/admin/content/npcs/${npcId}/voice-actor`, {
     method: 'PATCH',
+    body: request,
+  })
+}
+
+export function archiveNpc(
+  npcId: number,
+  request: ArchiveNpcRequest,
+): Promise<ArchiveNpcResponse> {
+  return apiFetch<ArchiveNpcResponse>(`/admin/content/npcs/${npcId}/archive`, {
+    method: 'POST',
     body: request,
   })
 }
