@@ -1,4 +1,5 @@
 using System.Globalization;
+using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 
@@ -34,13 +35,17 @@ public sealed class AzureNpcImageStorage : INpcImageStorage
         CancellationToken cancellationToken)
     {
         var source = containerClient.GetBlobClient(BlobKey(sourceNpcId));
-        if (!await source.ExistsAsync(cancellationToken))
+        var destination = containerClient.GetBlobClient(BlobKey(destinationNpcId));
+        Response<BlobDownloadStreamingResult> download;
+        try
+        {
+            download = await source.DownloadStreamingAsync(cancellationToken: cancellationToken);
+        }
+        catch (RequestFailedException ex) when (ex.Status == 404)
         {
             return false;
         }
 
-        var destination = containerClient.GetBlobClient(BlobKey(destinationNpcId));
-        var download = await source.DownloadStreamingAsync(cancellationToken: cancellationToken);
         await using (download.Value.Content)
         {
             await destination.UploadAsync(download.Value.Content, overwrite: true, cancellationToken);

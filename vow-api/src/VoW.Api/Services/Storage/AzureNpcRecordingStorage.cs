@@ -57,6 +57,11 @@ public sealed class AzureNpcRecordingStorage : INpcRecordingStorage
         string newFileName,
         CancellationToken cancellationToken)
     {
+        if (BlobKey(currentFileName) == BlobKey(newFileName))
+        {
+            return true;
+        }
+
         var source = containerClient.GetBlobClient(BlobKey(currentFileName));
         var destination = containerClient.GetBlobClient(BlobKey(newFileName));
 

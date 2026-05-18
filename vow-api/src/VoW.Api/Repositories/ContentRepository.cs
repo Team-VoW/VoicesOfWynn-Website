@@ -685,7 +685,7 @@ public sealed class ContentRepository(IConfiguration configuration) : IContentRe
                 transaction,
                 cancellationToken: cancellationToken);
             var npc = await connection.QuerySingleOrDefaultAsync<NpcArchiveRow>(npcCommand);
-            if (npc is null)
+            if (npc is null || npc.Archived)
             {
                 await transaction.RollbackAsync(cancellationToken);
                 return null;

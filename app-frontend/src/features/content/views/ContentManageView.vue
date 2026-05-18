@@ -49,6 +49,7 @@ const dialogMode = ref<DialogMode>(null)
 const selectedQuest = ref<ContentSearchQuest | null>(null)
 const selectedNpc = ref<ContentSearchNpc | null>(null)
 const pendingReplacementNpcId = ref<number | null>(null)
+let pendingReplacementTimeout: ReturnType<typeof setTimeout> | null = null
 
 const { data: options, isLoading, isError, error } = useContentOptions()
 
@@ -84,6 +85,23 @@ const {
 
 const searchResults = computed(() => searchData.value?.results ?? [])
 const total = computed(() => searchData.value?.total ?? 0)
+
+function clearPendingReplacementNpc() {
+  pendingReplacementNpcId.value = null
+  if (pendingReplacementTimeout !== null) {
+    clearTimeout(pendingReplacementTimeout)
+    pendingReplacementTimeout = null
+  }
+}
+
+function setPendingReplacementNpc(npcId: number) {
+  clearPendingReplacementNpc()
+  pendingReplacementNpcId.value = npcId
+  pendingReplacementTimeout = setTimeout(() => {
+    pendingReplacementNpcId.value = null
+    pendingReplacementTimeout = null
+  }, 3000)
+}
 
 watch(
   [activeTab, searchParams],
@@ -126,14 +144,21 @@ watch(
   },
 )
 
+watch([activeTab, searchQuest, searchNpc, page, pageSize], clearPendingReplacementNpc)
+
 function openQuestDialog(quest: ContentSearchQuest) {
+  clearPendingReplacementNpc()
   selectedQuest.value = quest
   selectedNpc.value = null
   dialogMode.value = 'quest'
   dialogOpen.value = true
 }
 
-function openNpcDialog(quest: ContentSearchQuest, npc: ContentSearchNpc) {
+function openNpcDialog(quest: ContentSearchQuest, npc: ContentSearchNpc, clearPending = true) {
+  if (clearPending) {
+    clearPendingReplacementNpc()
+  }
+
   selectedQuest.value = quest
   selectedNpc.value = npc
   dialogMode.value = 'npc'
@@ -153,8 +178,8 @@ function openReplacementNpcIfAvailable(npcId: number) {
   const match = findNpcInSearchResults(npcId)
   if (!match) return false
 
-  openNpcDialog(match.quest, match.npc)
-  pendingReplacementNpcId.value = null
+  openNpcDialog(match.quest, match.npc, false)
+  clearPendingReplacementNpc()
   return true
 }
 
@@ -166,7 +191,7 @@ async function onNpcArchived(replacementNpcId: number | null) {
     return
   }
 
-  pendingReplacementNpcId.value = replacementNpcId
+  setPendingReplacementNpc(replacementNpcId)
   dialogOpen.value = false
   await refetchContentSearch()
   openReplacementNpcIfAvailable(replacementNpcId)

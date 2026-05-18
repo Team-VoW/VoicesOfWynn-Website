@@ -12,12 +12,14 @@ public sealed partial class ContentService(
     IContentRepository contentRepository,
     IQuestScriptStorage questScriptStorage,
     INpcImageStorage npcImageStorage,
-    INpcRecordingStorage npcRecordingStorage) : IContentService
+    INpcRecordingStorage npcRecordingStorage,
+    ILogger<ContentService> logger) : IContentService
 {
     private const int ContentNameMaxLength = 63;
     private const int RecordingFileNameMaxLength = 63;
     private const short RecordingLineMinValue = 1;
     private const short RecordingLineMaxValue = short.MaxValue;
+    private const int ArchiveRecordingStorageConcurrency = 4;
     private static readonly int[] AllowedPageSizes = [10, 25, 50, 100];
     private static readonly string[] AcceptedRecordingContentTypes = ["audio/ogg", "video/ogg", "application/ogg"];
 
@@ -348,39 +350,97 @@ public sealed partial class ContentService(
         foreach (var recording in archiveData.Recordings)
         {
             var archivedFileName = CreateArchivedRecordingFileName(recording.File, recording.RecordingId, archiveDate);
-            var renamed = await npcRecordingStorage.TryRenameRecordingAsync(
-                recording.File,
-                archivedFileName,
-                cancellationToken);
-            if (renamed)
-            {
-                archivedRecordings.Add(new ArchivedRecordingFile(recording.RecordingId, archivedFileName));
-            }
-            else
-            {
-                deletedRecordingIds.Add(recording.RecordingId);
-            }
+            archivedRecordings.Add(new ArchivedRecordingFile(recording.RecordingId, archivedFileName));
         }
 
+        var archiveCancellationToken = CancellationToken.None;
         var replacementNpcId = await contentRepository.ArchiveNpcAsync(
             npcId,
             request.CreateReplacement,
             archivedRecordings,
             deletedRecordingIds,
-            cancellationToken);
+            archiveCancellationToken);
         if (replacementNpcId is null && request.CreateReplacement)
         {
             return ContentMutationResult.NotFound();
         }
 
+        await ApplyArchivedRecordingRenamesAsync(archiveData.Recordings, archiveDate, archiveCancellationToken);
+
         if (replacementNpcId is not null)
         {
-            await npcImageStorage.CopyImageIfExistsAsync(npcId, replacementNpcId.Value, cancellationToken);
+            await npcImageStorage.CopyImageIfExistsAsync(npcId, replacementNpcId.Value, archiveCancellationToken);
         }
 
         return replacementNpcId is null
             ? ContentMutationResult.Success()
             : ContentMutationResult.Success(replacementNpcId.Value);
+    }
+
+    private async Task ApplyArchivedRecordingRenamesAsync(
+        IReadOnlyCollection<RecordingFile> recordings,
+        string archiveDate,
+        CancellationToken cancellationToken)
+    {
+        using var concurrency = new SemaphoreSlim(ArchiveRecordingStorageConcurrency);
+        var renameTasks = recordings.Select(async recording =>
+        {
+            await concurrency.WaitAsync(cancellationToken);
+            try
+            {
+                var archivedFileName = CreateArchivedRecordingFileName(recording.File, recording.RecordingId, archiveDate);
+                await TryApplyArchivedRecordingRenameAsync(recording, archivedFileName, cancellationToken);
+            }
+            finally
+            {
+                concurrency.Release();
+            }
+        });
+
+        await Task.WhenAll(renameTasks);
+    }
+
+    private async Task TryApplyArchivedRecordingRenameAsync(
+        RecordingFile recording,
+        string archivedFileName,
+        CancellationToken cancellationToken)
+    {
+        const int maxAttempts = 2;
+        for (var attempt = 1; attempt <= maxAttempts; attempt++)
+        {
+            try
+            {
+                if (await npcRecordingStorage.TryRenameRecordingAsync(recording.File, archivedFileName, cancellationToken))
+                {
+                    return;
+                }
+
+                logger.LogError(
+                    "Archived NPC recording {RecordingId} references {ArchivedFileName}, but source blob {SourceFileName} was not found after database commit.",
+                    recording.RecordingId,
+                    archivedFileName,
+                    recording.File);
+                return;
+            }
+            catch (Exception ex) when (attempt < maxAttempts)
+            {
+                logger.LogWarning(
+                    ex,
+                    "Failed to rename archived NPC recording blob {SourceFileName} to {ArchivedFileName}. Retrying.",
+                    recording.File,
+                    archivedFileName);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(
+                    ex,
+                    "Archived NPC recording {RecordingId} references {ArchivedFileName}, but blob rename from {SourceFileName} failed after database commit.",
+                    recording.RecordingId,
+                    archivedFileName,
+                    recording.File);
+                throw;
+            }
+        }
     }
 
     public async Task<ContentMutationResult> LinkNpcToQuestAsync(
