@@ -35,6 +35,23 @@ function storageBaseUrl(): string {
     return \VoicesOfWynn\Models\Storage\Storage::get()->getBaseUrl();
 }
 
+function appFrontendUrl(): string {
+    $configuredUrl = getenv('APP_FRONTEND_URL');
+    if ($configuredUrl) {
+        return rtrim($configuredUrl, '/');
+    }
+
+    if (getenv('DEV_MODE') === 'true') {
+        return 'http://localhost:5173';
+    }
+
+    return 'https://app.voicesofwynn.com';
+}
+
+function appLoginUrl(): string {
+    return appFrontendUrl().'/login';
+}
+
 // Create "sessions" folder if it does not exist
 $sessionsPath = __DIR__.'/sessions';
 if (!is_dir($sessionsPath)) {
@@ -86,4 +103,3 @@ else if ($result < 300) {
 
 //Display the generated website
 echo $website;
-

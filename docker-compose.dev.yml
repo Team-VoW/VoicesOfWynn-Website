@@ -23,6 +23,7 @@ services:
       - DISCORD_INTEGRATION=${DISCORD_INTEGRATION}
       - AZURE_STORAGE_CONNECTION_STRING=${AZURE_STORAGE_CONNECTION_STRING:-}
       - STORAGE_TYPE=${STORAGE_TYPE:-local}
+      - APP_FRONTEND_URL=${APP_FRONTEND_URL:-http://localhost:5173}
       - DEV_MODE=true
     depends_on:
       - website

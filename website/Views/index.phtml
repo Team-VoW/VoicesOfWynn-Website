@@ -84,7 +84,7 @@
         </p>
         <div class="session-buttons">
             <?php if (!isset($_SESSION['user'])): ?>
-                <a href="/login" class="btn loginbtn">
+                <a href="<?= \VoicesOfWynn\appLoginUrl(); ?>" class="btn loginbtn">
                     <img src="images/user.png" alt="login icon" class="buttonicon" />
                     Login
                 </a>
