@@ -290,7 +290,7 @@ public sealed class ContentRepository(IConfiguration configuration) : IContentRe
         return await connection.QuerySingleOrDefaultAsync<RecordingFile>(command);
     }
 
-    public async Task<bool> RecordingFileBelongsToDifferentRecordingAsync(
+    public async Task<RecordingConflict?> GetRecordingFileConflictAsync(
         string fileName,
         int questId,
         int npcId,
@@ -298,17 +298,28 @@ public sealed class ContentRepository(IConfiguration configuration) : IContentRe
         CancellationToken cancellationToken)
     {
         const string sql = """
-            SELECT COUNT(*)
-            FROM recording
-            WHERE file = @FileName
-              AND (quest_id <> @QuestId OR npc_id <> @NpcId OR line <> @Line);
+            SELECT
+                r.recording_id AS RecordingId,
+                r.quest_id AS QuestId,
+                q.name AS QuestName,
+                r.npc_id AS NpcId,
+                n.name AS NpcName,
+                r.line AS Line,
+                r.file AS FileName
+            FROM recording r
+            JOIN quest q ON q.quest_id = r.quest_id
+            JOIN npc n ON n.npc_id = r.npc_id
+            WHERE r.file = @FileName
+              AND (r.quest_id <> @QuestId OR r.npc_id <> @NpcId OR r.line <> @Line)
+            ORDER BY r.recording_id
+            LIMIT 1;
             """;
         await using var connection = new MySqlConnection(DatabaseSettings.GetWebsiteConnectionString(configuration));
         var command = new CommandDefinition(
             sql,
             new { FileName = fileName, QuestId = questId, NpcId = npcId, Line = line },
             cancellationToken: cancellationToken);
-        return await connection.ExecuteScalarAsync<int>(command) > 0;
+        return await connection.QuerySingleOrDefaultAsync<RecordingConflict>(command);
     }
 
     public async Task<bool> UpdateRecordingFileAsync(

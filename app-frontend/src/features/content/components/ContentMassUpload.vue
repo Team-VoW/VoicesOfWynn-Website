@@ -96,6 +96,13 @@ function formatBytes(bytes: number) {
   return `${size.toFixed(size >= 10 ? 0 : 1)} ${units[unitIndex]}`
 }
 
+function recordingResultDescription(result: UploadNpcRecordingResult) {
+  if (!result.conflict) return result.description
+
+  const conflict = result.conflict
+  return `${result.description} Existing location: ${conflict.questName} (quest ${conflict.questId}) -> ${conflict.npcName} (NPC ${conflict.npcId}), line ${conflict.line}, recording ${conflict.recordingId} (${conflict.fileName}).`
+}
+
 function createBatches(files: File[]) {
   const batches: File[][] = []
   let current: File[] = []
@@ -349,7 +356,7 @@ async function uploadSelectedFiles() {
             </TableCell>
             <TableCell class="font-mono text-xs">{{ result.fileName }}</TableCell>
             <TableCell class="font-mono text-xs">{{ result.storedFileName ?? '-' }}</TableCell>
-            <TableCell class="min-w-80 text-sm">{{ result.description }}</TableCell>
+            <TableCell class="min-w-80 text-sm">{{ recordingResultDescription(result) }}</TableCell>
           </TableRow>
         </TableBody>
       </Table>

@@ -306,10 +306,21 @@ export interface UploadNpcRecordingResult {
   message: string
   description: string
   storedFileName: string | null
+  conflict: RecordingConflict | null
 }
 
 export interface UploadNpcRecordingsResponse {
   results: UploadNpcRecordingResult[]
+}
+
+export interface RecordingConflict {
+  recordingId: number
+  questId: number
+  questName: string
+  npcId: number
+  npcName: string
+  line: number
+  fileName: string
 }
 
 export interface NpcRecording {

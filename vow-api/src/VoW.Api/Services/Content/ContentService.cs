@@ -670,18 +670,20 @@ public sealed partial class ContentService(
         }
 
         var line = ParseRecordingLine(fileName);
-        if (await contentRepository.RecordingFileBelongsToDifferentRecordingAsync(
+        var recordingConflict = await contentRepository.GetRecordingFileConflictAsync(
                 fileName,
                 questId,
                 npcId,
                 line,
-                cancellationToken))
+                cancellationToken);
+        if (recordingConflict is not null)
         {
             return RecordingResult(
                 fileName,
                 409,
                 "Conflict",
-                "A recording with this filename is already connected to a different quest, NPC, or line.");
+                "A recording with this filename is already connected to a different quest, NPC, or line.",
+                conflict: ToResponse(recordingConflict));
         }
 
         var conflictExists = await npcRecordingStorage.RecordingExistsAsync(fileName, cancellationToken);
@@ -802,18 +804,20 @@ public sealed partial class ContentService(
         }
 
         var storedFileName = fileName;
-        if (await contentRepository.RecordingFileBelongsToDifferentRecordingAsync(
+        var recordingConflict = await contentRepository.GetRecordingFileConflictAsync(
                 storedFileName,
                 questId,
                 npcId,
                 line,
-                cancellationToken))
+                cancellationToken);
+        if (recordingConflict is not null)
         {
             return RecordingResult(
                 fileName,
                 409,
                 "Conflict",
-                "A recording with this filename is already connected to a different quest, NPC, or line.");
+                "A recording with this filename is already connected to a different quest, NPC, or line.",
+                conflict: ToResponse(recordingConflict));
         }
 
         var conflictExists = await npcRecordingStorage.RecordingExistsAsync(storedFileName, cancellationToken);
@@ -986,8 +990,19 @@ public sealed partial class ContentService(
         int code,
         string message,
         string description,
-        string? storedFileName = null) =>
-        new(fileName, code, message, description, storedFileName);
+        string? storedFileName = null,
+        RecordingConflictResponse? conflict = null) =>
+        new(fileName, code, message, description, storedFileName, conflict);
+
+    private static RecordingConflictResponse ToResponse(RecordingConflict conflict) =>
+        new(
+            conflict.RecordingId,
+            conflict.QuestId,
+            conflict.QuestName,
+            conflict.NpcId,
+            conflict.NpcName,
+            conflict.Line,
+            conflict.FileName);
 
     private async Task<bool> OptionExistsAsync(
         ContentUserRole role,

@@ -165,6 +165,13 @@ function npcOptionLabel(npc: ContentOption) {
   return `${npc.name} (${npc.id})`
 }
 
+function recordingResultDescription(result: UploadNpcRecordingResult) {
+  if (!result.conflict) return result.description
+
+  const conflict = result.conflict
+  return `${result.description} Existing location: ${conflict.questName} (quest ${conflict.questId}) -> ${conflict.npcName} (NPC ${conflict.npcId}), line ${conflict.line}, recording ${conflict.recordingId} (${conflict.fileName}).`
+}
+
 watch(
   () => [props.mode, props.selectedQuest, props.selectedNpc, props.open] as const,
   () => {
@@ -790,7 +797,9 @@ async function archiveNpc(createReplacement: boolean) {
                     {{ result.code }} {{ result.message }}
                   </span>
                 </div>
-                <p class="mt-1 text-xs text-muted-foreground">{{ result.description }}</p>
+                <p class="mt-1 text-xs text-muted-foreground">
+                  {{ recordingResultDescription(result) }}
+                </p>
               </div>
             </div>
           </div>
