@@ -18,6 +18,7 @@ internal static class AccountBioSanitizer
         sanitizer.AllowedTags.UnionWith(
             [
                 "p",
+                "div",
                 "span",
                 "strong",
                 "em",

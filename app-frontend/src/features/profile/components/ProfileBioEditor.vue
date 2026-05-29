@@ -124,7 +124,10 @@ watch(
   { immediate: true },
 )
 
-onMounted(() => syncEditorContent(model.value))
+onMounted(() => {
+  document.execCommand('defaultParagraphSeparator', false, 'p')
+  syncEditorContent(model.value)
+})
 </script>
 
 <template>
