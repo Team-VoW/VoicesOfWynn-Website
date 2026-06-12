@@ -449,7 +449,7 @@
 .comment-content p {
   margin: 0;
   word-wrap: break-word;
-  line-height: 0.5rem;
+  line-height: 1rem;
 }
 
 /* Back Button */
