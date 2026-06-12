@@ -3,7 +3,7 @@ version: "3.8"
 services:
   web:
     build:
-      context: .
+      context: ./website
       dockerfile: Dockerfile
     ports:
       - "8000:80"
@@ -23,19 +23,55 @@ services:
       - DISCORD_INTEGRATION=${DISCORD_INTEGRATION}
       - AZURE_STORAGE_CONNECTION_STRING=${AZURE_STORAGE_CONNECTION_STRING:-}
       - STORAGE_TYPE=${STORAGE_TYPE:-local}
+      - APP_FRONTEND_URL=${APP_FRONTEND_URL:-http://localhost:5173}
       - DEV_MODE=true
     depends_on:
       - website
       - api
       - adminer
+      - vow-api
 
     env_file:
       - .env
     volumes:
-      - .:/var/www/html
+      - ./website:/var/www/html
     dns: # Add this dns option
       - 8.8.8.8 # Use Google's public DNS server
       - 8.8.4.4 # (Optional) Secondary Google DNS server
+
+  vow-api:
+    build:
+      context: ./vow-api
+      dockerfile: Dockerfile
+      target: dev
+    working_dir: /workspace
+    command: dotnet src/VoW.Api/bin/Debug/net10.0/VoW.Api.dll --urls http://0.0.0.0:8080
+    ports:
+      - "5080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - WEBSITE_DB_HOST=website
+      - WEBSITE_DB_NAME=website
+      - API_DB_HOST=api
+      - API_DB_NAME=api
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - DISCORD_CLIENT_ID=${DISCORD_CLIENT_ID}
+      - DISCORD_CLIENT_SECRET=${DISCORD_CLIENT_SECRET}
+      - DISCORD_REDIRECT_URI=${DISCORD_REDIRECT_URI:-http://localhost:5080/auth/callback/discord}
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:5173}
+      - SPA_AUTH_CALLBACK_URL=${SPA_AUTH_CALLBACK_URL:-http://localhost:5173/auth/callback}
+      - AZURE_STORAGE_CONNECTION_STRING=${AZURE_STORAGE_CONNECTION_STRING:-}
+      - COMPlus_EnableHWIntrinsic=0
+      - DOTNET_EnableHWIntrinsic=0
+    depends_on:
+      - website
+      - api
+    env_file:
+      - .env
+    volumes:
+      - ./vow-api:/workspace
 
   website:
     image: mariadb:10.5.24
@@ -85,3 +121,5 @@ services:
 volumes:
   website_data:
   api_data:
+  vow_api_bin:
+  vow_api_obj:

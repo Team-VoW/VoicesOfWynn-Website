@@ -1,0 +1,21 @@
+namespace VoW.Api.Domain.Accounts;
+
+public sealed record AccountDetails(
+    int UserId,
+    string DisplayName,
+    string Picture,
+    PictureType PictureType,
+    string AvatarUrl,
+    string DefaultAvatarUrl,
+    string? DiscordId,
+    string? Email,
+    bool PublicEmail,
+    string? Discord,
+    string? Youtube,
+    string? Twitter,
+    string? CastingCallClub,
+    string? Bio,
+    string? Lore,
+    bool ForcePasswordChange,
+    bool SystemAdmin,
+    IReadOnlyCollection<int> RoleIds);

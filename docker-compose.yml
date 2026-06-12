@@ -20,14 +20,16 @@ services:
       - LINE_REPORT_MODIFY=${LINE_REPORT_MODIFY}
       - STATISTICS_AGGREGATE=${STATISTICS_AGGREGATE}
       - DISCORD_INTEGRATION=${DISCORD_INTEGRATION}
-      - AZURE_STORAGE_CONNECTION_STRING=${AZURE_STORAGE_CONNECTION_STRING:-}
+      - AZURE_STORAGE_CONNECTION_STRING=${AZURE_STORAGE_CONNECTION_STRING}
       - STORAGE_TYPE=${STORAGE_TYPE:-local}
+      - APP_FRONTEND_URL=${APP_FRONTEND_URL:-https://app.voicesofwynn.com}
       - ADMINER_HOST=adminer
       - ADMINER_PORT=8080
     depends_on:
       - website
       - api
       - adminer
+      - vow-api
     volumes:
       # Keep dynamic_data volume commented during Azure migration for easy rollback
       # Remove completely once Azure storage is proven stable
@@ -35,6 +37,34 @@ services:
       - /etc/letsencrypt/live/voicesofwynn.com:/etc/letsencrypt/live/voicesofwynn.com:ro
       - /etc/letsencrypt/archive/voicesofwynn.com:/etc/letsencrypt/archive/voicesofwynn.com:ro
       - ${PWD}/logs:/var/log
+    env_file:
+      - .env
+    networks:
+      - app_network
+
+  vow-api:
+    image: ghcr.io/team-vow/vow-api:latest
+    restart: unless-stopped
+    expose:
+      - "8080"
+    environment:
+      - WEBSITE_DB_HOST=website
+      - WEBSITE_DB_NAME=website
+      - API_DB_HOST=api
+      - API_DB_NAME=api
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - DISCORD_CLIENT_ID=${DISCORD_CLIENT_ID}
+      - DISCORD_CLIENT_SECRET=${DISCORD_CLIENT_SECRET}
+      - DISCORD_REDIRECT_URI=${DISCORD_REDIRECT_URI:-https://voicesofwynn.com/vow-api/auth/callback/discord}
+      - CORS_ORIGIN=${CORS_ORIGIN:-https://app.voicesofwynn.com}
+      - SPA_AUTH_CALLBACK_URL=${SPA_AUTH_CALLBACK_URL:-https://app.voicesofwynn.com/auth/callback}
+      - PATH_BASE=${PATH_BASE:-/vow-api}
+      - AZURE_STORAGE_CONNECTION_STRING=${AZURE_STORAGE_CONNECTION_STRING:-}
+    depends_on:
+      - website
+      - api
     env_file:
       - .env
     networks:
@@ -98,7 +128,7 @@ volumes:
   #   driver_opts:
   #     type: none
   #     o: bind
-  #     device: ${PWD}/dynamic
+  #     device: ${PWD}/website/dynamic
 
 # Add this networks section to define the network
 networks:

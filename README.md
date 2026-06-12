@@ -22,10 +22,31 @@ after having run it once you do not need to include the --build in future startu
 
 this will create all the containers (databases and everything) for you.
 
+The API build requires the .NET 10 SDK on the host with `dotnet` available on your PATH. Install the .NET 10 SDK before running `dotnet build src/VoW.Api/VoW.Api.csproj`.
+
+The .NET API container runs the locally built API DLL from `vow-api/src/VoW.Api/bin/Debug/net10.0/`. Build it before starting the stack for the first time, and rebuild it after changing API code:
+
+```bash
+cd vow-api
+dotnet build src/VoW.Api/VoW.Api.csproj
+cd ..
+docker-compose -f docker-compose.dev.yml up -d vow-api
+```
+
+The `vow-api` dev image installs `ffmpeg` for backend audio analysis. You do not need to install `ffmpeg` on your host machine for the containerized API, but you do need to rebuild the dev image after Dockerfile changes:
+
+```bash
+docker-compose -f docker-compose.dev.yml build vow-api
+docker-compose -f docker-compose.dev.yml up -d vow-api
+```
+
 Once the containers are running, you can access the following services:
 
 - **Website:** [http://localhost:8000](http://localhost:8000) or [http://127.0.0.1:8000](http://127.0.0.1:8000)  
   The main Voices of Wynn website will be available here.
+
+- **VoW API:** [http://localhost:5080/scalar/v1](http://localhost:5080/scalar/v1)  
+  The .NET API and Scalar API documentation will be available here.
 
 - **phpMyAdmin:** [http://localhost:8080](http://localhost:8080)  
   Use this interface to manage and inspect the MySQL database.
@@ -45,7 +66,7 @@ after which you will have to run the docker-compose command again with --build.
 
 We use liquibase as a database schema change management tool. It allows you to manage and track database schema changes in a version-controlled manner, making it easier to deploy and maintain database changes across different environments.
 
-To change anything about the database structure you need to create a new changeset and add it at the bottom of the changelog found in the `liquibase` directory. The changset name should get a title such as:
+To change anything about the database structure you need to create a new changeset and add it at the bottom of the changelog found in the `website/liquibase` directory. The changset name should get a title such as:
 `-- changeset <name>:<yourChangesetNum>` so if your name is kmaxi and this is the first change YOU are making it should look like this:
 `-- changeset kmaxi:1`.
 
@@ -56,7 +77,7 @@ For more information on how to use Liquibase, refer to the [official documentati
 The application supports two storage backends for dynamic files (recordings, avatars, etc.):
 
 #### Local Storage (Default)
-Files are stored in the `./dynamic/` directory on the server filesystem.
+Files are stored in the `./website/dynamic/` directory on the server filesystem.
 
 **Configuration:**
 ```env

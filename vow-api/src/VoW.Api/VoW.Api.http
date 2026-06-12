@@ -1,0 +1,7 @@
+@VoW.Api_HostAddress = http://localhost:5080
+
+GET {{VoW.Api_HostAddress}}/admin/reports/search?page=1&pageSize=25
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+###
