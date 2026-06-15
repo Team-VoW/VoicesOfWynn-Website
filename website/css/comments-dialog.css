@@ -29,8 +29,6 @@
     flex-direction: column;
 }
 
-/* base.css forces `body > div > div { position: fixed !important; ... }` which rips the modal
-   out of the overlay's flex layout. Override using a higher-specificity selector. */
 #comments-dialog-overlay .comments-dialog-modal {
     position: relative !important;
     height: auto !important;
