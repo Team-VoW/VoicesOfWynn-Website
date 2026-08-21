@@ -22,6 +22,16 @@ public static class CapabilityMapper
         Capability.AccountsManage
     ];
 
+    private static readonly Capability[] CastManagerCapabilities =
+    [
+        Capability.ReportsView,
+        Capability.ReportsManage,
+        Capability.AnalyticsView,
+        Capability.ToolsScripts,
+        Capability.ToolsAudioAnalysis,
+        Capability.ContentManage
+    ];
+
     private static readonly HashSet<DiscordRoleId> AdminRoles =
     [
         DiscordRoleId.ProjectDirector,
@@ -60,6 +70,11 @@ public static class CapabilityMapper
         if (roleSet.Overlaps(AdminRoles))
         {
             return AllCapabilities;
+        }
+
+        if (roleSet.Contains(DiscordRoleId.CastManager))
+        {
+            return CastManagerCapabilities;
         }
 
         var capabilities = new HashSet<Capability>();
