@@ -7,7 +7,10 @@ import ReportFilters from '../components/ReportFilters.vue'
 import ReportManageDrawer from '../components/ReportManageDrawer.vue'
 import ReportTable from '../components/ReportTable.vue'
 import ReportPagination from '../components/ReportPagination.vue'
+import ReportVoicedLinesUpload from '../components/ReportVoicedLinesUpload.vue'
 import { useReportsSearch } from '../queries'
+import { useAuthStore } from '@/stores/auth'
+import { Capabilities } from '@/lib/capabilities'
 import {
   REPORT_SORT_FIELDS,
   REPORT_STATUSES,
@@ -22,6 +25,9 @@ const DEFAULT_PAGE_SIZE = 25
 const PAGE_SIZE_OPTIONS = [10, 25, 50, 100] as const
 const route = useRoute()
 const router = useRouter()
+const auth = useAuthStore()
+
+const canManage = computed(() => auth.hasCapability(Capabilities.ReportsManage))
 
 function statusFromQuery(value: unknown): ReportStatus | 'any' {
   return typeof value === 'string' && (REPORT_STATUSES as string[]).includes(value)
@@ -151,6 +157,8 @@ function onManage(report: ReportSearchResult) {
         Search reports by NPC, message content, or status.
       </p>
     </header>
+
+    <ReportVoicedLinesUpload v-if="canManage" />
 
     <div class="flex items-end gap-3">
       <ReportFilters

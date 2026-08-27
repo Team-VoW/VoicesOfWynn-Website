@@ -38,6 +38,7 @@ builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
 builder.Services.AddScoped<IContentService, ContentService>();
 builder.Services.AddScoped<IDiscordIntegrationService, DiscordIntegrationService>();
 builder.Services.AddScoped<IReportService, ReportService>();
+builder.Services.AddScoped<IReportImportService, ReportImportService>();
 builder.Services.AddScoped<IAudioAnalysisService, AudioAnalysisService>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IAnalyticsRepository, AnalyticsRepository>();

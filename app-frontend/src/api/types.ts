@@ -46,6 +46,22 @@ export interface ReportSearchResponse {
   results: ReportSearchResult[]
 }
 
+export interface ImportVoicedLinesSkipped {
+  noAudioFile: number
+  blankLine: number
+  tooLong: number
+  duplicateInFile: number
+  total: number
+}
+
+export interface ImportVoicedLinesResponse {
+  totalEntries: number
+  uniqueLines: number
+  alreadyPresent: number
+  rowsInserted: number
+  skipped: ImportVoicedLinesSkipped
+}
+
 export type DailyUsageRange = '30' | '90' | '365' | 'all'
 
 export interface DailyUsagePoint {

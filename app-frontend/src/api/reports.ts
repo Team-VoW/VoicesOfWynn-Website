@@ -1,5 +1,10 @@
 import { apiFetch } from './client'
-import type { ReportSearchRequest, ReportSearchResponse, ReportStatus } from './types'
+import type {
+  ImportVoicedLinesResponse,
+  ReportSearchRequest,
+  ReportSearchResponse,
+  ReportStatus,
+} from './types'
 
 export function searchReports(
   params: ReportSearchRequest,
@@ -29,5 +34,15 @@ export function updateReportStatus(reportId: number, status: ReportStatus): Prom
 export function deleteReport(reportId: number): Promise<void> {
   return apiFetch<void>(`/admin/reports/${reportId}`, {
     method: 'DELETE',
+  })
+}
+
+export function importVoicedLines(file: File): Promise<ImportVoicedLinesResponse> {
+  const form = new FormData()
+  form.append('file', file)
+
+  return apiFetch<ImportVoicedLinesResponse>('/admin/reports/import/voiced', {
+    method: 'POST',
+    body: form,
   })
 }

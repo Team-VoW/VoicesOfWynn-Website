@@ -1,6 +1,6 @@
 import { computed, type ComputedRef, type Ref } from 'vue'
 import { keepPreviousData, useMutation, useQueryClient, useQuery } from '@tanstack/vue-query'
-import { deleteReport, searchReports, updateReportStatus } from '@/api/reports'
+import { deleteReport, importVoicedLines, searchReports, updateReportStatus } from '@/api/reports'
 import type { ReportSearchRequest, ReportStatus } from '@/api/types'
 
 export function useReportsSearch(params: Ref<ReportSearchRequest> | ComputedRef<ReportSearchRequest>) {
@@ -27,6 +27,16 @@ export function useDeleteReport() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (reportId: number) => deleteReport(reportId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['reports', 'search'] })
+    },
+  })
+}
+
+export function useImportVoicedLines() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (file: File) => importVoicedLines(file),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['reports', 'search'] })
     },
