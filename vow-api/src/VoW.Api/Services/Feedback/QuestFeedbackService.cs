@@ -11,13 +11,16 @@ public sealed class QuestFeedbackService(IQuestFeedbackRepository repository, IC
 {
     private static byte[] Hash(string value) => SHA256.HashData(Encoding.UTF8.GetBytes(value));
 
-    private string Token(string id)
+    public static bool HasEditSecret(IConfiguration configuration) =>
+        !string.IsNullOrWhiteSpace(configuration["QUEST_FEEDBACK_EDIT_SECRET"])
+        && Encoding.UTF8.GetByteCount(configuration["QUEST_FEEDBACK_EDIT_SECRET"]!) >= 32;
+
+    private string? Token(string id)
     {
         // Stable across retries and replicas; only the hash is stored in the database.
         var secret = configuration["QUEST_FEEDBACK_EDIT_SECRET"];
-        if (string.IsNullOrEmpty(secret) || Encoding.UTF8.GetByteCount(secret) < 32)
-            throw new InvalidOperationException("QUEST_FEEDBACK_EDIT_SECRET must contain at least 32 bytes.");
-        return Convert.ToHexString(HMACSHA256.HashData(Encoding.UTF8.GetBytes(secret), Encoding.UTF8.GetBytes("quest-feedback:" + id)));
+        if (!HasEditSecret(configuration)) return null;
+        return Convert.ToHexString(HMACSHA256.HashData(Encoding.UTF8.GetBytes(secret!), Encoding.UTF8.GetBytes("quest-feedback:" + id)));
     }
 
     private Task<bool> Limit(string kind, string value, int limit, CancellationToken ct) =>
@@ -31,9 +34,11 @@ public sealed class QuestFeedbackService(IQuestFeedbackRepository repository, IC
             return new(400);
         var key = QuestNameNormalizer.Normalize(request.QuestName);
         if (key.Length is 0 or > 200 || key.Any(char.IsControl)) return new(400);
-        if (!await Limit("ip", ip, 120, ct) || !await Limit("installation", request.InstallationId.ToString(), 30, ct)) return new(429);
         var id = request.SubmissionId.ToString();
         var token = Token(id);
+        // A deployment configuration failure must not consume the player's retry allowance.
+        if (token is null) return new(503);
+        if (!await Limit("ip", ip, 120, ct) || !await Limit("installation", request.InstallationId.ToString(), 30, ct)) return new(429);
         await repository.InsertAsync(request, key, Hash(token), ct);
         var stored = await repository.FindAsync(id, ct);
         if (stored is null) throw new InvalidOperationException("Inserted feedback was not found.");

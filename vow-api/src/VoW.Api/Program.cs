@@ -109,6 +109,10 @@ builder.Services.AddAuthorization(options =>
 });
 
 var app = builder.Build();
+if (!VoW.Api.Services.Feedback.QuestFeedbackService.HasEditSecret(app.Configuration))
+{
+    app.Logger.LogError("Quest rating submissions are unavailable: configure QUEST_FEEDBACK_EDIT_SECRET with at least 32 bytes and recreate the API container. Existing comment edits and admin reads remain available.");
+}
 
 var pathBase = builder.Configuration["PATH_BASE"];
 if (!string.IsNullOrEmpty(pathBase))

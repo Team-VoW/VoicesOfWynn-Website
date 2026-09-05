@@ -26,6 +26,31 @@ public sealed class FeedbackTests
         new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?> { ["QUEST_FEEDBACK_EDIT_SECRET"] = Secret }).Build());
 
     [Theory]
+    [InlineData(null)] [InlineData("")] [InlineData("short")]
+    public async Task MissingSecretDoesNotConsumeRetriesAndRecoveryAcceptsSameSubmission(string? secret)
+    {
+        var db = new MemoryFeedback();
+        var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?> { ["QUEST_FEEDBACK_EDIT_SECRET"] = secret }).Build();
+        var service = new QuestFeedbackService(db, configuration);
+        var request = Rating();
+        for (var i = 0; i < 40; i++) Assert.Equal(503, (await service.RateAsync(request, "::1", default)).Status);
+        Assert.Empty(db.Ratings);
+        configuration["QUEST_FEEDBACK_EDIT_SECRET"] = Secret;
+        Assert.Equal(200, (await service.RateAsync(request, "::1", default)).Status);
+        Assert.Single(db.Ratings);
+    }
+
+    [Fact] public async Task MissingSecretReturns503WithRetryGuidance()
+    {
+        await using var app = new FeedbackApp("");
+        using var client = app.CreateClient();
+        var response = await client.PostAsJsonAsync("/feedback/quests", Rating());
+        Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
+        Assert.Equal(TimeSpan.FromSeconds(60), response.Headers.RetryAfter!.Delta);
+        Assert.DoesNotContain("QUEST_FEEDBACK_EDIT_SECRET", await response.Content.ReadAsStringAsync());
+    }
+
+    [Theory]
     [InlineData(1)] [InlineData(2)] [InlineData(3)] [InlineData(4)] [InlineData(5)]
     public async Task EveryScoreAndLostResponseRetries(int score)
     {
@@ -106,13 +131,13 @@ public sealed class FeedbackTests
         claims: reports ? new[] { new Claim("type", "access"), new Claim(CapabilityMapper.ClaimType, "reports.view") } : new[] { new Claim("type", "access") },
         expires: DateTime.UtcNow.AddMinutes(5), signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Secret)), SecurityAlgorithms.HmacSha256)));
 
-    private sealed class FeedbackApp : WebApplicationFactory<Program>
+    private sealed class FeedbackApp(string editSecret = Secret) : WebApplicationFactory<Program>
     {
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             builder.UseEnvironment("Development");
             builder.UseSetting("JWT_SECRET", Secret);
-            builder.UseSetting("QUEST_FEEDBACK_EDIT_SECRET", Secret);
+            builder.UseSetting("QUEST_FEEDBACK_EDIT_SECRET", editSecret);
             builder.ConfigureServices(services => { services.RemoveAll<IQuestFeedbackRepository>(); services.AddSingleton<IQuestFeedbackRepository>(new MemoryFeedback()); });
         }
     }

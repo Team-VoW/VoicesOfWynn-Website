@@ -24,6 +24,11 @@ public sealed class QuestFeedbackController(QuestFeedbackService service) : Cont
     private IActionResult Result(FeedbackWriteResult result)
     {
         Response.Headers.CacheControl = "no-store";
+        if (result.Status == 503)
+        {
+            Response.Headers.RetryAfter = "60";
+            return StatusCode(503, new { message = "Quest feedback is temporarily unavailable. Please try again later." });
+        }
         if (result.Status == 429)
         {
             var now = DateTime.UtcNow;
