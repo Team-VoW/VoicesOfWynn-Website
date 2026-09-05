@@ -45,6 +45,12 @@ const router = createRouter({
           meta: { capability: Capabilities.ReportsView },
         },
         {
+          path: 'admin/quest-feedback',
+          name: 'quest-feedback',
+          component: () => import('@/features/feedback/QuestFeedbackView.vue'),
+          meta: { capability: Capabilities.ReportsView },
+        },
+        {
           path: 'admin/analytics',
           name: 'analytics',
           component: () => import('@/features/analytics/views/DailyUsageAnalyticsView.vue'),

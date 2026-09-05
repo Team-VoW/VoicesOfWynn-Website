@@ -38,6 +38,8 @@ builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
 builder.Services.AddScoped<IContentService, ContentService>();
 builder.Services.AddScoped<IDiscordIntegrationService, DiscordIntegrationService>();
 builder.Services.AddScoped<IReportService, ReportService>();
+builder.Services.AddScoped<VoW.Api.Services.Feedback.QuestFeedbackService>();
+builder.Services.AddScoped<IQuestFeedbackRepository, QuestFeedbackRepository>();
 builder.Services.AddScoped<IReportImportService, ReportImportService>();
 builder.Services.AddScoped<IAudioAnalysisService, AudioAnalysisService>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
@@ -127,3 +129,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }

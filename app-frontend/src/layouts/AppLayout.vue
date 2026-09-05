@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import { AudioLines, ChartLine, FileText, LayoutDashboard, ScrollText, User, Users } from 'lucide-vue-next'
+import {
+  AudioLines,
+  ChartLine,
+  FileText,
+  LayoutDashboard,
+  ScrollText,
+  User,
+  Users,
+} from 'lucide-vue-next'
 import { computed } from 'vue'
 import { RouterView, useRoute, useRouter } from 'vue-router'
 import { Button } from '@/components/ui/button'
@@ -37,6 +45,13 @@ const navItems: {
     routeName: 'reports',
     capability: Capabilities.ReportsView,
     icon: LayoutDashboard,
+  },
+  {
+    label: 'Quest Feedback',
+    to: '/admin/quest-feedback',
+    routeName: 'quest-feedback',
+    capability: Capabilities.ReportsView,
+    icon: FileText,
   },
   {
     label: 'Analytics',
@@ -121,7 +136,9 @@ async function logout() {
         </aside>
 
         <div class="flex min-w-0 flex-1 flex-col">
-          <header class="sticky top-0 z-20 border-b border-[--brand-violet]/15 bg-background md:hidden">
+          <header
+            class="sticky top-0 z-20 border-b border-[--brand-violet]/15 bg-background md:hidden"
+          >
             <div class="flex items-center justify-between px-4 py-3">
               <a :href="WEBSITE_BASE_URL" class="flex items-center gap-2">
                 <img src="/wynnvplogo.svg" alt="Voices of Wynn logo" class="size-8 shrink-0" />

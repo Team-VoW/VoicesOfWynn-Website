@@ -2,4 +2,7 @@
   <Folder Name="/src/">
     <Project Path="src/VoW.Api/VoW.Api.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/VoW.Api.Tests/VoW.Api.Tests.csproj" />
+  </Folder>
 </Solution>
