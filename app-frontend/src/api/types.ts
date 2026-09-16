@@ -345,3 +345,136 @@ export interface NpcRecording {
   fileName: string
   url: string
 }
+
+export interface ContributorRole {
+  id: number
+  name: string
+  color: string
+  weight: number
+}
+
+export interface ContributorSummary {
+  userId: number
+  displayName: string
+  avatarUrl: string
+  defaultAvatarUrl: string
+  lore: string | null
+  /** The role the contributor is credited under; the credits page groups by it. */
+  topRole: ContributorRole
+  roles: ContributorRole[]
+}
+
+export interface ContributorListResponse {
+  total: number
+  page: number
+  pageSize: number
+  results: ContributorSummary[]
+}
+
+export interface NpcQuestAppearance {
+  questId: number
+  questName: string
+  questDegeneratedName: string
+}
+
+export interface VoicedNpc {
+  npcId: number
+  npcName: string
+  imageUrl: string
+  defaultImageUrl: string
+  archived: boolean
+  upvotes: number
+  downvotes: number
+  commentCount: number
+  recordingCount: number
+  quests: NpcQuestAppearance[]
+}
+
+export interface WrittenQuest {
+  questId: number
+  questName: string
+  questDegeneratedName: string
+  scriptUrl: string | null
+}
+
+export interface EditedNpc {
+  npcId: number
+  npcName: string
+}
+
+export interface EditedQuest {
+  questId: number
+  questName: string
+  questDegeneratedName: string
+  npcs: EditedNpc[]
+}
+
+export interface ContributorDetail {
+  userId: number
+  displayName: string
+  avatarUrl: string
+  defaultAvatarUrl: string
+  lore: string | null
+  /** Sanitized HTML, rendered as markup. */
+  bio: string | null
+  email: string | null
+  discord: string | null
+  youtube: string | null
+  twitter: string | null
+  castingCallClub: string | null
+  roles: ContributorRole[]
+  voicing: VoicedNpc[]
+  scriptwriting: WrittenQuest[]
+  soundEditing: EditedQuest[]
+}
+
+export interface ContributorVotes {
+  upvoted: number[]
+  downvoted: number[]
+}
+
+export type VoteType = 'Up' | 'Down'
+
+export interface NpcVoteResponse {
+  upvotes: number
+  downvotes: number
+  myVote: VoteType | null
+}
+
+export interface NpcRecordingLine {
+  recordingId: number
+  line: number
+  url: string
+}
+
+export interface NpcQuestRecordings {
+  questId: number
+  questName: string
+  questDegeneratedName: string
+  recordings: NpcRecordingLine[]
+}
+
+export interface NpcRecordingsResponse {
+  quests: NpcQuestRecordings[]
+}
+
+export interface NpcComment {
+  commentId: number
+  verified: boolean
+  authorName: string
+  avatarUrl: string | null
+  content: string
+  /** Null for comments posted before the API recorded timestamps. */
+  createdAt: string | null
+  canDelete: boolean
+}
+
+export interface NpcCommentsResponse {
+  comments: NpcComment[]
+}
+
+export interface PostNpcCommentRequest {
+  name?: string | null
+  email?: string | null
+  content: string
+}

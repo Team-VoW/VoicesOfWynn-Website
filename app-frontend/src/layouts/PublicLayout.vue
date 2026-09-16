@@ -15,9 +15,14 @@ useSilentRefresh()
 
 const menuOpen = ref(false)
 
+const navLinks = [
+  { label: 'Home', to: { name: 'home' } as const },
+  { label: 'Credits', to: { name: 'credits' } as const },
+]
+
 // Pages that still live on the PHP site. They stay visible so the map of the
 // site is honest, but they lead nowhere until they are migrated.
-const upcomingPages = ['FAQ', 'Credits', 'Contents']
+const upcomingPages = ['FAQ', 'Contents']
 
 const externalLinks = [
   {
@@ -56,9 +61,12 @@ watch(
 
         <nav class="hidden items-center gap-1 lg:flex" aria-label="Main">
           <RouterLink
-            :to="{ name: 'home' }"
-            class="relative rounded-md px-3 py-2 text-[0.95rem] text-white transition-colors after:absolute after:inset-x-3 after:bottom-1 after:h-0.5 after:rounded-full after:bg-[#fbd057] hover:text-[#fbd057] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fbd057]"
-            >Home</RouterLink
+            v-for="link in navLinks"
+            :key="link.label"
+            :to="link.to"
+            exact-active-class="is-current"
+            class="nav-link relative rounded-md px-3 py-2 text-[0.95rem] text-white transition-colors hover:text-[#fbd057] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fbd057]"
+            >{{ link.label }}</RouterLink
           >
           <button
             v-for="page in upcomingPages"
@@ -118,9 +126,11 @@ watch(
         class="border-t border-white/10 bg-[#2e1a47] px-4 pb-5 pt-3 sm:px-6 lg:hidden"
       >
         <RouterLink
-          :to="{ name: 'home' }"
+          v-for="link in navLinks"
+          :key="link.label"
+          :to="link.to"
           class="block rounded-md px-3 py-2.5 text-white transition-colors hover:bg-white/10"
-          >Home</RouterLink
+          >{{ link.label }}</RouterLink
         >
         <button
           v-for="page in upcomingPages"
@@ -209,3 +219,17 @@ watch(
     </footer>
   </div>
 </template>
+
+<style scoped>
+/* Marks the page you are on. RouterLink's exact-active class drives it, so it follows the route
+   rather than being painted on whichever link happens to be first. */
+.nav-link.is-current::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0.75rem;
+  bottom: 0.25rem;
+  height: 2px;
+  border-radius: 9999px;
+  background-color: #fbd057;
+}
+</style>

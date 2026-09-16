@@ -23,6 +23,23 @@ const router = createRouter({
           name: 'home',
           component: () => import('@/features/home/views/HomeView.vue'),
         },
+        {
+          path: 'credits',
+          name: 'credits',
+          component: () => import('@/features/credits/views/CreditsView.vue'),
+        },
+        {
+          path: 'cast/:userId(\\d+)',
+          name: 'cast',
+          component: () => import('@/features/cast/views/CastView.vue'),
+        },
+        {
+          // Quest and NPC pages are still on the PHP site, so links to them land on the 404
+          // below until those pages are migrated too.
+          path: ':pathMatch(.*)*',
+          name: 'not-found',
+          component: () => import('@/features/errors/views/NotFoundView.vue'),
+        },
       ],
     },
     {
@@ -90,7 +107,6 @@ const router = createRouter({
         },
       ],
     },
-    { path: '/:pathMatch(.*)*', redirect: { name: 'home' } },
   ],
 })
 

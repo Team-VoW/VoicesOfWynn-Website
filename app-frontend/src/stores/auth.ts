@@ -60,6 +60,13 @@ export const useAuthStore = defineStore('auth', () => {
 
   const displayName = computed(() => claims.value?.display_name ?? '')
 
+  // The account's own id, for telling "my" comments apart from everyone else's.
+  const userId = computed(() => {
+    const sub = claims.value?.sub
+    const parsed = sub ? Number(sub) : Number.NaN
+    return Number.isInteger(parsed) ? parsed : null
+  })
+
   const capabilities = computed<string[]>(() => {
     const c = claims.value?.capability
     if (Array.isArray(c)) return c
@@ -113,6 +120,7 @@ export const useAuthStore = defineStore('auth', () => {
     expiresAt,
     isAuthenticated,
     displayName,
+    userId,
     capabilities,
     forcePasswordChange,
     hasCapability,

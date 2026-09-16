@@ -12,14 +12,19 @@ const MODRINTH_URL = 'https://modrinth.com/mod/vow'
 const DISCORD_URL = 'https://discord.gg/kuEK3XH4Y5'
 const PATREON_URL = 'https://www.patreon.com/Voices_Of_Wynn'
 
-const upcomingPages = [
+// Pages that are live in the new site.
+const readyPages = [
   {
     title: 'Credits',
     icon: Users,
     description:
       'A lot of great people have put tons of effort into the Voices of Wynn mod. Take a minute to appreciate their work!',
     action: 'Credits',
+    to: { name: 'credits' } as const,
   },
+]
+
+const upcomingPages = [
   {
     title: 'FAQ',
     icon: CircleHelp,
@@ -107,12 +112,32 @@ const upcomingPages = [
         <VoiceMark class="h-3.5 w-auto text-[#a340c4]" />
         More to explore
       </p>
-      <h2 class="mt-4 font-display text-2xl text-[#2a1438] sm:text-3xl">Coming soon</h2>
+      <h2 class="mt-4 font-display text-2xl text-[#2a1438] sm:text-3xl">More to explore</h2>
       <p class="mt-4 max-w-2xl text-lg leading-relaxed text-[#2a1438]/75">
-        These pages are being rebuilt for the new site. They open up here as soon as they are ready.
+        The rest of the site is being rebuilt. Pages open up here as soon as they are ready.
       </p>
 
       <ul class="mt-10 grid gap-6 md:grid-cols-3">
+        <li
+          v-for="page in readyPages"
+          :key="page.title"
+          class="flex flex-col rounded-xl border border-[#2a1438]/10 bg-white p-6 shadow-sm"
+        >
+          <span
+            class="flex size-11 items-center justify-center rounded-lg bg-[#a340c4]/12 text-[#7b1a9b]"
+          >
+            <component :is="page.icon" class="size-5" aria-hidden="true" />
+          </span>
+          <h3 class="mt-5 font-display text-lg text-[#2a1438]">{{ page.title }}</h3>
+          <p class="mt-3 flex-1 leading-relaxed text-[#2a1438]/70">{{ page.description }}</p>
+          <Button as-child variant="brand" class="mt-6 w-fit">
+            <RouterLink :to="page.to">
+              <component :is="page.icon" class="size-4" aria-hidden="true" />
+              {{ page.action }}
+            </RouterLink>
+          </Button>
+        </li>
+
         <li
           v-for="page in upcomingPages"
           :key="page.title"

@@ -34,6 +34,21 @@ public sealed class AzureQuestScriptStorage : IQuestScriptStorage
         return response.Value;
     }
 
+    public async Task<IReadOnlySet<string>> ListScriptNamesAsync(CancellationToken cancellationToken)
+    {
+        var names = new HashSet<string>(StringComparer.Ordinal);
+        var blobs = containerClient.GetBlobsAsync(prefix: ScriptKeyPrefix, cancellationToken: cancellationToken);
+        await foreach (var blob in blobs)
+        {
+            if (blob.Name.Length > ScriptKeyPrefix.Length + 4 && blob.Name.EndsWith(".txt", StringComparison.Ordinal))
+            {
+                names.Add(blob.Name[ScriptKeyPrefix.Length..^4]);
+            }
+        }
+
+        return names;
+    }
+
     public Uri GetScriptUrl(string degeneratedName) =>
         containerClient.GetBlobClient(BlobKey(degeneratedName)).Uri;
 

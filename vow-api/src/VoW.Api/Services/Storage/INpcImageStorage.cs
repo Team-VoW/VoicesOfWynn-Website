@@ -6,6 +6,18 @@ namespace VoW.Api.Services.Storage;
 public interface INpcImageStorage
 {
     /// <summary>
+    /// Returns the public URI of an NPC's portrait. The blob is not checked for existence, so
+    /// callers must render a fallback image when it 404s.
+    /// </summary>
+    /// <param name="npcId">The NPC identifier used as the storage key.</param>
+    Uri GetImageUrl(int npcId);
+
+    /// <summary>
+    /// Returns the placeholder portrait shown when an NPC has no image of its own.
+    /// </summary>
+    Uri GetDefaultImageUrl();
+
+    /// <summary>
     /// Uploads WebP image content for an existing NPC.
     /// </summary>
     /// <param name="npcId">The valid NPC identifier used as the storage key.</param>

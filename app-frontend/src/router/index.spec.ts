@@ -63,10 +63,36 @@ describe('routing', () => {
     expect(route.name).toBe('home')
   })
 
-  it('sends unknown URLs to home', async () => {
+  it('shows a not-found page for unknown URLs instead of bouncing home', async () => {
     const route = await visit('/this-page-does-not-exist')
 
-    expect(route.name).toBe('home')
+    expect(route.name).toBe('not-found')
+    expect(route.meta.public).toBe(true)
+  })
+
+  it('shows a not-found page for quest and NPC pages that are not migrated yet', async () => {
+    expect((await visit('/contents/a-quest')).name).toBe('not-found')
+    expect((await visit('/contents/npc/12')).name).toBe('not-found')
+  })
+
+  it('shows the public credits page to anonymous visitors', async () => {
+    const route = await visit('/credits')
+
+    expect(route.name).toBe('credits')
+    expect(route.meta.public).toBe(true)
+  })
+
+  it('shows a public cast page to anonymous visitors', async () => {
+    const route = await visit('/cast/42')
+
+    expect(route.name).toBe('cast')
+    expect(route.params.userId).toBe('42')
+  })
+
+  it('does not treat a non-numeric cast id as a contributor', async () => {
+    const route = await visit('/cast/not-a-number')
+
+    expect(route.name).toBe('not-found')
   })
 
   it('sends anonymous visitors of a protected route to login with a redirect', async () => {

@@ -25,8 +25,7 @@ public sealed partial class DiscordIntegrationService(
     private const int DiscordIdMaxLength = 19;
     private const int AvatarUrlMaxLength = 2048;
 
-    private readonly string storageBaseUrl = NormalizeStorageBaseUrl(
-        StorageConfiguration.GetBaseUrl(configuration));
+    private readonly AvatarUrlResolver avatarUrls = new(configuration);
 
     public async Task<IReadOnlyCollection<DiscordIntegrationUserResponse>> GetUsersAsync(
         CancellationToken cancellationToken)
@@ -37,7 +36,7 @@ public sealed partial class DiscordIntegrationService(
             user.DisplayName,
             user.DiscordId,
             user.DiscordName,
-            AvatarUrl(user.Picture, user.PictureType),
+            avatarUrls.AvatarUrl(user.Picture, user.PictureType),
             user.PictureType,
             user.RoleNames)).ToArray();
     }
@@ -237,13 +236,6 @@ public sealed partial class DiscordIntegrationService(
         return AvatarUpdateResult.Success();
     }
 
-    private string AvatarUrl(string picture, PictureType pictureType) =>
-        pictureType == PictureType.Default
-            ? DefaultAvatarUrl()
-            : $"{storageBaseUrl}avatars/{picture}";
-
-    private string DefaultAvatarUrl() => $"{storageBaseUrl}avatars/default.png";
-
     private static bool IsAllowedAvatarUrl(string avatarUrl) =>
         avatarUrl.Length <= AvatarUrlMaxLength
         && Uri.TryCreate(avatarUrl, UriKind.Absolute, out var uri)
@@ -324,9 +316,6 @@ public sealed partial class DiscordIntegrationService(
         const string chars = "abcdefghijklmnopqrstuvwxyz0123456789";
         return RandomNumberGenerator.GetString(chars, 12);
     }
-
-    private static string NormalizeStorageBaseUrl(string value) =>
-        value.EndsWith("/", StringComparison.Ordinal) ? value : $"{value}/";
 
     [GeneratedRegex(@"^[0-9]+$", RegexOptions.CultureInvariant)]
     private static partial Regex DiscordIdRegex();
