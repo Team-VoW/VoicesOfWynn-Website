@@ -4,12 +4,26 @@ import { RouterLink } from 'vue-router'
 import { ChevronDown, Drama } from 'lucide-vue-next'
 import AudioPlayer from '@/components/audio/AudioPlayer.vue'
 import { Skeleton } from '@/components/ui/skeleton'
-import type { VoicedNpc, VoteType } from '@/api/types'
+import type { ContentCredit, VoteType } from '@/api/types'
 import { useNpcRecordings } from '../queries'
+import type { NpcCardNpc } from '../types'
 import VoteButtons from './VoteButtons.vue'
 
-const props = defineProps<{ npc: VoicedNpc; myVote: VoteType | null }>()
-const emit = defineEmits<{ (e: 'open-comments', npc: VoicedNpc): void }>()
+const props = withDefaults(
+  defineProps<{
+    npc: NpcCardNpc
+    myVote: VoteType | null
+    /** Shown beside the name where the page is not already about one person, as a quest page is not. */
+    voiceActor?: ContentCredit | null
+    /** Off on a quest page, where every card is in the same quest and saying so adds nothing. */
+    showQuests?: boolean
+    /** Narrows the recordings to one quest, so a quest page plays only its own lines. */
+    questId?: number | null
+  }>(),
+  { voiceActor: null, showQuests: true, questId: null },
+)
+
+const emit = defineEmits<{ (e: 'open-comments', npc: NpcCardNpc): void }>()
 
 const open = ref(false)
 const npcId = computed(() => props.npc.npcId)
@@ -22,7 +36,10 @@ const { data, isPending, isError, error } = useNpcRecordings(
   computed(() => hasOpened.value),
 )
 
-const quests = computed(() => data.value?.quests ?? [])
+const quests = computed(() => {
+  const all = data.value?.quests ?? []
+  return props.questId === null ? all : all.filter((quest) => quest.questId === props.questId)
+})
 const showQuestHeadings = computed(() => quests.value.length > 1)
 const panelId = computed(() => `npc-recordings-${props.npc.npcId}`)
 
@@ -41,9 +58,19 @@ function onImageError(event: Event) {
   else imageFailed.value = true
 }
 
+// Guarded rather than assigning the fallback outright: swapping in a placeholder that is itself
+// missing fires this again, and an unguarded assignment would retry the same URL forever.
+function onAvatarError(event: Event) {
+  const image = event.target as HTMLImageElement
+  const fallback = props.voiceActor?.defaultAvatarUrl
+  if (fallback && image.src !== fallback) image.src = fallback
+}
+
 const recordingLabel = computed(() =>
   props.npc.recordingCount === 1 ? '1 recording' : `${props.npc.recordingCount} recordings`,
 )
+
+const appearances = computed(() => (props.showQuests ? (props.npc.quests ?? []) : []))
 </script>
 
 <template>
@@ -84,16 +111,16 @@ const recordingLabel = computed(() =>
             </span>
           </h3>
           <p class="mt-1 text-sm text-[#2a1438]/65">
-            <template v-if="npc.quests.length">
+            <template v-if="appearances.length">
               in
-              <template v-for="(quest, index) in npc.quests" :key="quest.questId">
+              <template v-for="(quest, index) in appearances" :key="quest.questId">
                 <RouterLink
                   :to="`/contents/${quest.questDegeneratedName}`"
                   class="text-[#7b1a9b] underline-offset-4 hover:underline"
                 >
                   {{ quest.questName }}
                 </RouterLink>
-                <span v-if="index < npc.quests.length - 1">, </span>
+                <span v-if="index < appearances.length - 1">, </span>
               </template>
               &bull;
             </template>
@@ -102,33 +129,49 @@ const recordingLabel = computed(() =>
         </div>
       </div>
 
-      <div class="flex flex-1 items-center justify-end gap-1.5">
-        <VoteButtons
-          :npc-id="npc.npcId"
-          :npc-name="npc.npcName"
-          :upvotes="npc.upvotes"
-          :downvotes="npc.downvotes"
-          :comment-count="npc.commentCount"
-          :my-vote="myVote"
-          @open-comments="emit('open-comments', npc)"
-        />
-
-        <button
-          type="button"
-          class="flex size-9 cursor-pointer items-center justify-center rounded-lg text-[#2a1438]/60 transition-colors hover:bg-[#a340c4]/10 hover:text-[#7b1a9b] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a340c4]"
-          :aria-expanded="open"
-          :aria-controls="panelId"
-          :aria-label="
-            open ? `Hide recordings of ${npc.npcName}` : `Show recordings of ${npc.npcName}`
-          "
-          @click="toggle"
+      <div class="flex flex-1 flex-wrap items-center justify-end gap-x-3 gap-y-2">
+        <RouterLink
+          v-if="voiceActor"
+          :to="`/cast/${voiceActor.userId}`"
+          class="flex items-center gap-2 rounded-lg px-2 py-1 text-sm text-[#2a1438]/70 transition-colors hover:bg-[#a340c4]/10 hover:text-[#7b1a9b] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a340c4]"
         >
-          <ChevronDown
-            class="size-5 transition-transform motion-reduce:transition-none"
-            :class="open ? 'rotate-180' : ''"
-            aria-hidden="true"
+          <img
+            :src="voiceActor.avatarUrl"
+            alt=""
+            loading="lazy"
+            class="size-7 rounded-full bg-[#faf6fd] object-cover"
+            @error="onAvatarError"
           />
-        </button>
+          <span class="max-w-32 truncate">{{ voiceActor.displayName }}</span>
+        </RouterLink>
+        <div class="flex items-center gap-1.5">
+          <VoteButtons
+            :npc-id="npc.npcId"
+            :npc-name="npc.npcName"
+            :upvotes="npc.upvotes"
+            :downvotes="npc.downvotes"
+            :comment-count="npc.commentCount"
+            :my-vote="myVote"
+            @open-comments="emit('open-comments', npc)"
+          />
+
+          <button
+            type="button"
+            class="flex size-9 cursor-pointer items-center justify-center rounded-lg text-[#2a1438]/60 transition-colors hover:bg-[#a340c4]/10 hover:text-[#7b1a9b] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a340c4]"
+            :aria-expanded="open"
+            :aria-controls="panelId"
+            :aria-label="
+              open ? `Hide recordings of ${npc.npcName}` : `Show recordings of ${npc.npcName}`
+            "
+            @click="toggle"
+          >
+            <ChevronDown
+              class="size-5 transition-transform motion-reduce:transition-none"
+              :class="open ? 'rotate-180' : ''"
+              aria-hidden="true"
+            />
+          </button>
+        </div>
       </div>
     </div>
 

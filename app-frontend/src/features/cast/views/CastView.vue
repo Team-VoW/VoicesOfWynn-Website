@@ -6,14 +6,15 @@ import { ApiError } from '@/api/client'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import VoiceMark from '@/features/home/components/VoiceMark.vue'
-import type { VoicedNpc, VoteType } from '@/api/types'
+import type { VoteType } from '@/api/types'
+import CommentsDialog from '@/features/npcs/components/CommentsDialog.vue'
+import NpcCard from '@/features/npcs/components/NpcCard.vue'
+import type { NpcIdentity } from '@/features/npcs/types'
 import CastBio from '../components/CastBio.vue'
 import CastProfileHeader from '../components/CastProfileHeader.vue'
 import CastSocials from '../components/CastSocials.vue'
-import CommentsDialog from '../components/CommentsDialog.vue'
 import ScriptwritingSection from '../components/ScriptwritingSection.vue'
 import SoundEditingSection from '../components/SoundEditingSection.vue'
-import VoicedNpcCard from '../components/VoicedNpcCard.vue'
 import { useContributor, useContributorVotes } from '../queries'
 
 const route = useRoute()
@@ -23,7 +24,7 @@ const userId = computed(() => Number(route.params.userId))
 const { data: contributor, isPending, isError, error } = useContributor(userId)
 const { data: votes } = useContributorVotes(userId)
 
-const commentsFor = ref<VoicedNpc | null>(null)
+const commentsFor = ref<NpcIdentity | null>(null)
 
 const notFound = computed(
   () => isError.value && error.value instanceof ApiError && error.value.status === 404,
@@ -98,7 +99,7 @@ function goBack() {
           </h2>
 
           <div class="mt-8 space-y-4">
-            <VoicedNpcCard
+            <NpcCard
               v-for="npc in contributor.voicing"
               :key="npc.npcId"
               :npc="npc"

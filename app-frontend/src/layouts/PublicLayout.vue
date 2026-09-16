@@ -17,12 +17,10 @@ const menuOpen = ref(false)
 
 const navLinks = [
   { label: 'Home', to: { name: 'home' } as const },
+  { label: 'Contents', to: { name: 'contents' } as const },
   { label: 'Credits', to: { name: 'credits' } as const },
+  { label: 'FAQ', to: { name: 'faq' } as const },
 ]
-
-// Pages that still live on the PHP site. They stay visible so the map of the
-// site is honest, but they lead nowhere until they are migrated.
-const upcomingPages = ['FAQ', 'Contents']
 
 const externalLinks = [
   {
@@ -68,16 +66,6 @@ watch(
             class="nav-link relative rounded-md px-3 py-2 text-[0.95rem] text-white transition-colors hover:text-[#fbd057] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fbd057]"
             >{{ link.label }}</RouterLink
           >
-          <button
-            v-for="page in upcomingPages"
-            :key="page"
-            type="button"
-            disabled
-            class="cursor-not-allowed rounded-md px-3 py-2 text-[0.95rem] text-white/40"
-          >
-            {{ page }}<span class="sr-only"> (coming soon)</span>
-          </button>
-
           <span class="mx-2 h-6 w-px bg-white/20" />
 
           <a
@@ -132,16 +120,6 @@ watch(
           class="block rounded-md px-3 py-2.5 text-white transition-colors hover:bg-white/10"
           >{{ link.label }}</RouterLink
         >
-        <button
-          v-for="page in upcomingPages"
-          :key="page"
-          type="button"
-          disabled
-          class="block w-full cursor-not-allowed px-3 py-2.5 text-left text-white/40"
-        >
-          {{ page }}<span class="sr-only"> (coming soon)</span>
-        </button>
-
         <span class="my-3 block h-px bg-white/15" />
 
         <a

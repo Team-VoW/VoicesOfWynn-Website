@@ -428,9 +428,80 @@ export interface ContributorDetail {
   soundEditing: EditedQuest[]
 }
 
-export interface ContributorVotes {
+/** The caller's standing votes among a set of NPCs, keyed apart from the page that lists them. */
+export interface NpcVotes {
   upvoted: number[]
   downvoted: number[]
+}
+
+export type ContributorVotes = NpcVotes
+
+export interface MyNpcVote {
+  myVote: VoteType | null
+}
+
+/** A contributor credited on a quest or NPC page. */
+export interface ContentCredit {
+  userId: number
+  displayName: string
+  avatarUrl: string
+  defaultAvatarUrl: string
+}
+
+export interface QuestListItem {
+  questId: number
+  questName: string
+  questDegeneratedName: string
+  npcCount: number
+  recordingCount: number
+}
+
+export interface QuestListResponse {
+  quests: QuestListItem[]
+}
+
+export interface QuestNpc {
+  npcId: number
+  npcName: string
+  imageUrl: string
+  defaultImageUrl: string
+  archived: boolean
+  upvotes: number
+  downvotes: number
+  commentCount: number
+  recordingCount: number
+  voiceActor: ContentCredit | null
+  soundEditor: ContentCredit | null
+}
+
+export interface QuestDetail {
+  questId: number
+  questName: string
+  questDegeneratedName: string
+  scriptUrl: string | null
+  writer: ContentCredit | null
+  npcs: QuestNpc[]
+}
+
+export interface NpcQuestCredit {
+  questId: number
+  questName: string
+  questDegeneratedName: string
+  soundEditor: ContentCredit | null
+}
+
+export interface NpcDetail {
+  npcId: number
+  npcName: string
+  imageUrl: string
+  defaultImageUrl: string
+  archived: boolean
+  upvotes: number
+  downvotes: number
+  commentCount: number
+  recordingCount: number
+  voiceActor: ContentCredit | null
+  quests: NpcQuestCredit[]
 }
 
 export type VoteType = 'Up' | 'Down'

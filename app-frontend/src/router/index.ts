@@ -34,8 +34,28 @@ const router = createRouter({
           component: () => import('@/features/cast/views/CastView.vue'),
         },
         {
-          // Quest and NPC pages are still on the PHP site, so links to them land on the 404
-          // below until those pages are migrated too.
+          path: 'faq',
+          name: 'faq',
+          component: () => import('@/features/faq/views/FaqView.vue'),
+        },
+        {
+          path: 'contents',
+          name: 'contents',
+          component: () => import('@/features/contents/views/ContentsView.vue'),
+        },
+        {
+          // NPC pages are matched first so that an NPC id is never read as a quest name.
+          path: 'contents/npc/:npcId(\\d+)',
+          name: 'npc',
+          component: () => import('@/features/contents/views/NpcView.vue'),
+        },
+        {
+          // Quests are addressed by their degenerated name, the same URL the legacy site used.
+          path: 'contents/:questName',
+          name: 'quest',
+          component: () => import('@/features/contents/views/QuestView.vue'),
+        },
+        {
           path: ':pathMatch(.*)*',
           name: 'not-found',
           component: () => import('@/features/errors/views/NotFoundView.vue'),

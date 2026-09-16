@@ -70,9 +70,40 @@ describe('routing', () => {
     expect(route.meta.public).toBe(true)
   })
 
-  it('shows a not-found page for quest and NPC pages that are not migrated yet', async () => {
-    expect((await visit('/contents/a-quest')).name).toBe('not-found')
-    expect((await visit('/contents/npc/12')).name).toBe('not-found')
+  it('shows the public FAQ to anonymous visitors, hash and all', async () => {
+    const route = await visit('/faq#data-processing')
+
+    expect(route.name).toBe('faq')
+    // The mod and the legacy download pages hand out this deep link; the view opens the
+    // matching question from it.
+    expect(route.hash).toBe('#data-processing')
+  })
+
+  it('shows the public quest index to anonymous visitors', async () => {
+    const route = await visit('/contents')
+
+    expect(route.name).toBe('contents')
+    expect(route.meta.public).toBe(true)
+  })
+
+  it('addresses a quest by its degenerated name', async () => {
+    const route = await visit('/contents/a-quest')
+
+    expect(route.name).toBe('quest')
+    expect(route.params.questName).toBe('a-quest')
+  })
+
+  it('reads an NPC url as an NPC rather than as a quest named "npc"', async () => {
+    const route = await visit('/contents/npc/12')
+
+    expect(route.name).toBe('npc')
+    expect(route.params.npcId).toBe('12')
+  })
+
+  it('does not treat a non-numeric NPC id as an NPC', async () => {
+    const route = await visit('/contents/npc/not-a-number')
+
+    expect(route.name).toBe('not-found')
   })
 
   it('shows the public credits page to anonymous visitors', async () => {

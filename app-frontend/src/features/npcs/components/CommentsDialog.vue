@@ -17,11 +17,11 @@ import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
 import { messageFromContentError } from '@/features/content/contentUtils'
 import { useAuthStore } from '@/stores/auth'
-import type { VoicedNpc } from '@/api/types'
 import { useDeleteNpcComment, useNpcComments, usePostNpcComment } from '../queries'
+import type { NpcIdentity } from '../types'
 
-const props = defineProps<{ npc: VoicedNpc | null }>()
-const emit = defineEmits<{ (e: 'update:npc', value: VoicedNpc | null): void }>()
+const props = defineProps<{ npc: NpcIdentity | null }>()
+const emit = defineEmits<{ (e: 'update:npc', value: NpcIdentity | null): void }>()
 
 // Matches the API's cap, so an over-long comment is caught before a request is made.
 const CONTENT_MAX_LENGTH = 2000

@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using VoW.Api.Contracts.Contents;
 using VoW.Api.Contracts.Npcs;
+using VoW.Api.Services.Contents;
 using VoW.Api.Services.Npcs;
 
 namespace VoW.Api.Controllers;
@@ -10,6 +12,7 @@ namespace VoW.Api.Controllers;
 [Route("npcs")]
 [RequestSizeLimit(16384)]
 public sealed class NpcsController(
+    INpcPageService pageService,
     INpcRecordingCatalogService recordingService,
     INpcVoteService voteService,
     INpcCommentService commentService) : ControllerBase
@@ -19,6 +22,28 @@ public sealed class NpcsController(
     /// visitor's address rather than the proxy's.
     /// </remarks>
     private string ConnectionIp => HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+
+    [HttpGet("{npcId:int}")]
+    public async Task<ActionResult<NpcDetailResponse>> Get(int npcId, CancellationToken cancellationToken)
+    {
+        var npc = await pageService.GetAsync(npcId, cancellationToken);
+        if (npc is null)
+        {
+            return NotFound();
+        }
+
+        // Identical for every visitor; the caller's own vote is served by my-vote below.
+        Response.Headers.CacheControl = "public, max-age=60";
+        return Ok(npc);
+    }
+
+    [HttpGet("{npcId:int}/my-vote")]
+    public async Task<ActionResult<MyNpcVoteResponse>> MyVote(int npcId, CancellationToken cancellationToken)
+    {
+        Response.Headers.CacheControl = "no-store";
+        var vote = await pageService.GetVoteAsync(npcId, User, ConnectionIp, cancellationToken);
+        return vote is null ? NotFound() : Ok(vote);
+    }
 
     [HttpGet("{npcId:int}/recordings")]
     public async Task<ActionResult<NpcRecordingsResponse>> Recordings(int npcId, CancellationToken cancellationToken)

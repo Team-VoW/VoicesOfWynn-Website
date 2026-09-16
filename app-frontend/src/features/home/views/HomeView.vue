@@ -12,7 +12,6 @@ const MODRINTH_URL = 'https://modrinth.com/mod/vow'
 const DISCORD_URL = 'https://discord.gg/kuEK3XH4Y5'
 const PATREON_URL = 'https://www.patreon.com/Voices_Of_Wynn'
 
-// Pages that are live in the new site.
 const readyPages = [
   {
     title: 'Credits',
@@ -22,21 +21,20 @@ const readyPages = [
     action: 'Credits',
     to: { name: 'credits' } as const,
   },
-]
-
-const upcomingPages = [
-  {
-    title: 'FAQ',
-    icon: CircleHelp,
-    description: 'Do you have any unanswered questions? Check out the FAQ!',
-    action: 'FAQ',
-  },
   {
     title: "What's in the box?",
     icon: Package,
     description:
       'Do you want to know who your favorite NPCs were voiced by? Want to listen to specific voice lines?',
     action: 'Mod contents',
+    to: { name: 'contents' } as const,
+  },
+  {
+    title: 'FAQ',
+    icon: CircleHelp,
+    description: 'Do you have any unanswered questions? Check out the FAQ!',
+    action: 'FAQ',
+    to: { name: 'faq' } as const,
   },
 ]
 </script>
@@ -105,7 +103,7 @@ const upcomingPages = [
     </div>
   </section>
 
-  <!-- Pages still being rebuilt -->
+  <!-- The rest of the site -->
   <section class="border-y border-[#a340c4]/15 bg-[#faf6fd]">
     <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20">
       <p class="flex items-center gap-3 text-xs uppercase tracking-[0.3em] text-[#7b1a9b]">
@@ -114,7 +112,7 @@ const upcomingPages = [
       </p>
       <h2 class="mt-4 font-display text-2xl text-[#2a1438] sm:text-3xl">More to explore</h2>
       <p class="mt-4 max-w-2xl text-lg leading-relaxed text-[#2a1438]/75">
-        The rest of the site is being rebuilt. Pages open up here as soon as they are ready.
+        Browse who voiced what, read up on how the mod works, or meet the people behind it.
       </p>
 
       <ul class="mt-10 grid gap-6 md:grid-cols-3">
@@ -135,24 +133,6 @@ const upcomingPages = [
               <component :is="page.icon" class="size-4" aria-hidden="true" />
               {{ page.action }}
             </RouterLink>
-          </Button>
-        </li>
-
-        <li
-          v-for="page in upcomingPages"
-          :key="page.title"
-          class="flex flex-col rounded-xl border border-[#2a1438]/10 bg-white p-6 shadow-sm"
-        >
-          <span
-            class="flex size-11 items-center justify-center rounded-lg bg-[#a340c4]/12 text-[#7b1a9b]"
-          >
-            <component :is="page.icon" class="size-5" aria-hidden="true" />
-          </span>
-          <h3 class="mt-5 font-display text-lg text-[#2a1438]">{{ page.title }}</h3>
-          <p class="mt-3 flex-1 leading-relaxed text-[#2a1438]/70">{{ page.description }}</p>
-          <Button disabled variant="outline" class="mt-6 w-fit">
-            <component :is="page.icon" class="size-4" aria-hidden="true" />
-            {{ page.action }}<span class="sr-only"> (coming soon)</span>
           </Button>
         </li>
       </ul>
