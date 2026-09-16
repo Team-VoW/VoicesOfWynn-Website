@@ -24,6 +24,11 @@ const iframePermissions =
   <div
     class="relative aspect-video w-full overflow-hidden rounded-xl border-2 border-[#fbd057]/60 bg-[#1b0f2b] shadow-[0_18px_50px_rgba(20,8,36,0.55)] has-[button:focus-visible]:shadow-[0_0_0_3px_#2e1a47,0_0_0_6px_#fbd057,0_18px_50px_rgba(20,8,36,0.55)]"
   >
+    <!--
+      referrerpolicy is explicit because the host serves the site with
+      `Referrer-Policy: same-origin`; without a referrer YouTube refuses to play
+      the embed and shows error 153.
+    -->
     <iframe
       v-if="playing"
       class="absolute inset-0 size-full"
@@ -31,6 +36,7 @@ const iframePermissions =
       :title="label"
       :allow="iframePermissions"
       allowfullscreen
+      referrerpolicy="strict-origin-when-cross-origin"
     />
     <button
       v-else
