@@ -25,4 +25,13 @@ public sealed class AnalyticsController(IAnalyticsService analyticsService) : Co
 
         return Ok(result.Response);
     }
+
+    /// <summary>
+    /// Rolls raw bootup pings into the aggregated daily table that <see cref="Daily"/> reads.
+    /// Safe to run repeatedly: days already aggregated are skipped.
+    /// </summary>
+    [HttpPost("aggregate")]
+    [RequireCapability(Capability.SystemAdmin)]
+    public async Task<ActionResult<AggregateUsageResponse>> Aggregate(CancellationToken cancellationToken) =>
+        Ok(await analyticsService.AggregateAsync(cancellationToken));
 }

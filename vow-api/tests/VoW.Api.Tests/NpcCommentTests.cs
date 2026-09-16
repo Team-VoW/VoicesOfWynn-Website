@@ -269,11 +269,14 @@ internal sealed class MemoryWriteLimits : IWriteLimitRepository
 {
     private readonly Dictionary<string, int> writes = [];
 
+    /// <summary>Caps the caller's own budget, so a test does not have to make its real limit of calls.</summary>
+    public int Limit { get; set; } = int.MaxValue;
+
     public Task<bool> ConsumeLimitAsync(byte[] key, int limit, CancellationToken ct)
     {
         var id = Convert.ToHexString(key);
         writes[id] = writes.GetValueOrDefault(id) + 1;
-        return Task.FromResult(writes[id] <= limit);
+        return Task.FromResult(writes[id] <= Math.Min(limit, Limit));
     }
 }
 

@@ -3,7 +3,6 @@
 namespace VoicesOfWynn\Models\Api\UsageAnalysis;
 
 use DateTime;
-use PDOException;
 use VoicesOfWynn\Models\Db;
 
 class BootupLogger
@@ -26,7 +25,7 @@ class BootupLogger
         }
 
         $result1 = $this->logDailyStats($playerUUID, $playerIp); //true in case of success
-        $result2 = $this->logAllTimeStars($playerUUID); //true or 204 in case of success, both evaluate to TRUE in the condition below
+        $result2 = $this->logAllTimeStars($playerUUID);
         return ($result1 && $result2) ? 200 : 500;
     }
 
@@ -58,16 +57,11 @@ class BootupLogger
     private function logAllTimeStars($hashedUUID): bool
     {
         $db = new Db('Api/UsageAnalysis/DbInfo.ini');
-        try {
-            $result = $db->executeQuery('INSERT INTO total(uuid) VALUES (?)', array($hashedUUID));
-        } catch (PDOException $e) {
-            if ($e->getCode() === 1062) { //1062 = error code for duplicated entry in a column required unique values
-                return 204; //Request OK, but nothing new was saved
-            }
-            else {
-                return false; //Query failed because of who knows why
-            }
-        }
-        return $result; //New UUID hash saved
+        //This used to compare $e->getCode() against MySQL's 1062, but PDO reports the SQLSTATE
+        //'23000' instead, so every returning player fell through to the failure branch and got a
+        //500 back - which the mod's HttpURLConnection turns into an exception, silently costing
+        //them the version check, the kill switch and the broadcasts. INSERT IGNORE removes the
+        //need to inspect the error at all.
+        return $db->executeQuery('INSERT IGNORE INTO total(uuid) VALUES (?)', array($hashedUUID));
     }
 }

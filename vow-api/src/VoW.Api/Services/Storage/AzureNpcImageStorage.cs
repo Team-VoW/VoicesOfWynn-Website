@@ -63,6 +63,24 @@ public sealed class AzureNpcImageStorage : INpcImageStorage
         return true;
     }
 
+    public async Task<IReadOnlySet<int>> ListNpcIdsWithImagesAsync(CancellationToken cancellationToken)
+    {
+        var ids = new HashSet<int>();
+        await foreach (var blob in containerClient
+                           .GetBlobsAsync(prefix: ImageKeyPrefix, cancellationToken: cancellationToken))
+        {
+            // npcs/<id>.webp - anything else under the prefix (default.webp) is not an NPC.
+            var name = blob.Name.AsSpan(ImageKeyPrefix.Length);
+            if (name.EndsWith(".webp", StringComparison.OrdinalIgnoreCase)
+                && int.TryParse(name[..^5], NumberStyles.None, CultureInfo.InvariantCulture, out var npcId))
+            {
+                ids.Add(npcId);
+            }
+        }
+
+        return ids;
+    }
+
     private static string BlobKey(int npcId) =>
         $"{ImageKeyPrefix}{npcId.ToString(CultureInfo.InvariantCulture)}.webp";
 }

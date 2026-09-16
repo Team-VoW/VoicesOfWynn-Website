@@ -120,6 +120,13 @@ const router = createRouter({
           meta: { capability: Capabilities.ContentManage },
         },
         {
+          // Project Director and Admin only: mod bootup configuration and analytics aggregation.
+          path: 'admin/system',
+          name: 'admin',
+          component: () => import('@/features/admin/views/AdminView.vue'),
+          meta: { capability: Capabilities.SystemAdmin },
+        },
+        {
           path: 'admin/accounts',
           name: 'accounts',
           component: () => import('@/features/accounts/views/AccountsManageView.vue'),

@@ -1,6 +1,6 @@
 import { Capabilities, type Capability } from '@/lib/capabilities'
 
-const adminRouteOrder = ['reports', 'analytics', 'script-tools', 'content', 'accounts'] as const
+const adminRouteOrder = ['reports', 'analytics', 'script-tools', 'content', 'accounts', 'admin'] as const
 
 type AdminRouteName = (typeof adminRouteOrder)[number]
 
@@ -21,4 +21,5 @@ const routeCapabilityByName: Record<AdminRouteName, Capability> = {
   'script-tools': Capabilities.ToolsScripts,
   content: Capabilities.ContentManage,
   accounts: Capabilities.AccountsManage,
+  admin: Capabilities.SystemAdmin,
 }

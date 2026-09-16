@@ -6,6 +6,8 @@ namespace VoW.Api.Services.Analytics;
 
 public sealed class AnalyticsService(IAnalyticsRepository analyticsRepository) : IAnalyticsService
 {
+    private const int MaxDaysPerRun = 400;
+
     public async Task<DailyUsageServiceResult> GetDailyUsageAsync(
         DailyUsageRequest request,
         CancellationToken cancellationToken)
@@ -30,6 +32,18 @@ public sealed class AnalyticsService(IAnalyticsRepository analyticsRepository) :
             ToNullableResponse(summary.PeakDay),
             summary.PreviousPeriodChangePercent,
             summary.Points.Select(ToResponse).ToList()));
+    }
+
+    /// <remarks>
+    /// Days are only ever aggregated once the bootup throttles guarantee no further pings can
+    /// land on them, and at most <see cref="MaxDaysPerRun"/> are handled per call so a job that
+    /// has not run in a long time cannot tie the request up indefinitely.
+    /// </remarks>
+    public async Task<AggregateUsageResponse> AggregateAsync(CancellationToken cancellationToken)
+    {
+        var throughDate = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(-BootupThrottle.AggregationLagDays);
+        var result = await analyticsRepository.AggregateAsync(throughDate, MaxDaysPerRun, cancellationToken);
+        return new AggregateUsageResponse(result.DaysProcessed, result.BootupsAggregated, result.ThroughDate);
     }
 
     private async Task<DailyUsageSummary> BuildSummaryAsync(

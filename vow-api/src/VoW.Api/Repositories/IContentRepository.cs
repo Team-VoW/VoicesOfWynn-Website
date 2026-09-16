@@ -91,6 +91,14 @@ public interface IContentRepository
 
     Task<ContentSearchPage> SearchAsync(ContentSearchCriteria criteria, CancellationToken cancellationToken);
 
+    /// <summary>
+    /// Non-archived NPCs whose name contains <paramref name="query"/>, ordered by name.
+    /// </summary>
+    Task<IReadOnlyList<NpcSearchMatch>> SearchNpcsByNameAsync(
+        string query,
+        int limit,
+        CancellationToken cancellationToken);
+
     Task<CreatedContent> CreateQuestAsync(CreateQuestCommand command, string degeneratedName, CancellationToken cancellationToken);
 
     Task<CreatedContent> CreateNpcAsync(CreateNpcCommand command, string degeneratedName, CancellationToken cancellationToken);

@@ -23,7 +23,7 @@ class ReportAdder
      */
     public function createReport(string $chatMessage, string $npcName, string $playerName, int $posX, int $posY, int $posZ) {
         if (!(
-            $this->checkLength($chatMessage, 1, 511) &&
+            $this->checkLength($chatMessage, 1, 319) &&
             $this->checkLength($npcName, 0, 127) &&
             $this->checkLength($playerName, 1, 16) &&
             $this->checkRange($posX, -8388608, 8388607) &&
@@ -85,30 +85,6 @@ class ReportAdder
         } catch (PDOException $e) {
             return 500;
         }
-    }
-
-    public function importLines(array $chatMessages, string $status)
-    {
-        // Update status of lines that already exist
-        (new ReportManager())->updateReport($chatMessages, $status);
-
-        $status = @[
-            'd' => 'unprocessed',   # Display in log
-            'm' => 'forwarded',     # Mute (don't display)
-            'y' => 'accepted',      # Yes (will be worked on)
-            'n' => 'rejected',      # No (will not be worked on)
-            'v' => 'fixed'          # Voiced already
-        ][$status];
-
-        // Import the rest
-        $db = new Db('Api/LineReporting/DbInfo.ini');
-
-        $valuesString = implode(',', array_fill(0, count($chatMessages), '(?, NULL, "<IMPORT>", NULL, NULL, NULL, 0, ?)'));
-        $query = 'INSERT IGNORE INTO report (chat_message, npc_name, player, pos_x, pos_y, pos_z, reported_times, status) VALUES '.$valuesString;
-        $parameters = call_user_func_array('array_merge', array_map(function($item) use ($status) { return [$item, $status]; }, $chatMessages));
-
-        $result = $db->executeQuery($query, $parameters);
-        return ($result) ? 204 : 500;
     }
 
     /**

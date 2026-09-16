@@ -10,6 +10,7 @@ public static class CapabilityMapper
     public const string ToolsAudioAnalysisClaim = "tools.audio-analysis";
     public const string ContentManageClaim = "content.manage";
     public const string AccountsManageClaim = "accounts.manage";
+    public const string SystemAdminClaim = "system.admin";
 
     private static readonly Capability[] AllCapabilities =
     [
@@ -19,7 +20,8 @@ public static class CapabilityMapper
         Capability.ToolsScripts,
         Capability.ToolsAudioAnalysis,
         Capability.ContentManage,
-        Capability.AccountsManage
+        Capability.AccountsManage,
+        Capability.SystemAdmin
     ];
 
     private static readonly Capability[] CastManagerCapabilities =
@@ -106,6 +108,7 @@ public static class CapabilityMapper
         Capability.ToolsAudioAnalysis => ToolsAudioAnalysisClaim,
         Capability.ContentManage => ContentManageClaim,
         Capability.AccountsManage => AccountsManageClaim,
+        Capability.SystemAdmin => SystemAdminClaim,
         _ => throw new ArgumentOutOfRangeException(nameof(capability), capability, null)
     };
 

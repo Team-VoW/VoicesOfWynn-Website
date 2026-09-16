@@ -1,1 +1,0 @@
-Our website's backend is written by Shady in PHP. Everyone else in our developer team seems to hate that language (unjustly, signed: Shady).

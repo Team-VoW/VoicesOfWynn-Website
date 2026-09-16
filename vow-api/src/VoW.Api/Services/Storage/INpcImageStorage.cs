@@ -36,4 +36,11 @@ public interface INpcImageStorage
     /// </summary>
     /// <returns>Whether a source image existed and was copied.</returns>
     Task<bool> CopyImageIfExistsAsync(int sourceNpcId, int destinationNpcId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Every NPC id that currently has a stored portrait, read in one listing. Asking per NPC
+    /// instead costs one round trip each, which is what made the legacy "NPCs without a picture"
+    /// search issue hundreds of sequential storage calls per request.
+    /// </summary>
+    Task<IReadOnlySet<int>> ListNpcIdsWithImagesAsync(CancellationToken cancellationToken);
 }

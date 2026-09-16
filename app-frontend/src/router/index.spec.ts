@@ -166,6 +166,29 @@ describe('routing', () => {
     expect(route.name).toBe('reports')
   })
 
+  // Cast Manager holds every other capability, so the Admin page is the one place where a
+  // staff member with broad access must still be turned away.
+  it('keeps the Admin page away from staff without system.admin', async () => {
+    signIn([
+      Capabilities.ReportsView,
+      Capabilities.ReportsManage,
+      Capabilities.AnalyticsView,
+      Capabilities.ContentManage,
+    ])
+
+    const route = await visit('/admin/system')
+
+    expect(route.name).not.toBe('admin')
+  })
+
+  it('opens the Admin page for accounts with system.admin', async () => {
+    signIn([Capabilities.SystemAdmin])
+
+    const route = await visit('/admin/system')
+
+    expect(route.name).toBe('admin')
+  })
+
   it('holds accounts that must change their password on the profile page', async () => {
     signIn([Capabilities.ReportsView], true)
 

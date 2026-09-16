@@ -8,5 +8,11 @@ public enum Capability
     ToolsScripts,
     ToolsAudioAnalysis,
     ContentManage,
-    AccountsManage
+    AccountsManage,
+
+    /// <summary>
+    /// Project Director and Admin only - CastManager deliberately does not receive it.
+    /// Gates the Admin page: analytics aggregation and the mod bootup configuration.
+    /// </summary>
+    SystemAdmin
 }

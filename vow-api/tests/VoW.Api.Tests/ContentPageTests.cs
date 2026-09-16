@@ -278,6 +278,11 @@ internal sealed class FakeImageStorage : INpcImageStorage
 
     public Task<bool> CopyImageIfExistsAsync(int source, int destination, CancellationToken cancellationToken) =>
         throw new NotSupportedException();
+
+    public Task<IReadOnlySet<int>> ListNpcIdsWithImagesAsync(CancellationToken cancellationToken) =>
+        Task.FromResult<IReadOnlySet<int>>(NpcIdsWithImages);
+
+    public HashSet<int> NpcIdsWithImages { get; } = [];
 }
 
 internal sealed class FakeScriptStorage(string[] names) : IQuestScriptStorage

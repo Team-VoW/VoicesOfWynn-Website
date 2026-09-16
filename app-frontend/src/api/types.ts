@@ -571,3 +571,63 @@ export interface PostNpcCommentRequest {
   email?: string | null
   content: string
 }
+
+// --- Admin: analytics aggregation and mod bootup configuration ---
+
+export interface AggregateUsageResponse {
+  daysProcessed: number
+  bootupsAggregated: number
+  /** ISO date of the newest day rolled up, or null when there was nothing to do. */
+  throughDate: string | null
+}
+
+export interface ModRelease {
+  latestVersion: string
+  updateNotificationVersion: string
+  killSwitchVersion: string
+  downloadUrl: string
+  changelogUrl: string
+  audioBaseUrl: string
+  audioMirrorUrls: string[]
+  updatedAt: string
+  updatedBy: number | null
+}
+
+export type UpdateModReleaseRequest = Omit<ModRelease, 'updatedAt' | 'updatedBy'>
+
+export interface Broadcast {
+  id: number
+  content: string
+  activeFrom: string
+  activeUntil: string
+  createdAt: string
+  createdBy: number | null
+}
+
+export interface BroadcastListResponse {
+  broadcasts: Broadcast[]
+}
+
+export interface SaveBroadcastRequest {
+  content: string
+  activeFrom: string
+  activeUntil: string
+}
+
+export interface FunFact {
+  id: number
+  slug: string
+  content: string
+  active: boolean
+  createdAt: string
+}
+
+export interface FunFactListResponse {
+  funFacts: FunFact[]
+}
+
+export interface SaveFunFactRequest {
+  slug: string
+  content: string
+  active: boolean
+}

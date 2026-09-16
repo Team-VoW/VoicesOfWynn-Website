@@ -17,9 +17,6 @@ services:
       - API_DB_NAME=api
       - API_DB_USER=${DB_USER}
       - API_DB_PASSWORD=${DB_PASSWORD}
-      - LINE_REPORT_COLLECT=${LINE_REPORT_COLLECT}
-      - LINE_REPORT_MODIFY=${LINE_REPORT_MODIFY}
-      - STATISTICS_AGGREGATE=${STATISTICS_AGGREGATE}
       - DISCORD_INTEGRATION=${DISCORD_INTEGRATION}
       - AZURE_STORAGE_CONNECTION_STRING=${AZURE_STORAGE_CONNECTION_STRING:-}
       - STORAGE_TYPE=${STORAGE_TYPE:-local}
@@ -63,6 +60,9 @@ services:
       - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:5173}
       - SPA_AUTH_CALLBACK_URL=${SPA_AUTH_CALLBACK_URL:-http://localhost:5173/auth/callback}
       - AZURE_STORAGE_CONNECTION_STRING=${AZURE_STORAGE_CONNECTION_STRING:-}
+      # Optional. Salts the hashed client IP stored against a bootup ping; leaving it unset
+      # keeps the pre-migration unsalted hash so the ping throttle still matches existing rows.
+      - ANALYTICS_IP_SALT=${ANALYTICS_IP_SALT:-}
       - COMPlus_EnableHWIntrinsic=0
       - DOTNET_EnableHWIntrinsic=0
     depends_on:

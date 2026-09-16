@@ -788,6 +788,26 @@ public sealed class ContentRepository(IConfiguration configuration) : IContentRe
         }
     }
 
+    public async Task<IReadOnlyList<NpcSearchMatch>> SearchNpcsByNameAsync(
+        string query,
+        int limit,
+        CancellationToken cancellationToken)
+    {
+        const string sql = """
+            SELECT npc_id AS NpcId, name AS Name, degenerated_name AS DegeneratedName
+            FROM npc
+            WHERE name LIKE @Query AND archived = 0
+            ORDER BY name
+            LIMIT @Limit;
+            """;
+
+        await using var connection = new MySqlConnection(DatabaseSettings.GetWebsiteConnectionString(configuration));
+        return (await connection.QueryAsync<NpcSearchMatch>(new CommandDefinition(
+            sql,
+            new { Query = $"%{query}%", Limit = limit },
+            cancellationToken: cancellationToken))).ToList();
+    }
+
     private sealed class QuestContentRow
     {
         public int QuestId { get; init; }

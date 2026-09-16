@@ -6,6 +6,7 @@ import {
   FileText,
   LayoutDashboard,
   ScrollText,
+  Shield,
   User,
   Users,
 } from 'lucide-vue-next'
@@ -86,6 +87,13 @@ const navItems: {
     routeName: 'accounts',
     capability: Capabilities.AccountsManage,
     icon: Users,
+  },
+  {
+    label: 'Admin',
+    to: '/admin/system',
+    routeName: 'admin',
+    capability: Capabilities.SystemAdmin,
+    icon: Shield,
   },
 ]
 

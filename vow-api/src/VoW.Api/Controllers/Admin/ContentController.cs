@@ -9,7 +9,9 @@ namespace VoW.Api.Controllers.Admin;
 [ApiController]
 [RequireCapability(Capability.ContentManage)]
 [Route("admin/content")]
-public sealed class ContentController(IContentService contentService) : ControllerBase
+public sealed class ContentController(
+    IContentService contentService,
+    INpcLookupService npcLookupService) : ControllerBase
 {
     [HttpGet("options")]
     public async Task<ActionResult<ContentOptionsResponse>> Options(CancellationToken cancellationToken) =>
@@ -29,6 +31,16 @@ public sealed class ContentController(IContentService contentService) : Controll
 
         return Ok(result.Response);
     }
+
+    /// <summary>
+    /// Finds NPCs by name, with the coordinates each was last reported at. Replaces the public,
+    /// unauthenticated PHP /api/npc/search, which also exposed those coordinates to anyone.
+    /// </summary>
+    [HttpGet("npcs/search")]
+    public async Task<ActionResult<NpcLookupResponse>> SearchNpcs(
+        [FromQuery] NpcLookupRequest request,
+        CancellationToken cancellationToken) =>
+        Ok(await npcLookupService.SearchAsync(request, cancellationToken));
 
     [HttpPost("quests")]
     public async Task<ActionResult<CreateContentResponse>> CreateQuest(

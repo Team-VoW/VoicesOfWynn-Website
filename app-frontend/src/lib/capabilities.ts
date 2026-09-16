@@ -8,6 +8,7 @@ export const Capabilities = {
   ToolsAudioAnalysis: 'tools.audio-analysis',
   ContentManage: 'content.manage',
   AccountsManage: 'accounts.manage',
+  SystemAdmin: 'system.admin',
 } as const
 
 export type Capability = (typeof Capabilities)[keyof typeof Capabilities]
