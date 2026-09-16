@@ -11,6 +11,8 @@ public sealed record AccountDetailsResponse(
     string? Discord,
     string? Youtube,
     string? Twitter,
+    string? Instagram,
+    string? Github,
     string? CastingCallClub,
     string? Bio,
     string? Lore,

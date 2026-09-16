@@ -66,6 +66,8 @@ public sealed class ContributorService(
             profile.Discord,
             profile.Youtube,
             profile.Twitter,
+            profile.Instagram,
+            profile.Github,
             profile.CastingCallClub,
             Roles(profile.Roles),
             voicing.Select(npc => new VoicedNpcResponse(

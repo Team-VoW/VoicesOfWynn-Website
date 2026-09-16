@@ -238,6 +238,8 @@ export interface AccountDetails {
   discord: string | null
   youtube: string | null
   twitter: string | null
+  instagram: string | null
+  github: string | null
   castingCallClub: string | null
   bio: string | null
   lore: string | null
@@ -255,6 +257,8 @@ export interface UpdateAccountRequest {
   discord?: string
   youtube?: string
   twitter?: string
+  instagram?: string
+  github?: string
   castingCallClub?: string
   bio?: string
   lore?: string
@@ -270,6 +274,8 @@ export interface SelfProfile {
   discord: string | null
   youtube: string | null
   twitter: string | null
+  instagram: string | null
+  github: string | null
   castingCallClub: string | null
   bio: string | null
   lore: string | null
@@ -285,6 +291,8 @@ export interface UpdateSelfProfileRequest {
   discord: string | null
   youtube: string | null
   twitter: string | null
+  instagram: string | null
+  github: string | null
   castingCallClub: string | null
   bio: string | null
   lore: string | null
@@ -421,6 +429,8 @@ export interface ContributorDetail {
   discord: string | null
   youtube: string | null
   twitter: string | null
+  instagram: string | null
+  github: string | null
   castingCallClub: string | null
   roles: ContributorRole[]
   voicing: VoicedNpc[]

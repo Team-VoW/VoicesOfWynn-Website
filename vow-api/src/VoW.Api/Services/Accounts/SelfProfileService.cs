@@ -41,6 +41,8 @@ internal sealed class SelfProfileService(
             account.Discord,
             account.Youtube,
             account.Twitter,
+            account.Instagram,
+            account.Github,
             account.CastingCallClub,
             account.Bio,
             account.Lore,
@@ -94,6 +96,20 @@ internal sealed class SelfProfileService(
             return AccountMutationResult.Invalid(twitterError.Field, twitterError.Message);
         }
 
+        var instagram = NormalizeOptional(request.Instagram);
+        var instagramError = await validator.ValidateInstagramAsync(userId, instagram, cancellationToken);
+        if (instagramError is not null)
+        {
+            return AccountMutationResult.Invalid(instagramError.Field, instagramError.Message);
+        }
+
+        var github = NormalizeOptional(request.Github);
+        var githubError = await validator.ValidateGithubAsync(userId, github, cancellationToken);
+        if (githubError is not null)
+        {
+            return AccountMutationResult.Invalid(githubError.Field, githubError.Message);
+        }
+
         var castingCallClub = NormalizeOptional(request.CastingCallClub);
         var cccError = await validator.ValidateCastingCallClubAsync(userId, castingCallClub, cancellationToken);
         if (cccError is not null)
@@ -126,6 +142,8 @@ internal sealed class SelfProfileService(
                     discord,
                     youtube,
                     twitter,
+                    instagram,
+                    github,
                     castingCallClub,
                     bio,
                     lore),

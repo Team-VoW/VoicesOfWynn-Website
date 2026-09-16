@@ -58,6 +58,8 @@ internal sealed class AccountAdminService(
                 account.Discord,
                 account.Youtube,
                 account.Twitter,
+                account.Instagram,
+                account.Github,
                 account.CastingCallClub,
                 account.Bio,
                 account.Lore,
@@ -124,6 +126,20 @@ internal sealed class AccountAdminService(
             return AccountMutationResult.Invalid(twitterError.Field, twitterError.Message);
         }
 
+        var instagram = NormalizeOptional(request.Instagram);
+        var instagramError = await validator.ValidateInstagramAsync(userId, instagram, cancellationToken);
+        if (instagramError is not null)
+        {
+            return AccountMutationResult.Invalid(instagramError.Field, instagramError.Message);
+        }
+
+        var github = NormalizeOptional(request.Github);
+        var githubError = await validator.ValidateGithubAsync(userId, github, cancellationToken);
+        if (githubError is not null)
+        {
+            return AccountMutationResult.Invalid(githubError.Field, githubError.Message);
+        }
+
         var castingCallClub = NormalizeOptional(request.CastingCallClub);
         var cccError = await validator.ValidateCastingCallClubAsync(userId, castingCallClub, cancellationToken);
         if (cccError is not null)
@@ -159,6 +175,8 @@ internal sealed class AccountAdminService(
                     discord,
                     youtube,
                     twitter,
+                    instagram,
+                    github,
                     castingCallClub,
                     bio,
                     lore),
@@ -306,6 +324,8 @@ internal sealed class AccountAdminService(
             account.Discord,
             account.Youtube,
             account.Twitter is null ? null : $"@{account.Twitter}",
+            account.Instagram is null ? null : $"@{account.Instagram}",
+            account.Github,
             account.CastingCallClub,
         }.Where(value => !string.IsNullOrWhiteSpace(value));
 

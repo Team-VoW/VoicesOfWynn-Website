@@ -11,5 +11,7 @@ public sealed record AccountSummary(
     string? Discord,
     string? Youtube,
     string? Twitter,
+    string? Instagram,
+    string? Github,
     string? CastingCallClub,
     IReadOnlyCollection<int> RoleIds);

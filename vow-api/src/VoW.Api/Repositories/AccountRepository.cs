@@ -33,6 +33,8 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
                    OR u.discord LIKE @Query
                    OR u.youtube LIKE @Query
                    OR u.twitter LIKE @Query
+                   OR u.instagram LIKE @Query
+                   OR u.github LIKE @Query
                    OR u.castingcallclub LIKE @Query
                    OR CAST(u.discord_id AS CHAR) = @ExactQuery
                    OR CAST(u.user_id AS CHAR) = @ExactQuery
@@ -56,6 +58,8 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
                 u.discord AS Discord,
                 u.youtube AS Youtube,
                 u.twitter AS Twitter,
+                u.instagram AS Instagram,
+                u.github AS Github,
                 u.castingcallclub AS CastingCallClub
             FROM user u
             {whereSql}
@@ -97,6 +101,8 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
                     user.Discord,
                     user.Youtube,
                     user.Twitter,
+                    user.Instagram,
+                    user.Github,
                     user.CastingCallClub,
                     rolesByUser.GetValueOrDefault(user.UserId, []));
             }).ToArray());
@@ -116,6 +122,8 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
                 discord AS Discord,
                 youtube AS Youtube,
                 twitter AS Twitter,
+                instagram AS Instagram,
+                github AS Github,
                 castingcallclub AS CastingCallClub,
                 bio AS Bio,
                 lore AS Lore,
@@ -148,6 +156,8 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
             user.Discord,
             user.Youtube,
             user.Twitter,
+            user.Instagram,
+            user.Github,
             user.CastingCallClub,
             user.Bio,
             user.Lore,
@@ -242,6 +252,8 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
                     discord = @Discord,
                     youtube = @Youtube,
                     twitter = @Twitter,
+                    instagram = @Instagram,
+                    github = @Github,
                     castingcallclub = @CastingCallClub,
                     public_email = COALESCE(@PublicEmail, public_email)
                 WHERE user_id = @UserId;
@@ -257,6 +269,8 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
                     discord = @Discord,
                     youtube = @Youtube,
                     twitter = @Twitter,
+                    instagram = @Instagram,
+                    github = @Github,
                     castingcallclub = @CastingCallClub,
                     public_email = COALESCE(@PublicEmail, public_email),
                     force_password_change = 0
@@ -277,6 +291,8 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
                 command.Discord,
                 command.Youtube,
                 command.Twitter,
+                command.Instagram,
+                command.Github,
                 command.CastingCallClub,
                 command.Bio,
                 command.Lore,
@@ -299,6 +315,8 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
                 discord = @Discord,
                 youtube = @Youtube,
                 twitter = @Twitter,
+                instagram = @Instagram,
+                github = @Github,
                 castingcallclub = @CastingCallClub,
                 public_email = @PublicEmail
             WHERE user_id = @UserId;
@@ -316,6 +334,8 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
                 command.Discord,
                 command.Youtube,
                 command.Twitter,
+                command.Instagram,
+                command.Github,
                 command.CastingCallClub,
                 command.Bio,
                 command.Lore,
@@ -494,6 +514,8 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
         "discord",
         "youtube",
         "twitter",
+        "instagram",
+        "github",
         "castingcallclub"
     ];
 
@@ -520,6 +542,10 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
         public string? Youtube { get; set; }
 
         public string? Twitter { get; set; }
+
+        public string? Instagram { get; set; }
+
+        public string? Github { get; set; }
 
         public string? CastingCallClub { get; set; }
     }
@@ -549,6 +575,10 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
         public string? Youtube { get; set; }
 
         public string? Twitter { get; set; }
+
+        public string? Instagram { get; set; }
+
+        public string? Github { get; set; }
 
         public string? CastingCallClub { get; set; }
 

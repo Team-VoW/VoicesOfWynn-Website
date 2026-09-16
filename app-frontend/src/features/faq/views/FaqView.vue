@@ -86,7 +86,7 @@ watch(() => route.hash, openFromHash)
           id="minecraft-version"
           question="What Minecraft version is needed for the mod to work?"
         >
-          <p>The mod is currently developed for Fabric (Minecraft version <code>1.21.10</code>).</p>
+          <p>The mod is currently developed for Fabric (Minecraft version <code>1.21.11</code>).</p>
           <p>
             We stay on whatever Minecraft version Wynntils uses, so Voices of Wynn is always
             compatible with it.

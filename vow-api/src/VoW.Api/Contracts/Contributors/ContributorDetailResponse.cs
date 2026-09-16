@@ -12,6 +12,8 @@ public sealed record ContributorDetailResponse(
     string? Discord,
     string? Youtube,
     string? Twitter,
+    string? Instagram,
+    string? Github,
     string? CastingCallClub,
     IReadOnlyCollection<ContributorRoleResponse> Roles,
     IReadOnlyCollection<VoicedNpcResponse> Voicing,

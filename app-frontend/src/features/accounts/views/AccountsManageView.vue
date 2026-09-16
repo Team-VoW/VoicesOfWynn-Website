@@ -60,6 +60,8 @@ const form = reactive({
   discord: '',
   youtube: '',
   twitter: '',
+  instagram: '',
+  github: '',
   castingCallClub: '',
   bio: '',
   lore: '',
@@ -134,6 +136,8 @@ function fillForm(account: AccountDetails) {
   form.discord = account.discord ?? ''
   form.youtube = account.youtube ?? ''
   form.twitter = account.twitter ?? ''
+  form.instagram = account.instagram ?? ''
+  form.github = account.github ?? ''
   form.castingCallClub = account.castingCallClub ?? ''
   form.bio = account.bio ?? ''
   form.lore = account.lore ?? ''
@@ -171,6 +175,8 @@ function requestFromForm(): UpdateAccountRequest {
     discord: optional(form.discord),
     youtube: optional(form.youtube),
     twitter: optional(form.twitter),
+    instagram: optional(form.instagram),
+    github: optional(form.github),
     castingCallClub: optional(form.castingCallClub),
     bio: optional(form.bio),
     lore: optional(form.lore),
@@ -535,8 +541,16 @@ function toggleRole(roleId: number, checked: boolean) {
                   <Input id="youtube" v-model="form.youtube" maxlength="56" />
                 </div>
                 <div class="space-y-2">
-                  <Label for="twitter">Twitter</Label>
+                  <Label for="twitter">X</Label>
                   <Input id="twitter" v-model="form.twitter" maxlength="15" />
+                </div>
+                <div class="space-y-2">
+                  <Label for="instagram">Instagram</Label>
+                  <Input id="instagram" v-model="form.instagram" maxlength="30" />
+                </div>
+                <div class="space-y-2">
+                  <Label for="github">GitHub</Label>
+                  <Input id="github" v-model="form.github" maxlength="39" />
                 </div>
                 <div class="space-y-2">
                   <Label for="ccc">Casting Call Club</Label>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { Mail } from 'lucide-vue-next'
+import type { Component } from 'vue'
+import { Github, Instagram, Mail } from 'lucide-vue-next'
 import type { ContributorDetail } from '@/api/types'
 
 const props = defineProps<{ contributor: ContributorDetail }>()
@@ -9,16 +10,18 @@ interface SocialLink {
   key: string
   label: string
   href: string
-  icon: string
+  /** Either a bundled brand image or, where no image asset exists, a lucide icon component. */
+  icon?: string
+  iconComponent?: Component
   classes: string
 }
 
 const links = computed<SocialLink[]>(() => {
   const result: SocialLink[] = []
-  const { youtube, twitter, castingCallClub } = props.contributor
+  const { youtube, twitter, instagram, github, castingCallClub } = props.contributor
 
-  // YouTube values are stored as full URLs while the other two are bare handles, which is why
-  // only these two get a prefix and only YouTube shows a fixed label.
+  // YouTube values are stored as full URLs while every other handle is bare, which is why only
+  // the others get a profile-URL prefix and only YouTube shows a fixed label.
   if (youtube) {
     result.push({
       key: 'youtube',
@@ -32,9 +35,27 @@ const links = computed<SocialLink[]>(() => {
     result.push({
       key: 'twitter',
       label: twitter,
-      href: `https://twitter.com/${twitter}`,
-      icon: '/images/twitter_icon.png',
-      classes: 'bg-[#1DA1F2] hover:bg-[#4ab3f4] text-white',
+      href: `https://x.com/${twitter}`,
+      icon: '/images/x_icon.svg',
+      classes: 'bg-black hover:bg-[#1a1a1a] text-white',
+    })
+  }
+  if (instagram) {
+    result.push({
+      key: 'instagram',
+      label: instagram,
+      href: `https://instagram.com/${instagram}`,
+      iconComponent: Instagram,
+      classes: 'bg-[#C13584] hover:bg-[#d8438f] text-white',
+    })
+  }
+  if (github) {
+    result.push({
+      key: 'github',
+      label: github,
+      href: `https://github.com/${github}`,
+      iconComponent: Github,
+      classes: 'bg-[#24292F] hover:bg-[#3a4149] text-white',
     })
   }
   if (castingCallClub) {
@@ -73,7 +94,13 @@ const hasAnything = computed(
       class="flex items-center gap-2 rounded-xl px-4 py-2.5 shadow-sm transition-[transform,background-color] hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a340c4] motion-reduce:hover:translate-y-0"
       :class="link.classes"
     >
-      <img :src="link.icon" alt="" class="size-5 rounded-sm" />
+      <component
+        :is="link.iconComponent"
+        v-if="link.iconComponent"
+        class="size-5"
+        aria-hidden="true"
+      />
+      <img v-else :src="link.icon" alt="" class="size-5 rounded-sm" />
       {{ link.label }}
     </a>
 

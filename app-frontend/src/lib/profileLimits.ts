@@ -5,6 +5,8 @@ export const ProfileLimits = {
   discord: 37,
   youtube: 56,
   twitter: 15,
+  instagram: 30,
+  github: 39,
   castingCallClub: 64,
   lore: 63,
 } as const

@@ -100,6 +100,8 @@ public sealed class ContributorRepository(IConfiguration configuration) : IContr
                 discord AS Discord,
                 youtube AS Youtube,
                 twitter AS Twitter,
+                instagram AS Instagram,
+                github AS Github,
                 castingcallclub AS CastingCallClub
             FROM user
             WHERE user_id = @UserId;
@@ -128,6 +130,8 @@ public sealed class ContributorRepository(IConfiguration configuration) : IContr
             NullIfEmpty(row.Discord),
             NullIfEmpty(row.Youtube),
             NullIfEmpty(row.Twitter),
+            NullIfEmpty(row.Instagram),
+            NullIfEmpty(row.Github),
             NullIfEmpty(row.CastingCallClub),
             rolesByUser.GetValueOrDefault(userId, []));
     }
@@ -370,6 +374,10 @@ public sealed class ContributorRepository(IConfiguration configuration) : IContr
         public string? Youtube { get; set; }
 
         public string? Twitter { get; set; }
+
+        public string? Instagram { get; set; }
+
+        public string? Github { get; set; }
 
         public string? CastingCallClub { get; set; }
     }

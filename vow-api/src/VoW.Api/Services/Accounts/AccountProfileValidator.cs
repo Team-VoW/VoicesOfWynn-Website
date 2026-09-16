@@ -16,6 +16,8 @@ internal sealed partial class AccountProfileValidator(IAccountRepository account
     private const int DiscordMaxLength = 37;
     private const int YoutubeMaxLength = 56;
     private const int TwitterMaxLength = 15;
+    private const int InstagramMaxLength = 30;
+    private const int GithubMaxLength = 39;
     private const int CastingCallClubMaxLength = 64;
     private const int BioMaxBytes = 65535;
     private const int LoreMaxLength = 63;
@@ -148,9 +150,37 @@ internal sealed partial class AccountProfileValidator(IAccountRepository account
             twitter,
             "twitter",
             "Twitter",
-            "Twitter handle",
+            "X handle",
             null,
             TwitterMaxLength,
+            cancellationToken);
+
+    public Task<AccountFieldError?> ValidateInstagramAsync(
+        int exceptUserId,
+        string? instagram,
+        CancellationToken cancellationToken) =>
+        ValidateSocialAsync(
+            exceptUserId,
+            instagram,
+            "instagram",
+            "Instagram",
+            "Instagram username",
+            null,
+            InstagramMaxLength,
+            cancellationToken);
+
+    public Task<AccountFieldError?> ValidateGithubAsync(
+        int exceptUserId,
+        string? github,
+        CancellationToken cancellationToken) =>
+        ValidateSocialAsync(
+            exceptUserId,
+            github,
+            "github",
+            "Github",
+            "GitHub username",
+            null,
+            GithubMaxLength,
             cancellationToken);
 
     public AccountFieldError? ValidateBio(string? bio) =>

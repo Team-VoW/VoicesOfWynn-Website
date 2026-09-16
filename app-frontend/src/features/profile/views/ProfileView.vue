@@ -43,6 +43,8 @@ const form = reactive({
   discord: '',
   youtube: '',
   twitter: '',
+  instagram: '',
+  github: '',
   castingCallClub: '',
   bio: '',
   lore: '',
@@ -92,6 +94,8 @@ watch(
       form.discord = value.discord ?? ''
       form.youtube = value.youtube ?? ''
       form.twitter = value.twitter ?? ''
+      form.instagram = value.instagram ?? ''
+      form.github = value.github ?? ''
       form.castingCallClub = value.castingCallClub ?? ''
       form.bio = value.bio ?? ''
       form.lore = value.lore ?? ''
@@ -120,6 +124,8 @@ async function saveProfile() {
       discord: optional(form.discord),
       youtube: optional(form.youtube),
       twitter: optional(form.twitter),
+      instagram: optional(form.instagram),
+      github: optional(form.github),
       castingCallClub: optional(form.castingCallClub),
       bio: optional(form.bio),
       lore: optional(form.lore),
@@ -334,11 +340,27 @@ function onAvatarDrop(event: DragEvent) {
               />
             </div>
             <div class="space-y-2">
-              <Label for="profile-twitter">Twitter</Label>
+              <Label for="profile-twitter">X</Label>
               <Input
                 id="profile-twitter"
                 v-model="form.twitter"
                 :maxlength="ProfileLimits.twitter"
+              />
+            </div>
+            <div class="space-y-2">
+              <Label for="profile-instagram">Instagram</Label>
+              <Input
+                id="profile-instagram"
+                v-model="form.instagram"
+                :maxlength="ProfileLimits.instagram"
+              />
+            </div>
+            <div class="space-y-2">
+              <Label for="profile-github">GitHub</Label>
+              <Input
+                id="profile-github"
+                v-model="form.github"
+                :maxlength="ProfileLimits.github"
               />
             </div>
             <div class="space-y-2">

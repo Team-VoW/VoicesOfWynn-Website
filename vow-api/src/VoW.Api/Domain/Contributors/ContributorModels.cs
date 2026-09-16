@@ -32,6 +32,8 @@ public sealed record ContributorProfile(
     string? Discord,
     string? Youtube,
     string? Twitter,
+    string? Instagram,
+    string? Github,
     string? CastingCallClub,
     IReadOnlyCollection<ContributorRole> Roles);
 
