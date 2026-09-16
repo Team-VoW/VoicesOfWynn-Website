@@ -18,6 +18,10 @@ public sealed class AzureNpcImageStorage : INpcImageStorage
         containerClient = blobServiceClient.GetBlobContainerClient(StorageConfiguration.GetContainerName(configuration));
     }
 
+    public Uri GetImageUrl(int npcId) => containerClient.GetBlobClient(BlobKey(npcId)).Uri;
+
+    public Uri GetDefaultImageUrl() => containerClient.GetBlobClient($"{ImageKeyPrefix}default.webp").Uri;
+
     public async Task UploadImageAsync(int npcId, Stream webpContent, CancellationToken cancellationToken)
     {
         var blob = containerClient.GetBlobClient(BlobKey(npcId));

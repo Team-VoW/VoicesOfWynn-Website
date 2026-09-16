@@ -25,6 +25,13 @@ public interface IQuestScriptStorage
     Task<bool> ScriptExistsAsync(string degeneratedName, CancellationToken cancellationToken);
 
     /// <summary>
+    /// Returns every normalized quest name that currently has a script, in one storage call.
+    /// Checking a batch of quests one <see cref="ScriptExistsAsync"/> at a time costs a round
+    /// trip each, which dominates the response time of a prolific writer's page.
+    /// </summary>
+    Task<IReadOnlySet<string>> ListScriptNamesAsync(CancellationToken cancellationToken);
+
+    /// <summary>
     /// Returns the public URI for the script identified by the normalized quest name.
     /// </summary>
     /// <param name="degeneratedName">A sanitized quest identifier used as the script storage key.</param>

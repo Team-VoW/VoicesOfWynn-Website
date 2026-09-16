@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using VoW.Api.Domain.Auth;
@@ -11,7 +12,10 @@ using VoW.Api.Services.Accounts;
 using VoW.Api.Services.Analytics;
 using VoW.Api.Services.Auth;
 using VoW.Api.Services.Content;
+using VoW.Api.Services.Contents;
+using VoW.Api.Services.Contributors;
 using VoW.Api.Services.DiscordIntegration;
+using VoW.Api.Services.Npcs;
 using VoW.Api.Services.Reports;
 using VoW.Api.Services.Storage;
 using VoW.Api.Services.Tools;
@@ -24,7 +28,23 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 builder.Services.AddOpenApi();
+builder.Services.AddMemoryCache();
+
+// Apache terminates TLS and proxies /vow-api/ to this container (website/ssl.conf), so without
+// this every request appears to come from the proxy's bridge address. Anything keyed on the
+// caller - vote identity, per-IP write limits - would then collapse into a single global bucket.
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.ForwardLimit = 1;
+    // The proxy's address is assigned by Docker and is not knowable up front. Trusting the hop
+    // is safe only because the container publishes no port outside the compose network.
+    options.KnownIPNetworks.Clear();
+    options.KnownProxies.Clear();
+});
 builder.Services.AddHttpClient<IExternalAuthProvider, DiscordAuthService>();
+builder.Services.AddHttpClient<ICommentNotifier, DiscordCommentNotifier>(
+    client => client.Timeout = TimeSpan.FromSeconds(5));
 
 builder.Services.AddSingleton<IJwtService, JwtService>();
 builder.Services.AddSingleton<IAuthHandoffService, AuthHandoffService>();
@@ -36,6 +56,13 @@ builder.Services.AddScoped<AccountProfileValidator>();
 builder.Services.AddScoped<AccountAvatarManager>();
 builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
 builder.Services.AddScoped<IContentService, ContentService>();
+builder.Services.AddScoped<IContributorService, ContributorService>();
+builder.Services.AddScoped<IQuestPageService, QuestPageService>();
+builder.Services.AddScoped<INpcPageService, NpcPageService>();
+builder.Services.AddScoped<INpcRecordingCatalogService, NpcRecordingCatalogService>();
+builder.Services.AddScoped<INpcVoteService, NpcVoteService>();
+builder.Services.AddScoped<INpcCommentService, NpcCommentService>();
+builder.Services.AddSingleton<QuestScriptCatalog>();
 builder.Services.AddScoped<IDiscordIntegrationService, DiscordIntegrationService>();
 builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<VoW.Api.Services.Feedback.QuestFeedbackService>();
@@ -45,6 +72,10 @@ builder.Services.AddScoped<IAudioAnalysisService, AudioAnalysisService>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IAnalyticsRepository, AnalyticsRepository>();
 builder.Services.AddScoped<IContentRepository, ContentRepository>();
+builder.Services.AddScoped<IContentPageRepository, ContentPageRepository>();
+builder.Services.AddScoped<IContributorRepository, ContributorRepository>();
+builder.Services.AddScoped<INpcInteractionRepository, NpcInteractionRepository>();
+builder.Services.AddScoped<IWriteLimitRepository, WriteLimitRepository>();
 builder.Services.AddScoped<IDiscordIntegrationRepository, DiscordIntegrationRepository>();
 builder.Services.AddScoped<IReportRepository, ReportRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -113,6 +144,8 @@ if (!VoW.Api.Services.Feedback.QuestFeedbackService.HasEditSecret(app.Configurat
 {
     app.Logger.LogError("Quest rating submissions are unavailable: configure QUEST_FEEDBACK_EDIT_SECRET with at least 32 bytes and recreate the API container. Existing comment edits and admin reads remain available.");
 }
+
+app.UseForwardedHeaders();
 
 var pathBase = builder.Configuration["PATH_BASE"];
 if (!string.IsNullOrEmpty(pathBase))

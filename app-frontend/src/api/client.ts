@@ -14,9 +14,11 @@ export class ApiError extends Error {
   }
 }
 
+type QueryValue = string | number | boolean | undefined | null
+
 interface RequestOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
-  query?: Record<string, string | number | boolean | undefined | null>
+  query?: Record<string, QueryValue | readonly QueryValue[]>
   body?: unknown
   auth?: boolean
   signal?: AbortSignal
@@ -61,8 +63,11 @@ function buildUrl(path: string, query?: RequestOptions['query']) {
   const url = new URL(`${API_BASE_URL}${path}`, window.location.origin)
   if (query) {
     for (const [key, value] of Object.entries(query)) {
-      if (value === undefined || value === null || value === '') continue
-      url.searchParams.set(key, String(value))
+      // An array repeats its key, which is how ASP.NET binds a collection off the query string.
+      for (const item of Array.isArray(value) ? value : [value]) {
+        if (item === undefined || item === null || item === '') continue
+        url.searchParams.append(key, String(item))
+      }
     }
   }
   return url.toString()

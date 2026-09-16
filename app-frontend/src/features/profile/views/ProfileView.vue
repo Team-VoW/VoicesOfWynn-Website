@@ -10,7 +10,6 @@ import {
   DialogTitle,
 } from 'reka-ui'
 import { toast } from 'vue-sonner'
-import { WEBSITE_BASE_URL } from '@/api/config'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -69,9 +68,6 @@ const updateMutation = useUpdateSelfProfile()
 const passwordMutation = useSetSelfPassword()
 const clearAvatarMutation = useClearSelfAvatar()
 
-const publicProfileUrl = computed(() =>
-  profile.value ? `${WEBSITE_BASE_URL}/cast/${profile.value.userId}` : '',
-)
 const passwordChangeRequiresCurrentPassword = computed(
   () => profile.value?.passwordChangeRequiresCurrentPassword ?? true,
 )
@@ -282,16 +278,11 @@ function onAvatarDrop(event: DragEvent) {
             <KeyRound class="size-4" />
             Reset password
           </Button>
-          <Button
-            as="a"
-            variant="outline"
-            class="w-full gap-2"
-            :href="publicProfileUrl"
-            target="_blank"
-            rel="noopener"
-          >
-            <ExternalLink class="size-4" />
-            View public profile
+          <Button v-if="profile" as-child variant="outline" class="w-full gap-2">
+            <RouterLink :to="{ name: 'cast', params: { userId: profile.userId } }">
+              <ExternalLink class="size-4" />
+              View public profile
+            </RouterLink>
           </Button>
         </div>
 

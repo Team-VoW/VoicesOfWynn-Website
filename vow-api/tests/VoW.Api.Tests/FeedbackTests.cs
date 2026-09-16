@@ -22,7 +22,7 @@ public sealed class FeedbackTests
 {
     private const string Secret = "test-only-quest-feedback-secret-with-32-bytes";
     private static QuestRatingRequest Rating(int score = 3) => new(Guid.NewGuid(), Guid.NewGuid(), "Recover the Past", score, "v2.2.0");
-    private static QuestFeedbackService Service(MemoryFeedback db) => new(db,
+    private static QuestFeedbackService Service(MemoryFeedback db) => new(db, db,
         new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?> { ["QUEST_FEEDBACK_EDIT_SECRET"] = Secret }).Build());
 
     [Theory]
@@ -31,7 +31,7 @@ public sealed class FeedbackTests
     {
         var db = new MemoryFeedback();
         var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?> { ["QUEST_FEEDBACK_EDIT_SECRET"] = secret }).Build();
-        var service = new QuestFeedbackService(db, configuration);
+        var service = new QuestFeedbackService(db, db, configuration);
         var request = Rating();
         for (var i = 0; i < 40; i++) Assert.Equal(503, (await service.RateAsync(request, "::1", default)).Status);
         Assert.Empty(db.Ratings);
@@ -138,12 +138,20 @@ public sealed class FeedbackTests
             builder.UseEnvironment("Development");
             builder.UseSetting("JWT_SECRET", Secret);
             builder.UseSetting("QUEST_FEEDBACK_EDIT_SECRET", editSecret);
-            builder.ConfigureServices(services => { services.RemoveAll<IQuestFeedbackRepository>(); services.AddSingleton<IQuestFeedbackRepository>(new MemoryFeedback()); });
+            builder.ConfigureServices(services =>
+            {
+                var feedback = new MemoryFeedback();
+                services.RemoveAll<IQuestFeedbackRepository>();
+                services.AddSingleton<IQuestFeedbackRepository>(feedback);
+                // The rate limiter lives behind its own interface now, and the real one needs a database.
+                services.RemoveAll<IWriteLimitRepository>();
+                services.AddSingleton<IWriteLimitRepository>(feedback);
+            });
         }
     }
 }
 
-internal sealed class MemoryFeedback : IQuestFeedbackRepository
+internal sealed class MemoryFeedback : IQuestFeedbackRepository, IWriteLimitRepository
 {
     public readonly Dictionary<string, StoredQuestRating> Ratings = new();
     public readonly Dictionary<string, string> Comments = new();

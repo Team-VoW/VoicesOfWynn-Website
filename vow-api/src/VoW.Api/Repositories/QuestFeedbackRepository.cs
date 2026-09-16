@@ -23,27 +23,6 @@ public sealed class QuestFeedbackRepository(IConfiguration configuration) : IQue
         GuidFormat = MySqlGuidFormat.None
     }.ConnectionString);
 
-    public async Task<bool> ConsumeLimitAsync(byte[] key, int limit, CancellationToken ct)
-    {
-        await using var db = Connect();
-        await db.OpenAsync(ct);
-        await using var tx = await db.BeginTransactionAsync(ct);
-        var now = DateTime.UtcNow;
-        var window = new DateTime(now.Year, now.Month, now.Day, now.Hour, 0, 0, DateTimeKind.Utc);
-        var args = new { key, window };
-        await db.ExecuteAsync(new CommandDefinition("""
-            INSERT INTO quest_feedback_write_limit VALUES (@key, @window, 1)
-            ON DUPLICATE KEY UPDATE writes = writes + 1;
-            """, args, tx, cancellationToken: ct));
-        var count = await db.ExecuteScalarAsync<int>(new CommandDefinition(
-            "SELECT writes FROM quest_feedback_write_limit WHERE bucket_key=@key AND window_start=@window", args, tx, cancellationToken: ct));
-        await tx.CommitAsync(ct);
-        await db.ExecuteAsync(new CommandDefinition(
-            "DELETE FROM quest_feedback_write_limit WHERE window_start < @old LIMIT 1000",
-            new { old = window.AddHours(-2) }, cancellationToken: ct));
-        return count <= limit;
-    }
-
     public async Task<StoredQuestRating?> FindAsync(string id, CancellationToken ct)
     {
         await using var db = Connect();

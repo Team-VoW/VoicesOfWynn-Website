@@ -1,14 +1,12 @@
 using Dapper;
 using MySqlConnector;
 using VoW.Api.Domain.Accounts;
-using VoW.Api.Services.Storage;
 
 namespace VoW.Api.Repositories;
 
 public sealed class AccountRepository(IConfiguration configuration) : IAccountRepository
 {
-    private readonly string storageBaseUrl = NormalizeStorageBaseUrl(
-        StorageConfiguration.GetBaseUrl(configuration));
+    private readonly AvatarUrlResolver avatarUrls = new(configuration);
 
     public async Task<IReadOnlyCollection<AccountRole>> GetRolesAsync(CancellationToken cancellationToken)
     {
@@ -87,14 +85,14 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
             criteria.PageSize,
             users.Select(user =>
             {
-                var pictureType = ParsePictureType(user.PictureType);
+                var pictureType = AvatarUrlResolver.ParsePictureType(user.PictureType);
                 return new AccountSummary(
                     user.UserId,
                     user.DisplayName,
                     user.Picture,
                     pictureType,
-                    AvatarUrl(user.Picture, pictureType),
-                    DefaultAvatarUrl(),
+                    avatarUrls.AvatarUrl(user.Picture, pictureType),
+                    avatarUrls.DefaultAvatarUrl(),
                     user.Email,
                     user.Discord,
                     user.Youtube,
@@ -136,14 +134,14 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
         }
 
         var rolesByUser = await GetRoleIdsByUserAsync(connection, [userId], cancellationToken);
-        var pictureType = ParsePictureType(user.PictureType);
+        var pictureType = AvatarUrlResolver.ParsePictureType(user.PictureType);
         return new AccountDetails(
             user.UserId,
             user.DisplayName,
             user.Picture,
             pictureType,
-            AvatarUrl(user.Picture, pictureType),
-            DefaultAvatarUrl(),
+            avatarUrls.AvatarUrl(user.Picture, pictureType),
+            avatarUrls.DefaultAvatarUrl(),
             user.DiscordId,
             user.Email,
             user.PublicEmail != 0,
@@ -432,7 +430,7 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
         await using var connection = new MySqlConnection(DatabaseSettings.GetWebsiteConnectionString(configuration));
         var command = new CommandDefinition(
             sql,
-            new { UserId = userId, Picture = picture, PictureType = ToDatabaseValue(pictureType) },
+            new { UserId = userId, Picture = picture, PictureType = AvatarUrlResolver.ToDatabaseValue(pictureType) },
             cancellationToken: cancellationToken);
         return await connection.ExecuteAsync(command) > 0;
     }
@@ -443,7 +441,7 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
         await using var connection = new MySqlConnection(DatabaseSettings.GetWebsiteConnectionString(configuration));
         var command = new CommandDefinition(
             sql,
-            new { UserId = userId, PictureType = ToDatabaseValue(PictureType.Default) },
+            new { UserId = userId, PictureType = AvatarUrlResolver.ToDatabaseValue(PictureType.Default) },
             cancellationToken: cancellationToken);
         return await connection.ExecuteAsync(command) > 0;
     }
@@ -498,34 +496,6 @@ public sealed class AccountRepository(IConfiguration configuration) : IAccountRe
         "twitter",
         "castingcallclub"
     ];
-
-    private string AvatarUrl(string picture, PictureType pictureType) =>
-        pictureType == PictureType.Default
-            ? DefaultAvatarUrl()
-            : $"{storageBaseUrl}avatars/{picture}";
-
-    private string DefaultAvatarUrl() => $"{storageBaseUrl}avatars/default.png";
-
-    private static PictureType ParsePictureType(string value) =>
-        value switch
-        {
-            "default" => PictureType.Default,
-            "discord" => PictureType.Discord,
-            "manual" => PictureType.Manual,
-            _ => throw new InvalidOperationException($"Unknown picture type '{value}'.")
-        };
-
-    private static string ToDatabaseValue(PictureType pictureType) =>
-        pictureType switch
-        {
-            PictureType.Default => "default",
-            PictureType.Discord => "discord",
-            PictureType.Manual => "manual",
-            _ => throw new ArgumentOutOfRangeException(nameof(pictureType), pictureType, "Unknown picture type.")
-        };
-
-    private static string NormalizeStorageBaseUrl(string value) =>
-        value.EndsWith("/", StringComparison.Ordinal) ? value : $"{value}/";
 
     private sealed class AccountRow
     {
