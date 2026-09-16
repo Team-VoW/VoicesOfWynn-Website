@@ -14,6 +14,18 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
+      path: '/',
+      component: () => import('@/layouts/PublicLayout.vue'),
+      meta: { public: true },
+      children: [
+        {
+          path: '',
+          name: 'home',
+          component: () => import('@/features/home/views/HomeView.vue'),
+        },
+      ],
+    },
+    {
       path: '/login',
       name: 'login',
       component: () => import('@/features/auth/views/LoginView.vue'),
@@ -29,10 +41,6 @@ const router = createRouter({
       path: '/',
       component: () => import('@/layouts/AppLayout.vue'),
       children: [
-        {
-          path: '',
-          redirect: { name: 'reports' },
-        },
         {
           path: 'profile',
           name: 'profile',
@@ -82,7 +90,7 @@ const router = createRouter({
         },
       ],
     },
-    { path: '/:pathMatch(.*)*', redirect: { name: 'reports' } },
+    { path: '/:pathMatch(.*)*', redirect: { name: 'home' } },
   ],
 })
 

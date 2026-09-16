@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { RouterLink, useRouter } from 'vue-router'
 import { LogIn } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { discordLoginUrl, loginWithPassword } from '@/api/auth'
-import { WEBSITE_BASE_URL } from '@/api/config'
 import { messageFromContentError } from '@/features/content/contentUtils'
 import { queryClient } from '@/lib/queryClient'
 import { useAuthStore } from '@/stores/auth'
@@ -58,20 +57,20 @@ async function goAfterLogin() {
     style="background: radial-gradient(ellipse at 50% 20%, #2e1a47 0%, #1a0f2e 55%, #0b0617 100%)"
   >
     <div class="relative z-10 w-full max-w-md space-y-6">
-      <a
-        :href="WEBSITE_BASE_URL"
+      <RouterLink
+        :to="{ name: 'home' }"
         class="flex flex-col items-center gap-3 text-center text-white transition-transform hover:scale-[1.02]"
       >
         <img src="/wynnvplogo.svg" alt="Voices of Wynn logo" class="size-16 drop-shadow-lg" />
         <h1 class="font-display text-3xl drop-shadow">Voices of Wynn</h1>
-      </a>
+      </RouterLink>
       <p class="text-center">
-        <a
-          :href="WEBSITE_BASE_URL"
+        <RouterLink
+          :to="{ name: 'home' }"
           class="text-sm text-white/85 underline-offset-4 hover:text-white hover:underline"
         >
-          ← Back to main site
-        </a>
+          ← Back to home
+        </RouterLink>
       </p>
 
       <div class="space-y-6 rounded-xl border border-white/40 bg-card p-8 shadow-xl">

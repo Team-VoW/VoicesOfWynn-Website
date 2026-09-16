@@ -123,3 +123,34 @@
     letter-spacing: 0.02em;
   }
 }
+
+/*
+ * Minecraftia draws its glyphs between 1.51em and 0.51em above the baseline, so
+ * its line box overflows a little at the top and leaves a deep gap underneath.
+ * Icons next to a heading then look low, and the text below looks adrift.
+ * These trims collapse that padding, so a display element's box is exactly its
+ * glyphs and it aligns and spaces like any other text. Deliberately outside
+ * @layer so it wins over the line-height Tailwind's text-* utilities set; use
+ * --display-leading rather than a leading-* class to change line spacing.
+ */
+.font-display {
+  --display-leading: 1.35;
+  line-height: var(--display-leading);
+}
+
+/* display: table stops these margins collapsing out of the element, so they
+   trim the box instead of moving it. */
+.font-display::before,
+.font-display::after {
+  content: '';
+  display: table;
+  height: 0;
+}
+
+.font-display::before {
+  margin-bottom: calc(0.825em - var(--display-leading) * 0.5em);
+}
+
+.font-display::after {
+  margin-top: calc(0.175em - var(--display-leading) * 0.5em);
+}

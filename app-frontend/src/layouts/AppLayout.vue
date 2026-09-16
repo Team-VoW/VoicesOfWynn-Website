@@ -10,10 +10,9 @@ import {
   Users,
 } from 'lucide-vue-next'
 import { computed } from 'vue'
-import { RouterView, useRoute, useRouter } from 'vue-router'
+import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import { TooltipProvider } from '@/components/ui/tooltip'
-import { WEBSITE_BASE_URL } from '@/api/config'
 import { Capabilities, type Capability } from '@/lib/capabilities'
 import { queryClient } from '@/lib/queryClient'
 import { useAuthStore } from '@/stores/auth'
@@ -109,10 +108,10 @@ async function logout() {
           class="sticky top-0 hidden h-screen w-64 shrink-0 border-r border-[--brand-violet]/15 md:flex md:flex-col"
           style="background: var(--brand-gradient-soft)"
         >
-          <a :href="WEBSITE_BASE_URL" class="flex items-center gap-3 px-5 py-5">
+          <RouterLink :to="{ name: 'home' }" class="flex items-center gap-3 px-5 py-5">
             <img src="/wynnvplogo.svg" alt="Voices of Wynn logo" class="size-9 shrink-0" />
             <span class="font-display text-base tracking-wide">Voices of Wynn</span>
-          </a>
+          </RouterLink>
           <nav class="flex flex-1 flex-col gap-1 overflow-y-auto px-3 py-2">
             <RouterLink
               v-for="item in visibleNavItems"
@@ -140,10 +139,10 @@ async function logout() {
             class="sticky top-0 z-20 border-b border-[--brand-violet]/15 bg-background md:hidden"
           >
             <div class="flex items-center justify-between px-4 py-3">
-              <a :href="WEBSITE_BASE_URL" class="flex items-center gap-2">
+              <RouterLink :to="{ name: 'home' }" class="flex items-center gap-2">
                 <img src="/wynnvplogo.svg" alt="Voices of Wynn logo" class="size-8 shrink-0" />
                 <span class="font-display text-base tracking-wide">Voices of Wynn</span>
-              </a>
+              </RouterLink>
               <Button variant="ghost" size="sm" @click="logout">Logout</Button>
             </div>
             <nav class="flex gap-1 overflow-x-auto px-4 pb-3">

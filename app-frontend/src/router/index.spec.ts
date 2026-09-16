@@ -1,0 +1,124 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { createPinia, setActivePinia } from 'pinia'
+import router from './index'
+import { Capabilities, type Capability } from '@/lib/capabilities'
+import { useAuthStore } from '@/stores/auth'
+
+// Node 25 ships its own (unusable) localStorage global that shadows jsdom's, so
+// the auth store gets a working in-memory one here.
+function memoryStorage(): Storage {
+  const entries = new Map<string, string>()
+  return {
+    get length() {
+      return entries.size
+    },
+    key: (index: number) => [...entries.keys()][index] ?? null,
+    getItem: (key: string) => entries.get(key) ?? null,
+    setItem: (key: string, value: string) => void entries.set(key, value),
+    removeItem: (key: string) => void entries.delete(key),
+    clear: () => entries.clear(),
+  }
+}
+
+function fakeAccessToken(capabilities: Capability[]) {
+  const encode = (value: object) => btoa(JSON.stringify(value)).replace(/=+$/, '')
+  return `${encode({ alg: 'none' })}.${encode({ display_name: 'Tester', capability: capabilities })}.sig`
+}
+
+function signIn(capabilities: Capability[] = [], forcePasswordChange = false) {
+  const auth = useAuthStore()
+  auth.setTokens(
+    fakeAccessToken(capabilities),
+    'refresh-token',
+    new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+    forcePasswordChange,
+  )
+}
+
+async function visit(path: string) {
+  await router.push(path).catch(() => {})
+  await router.isReady()
+  return router.currentRoute.value
+}
+
+beforeEach(async () => {
+  vi.stubGlobal('localStorage', memoryStorage())
+  setActivePinia(createPinia())
+  await router.replace('/')
+})
+
+describe('routing', () => {
+  it('shows the public home page to anonymous visitors', async () => {
+    const route = await visit('/')
+
+    expect(route.name).toBe('home')
+    expect(route.meta.public).toBe(true)
+  })
+
+  it('shows the public home page to signed-in visitors', async () => {
+    signIn([Capabilities.ReportsView])
+
+    const route = await visit('/')
+
+    expect(route.name).toBe('home')
+  })
+
+  it('sends unknown URLs to home', async () => {
+    const route = await visit('/this-page-does-not-exist')
+
+    expect(route.name).toBe('home')
+  })
+
+  it('sends anonymous visitors of a protected route to login with a redirect', async () => {
+    const route = await visit('/admin/reports')
+
+    expect(route.name).toBe('login')
+    expect(route.query.redirect).toBe('/admin/reports')
+  })
+
+  it('keeps the login page reachable while signed out', async () => {
+    const route = await visit('/login')
+
+    expect(route.name).toBe('login')
+  })
+
+  it('sends signed-in visitors away from the login page', async () => {
+    signIn()
+
+    const route = await visit('/login')
+
+    expect(route.name).toBe('profile')
+  })
+
+  it('blocks protected routes the account has no capability for', async () => {
+    signIn([Capabilities.AnalyticsView])
+
+    const route = await visit('/admin/accounts')
+
+    expect(route.name).toBe('analytics')
+  })
+
+  it('allows protected routes the account has the capability for', async () => {
+    signIn([Capabilities.ReportsView])
+
+    const route = await visit('/admin/reports')
+
+    expect(route.name).toBe('reports')
+  })
+
+  it('holds accounts that must change their password on the profile page', async () => {
+    signIn([Capabilities.ReportsView], true)
+
+    const route = await visit('/admin/reports')
+
+    expect(route.name).toBe('profile')
+  })
+
+  it('still lets accounts that must change their password read the home page', async () => {
+    signIn([Capabilities.ReportsView], true)
+
+    const route = await visit('/')
+
+    expect(route.name).toBe('home')
+  })
+})
