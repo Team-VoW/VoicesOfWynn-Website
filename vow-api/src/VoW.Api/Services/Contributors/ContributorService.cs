@@ -120,15 +120,12 @@ public sealed class ContributorService(
         string ipAddress,
         CancellationToken cancellationToken)
     {
-        var profile = await contributorRepository.GetProfileAsync(userId, cancellationToken);
-        if (profile is null)
+        var npcIds = await contributorRepository.GetVoicedNpcIdsAsync(userId, cancellationToken);
+        if (npcIds is null)
         {
             return null;
         }
 
-        var npcIds = (await contributorRepository.GetVoicedNpcsAsync(userId, cancellationToken))
-            .Select(npc => npc.NpcId)
-            .ToArray();
         var votes = await voteService.GetVotesAsync(npcIds, user, ipAddress, cancellationToken);
 
         return new ContributorVotesResponse(

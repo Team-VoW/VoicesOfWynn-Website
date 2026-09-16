@@ -227,6 +227,13 @@ internal sealed class FakeContentPages : IContentPageRepository
                 new QuestNpc(ContentPageTests.CastNpcId, "Captain Ackbar", false, 3, 1, 4, 36, Puppy, Kmaxi)])
             : null);
 
+    public Task<IReadOnlyCollection<int>?> GetQuestNpcIdsAsync(
+        string degeneratedName,
+        CancellationToken cancellationToken) =>
+        Task.FromResult<IReadOnlyCollection<int>?>(degeneratedName == "flightindistress"
+            ? [1, ContentPageTests.CastNpcId]
+            : null);
+
     public Task<NpcDetail?> GetNpcAsync(int npcId, CancellationToken cancellationToken) =>
         Task.FromResult(npcId == ContentPageTests.CastNpcId
             ? new NpcDetail(ContentPageTests.CastNpcId, "Captain Ackbar", false, 3, 1, 4, 36, Puppy, [

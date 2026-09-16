@@ -54,12 +54,12 @@ const {
 const npcs = computed(() => npcData.value?.pages.flatMap((page) => page.results) ?? [])
 const npcTotal = computed(() => npcData.value?.pages[0]?.total ?? 0)
 
-const { data: votes } = useNpcListVotes(computed(() => npcs.value.map((npc) => npc.npcId)))
+const votes = useNpcListVotes(computed(() => npcs.value.map((npc) => npc.npcId)))
 
 const myVotes = computed(() => {
   const map = new Map<number, VoteType>()
-  for (const npcId of votes.value?.upvoted ?? []) map.set(npcId, 'Up')
-  for (const npcId of votes.value?.downvoted ?? []) map.set(npcId, 'Down')
+  for (const npcId of votes.value.upvoted) map.set(npcId, 'Up')
+  for (const npcId of votes.value.downvoted) map.set(npcId, 'Down')
   return map
 })
 

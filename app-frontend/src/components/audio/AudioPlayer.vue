@@ -29,8 +29,9 @@ async function toggle() {
   try {
     await element.play()
   } catch {
-    // Autoplay policies and missing files both land here; the button simply stays idle.
-    failed.value = true
+    // Pausing an element before playback has begun rejects this promise, which is exactly what
+    // claiming the player for another clip does - so a rejection is no proof the clip is broken.
+    // A recording that genuinely cannot be played raises the element's error event instead.
     playing.value = false
   }
 }

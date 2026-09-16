@@ -56,7 +56,9 @@ public sealed class ContributorRepository(IConfiguration configuration) : IContr
 
         var rows = (await connection.QueryAsync<ContributorRow>(new CommandDefinition(
             pageSql,
-            new { PageSize = pageSize, Offset = (page - 1) * pageSize },
+            // Widened before multiplying: page is only bounded above by int.MaxValue, and an
+            // overflowed offset would reach MySQL negative.
+            new { PageSize = pageSize, Offset = (long)(page - 1) * pageSize },
             cancellationToken: cancellationToken))).AsList();
 
         if (rows.Count == 0)
@@ -128,6 +130,35 @@ public sealed class ContributorRepository(IConfiguration configuration) : IContr
             NullIfEmpty(row.Twitter),
             NullIfEmpty(row.CastingCallClub),
             rolesByUser.GetValueOrDefault(userId, []));
+    }
+
+    public async Task<IReadOnlyCollection<int>?> GetVoicedNpcIdsAsync(int userId, CancellationToken cancellationToken)
+    {
+        // The EXISTS mirrors the recording join in GetVoicedNpcsAsync below, so the votes answer
+        // covers exactly the characters the profile page shows and no others.
+        const string sql = """
+            SELECT n.npc_id
+            FROM npc n
+            WHERE n.voice_actor_id = @UserId
+              AND EXISTS (
+                  SELECT 1
+                  FROM recording r
+                  WHERE r.npc_id = n.npc_id AND (r.archived = FALSE OR n.archived = TRUE)
+              );
+            """;
+
+        await using var connection = Connect();
+        var exists = await connection.ExecuteScalarAsync<bool>(new CommandDefinition(
+            "SELECT EXISTS(SELECT 1 FROM user WHERE user_id = @UserId);",
+            new { UserId = userId },
+            cancellationToken: cancellationToken));
+        if (!exists)
+        {
+            return null;
+        }
+
+        return (await connection.QueryAsync<int>(
+            new CommandDefinition(sql, new { UserId = userId }, cancellationToken: cancellationToken))).AsList();
     }
 
     public async Task<IReadOnlyCollection<VoicedNpc>> GetVoicedNpcsAsync(int userId, CancellationToken cancellationToken)

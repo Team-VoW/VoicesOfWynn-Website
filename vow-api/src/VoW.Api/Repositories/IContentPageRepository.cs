@@ -13,6 +13,12 @@ public interface IContentPageRepository
     /// <summary>The quest addressed by its URL name, or null when no such quest exists.</summary>
     Task<QuestDetail?> GetQuestAsync(string degeneratedName, CancellationToken cancellationToken);
 
+    /// <summary>
+    /// Just the ids of a quest's cast, or null when no such quest exists. The per-caller votes
+    /// endpoint needs nothing else, and the full cast query is far too much work for two columns.
+    /// </summary>
+    Task<IReadOnlyCollection<int>?> GetQuestNpcIdsAsync(string degeneratedName, CancellationToken cancellationToken);
+
     Task<NpcDetail?> GetNpcAsync(int npcId, CancellationToken cancellationToken);
 
     /// <summary>

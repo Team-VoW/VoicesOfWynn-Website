@@ -1,5 +1,5 @@
 import { computed, type ComputedRef, type Ref } from 'vue'
-import { useInfiniteQuery, useQuery } from '@tanstack/vue-query'
+import { useInfiniteQuery, useQueries, useQuery } from '@tanstack/vue-query'
 import {
   getMyNpcVote,
   getNpc,
@@ -85,15 +85,36 @@ export function useNpcs(search: Ref<string> | ComputedRef<string>) {
 /**
  * The caller's votes on the NPCs loaded so far, kept apart from the index so that response stays
  * identical for every visitor. A failure here only costs the highlight.
+ *
+ * Asked one page of ids at a time rather than as a single growing list. The server caps a lookup
+ * at 200 ids, so re-sending everything the infinite scroll has accumulated would quietly stop
+ * highlighting anything past that point, and the query string would keep growing until it no
+ * longer fit in a request line. Chunking on the page size also leaves every key but the newest
+ * one unchanged, so a page's votes are fetched once.
  */
 export function useNpcListVotes(npcIds: Ref<number[]> | ComputedRef<number[]>) {
-  return useQuery({
-    queryKey: computed(() => ['npcs', 'my-votes', npcIds.value] as const),
-    queryFn: ({ signal }) => getNpcListVotes(npcIds.value, signal),
-    enabled: computed(() => npcIds.value.length > 0),
-    // Re-asked as the list grows, so the previous answer stands while the next one is in flight.
-    placeholderData: (previous) => previous,
-    staleTime: 60_000,
-    retry: false,
+  return useQueries({
+    queries: computed(() =>
+      chunk(npcIds.value, NPCS_PAGE_SIZE).map((ids) => ({
+        queryKey: ['npcs', 'my-votes', ids] as const,
+        queryFn: ({ signal }: { signal: AbortSignal }) => getNpcListVotes(ids, signal),
+        staleTime: 60_000,
+        retry: false,
+      })),
+    ),
+    // Pages that have not answered yet simply contribute nothing, so the highlights already on
+    // screen stay put while the newest page is in flight.
+    combine: (results) => ({
+      upvoted: results.flatMap((result) => result.data?.upvoted ?? []),
+      downvoted: results.flatMap((result) => result.data?.downvoted ?? []),
+    }),
   })
+}
+
+function chunk(ids: readonly number[], size: number) {
+  const chunks: number[][] = []
+  for (let start = 0; start < ids.length; start += size) {
+    chunks.push(ids.slice(start, start + size))
+  }
+  return chunks
 }

@@ -26,7 +26,8 @@ public sealed class FeedbackDatabaseTests
         await db.ExecuteAsync("DELETE FROM quest WHERE degenerated_name IN ('feedback_test_later', 'feedback_test_ambiguous_1', 'feedback_test_ambiguous_2')");
         await db.ExecuteAsync("INSERT INTO quest (name, degenerated_name) VALUES ('Recover the Past', 'feedback_test_recover') ON DUPLICATE KEY UPDATE name=VALUES(name)");
         var repository = new QuestFeedbackRepository(config);
-        var service = new QuestFeedbackService(repository, config);
+        var writeLimits = new WriteLimitRepository(config);
+        var service = new QuestFeedbackService(repository, writeLimits, config);
         async Task<QuestRatingRequest> Rate(string name, int score)
         {
             var r = new QuestRatingRequest(Guid.NewGuid(), Guid.NewGuid(), name, score, "v2.2.0");
@@ -70,7 +71,7 @@ public sealed class FeedbackDatabaseTests
         Assert.All(responses, x => Assert.Equal(responses[0], x));
         Assert.Equal(1, await db.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM quest_feedback WHERE submission_id=@id", new { id = concurrent.SubmissionId.ToString() }));
         var key = System.Security.Cryptography.SHA256.HashData("test-limit"u8.ToArray());
-        var limits = await Task.WhenAll(Enumerable.Range(0, 10).Select(_ => repository.ConsumeLimitAsync(key, 3, default)));
+        var limits = await Task.WhenAll(Enumerable.Range(0, 10).Select(_ => writeLimits.ConsumeLimitAsync(key, 3, default)));
         Assert.Equal(3, limits.Count(x => x));
         await db.ExecuteAsync("INSERT INTO quest (name, degenerated_name) VALUES ('Ambiguous', 'feedback_test_ambiguous_1'), ('AMBIGUOUS', 'feedback_test_ambiguous_2') ON DUPLICATE KEY UPDATE name=VALUES(name)");
         await Rate("Ambiguous", 3);

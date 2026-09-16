@@ -68,17 +68,13 @@ public sealed class QuestPageService(
         string ipAddress,
         CancellationToken cancellationToken)
     {
-        var quest = await repository.GetQuestAsync(degeneratedName, cancellationToken);
-        if (quest is null)
+        var npcIds = await repository.GetQuestNpcIdsAsync(degeneratedName, cancellationToken);
+        if (npcIds is null)
         {
             return null;
         }
 
-        var votes = await voteService.GetVotesAsync(
-            quest.Npcs.Select(npc => npc.NpcId).ToArray(),
-            user,
-            ipAddress,
-            cancellationToken);
+        var votes = await voteService.GetVotesAsync(npcIds, user, ipAddress, cancellationToken);
 
         return new NpcVotesResponse(
             votes.Where(vote => vote.Value == VoteType.Up).Select(vote => vote.Key).ToArray(),

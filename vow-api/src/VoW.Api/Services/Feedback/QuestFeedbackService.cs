@@ -7,7 +7,10 @@ namespace VoW.Api.Services.Feedback;
 
 public sealed record FeedbackWriteResult(int Status, QuestRatingResponse? Rating = null);
 
-public sealed class QuestFeedbackService(IQuestFeedbackRepository repository, IConfiguration configuration)
+public sealed class QuestFeedbackService(
+    IQuestFeedbackRepository repository,
+    IWriteLimitRepository writeLimits,
+    IConfiguration configuration)
 {
     private static byte[] Hash(string value) => SHA256.HashData(Encoding.UTF8.GetBytes(value));
 
@@ -24,7 +27,7 @@ public sealed class QuestFeedbackService(IQuestFeedbackRepository repository, IC
     }
 
     private Task<bool> Limit(string kind, string value, int limit, CancellationToken ct) =>
-        repository.ConsumeLimitAsync(Hash(kind + ":" + value), limit, ct);
+        writeLimits.ConsumeLimitAsync(Hash(kind + ":" + value), limit, ct);
 
     public async Task<FeedbackWriteResult> RateAsync(QuestRatingRequest request, string ip, CancellationToken ct)
     {

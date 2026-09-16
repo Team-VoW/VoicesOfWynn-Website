@@ -146,6 +146,26 @@ public sealed class ContentPageRepository(IConfiguration configuration) : IConte
                     npc.SoundEditorPictureType))).ToArray());
     }
 
+    public async Task<IReadOnlyCollection<int>?> GetQuestNpcIdsAsync(
+        string degeneratedName,
+        CancellationToken cancellationToken)
+    {
+        await using var connection = Connect();
+        var questId = await connection.QuerySingleOrDefaultAsync<int?>(new CommandDefinition(
+            "SELECT quest_id FROM quest WHERE degenerated_name = @DegeneratedName;",
+            new { DegeneratedName = degeneratedName },
+            cancellationToken: cancellationToken));
+        if (questId is null)
+        {
+            return null;
+        }
+
+        return (await connection.QueryAsync<int>(new CommandDefinition(
+            "SELECT npc_id FROM npc_quest WHERE quest_id = @QuestId;",
+            new { QuestId = questId.Value },
+            cancellationToken: cancellationToken))).AsList();
+    }
+
     public async Task<NpcDetail?> GetNpcAsync(int npcId, CancellationToken cancellationToken)
     {
         const string npcSql = """
@@ -235,12 +255,16 @@ public sealed class ContentPageRepository(IConfiguration configuration) : IConte
         var where = string.Empty;
         if (criteria.Search is not null)
         {
-            where = "WHERE (n.name LIKE @Search OR n.degenerated_name LIKE @Search)";
-            parameters.Add("Search", $"%{criteria.Search}%");
+            where = """
+                WHERE (n.name LIKE @Search ESCAPE '\\' OR n.degenerated_name LIKE @Search ESCAPE '\\')
+                """;
+            parameters.Add("Search", $"%{EscapeLike(criteria.Search)}%");
         }
 
         parameters.Add("PageSize", criteria.PageSize);
-        parameters.Add("Offset", (criteria.Page - 1) * criteria.PageSize);
+        // Widened before multiplying: page is only bounded above by int.MaxValue, and an overflowed
+        // offset would reach MySQL negative.
+        parameters.Add("Offset", (long)(criteria.Page - 1) * criteria.PageSize);
 
         var countSql = $"SELECT COUNT(*) FROM npc n {where};";
 
@@ -344,6 +368,16 @@ public sealed class ContentPageRepository(IConfiguration configuration) : IConte
             avatarUrls.AvatarUrl(picture, pictureType),
             avatarUrls.DefaultAvatarUrl());
     }
+
+    /// <summary>
+    /// Neutralises the LIKE metacharacters in a search term. Without this a visitor typing % would
+    /// match every NPC, _ would match any single character, and a trailing backslash would eat the
+    /// closing wildcard.
+    /// </summary>
+    private static string EscapeLike(string term) => term
+        .Replace("\\", "\\\\")
+        .Replace("%", "\\%")
+        .Replace("_", "\\_");
 
     /// <summary>The four columns an outer-joined credit contributes, shared by the row types below.</summary>
     private abstract class CreditColumns
