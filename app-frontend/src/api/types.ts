@@ -460,6 +460,28 @@ export interface QuestListResponse {
   quests: QuestListItem[]
 }
 
+/** One NPC in the mod-contents index. Shaped for the shared NPC card, plus its voice actor. */
+export interface NpcListItem {
+  npcId: number
+  npcName: string
+  imageUrl: string
+  defaultImageUrl: string
+  archived: boolean
+  upvotes: number
+  downvotes: number
+  commentCount: number
+  recordingCount: number
+  voiceActor: ContentCredit | null
+  quests: NpcQuestAppearance[]
+}
+
+export interface NpcListResponse {
+  total: number
+  page: number
+  pageSize: number
+  results: NpcListItem[]
+}
+
 export interface QuestNpc {
   npcId: number
   npcName: string

@@ -1,6 +1,7 @@
 using Dapper;
 using MySqlConnector;
 using VoW.Api.Domain.Contents;
+using VoW.Api.Domain.Contributors;
 
 namespace VoW.Api.Repositories;
 
@@ -226,6 +227,109 @@ public sealed class ContentPageRepository(IConfiguration configuration) : IConte
                     quest.CreditPictureType))).ToArray());
     }
 
+    public async Task<NpcListPage> GetNpcListAsync(NpcListCriteria criteria, CancellationToken cancellationToken)
+    {
+        var parameters = new DynamicParameters();
+        // Matched against both names for the same reason the quest filter is: a visitor who types
+        // the URL spelling of a character should find them too.
+        var where = string.Empty;
+        if (criteria.Search is not null)
+        {
+            where = "WHERE (n.name LIKE @Search OR n.degenerated_name LIKE @Search)";
+            parameters.Add("Search", $"%{criteria.Search}%");
+        }
+
+        parameters.Add("PageSize", criteria.PageSize);
+        parameters.Add("Offset", (criteria.Page - 1) * criteria.PageSize);
+
+        var countSql = $"SELECT COUNT(*) FROM npc n {where};";
+
+        // Ordered by name, then by id to make the order total: infinite scroll pages by offset, and
+        // a tie broken differently between two queries would skip or repeat a character.
+        // Recording visibility follows the rule used everywhere else - archived recordings stay
+        // hidden unless the whole NPC is archived, in which case they are all that is left.
+        var pageSql = $"""
+            SELECT
+                n.npc_id AS NpcId,
+                n.name AS NpcName,
+                n.archived AS Archived,
+                n.upvotes AS Upvotes,
+                n.downvotes AS Downvotes,
+                (
+                    SELECT COUNT(*)
+                    FROM comment c
+                    WHERE c.npc_id = n.npc_id
+                ) AS CommentCount,
+                (
+                    SELECT COUNT(*)
+                    FROM recording r
+                    WHERE r.npc_id = n.npc_id AND (r.archived = FALSE OR n.archived = TRUE)
+                ) AS RecordingCount,
+                va.user_id AS CreditUserId,
+                va.display_name AS CreditDisplayName,
+                va.picture AS CreditPicture,
+                va.picture_type AS CreditPictureType
+            FROM npc n
+            LEFT JOIN user va ON va.user_id = n.voice_actor_id
+            {where}
+            ORDER BY n.name, n.npc_id
+            LIMIT @PageSize OFFSET @Offset;
+            """;
+
+        // Taken from npc_quest, not from the recordings, so a character who has been cast but not
+        // yet recorded still says which quest they belong to.
+        const string questSql = """
+            SELECT
+                nq.npc_id AS NpcId,
+                q.quest_id AS QuestId,
+                q.name AS QuestName,
+                q.degenerated_name AS QuestDegeneratedName
+            FROM npc_quest nq
+            JOIN quest q ON q.quest_id = nq.quest_id
+            WHERE nq.npc_id IN @NpcIds
+            ORDER BY q.name, q.quest_id;
+            """;
+
+        await using var connection = Connect();
+        var total = await connection.ExecuteScalarAsync<int>(
+            new CommandDefinition(countSql, parameters, cancellationToken: cancellationToken));
+
+        var rows = (await connection.QueryAsync<NpcListRow>(
+            new CommandDefinition(pageSql, parameters, cancellationToken: cancellationToken))).AsList();
+        if (rows.Count == 0)
+        {
+            return new NpcListPage(total, criteria.Page, criteria.PageSize, []);
+        }
+
+        var appearances = (await connection.QueryAsync<NpcListQuestRow>(new CommandDefinition(
+            questSql,
+            new { NpcIds = rows.Select(row => row.NpcId).ToArray() },
+            cancellationToken: cancellationToken))).AsList();
+
+        var questsByNpc = appearances
+            .GroupBy(row => row.NpcId)
+            .ToDictionary(
+                group => group.Key,
+                group => (IReadOnlyCollection<NpcQuestAppearance>)group
+                    .Select(row => new NpcQuestAppearance(row.QuestId, row.QuestName, row.QuestDegeneratedName))
+                    .ToArray());
+
+        return new NpcListPage(
+            total,
+            criteria.Page,
+            criteria.PageSize,
+            rows.Select(row => new NpcListItem(
+                row.NpcId,
+                row.NpcName,
+                row.Archived != 0,
+                row.Upvotes,
+                row.Downvotes,
+                row.CommentCount,
+                row.RecordingCount,
+                Credit(row.CreditUserId, row.CreditDisplayName, row.CreditPicture, row.CreditPictureType),
+                questsByNpc.GetValueOrDefault(row.NpcId, []))).ToArray());
+    }
+
     /// <summary>Builds a credit from an outer-joined user, which is absent when the role is uncast.</summary>
     private ContentCredit? Credit(int? userId, string? displayName, string? picture, string? pictureType)
     {
@@ -331,6 +435,35 @@ public sealed class ContentPageRepository(IConfiguration configuration) : IConte
 
     private sealed class NpcQuestRow : CreditColumns
     {
+        public int QuestId { get; set; }
+
+        public string QuestName { get; set; } = string.Empty;
+
+        public string QuestDegeneratedName { get; set; } = string.Empty;
+    }
+
+    private sealed class NpcListRow : CreditColumns
+    {
+        public int NpcId { get; set; }
+
+        public string NpcName { get; set; } = string.Empty;
+
+        public sbyte Archived { get; set; }
+
+        public int Upvotes { get; set; }
+
+        public int Downvotes { get; set; }
+
+        public int CommentCount { get; set; }
+
+        public int RecordingCount { get; set; }
+    }
+
+    /// <summary>A quest an NPC on the index speaks in, carried alongside the NPC id it belongs to.</summary>
+    private sealed class NpcListQuestRow
+    {
+        public int NpcId { get; set; }
+
         public int QuestId { get; set; }
 
         public string QuestName { get; set; } = string.Empty;

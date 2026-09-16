@@ -128,6 +128,16 @@ const router = createRouter({
       ],
     },
   ],
+  // Without this the reader keeps the scroll offset of the page they left, landing halfway down
+  // the next one. Back and forward restore where they were; anything else starts at the top.
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) return savedPosition
+    if (to.hash) return { el: to.hash, top: 80 }
+    // Staying on the same page and only changing the query (a filter, a tab) is not a new page,
+    // so it must not yank the reader back up.
+    if (to.path === from.path) return false
+    return { top: 0 }
+  },
 })
 
 router.beforeEach((to: RouteLocationNormalized) => {

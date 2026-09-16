@@ -1,7 +1,9 @@
 using System.Security.Claims;
 using Microsoft.Extensions.Caching.Memory;
+using VoW.Api.Contracts.Contents;
 using VoW.Api.Contracts.Npcs;
 using VoW.Api.Domain.Contents;
+using VoW.Api.Domain.Contributors;
 using VoW.Api.Domain.Npcs;
 using VoW.Api.Repositories;
 using VoW.Api.Services.Contents;
@@ -110,6 +112,79 @@ public sealed class ContentPageTests
         Assert.Equal(VoteType.Down, voted!.MyVote);
     }
 
+    [Fact]
+    public async Task TheNpcIndexCarriesThePortraitsAndQuestsACardNeeds()
+    {
+        // The index is not about any one quest, so each character has to say where they come from
+        // and which portrait to draw - the card is shared with the quest and cast pages.
+        var page = await NpcService().ListAsync(new NpcSearchRequest(), default);
+
+        var ackbar = page.Results.Single(npc => npc.NpcName == "Captain Ackbar");
+        Assert.Equal($"https://storage.test/npcs/{CastNpcId}.webp", ackbar.ImageUrl);
+        Assert.Equal("https://storage.test/npcs/default.webp", ackbar.DefaultImageUrl);
+        Assert.Equal(["Flight in Distress", "Silent Role"], ackbar.Quests.Select(quest => quest.QuestName));
+        Assert.Equal("puppy", ackbar.VoiceActor!.DisplayName);
+        Assert.Null(page.Results.Single(npc => npc.NpcName == "Broadcast").VoiceActor);
+    }
+
+    [Fact]
+    public async Task ABlankSearchAsksForEveryNpcRatherThanForTheEmptyString()
+    {
+        // The box is cleared by deleting its text, which arrives as "" or whitespace; treating
+        // that as a term would match nothing and empty the index.
+        var repository = new FakeContentPages();
+
+        await NpcService(repository: repository).ListAsync(new NpcSearchRequest("   "), default);
+
+        Assert.Null(repository.LastNpcCriteria!.Search);
+    }
+
+    [Fact]
+    public async Task ASearchIsTrimmedAndNarrowsTheIndex()
+    {
+        var page = await NpcService().ListAsync(new NpcSearchRequest(" ackbar "), default);
+
+        Assert.Equal(["Captain Ackbar"], page.Results.Select(npc => npc.NpcName));
+        Assert.Equal(1, page.Total);
+    }
+
+    [Fact]
+    public async Task AnOutOfRangePageSizeIsClampedRatherThanPassedToTheQuery()
+    {
+        // Page and size come off the query string, and the size becomes a LIMIT.
+        var repository = new FakeContentPages();
+
+        await NpcService(repository: repository).ListAsync(new NpcSearchRequest(Page: 0, PageSize: 5000), default);
+
+        Assert.Equal(1, repository.LastNpcCriteria!.Page);
+        Assert.Equal(100, repository.LastNpcCriteria.PageSize);
+    }
+
+    [Fact]
+    public async Task AListingAsksForVotesOnlyOnTheNpcsItShows()
+    {
+        var votes = new FakeVotes { [CastNpcId] = VoteType.Up, [1] = VoteType.Down };
+
+        var result = await NpcService(votes).GetVotesAsync([CastNpcId, CastNpcId, 1], Anonymous(), Ip, default);
+
+        // Repeated ids come from pages overlapping; the lookup builds an IN list from them.
+        Assert.Equal([CastNpcId, 1], votes.LastRequested);
+        Assert.Equal([CastNpcId], result.Upvoted);
+        Assert.Equal([1], result.Downvoted);
+    }
+
+    [Fact]
+    public async Task AskingAboutNoNpcsAnswersEmptyWithoutTouchingTheVoteLookup()
+    {
+        var votes = new FakeVotes();
+
+        var result = await NpcService(votes).GetVotesAsync([], Anonymous(), Ip, default);
+
+        Assert.Empty(result.Upvoted);
+        Assert.Empty(result.Downvoted);
+        Assert.Empty(votes.LastRequested);
+    }
+
     private const string Ip = "203.0.113.5";
 
     private static ClaimsPrincipal Anonymous() => new(new ClaimsIdentity());
@@ -125,8 +200,8 @@ public sealed class ContentPageTests
             votes ?? new FakeVotes());
     }
 
-    private static NpcPageService NpcService(FakeVotes? votes = null) => new(
-        new FakeContentPages(),
+    private static NpcPageService NpcService(FakeVotes? votes = null, FakeContentPages? repository = null) => new(
+        repository ?? new FakeContentPages(),
         new MemoryNpcs(),
         new FakeImageStorage(),
         votes ?? new FakeVotes());
@@ -158,6 +233,31 @@ internal sealed class FakeContentPages : IContentPageRepository
                 new NpcQuestCredit(1, "Flight in Distress", "flightindistress", Kmaxi),
                 new NpcQuestCredit(9, "Silent Role", "silentrole", null)])
             : null);
+
+    /// <summary>Records what the service asked for, so the tests can assert on the narrowing.</summary>
+    public NpcListCriteria? LastNpcCriteria { get; private set; }
+
+    public Task<NpcListPage> GetNpcListAsync(NpcListCriteria criteria, CancellationToken cancellationToken)
+    {
+        LastNpcCriteria = criteria;
+        NpcListItem[] all =
+        [
+            new(1, "Broadcast", false, 0, 0, 0, 2, null, []),
+            new(ContentPageTests.CastNpcId, "Captain Ackbar", false, 3, 1, 4, 36, Puppy, [
+                new NpcQuestAppearance(1, "Flight in Distress", "flightindistress"),
+                new NpcQuestAppearance(9, "Silent Role", "silentrole")]),
+        ];
+
+        var matches = criteria.Search is null
+            ? all
+            : all.Where(npc => npc.NpcName.Contains(criteria.Search, StringComparison.OrdinalIgnoreCase)).ToArray();
+
+        return Task.FromResult(new NpcListPage(
+            matches.Length,
+            criteria.Page,
+            criteria.PageSize,
+            matches.Skip((criteria.Page - 1) * criteria.PageSize).Take(criteria.PageSize).ToArray()));
+    }
 }
 
 internal sealed class FakeImageStorage : INpcImageStorage

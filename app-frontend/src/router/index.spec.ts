@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import type { RouteLocationNormalized } from 'vue-router'
 import { createPinia, setActivePinia } from 'pinia'
 import router from './index'
 import { Capabilities, type Capability } from '@/lib/capabilities'
@@ -43,6 +44,8 @@ async function visit(path: string) {
 
 beforeEach(async () => {
   vi.stubGlobal('localStorage', memoryStorage())
+  // jsdom has no scrollTo, and navigating now asks for one.
+  vi.stubGlobal('scrollTo', () => {})
   setActivePinia(createPinia())
   await router.replace('/')
 })
@@ -177,5 +180,33 @@ describe('routing', () => {
     const route = await visit('/')
 
     expect(route.name).toBe('home')
+  })
+})
+
+describe('scroll position', () => {
+  const scrollBehavior = router.options.scrollBehavior!
+
+  const at = (path: string, hash = '') =>
+    ({ path, hash, fullPath: `${path}${hash}` }) as RouteLocationNormalized
+
+  it('starts a new page at the top rather than where the last one was left', () => {
+    expect(scrollBehavior(at('/credits'), at('/contents'), null)).toEqual({ top: 0 })
+  })
+
+  it('puts the reader back where they were when they go back', () => {
+    const saved = { left: 0, top: 940 }
+
+    expect(scrollBehavior(at('/contents'), at('/credits'), saved)).toBe(saved)
+  })
+
+  it('leaves the page where it is when only the query changes', () => {
+    expect(scrollBehavior(at('/contents'), at('/contents'), null)).toBe(false)
+  })
+
+  it('scrolls an anchor clear of the sticky header', () => {
+    expect(scrollBehavior(at('/faq', '#data-processing'), at('/'), null)).toEqual({
+      el: '#data-processing',
+      top: 80,
+    })
   })
 })

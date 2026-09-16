@@ -23,6 +23,29 @@ public sealed class NpcsController(
     /// </remarks>
     private string ConnectionIp => HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
 
+    /// <remarks>
+    /// The mod-contents index browses this page by page. Identical for every visitor, so it is
+    /// cached the same way the quest index is; the caller's own votes come from my-votes below.
+    /// </remarks>
+    [HttpGet]
+    public async Task<ActionResult<NpcListResponse>> List(
+        [FromQuery] NpcSearchRequest request,
+        CancellationToken cancellationToken)
+    {
+        Response.Headers.CacheControl = "public, max-age=60";
+        return Ok(await pageService.ListAsync(request, cancellationToken));
+    }
+
+    /// <summary>The caller's standing votes among the NPCs a listing page is showing.</summary>
+    [HttpGet("my-votes")]
+    public async Task<ActionResult<NpcVotesResponse>> MyVotes(
+        [FromQuery] int[] npcIds,
+        CancellationToken cancellationToken)
+    {
+        Response.Headers.CacheControl = "no-store";
+        return Ok(await pageService.GetVotesAsync(npcIds ?? [], User, ConnectionIp, cancellationToken));
+    }
+
     [HttpGet("{npcId:int}")]
     public async Task<ActionResult<NpcDetailResponse>> Get(int npcId, CancellationToken cancellationToken)
     {

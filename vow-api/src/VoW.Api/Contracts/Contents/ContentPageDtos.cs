@@ -1,3 +1,6 @@
+using System.ComponentModel.DataAnnotations;
+using VoW.Api.Contracts.Contributors;
+
 namespace VoW.Api.Contracts.Contents;
 
 /// <summary>A contributor credited on a quest or NPC page.</summary>
@@ -55,3 +58,30 @@ public sealed record NpcDetailResponse(
     int RecordingCount,
     ContentCreditResponse? VoiceActor,
     IReadOnlyCollection<NpcQuestCreditResponse> Quests);
+
+/// <summary>How the NPC index is asked for. The search matches a name the way the quest filter does.</summary>
+public sealed record NpcSearchRequest(
+    string? Search = null,
+    [Range(1, int.MaxValue)]
+    int Page = 1,
+    [Range(1, 100)]
+    int PageSize = 24);
+
+public sealed record NpcListItemResponse(
+    int NpcId,
+    string NpcName,
+    string ImageUrl,
+    string DefaultImageUrl,
+    bool Archived,
+    int Upvotes,
+    int Downvotes,
+    int CommentCount,
+    int RecordingCount,
+    ContentCreditResponse? VoiceActor,
+    IReadOnlyCollection<NpcQuestAppearanceResponse> Quests);
+
+public sealed record NpcListResponse(
+    int Total,
+    int Page,
+    int PageSize,
+    IReadOnlyCollection<NpcListItemResponse> Results);
