@@ -76,6 +76,10 @@ watch(() => route.hash, openFromHash)
             always use real human performances in our work, even if it’s imperfect.
           </p>
           <p>We use 100% real human voice actors in our work.</p>
+          <p>
+            Outside of voicing, we use AI to assist us with some coding and repetitive management
+            tasks.
+          </p>
         </FaqItem>
 
         <FaqItem
@@ -237,7 +241,7 @@ watch(() => route.hash, openFromHash)
         <div>
           <h2 class="font-display text-base text-[#2a1438]">Still stuck?</h2>
           <p class="mt-1.5 text-[#2a1438]/70">
-            Ask in the Discord server — someone is usually around.
+            Ask in the Discord server. Someone is usually around.
           </p>
         </div>
         <Button as-child variant="brand">

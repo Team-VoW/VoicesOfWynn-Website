@@ -82,17 +82,20 @@ const readyPages = [
           </Button>
         </div>
 
-        <!-- The waveform is the page's mark for a spoken line; here it stands for
-             the claim itself: every one of them was performed by a person. -->
-        <p
-          class="mt-7 inline-flex flex-wrap items-center gap-x-3 gap-y-1 rounded-3xl border border-[#fbd057]/45 bg-[#fbd057]/10 py-2 pl-4 pr-5 text-xs shadow-[0_0_30px_rgba(251,208,87,0.1)] sm:rounded-full sm:text-sm"
-        >
-          <span class="inline-flex items-center gap-2.5 text-[#fbd057]">
-            <VoiceMark class="h-3 w-auto shrink-0 sm:h-3.5" />
-            <span class="font-display">100% human voice acting</span>
-          </span>
-          <span class="hidden h-4 w-px bg-[#fbd057]/30 sm:block" aria-hidden="true" />
-          <span class="text-white/70">no AI voices</span>
+        <!-- Stated plainly rather than sold: this was a glowing badge that said the same thing
+             twice, in the tone of the thing it disclaims. The claim is scoped to voices on
+             purpose - the project does use AI elsewhere, for code and the like, so an unqualified
+             "never AI" would not be true. The waveform is the page's mark for a spoken line,
+             standing here for who performed it. -->
+        <p class="mt-7 flex max-w-xl flex-wrap items-center gap-x-2.5 gap-y-1 text-white/85">
+          <VoiceMark class="h-3.5 w-auto shrink-0 text-[#fbd057]" />
+          <span>100% human voice acting.</span>
+          <RouterLink
+            :to="{ name: 'faq', hash: '#ai-voices' }"
+            class="text-[#fbd057] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fbd057]"
+          >
+            We will never use AI for voices.
+          </RouterLink>
         </p>
       </div>
 
@@ -106,11 +109,10 @@ const readyPages = [
   <!-- The rest of the site -->
   <section class="border-y border-[#a340c4]/15 bg-[#faf6fd]">
     <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20">
-      <p class="flex items-center gap-3 text-xs uppercase tracking-[0.3em] text-[#7b1a9b]">
-        <VoiceMark class="h-3.5 w-auto text-[#a340c4]" />
-        More to explore
-      </p>
-      <h2 class="mt-4 font-display text-2xl text-[#2a1438] sm:text-3xl">More to explore</h2>
+      <h2 class="flex items-center gap-3 text-2xl text-[#2a1438] sm:text-3xl">
+        <VoiceMark class="h-3.5 w-auto shrink-0 text-[#a340c4]" />
+        <span class="font-display">More to explore</span>
+      </h2>
       <p class="mt-4 max-w-2xl text-lg leading-relaxed text-[#2a1438]/75">
         Browse who voiced what, read up on how the mod works, or meet the people behind it.
       </p>
