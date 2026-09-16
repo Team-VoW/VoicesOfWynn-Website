@@ -157,22 +157,18 @@ watch(
       >
         <span>
           Original design &amp; database structure by
-          <a
-            href="https://github.com/ShadyMedic"
-            target="_blank"
-            rel="noopener"
+          <RouterLink
+            :to="{ name: 'cast', params: { userId: 2 } }"
             class="text-[#fbd057] underline-offset-4 hover:underline"
-            >Shady</a
+            >Shady</RouterLink
           >
         </span>
         <span>
           Coded by
-          <a
-            href="https://github.com/kmaxii"
-            target="_blank"
-            rel="noopener"
+          <RouterLink
+            :to="{ name: 'cast', params: { userId: 1 } }"
             class="text-[#fbd057] underline-offset-4 hover:underline"
-            >kmaxi</a
+            >kmaxi</RouterLink
           >
         </span>
       </div>

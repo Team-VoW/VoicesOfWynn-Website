@@ -100,7 +100,6 @@ const readyPages = [
       </div>
 
       <div class="lg:pl-4">
-        <p class="mb-3 text-xs uppercase tracking-[0.3em] text-white/60">Trailer</p>
         <VideoEmbed video-id="7dAte6W6Eps" label="Play the Voices of Wynn trailer" />
       </div>
     </div>
@@ -228,30 +227,45 @@ const readyPages = [
 </template>
 
 <style scoped>
+/* No artwork behind the hero any more - the depth is all light on flat purple:
+   a warm rim where the crest and headline sit, a cooler magenta lift on the
+   trailer side, and a diagonal lattice at a few percent so the panel has a
+   weave without ever reading as a picture. */
 .hero {
   position: relative;
-  background: linear-gradient(160deg, #3b2159 0%, #2e1a47 45%, #1b0f2d 100%);
+  isolation: isolate;
+  background:
+    radial-gradient(110% 95% at 12% 5%, rgba(163, 64, 196, 0.38) 0%, transparent 66%),
+    radial-gradient(85% 85% at 92% 22%, rgba(251, 208, 87, 0.12) 0%, transparent 62%),
+    linear-gradient(160deg, #3d2259 0%, #2e1a47 50%, #1d1030 100%);
 }
 
-/* The block artwork stays a texture, not a picture: faint and softened so white
-   copy keeps its contrast against the flat purple underneath. */
+/* The lattice: two crossed stripe sets make the diamond grid the old block
+   artwork hinted at, masked so it fades out before it reaches the copy. */
 .hero::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: url('/images/web_back.webp') center / cover no-repeat;
-  opacity: 0.12;
-  filter: blur(2px);
+  z-index: -1;
+  background-image:
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 22px),
+    repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 22px);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.55) 55%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.55) 55%, transparent 100%);
   pointer-events: none;
 }
 
+/* Vignette plus the gold hairline that closes the section off. */
 .hero::after {
   content: '';
   position: absolute;
-  inset-inline: 0;
-  bottom: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(251, 208, 87, 0.55), transparent);
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(140% 125% at 50% 40%, transparent 55%, rgba(12, 6, 22, 0.42) 100%),
+    linear-gradient(90deg, transparent, rgba(251, 208, 87, 0.55), transparent) bottom / 100% 1px
+      no-repeat;
+  pointer-events: none;
 }
 
 .hero-content {
