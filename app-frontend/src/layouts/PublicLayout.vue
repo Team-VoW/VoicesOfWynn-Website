@@ -156,7 +156,7 @@ watch(
         class="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-8 text-sm sm:flex-row sm:items-center sm:justify-between sm:px-6"
       >
         <span>
-          Coded by
+          Original design &amp; database structure by
           <a
             href="https://github.com/ShadyMedic"
             target="_blank"
@@ -166,25 +166,7 @@ watch(
           >
         </span>
         <span>
-          Designed with &hearts; by
-          <a
-            href="https://github.com/Just5MoreMinutes"
-            target="_blank"
-            rel="noopener"
-            class="text-[#fbd057] underline-offset-4 hover:underline"
-            >Just5MoreMinutes</a
-          >
-          and
-          <a
-            href="https://github.com/kmaxii"
-            target="_blank"
-            rel="noopener"
-            class="text-[#fbd057] underline-offset-4 hover:underline"
-            >kmaxi</a
-          >
-        </span>
-        <span>
-          DevOps by
+          Coded by
           <a
             href="https://github.com/kmaxii"
             target="_blank"
