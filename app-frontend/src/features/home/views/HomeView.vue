@@ -112,7 +112,7 @@ const readyPages = [
         <VoiceMark class="h-3.5 w-auto shrink-0 text-[#a340c4]" />
         <span class="font-display">More to explore</span>
       </h2>
-      <p class="mt-4 max-w-2xl text-lg leading-relaxed text-[#2a1438]/75">
+      <p class="mt-4 max-w-3xl text-lg leading-relaxed text-[#2a1438]/75">
         Browse who voiced what, read up on how the mod works, or meet the people behind it.
       </p>
 
