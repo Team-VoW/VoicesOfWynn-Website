@@ -6,7 +6,7 @@ namespace VoW.Api.Services.Casting;
 
 public interface ICastingBotService
 {
-    Task<BotCastingRoundResponse> EnsureRoundAsync(BotEnsureCastingRoundRequest request, CancellationToken cancellationToken);
+    Task<CastingResult<BotCastingRoundResponse>> EnsureRoundAsync(BotEnsureCastingRoundRequest request, CancellationToken cancellationToken);
 
     Task<CastingResult<BotAuditionResponse>> AddAuditionAsync(
         int roundId,
@@ -25,12 +25,17 @@ public sealed class CastingBotService(
     CastingAuditionIngestService ingest,
     IConfiguration configuration) : ICastingBotService
 {
-    public async Task<BotCastingRoundResponse> EnsureRoundAsync(
+    public async Task<CastingResult<BotCastingRoundResponse>> EnsureRoundAsync(
         BotEnsureCastingRoundRequest request,
         CancellationToken cancellationToken)
     {
         var questName = request.QuestName.Trim();
-        var round = await rounds.FindActiveRoundBySourceAsync(CastingSource.Discord, questName, cancellationToken);
+        var round = await rounds.FindRoundBySourceAsync(CastingSource.Discord, questName, cancellationToken);
+        if (round is { Status: CastingRoundStatus.Closed or CastingRoundStatus.Archived })
+        {
+            return CastingResult.Invalid("round", "This casting round is closed.");
+        }
+
         var created = round is null;
         var roundId = round?.Id ?? await rounds.CreateRoundAsync(
             new NewCastingRound(
@@ -48,7 +53,7 @@ public sealed class CastingBotService(
             }
         }
 
-        return new BotCastingRoundResponse(roundId, created, AdminUrl(roundId));
+        return CastingResult<BotCastingRoundResponse>.Success(new BotCastingRoundResponse(roundId, created, AdminUrl(roundId)));
     }
 
     public async Task<CastingResult<BotAuditionResponse>> AddAuditionAsync(
@@ -61,6 +66,10 @@ public sealed class CastingBotService(
         if (round is null)
         {
             return CastingResult.NotFound();
+        }
+        if (round.Status is CastingRoundStatus.Closed or CastingRoundStatus.Archived)
+        {
+            return CastingResult.Invalid("round", "This casting round is closed.");
         }
 
         var characterName = request.CharacterName.Trim();

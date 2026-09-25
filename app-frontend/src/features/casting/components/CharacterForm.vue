@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -14,19 +14,11 @@ const props = defineProps<{
 
 const emit = defineEmits<{ submit: [body: SaveCastingCharacterRequest]; cancel: [] }>()
 
-const form = ref({ name: '', questName: '', direction: '' })
-
-watch(
-  () => props.initial,
-  (initial) => {
-    form.value = {
-      name: initial?.name ?? '',
-      questName: initial?.questName ?? '',
-      direction: initial?.direction ?? '',
-    }
-  },
-  { immediate: true },
-)
+const form = ref({
+  name: props.initial?.name ?? '',
+  questName: props.initial?.questName ?? '',
+  direction: props.initial?.direction ?? '',
+})
 
 function submit() {
   emit('submit', {

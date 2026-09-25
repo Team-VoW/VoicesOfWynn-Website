@@ -284,18 +284,56 @@ public sealed class CastingTests
         var first = await service.EnsureRoundAsync(new BotEnsureCastingRoundRequest { QuestName = "Ragni", Characters = ["Guard"] }, default);
         var again = await service.EnsureRoundAsync(new BotEnsureCastingRoundRequest { QuestName = "Ragni", Characters = ["Guard", "Mayor"] }, default);
         var request = new BotUploadAuditionRequest { CharacterName = "Guard", AuditioneeName = "kmaxi", DiscordThreadId = "123" };
-        var upload = await service.AddAuditionAsync(first.RoundId, request, new MemoryStream([1]), default);
-        var resend = await service.AddAuditionAsync(first.RoundId, request, new MemoryStream([1]), default);
+        var upload = await service.AddAuditionAsync(first.Value!.RoundId, request, new MemoryStream([1]), default);
+        var resend = await service.AddAuditionAsync(first.Value.RoundId, request, new MemoryStream([1]), default);
 
-        Assert.True(first.Created);
-        Assert.False(again.Created);
-        Assert.Equal(first.RoundId, again.RoundId);
+        Assert.True(first.Value.Created);
+        Assert.False(again.Value!.Created);
+        Assert.Equal(first.Value.RoundId, again.Value.RoundId);
         Assert.Equal(2, rounds.Characters.Count);
         Assert.True(upload.Value!.Created);
         Assert.False(resend.Value!.Created);
         Assert.Single(rounds.Auditions);
         Assert.Single(audio.Blobs);
-        Assert.EndsWith($"/admin/casting/{first.RoundId}", first.AdminUrl);
+        Assert.EndsWith($"/admin/casting/{first.Value.RoundId}", first.Value.AdminUrl);
+    }
+
+    [Theory]
+    [InlineData(CastingRoundStatus.Closed)]
+    [InlineData(CastingRoundStatus.Archived)]
+    public async Task TheBotCannotChangeFinishedRounds(CastingRoundStatus status)
+    {
+        var service = new CastingBotService(rounds, new NoUsers(), Ingest(), new Microsoft.Extensions.Configuration.ConfigurationBuilder().Build());
+        var created = await service.EnsureRoundAsync(new BotEnsureCastingRoundRequest { QuestName = "Ragni", Characters = ["Guard"] }, default);
+        var roundId = created.Value!.RoundId;
+        await rounds.SetRoundStatusAsync(roundId, status, default);
+
+        var upload = await service.AddAuditionAsync(roundId,
+            new BotUploadAuditionRequest { CharacterName = "Mayor", AuditioneeName = "kmaxi", DiscordThreadId = "123" },
+            new MemoryStream([1]), default);
+
+        Assert.False(upload.Succeeded);
+        Assert.Empty(rounds.Auditions);
+        Assert.Single(rounds.Characters);
+
+        var ensured = await service.EnsureRoundAsync(
+            new BotEnsureCastingRoundRequest { QuestName = "Ragni", Characters = ["Mayor"] }, default);
+        Assert.False(ensured.Succeeded);
+        Assert.Single(rounds.Characters);
+    }
+
+    [Fact]
+    public void ImportQueueRejectsTheTwentyFirstWaitingJob()
+    {
+        var queue = new CastingImportQueue(null!,
+            Microsoft.Extensions.Logging.Abstractions.NullLogger<CastingImportQueue>.Instance);
+
+        for (var roundId = 1; roundId <= 20; roundId++)
+        {
+            Assert.True(queue.TryEnqueue(new CccImportJob(roundId, "https://www.castingcall.club/projects/example")));
+        }
+
+        Assert.False(queue.TryEnqueue(new CccImportJob(21, "https://www.castingcall.club/projects/example")));
     }
 
     [Fact]

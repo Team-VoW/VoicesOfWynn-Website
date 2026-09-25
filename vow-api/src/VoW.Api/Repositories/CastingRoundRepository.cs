@@ -7,6 +7,7 @@ namespace VoW.Api.Repositories;
 public sealed class CastingRoundRepository(IConfiguration configuration) : ICastingRoundRepository
 {
     private const int DuplicateKeyError = 1062;
+    private const int DeadlockError = 1213;
 
     private const string RoundColumns = """
         round_id AS Id,
@@ -104,7 +105,7 @@ public sealed class CastingRoundRepository(IConfiguration configuration) : ICast
         return row is null ? null : ToRound(row);
     }
 
-    public async Task<CastingRound?> FindActiveRoundBySourceAsync(
+    public async Task<CastingRound?> FindRoundBySourceAsync(
         CastingSource source,
         string sourceRef,
         CancellationToken cancellationToken)
@@ -112,7 +113,7 @@ public sealed class CastingRoundRepository(IConfiguration configuration) : ICast
         var sql = $"""
             SELECT {RoundColumns}
             FROM casting_round
-            WHERE source = @Source AND source_ref = @SourceRef AND status <> 'archived'
+            WHERE source = @Source AND source_ref = @SourceRef
             ORDER BY created_at DESC, round_id DESC
             LIMIT 1;
             """;
@@ -210,6 +211,19 @@ public sealed class CastingRoundRepository(IConfiguration configuration) : ICast
             Status = CastingEnumMapping.ToDb(status),
             Message = message is { Length: > 500 } ? message[..500] : message
         }, cancellationToken: cancellationToken));
+    }
+
+    public async Task FailRunningImportsAsync(CancellationToken cancellationToken)
+    {
+        const string sql = """
+            UPDATE casting_round
+            SET import_status = 'failed',
+                import_message = 'The import was interrupted by an API restart. Start it again to continue.'
+            WHERE import_status = 'running';
+            """;
+
+        await using var connection = Open();
+        await connection.ExecuteAsync(new CommandDefinition(sql, cancellationToken: cancellationToken));
     }
 
     public async Task DeleteRoundAsync(int roundId, CancellationToken cancellationToken)
@@ -414,15 +428,32 @@ public sealed class CastingRoundRepository(IConfiguration configuration) : ICast
             """;
 
         await using var connection = Open();
-        try
+        const int maxAttempts = 4;
+        for (var attempt = 1; attempt <= maxAttempts; attempt++)
         {
-            return await connection.ExecuteScalarAsync<int>(new CommandDefinition(
-                sql, audition, cancellationToken: cancellationToken));
+            cancellationToken.ThrowIfCancellationRequested();
+            try
+            {
+                return await connection.ExecuteScalarAsync<int>(new CommandDefinition(
+                    sql, audition, cancellationToken: cancellationToken));
+            }
+            catch (MySqlException ex) when (!cancellationToken.IsCancellationRequested &&
+                                            ex.Number == DuplicateKeyError &&
+                                            ex.Message.Contains("casting_audition_source", StringComparison.Ordinal))
+            {
+                return null;
+            }
+            catch (MySqlException ex) when (!cancellationToken.IsCancellationRequested &&
+                                            attempt < maxAttempts &&
+                                            (ex.Number == DeadlockError ||
+                                             (ex.Number == DuplicateKeyError &&
+                                              ex.Message.Contains("casting_audition_number", StringComparison.Ordinal))))
+            {
+                // Re-running the INSERT recomputes MAX(number) after the competing write.
+            }
         }
-        catch (MySqlException ex) when (ex.Number == DuplicateKeyError)
-        {
-            return null;
-        }
+
+        throw new InvalidOperationException("Audition insert exhausted its retry attempts.");
     }
 
     public async Task DeleteAuditionAsync(int auditionId, CancellationToken cancellationToken)

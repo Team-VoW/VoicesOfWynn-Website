@@ -20,12 +20,18 @@ public sealed class CastingImportQueue(
     ILogger<CastingImportQueue> logger) : BackgroundService, ICastingImportQueue
 {
     private readonly Channel<CccImportJob> jobs = Channel.CreateBounded<CccImportJob>(
-        new BoundedChannelOptions(20) { FullMode = BoundedChannelFullMode.DropWrite });
+        new BoundedChannelOptions(20) { FullMode = BoundedChannelFullMode.Wait });
 
     public bool TryEnqueue(CccImportJob job) => jobs.Writer.TryWrite(job);
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        await using (var scope = scopeFactory.CreateAsyncScope())
+        {
+            await scope.ServiceProvider.GetRequiredService<ICastingRoundRepository>()
+                .FailRunningImportsAsync(stoppingToken);
+        }
+
         await foreach (var job in jobs.Reader.ReadAllAsync(stoppingToken))
         {
             await using var scope = scopeFactory.CreateAsyncScope();

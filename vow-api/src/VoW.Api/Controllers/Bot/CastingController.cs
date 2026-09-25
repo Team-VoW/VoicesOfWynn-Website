@@ -20,8 +20,17 @@ public sealed class CastingController(ICastingBotService botService) : Controlle
     [HttpPost("rounds")]
     public async Task<ActionResult<BotCastingRoundResponse>> EnsureRound(
         [FromBody] BotEnsureCastingRoundRequest request,
-        CancellationToken cancellationToken) =>
-        Ok(await botService.EnsureRoundAsync(request, cancellationToken));
+        CancellationToken cancellationToken)
+    {
+        var result = await botService.EnsureRoundAsync(request, cancellationToken);
+        if (!result.Succeeded)
+        {
+            ModelState.AddErrors(result.Result.Errors);
+            return ValidationProblem(ModelState);
+        }
+
+        return Ok(result.Value);
+    }
 
     [HttpPost("rounds/{roundId:int}/auditions")]
     [RequestSizeLimit(AuditionMaxSizeBytes)]

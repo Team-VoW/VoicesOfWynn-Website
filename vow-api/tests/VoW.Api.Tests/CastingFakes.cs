@@ -41,8 +41,8 @@ internal sealed class MemoryCastingRounds : ICastingRoundRepository
     public Task<CastingRound?> GetRoundAsync(int roundId, CancellationToken cancellationToken) =>
         Task.FromResult(Rounds.FirstOrDefault(r => r.Id == roundId));
 
-    public Task<CastingRound?> FindActiveRoundBySourceAsync(CastingSource source, string sourceRef, CancellationToken cancellationToken) =>
-        Task.FromResult(Rounds.LastOrDefault(r => r.Source == source && r.SourceRef == sourceRef && r.Status != CastingRoundStatus.Archived));
+    public Task<CastingRound?> FindRoundBySourceAsync(CastingSource source, string sourceRef, CancellationToken cancellationToken) =>
+        Task.FromResult(Rounds.LastOrDefault(r => r.Source == source && r.SourceRef == sourceRef));
 
     public Task<int> CreateRoundAsync(NewCastingRound round, CancellationToken cancellationToken)
     {
@@ -79,6 +79,19 @@ internal sealed class MemoryCastingRounds : ICastingRoundRepository
     public Task SetImportStateAsync(int roundId, CastingImportStatus status, string? message, CancellationToken cancellationToken)
     {
         Replace(roundId, r => r with { ImportStatus = status, ImportMessage = message });
+        return Task.CompletedTask;
+    }
+
+    public Task FailRunningImportsAsync(CancellationToken cancellationToken)
+    {
+        foreach (var round in Rounds.Where(r => r.ImportStatus == CastingImportStatus.Running).ToList())
+        {
+            Replace(round.Id, r => r with
+            {
+                ImportStatus = CastingImportStatus.Failed,
+                ImportMessage = "The import was interrupted by an API restart. Start it again to continue."
+            });
+        }
         return Task.CompletedTask;
     }
 

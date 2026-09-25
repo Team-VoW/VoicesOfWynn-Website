@@ -42,22 +42,25 @@ public sealed class AudioTranscoder(IConfiguration configuration) : IAudioTransc
             // Mono 128k keeps voice clips small while staying transparent for judging a performance.
             var result = await ExternalProcess.RunAsync(
                 ffmpegPath,
-                ["-hide_banner", "-nostdin", "-y", "-i", sourcePath, "-vn", "-ac", "1", "-codec:a", "libmp3lame", "-b:a", "128k", targetPath],
+                ["-hide_banner", "-nostdin", "-y", "-protocol_whitelist", "file", "-format_whitelist", "aac,flac,matroska,webm,mov,mp3,ogg,wav", "-i", sourcePath, "-vn", "-ac", "1", "-codec:a", "libmp3lame", "-b:a", "128k", targetPath],
                 Timeout,
                 cancellationToken);
 
             if (result.ExitCode != 0 || !File.Exists(targetPath))
             {
-                ExternalProcess.TryDelete(targetPath);
                 throw new AudioTranscodeException($"The file could not be read as audio: {ExternalProcess.TrimForError(result.Error)}");
             }
 
             return new TranscodedAudio(targetPath, await TryGetDurationAsync(targetPath, cancellationToken));
         }
-        catch (Exception ex) when (ex is TimeoutException or System.ComponentModel.Win32Exception)
+        catch (Exception ex)
         {
             ExternalProcess.TryDelete(targetPath);
-            throw new AudioTranscodeException(ex.Message);
+            if (ex is TimeoutException or System.ComponentModel.Win32Exception)
+            {
+                throw new AudioTranscodeException(ex.Message);
+            }
+            throw;
         }
         finally
         {

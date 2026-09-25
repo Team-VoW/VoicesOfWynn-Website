@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -15,19 +15,11 @@ const props = defineProps<{
 
 const emit = defineEmits<{ submit: [body: SaveCastingRoundRequest]; cancel: [] }>()
 
-const form = ref({ name: '', description: '', closesAt: '' })
-
-watch(
-  () => props.initial,
-  (initial) => {
-    form.value = {
-      name: initial?.name ?? '',
-      description: initial?.description ?? '',
-      closesAt: toLocalInput(initial?.votingClosesAt ?? null),
-    }
-  },
-  { immediate: true },
-)
+const form = ref({
+  name: props.initial?.name ?? '',
+  description: props.initial?.description ?? '',
+  closesAt: toLocalInput(props.initial?.votingClosesAt ?? null),
+})
 
 function submit() {
   emit('submit', {

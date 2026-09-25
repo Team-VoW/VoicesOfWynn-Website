@@ -59,7 +59,7 @@ const doneCount = computed(() => characters.value.filter((c) => c.done).length)
 const donePercent = computed(() =>
   characters.value.length ? Math.round((doneCount.value / characters.value.length) * 100) : 0,
 )
-const totalPicks = computed(() => picksData.value?.picks.length ?? 0)
+const totalPicks = computed(() => picksData.value?.picks.filter((pick) => pick.picked).length ?? 0)
 
 const tabs = computed(() => {
   const list: { value: Tab; label: string }[] = [

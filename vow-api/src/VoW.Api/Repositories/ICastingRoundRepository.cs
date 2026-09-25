@@ -11,8 +11,8 @@ public interface ICastingRoundRepository
 
     Task<CastingRound?> GetRoundAsync(int roundId, CancellationToken cancellationToken);
 
-    /// <summary>The newest round that is not archived for this source, e.g. a Discord quest name.</summary>
-    Task<CastingRound?> FindActiveRoundBySourceAsync(
+    /// <summary>The newest round for this source, e.g. a Discord quest name.</summary>
+    Task<CastingRound?> FindRoundBySourceAsync(
         CastingSource source,
         string sourceRef,
         CancellationToken cancellationToken);
@@ -30,6 +30,8 @@ public interface ICastingRoundRepository
         CastingImportStatus status,
         string? message,
         CancellationToken cancellationToken);
+
+    Task FailRunningImportsAsync(CancellationToken cancellationToken);
 
     Task DeleteRoundAsync(int roundId, CancellationToken cancellationToken);
 
