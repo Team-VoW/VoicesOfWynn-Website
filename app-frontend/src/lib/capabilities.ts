@@ -9,6 +9,8 @@ export const Capabilities = {
   ContentManage: 'content.manage',
   AccountsManage: 'accounts.manage',
   SystemAdmin: 'system.admin',
+  CastingVote: 'casting.vote',
+  CastingManage: 'casting.manage',
 } as const
 
 export type Capability = (typeof Capabilities)[keyof typeof Capabilities]

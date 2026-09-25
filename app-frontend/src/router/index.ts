@@ -84,6 +84,24 @@ const router = createRouter({
           component: () => import('@/features/profile/views/ProfileView.vue'),
         },
         {
+          path: 'casting',
+          name: 'casting',
+          component: () => import('@/features/casting/views/CastingView.vue'),
+          meta: { capability: Capabilities.CastingVote },
+        },
+        {
+          path: 'admin/casting',
+          name: 'casting-rounds',
+          component: () => import('@/features/casting/views/CastingRoundsView.vue'),
+          meta: { capability: Capabilities.CastingManage },
+        },
+        {
+          path: 'admin/casting/:roundId(\\d+)',
+          name: 'casting-round-edit',
+          component: () => import('@/features/casting/views/CastingRoundEditView.vue'),
+          meta: { capability: Capabilities.CastingManage },
+        },
+        {
           path: 'admin/reports',
           name: 'reports',
           component: () => import('@/features/reports/views/ReportsSearchView.vue'),

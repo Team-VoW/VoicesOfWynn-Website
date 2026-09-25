@@ -11,6 +11,7 @@ using VoW.Api.Services;
 using VoW.Api.Services.Accounts;
 using VoW.Api.Services.Analytics;
 using VoW.Api.Services.Auth;
+using VoW.Api.Services.Casting;
 using VoW.Api.Services.Content;
 using VoW.Api.Services.Contents;
 using VoW.Api.Services.Contributors;
@@ -87,6 +88,24 @@ builder.Services.AddScoped<IWriteLimitRepository, WriteLimitRepository>();
 builder.Services.AddScoped<IDiscordIntegrationRepository, DiscordIntegrationRepository>();
 builder.Services.AddScoped<IReportRepository, ReportRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ICastingRoundRepository, CastingRoundRepository>();
+builder.Services.AddScoped<ICastingVoteRepository, CastingVoteRepository>();
+
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddSingleton<IAudioTranscoder, AudioTranscoder>();
+builder.Services.AddScoped<CastingAuditionIngestService>();
+builder.Services.AddScoped<ICastingVotingService, CastingVotingService>();
+builder.Services.AddScoped<ICastingAdminService, CastingAdminService>();
+builder.Services.AddScoped<ICastingReviewService, CastingReviewService>();
+builder.Services.AddScoped<ICastingBotService, CastingBotService>();
+builder.Services.AddScoped<CccImportService>();
+// The session cookie arrives on a redirect and has to be read by hand, so neither redirects nor a
+// cookie jar are handled by the handler; CccClient follows redirects itself.
+builder.Services.AddHttpClient<ICccClient, CccClient>(client => client.Timeout = TimeSpan.FromMinutes(2))
+    .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler { AllowAutoRedirect = false, UseCookies = false });
+builder.Services.AddSingleton<CastingImportQueue>();
+builder.Services.AddSingleton<ICastingImportQueue>(sp => sp.GetRequiredService<CastingImportQueue>());
+builder.Services.AddHostedService(sp => sp.GetRequiredService<CastingImportQueue>());
 
 builder.Services.AddSingleton(sp =>
 {
@@ -102,6 +121,7 @@ builder.Services.AddSingleton<IQuestScriptStorage, AzureQuestScriptStorage>();
 builder.Services.AddSingleton<INpcImageStorage, AzureNpcImageStorage>();
 builder.Services.AddSingleton<IAccountAvatarStorage, AzureAccountAvatarStorage>();
 builder.Services.AddSingleton<INpcRecordingStorage, AzureNpcRecordingStorage>();
+builder.Services.AddSingleton<ICastingAudioStorage, AzureCastingAudioStorage>();
 
 builder.Services.AddCors(options =>
 {

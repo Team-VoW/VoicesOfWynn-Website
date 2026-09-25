@@ -29,6 +29,18 @@ public sealed class EndpointAuthorizationTests
     [InlineData("GET", "/admin/mod/fun-facts")]
     [InlineData("POST", "/admin/mod/fun-facts")]
     [InlineData("GET", "/admin/content/npcs/search?q=a")]
+    [InlineData("GET", "/casting/rounds")]
+    [InlineData("GET", "/casting/rounds/1")]
+    [InlineData("GET", "/casting/characters/1/auditions")]
+    [InlineData("PUT", "/casting/auditions/1/vote")]
+    [InlineData("DELETE", "/casting/auditions/1/vote")]
+    [InlineData("PUT", "/casting/characters/1/done")]
+    [InlineData("GET", "/admin/casting/rounds")]
+    [InlineData("POST", "/admin/casting/rounds")]
+    [InlineData("POST", "/admin/casting/rounds/1/status")]
+    [InlineData("POST", "/admin/casting/rounds/1/import/ccc")]
+    [InlineData("GET", "/admin/casting/rounds/1/review")]
+    [InlineData("POST", "/admin/casting/characters/1/auditions")]
     public async Task StaffEndpointsRejectAnAnonymousCaller(string method, string path)
     {
         await using var app = new Api();
@@ -43,6 +55,8 @@ public sealed class EndpointAuthorizationTests
     [InlineData("GET", "/bot/reports/lines?statuses=accepted")]
     [InlineData("POST", "/bot/reports/lines/status")]
     [InlineData("DELETE", "/bot/reports/lines")]
+    [InlineData("POST", "/bot/casting/rounds")]
+    [InlineData("POST", "/bot/casting/rounds/1/auditions")]
     public async Task BotEndpointsRejectAWrongKey(string method, string path)
     {
         await using var app = new Api();
