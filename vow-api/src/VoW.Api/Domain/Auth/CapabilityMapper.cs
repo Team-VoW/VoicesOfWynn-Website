@@ -11,6 +11,8 @@ public static class CapabilityMapper
     public const string ContentManageClaim = "content.manage";
     public const string AccountsManageClaim = "accounts.manage";
     public const string SystemAdminClaim = "system.admin";
+    public const string CastingVoteClaim = "casting.vote";
+    public const string CastingManageClaim = "casting.manage";
 
     private static readonly Capability[] AllCapabilities =
     [
@@ -21,7 +23,9 @@ public static class CapabilityMapper
         Capability.ToolsAudioAnalysis,
         Capability.ContentManage,
         Capability.AccountsManage,
-        Capability.SystemAdmin
+        Capability.SystemAdmin,
+        Capability.CastingVote,
+        Capability.CastingManage
     ];
 
     private static readonly Capability[] CastManagerCapabilities =
@@ -31,7 +35,9 @@ public static class CapabilityMapper
         Capability.AnalyticsView,
         Capability.ToolsScripts,
         Capability.ToolsAudioAnalysis,
-        Capability.ContentManage
+        Capability.ContentManage,
+        Capability.CastingVote,
+        Capability.CastingManage
     ];
 
     private static readonly HashSet<DiscordRoleId> AdminRoles =
@@ -66,6 +72,18 @@ public static class CapabilityMapper
         DiscordRoleId.TrialSoundEditor
     ];
 
+    /// <summary>
+    /// Everyone who votes on castings. Admin, Project Director and Cast Manager are covered by their
+    /// full capability sets above; this list is also what the casting review counts as "staff".
+    /// </summary>
+    public static readonly IReadOnlyList<DiscordRoleId> CastingVoterRoles =
+    [
+        DiscordRoleId.ProjectDirector,
+        DiscordRoleId.Admin,
+        DiscordRoleId.CastManager,
+        DiscordRoleId.VoiceManager
+    ];
+
     public static IReadOnlyCollection<Capability> Map(IEnumerable<DiscordRoleId> roles)
     {
         var roleSet = roles.ToHashSet();
@@ -96,6 +114,11 @@ public static class CapabilityMapper
             capabilities.Add(Capability.ToolsAudioAnalysis);
         }
 
+        if (roleSet.Overlaps(CastingVoterRoles))
+        {
+            capabilities.Add(Capability.CastingVote);
+        }
+
         return capabilities;
     }
 
@@ -109,6 +132,8 @@ public static class CapabilityMapper
         Capability.ContentManage => ContentManageClaim,
         Capability.AccountsManage => AccountsManageClaim,
         Capability.SystemAdmin => SystemAdminClaim,
+        Capability.CastingVote => CastingVoteClaim,
+        Capability.CastingManage => CastingManageClaim,
         _ => throw new ArgumentOutOfRangeException(nameof(capability), capability, null)
     };
 

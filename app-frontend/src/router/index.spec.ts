@@ -189,6 +189,30 @@ describe('routing', () => {
     expect(route.name).toBe('admin')
   })
 
+  it('lets a voice manager vote on castings but not manage them', async () => {
+    signIn([Capabilities.CastingVote])
+
+    expect((await visit('/casting')).name).toBe('casting')
+    expect((await visit('/admin/casting')).name).toBe('casting')
+  })
+
+  it('opens casting management and a round for casting managers', async () => {
+    signIn([Capabilities.CastingVote, Capabilities.CastingManage])
+
+    expect((await visit('/admin/casting')).name).toBe('casting-rounds')
+    const round = await visit('/admin/casting/7')
+    expect(round.name).toBe('casting-round-edit')
+    expect(round.params.roundId).toBe('7')
+  })
+
+  it('keeps staff without the casting capability off the voting page', async () => {
+    signIn([Capabilities.ReportsView])
+
+    const route = await visit('/casting')
+
+    expect(route.name).toBe('reports')
+  })
+
   it('holds accounts that must change their password on the profile page', async () => {
     signIn([Capabilities.ReportsView], true)
 

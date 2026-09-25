@@ -5,6 +5,8 @@ import {
   ChartLine,
   FileText,
   LayoutDashboard,
+  Megaphone,
+  Mic,
   ScrollText,
   Shield,
   User,
@@ -18,6 +20,7 @@ import { Capabilities, type Capability } from '@/lib/capabilities'
 import { queryClient } from '@/lib/queryClient'
 import { useAuthStore } from '@/stores/auth'
 import { useSilentRefresh } from '@/features/auth/useSilentRefresh'
+import { useOpenCastingRounds } from '@/features/casting/queries'
 
 const auth = useAuthStore()
 const { displayName } = storeToRefs(auth)
@@ -75,6 +78,20 @@ const navItems: {
     icon: AudioLines,
   },
   {
+    label: 'Casting',
+    to: '/casting',
+    routeName: 'casting',
+    capability: Capabilities.CastingVote,
+    icon: Mic,
+  },
+  {
+    label: 'Manage castings',
+    to: '/admin/casting',
+    routeName: 'casting-rounds',
+    capability: Capabilities.CastingManage,
+    icon: Megaphone,
+  },
+  {
     label: 'Manage content',
     to: '/admin/content',
     routeName: 'content',
@@ -96,6 +113,21 @@ const navItems: {
     icon: Shield,
   },
 ]
+
+// Characters the voter has not marked done yet, across every open round.
+const canVote = computed(() => auth.hasCapability(Capabilities.CastingVote))
+const { data: openCastings } = useOpenCastingRounds(canVote)
+const castingTodo = computed(() =>
+  (openCastings.value?.rounds ?? [])
+    .filter((round) => round.votingOpen)
+    .reduce((sum, round) => sum + round.characterCount - round.doneCount, 0),
+)
+
+const activeRouteNames: Record<string, string[]> = { 'casting-rounds': ['casting-round-edit'] }
+
+function isActive(routeName: string) {
+  return route.name === routeName || (activeRouteNames[routeName]?.includes(String(route.name)) ?? false)
+}
 
 const visibleNavItems = computed(() =>
   navItems.filter((item) => !item.capability || auth.hasCapability(item.capability)),
@@ -127,13 +159,20 @@ async function logout() {
               :to="item.to"
               class="relative flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-white/60 hover:text-foreground"
               :class="
-                route.name === item.routeName
+                isActive(item.routeName)
                   ? 'bg-white/75 text-foreground font-semibold shadow-sm before:absolute before:left-0 before:top-1.5 before:bottom-1.5 before:w-1 before:rounded-full before:bg-[linear-gradient(180deg,#a340c4,#ff6b9d)]'
                   : ''
               "
             >
               <component :is="item.icon" class="size-4" aria-hidden="true" />
-              <span>{{ item.label }}</span>
+              <span class="flex-1">{{ item.label }}</span>
+              <span
+                v-if="item.routeName === 'casting' && castingTodo > 0"
+                class="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary"
+                :aria-label="`${castingTodo} characters left to vote on`"
+              >
+                {{ castingTodo }}
+              </span>
             </RouterLink>
           </nav>
           <div class="border-t border-[--brand-violet]/15 px-5 py-4 text-sm">
@@ -160,7 +199,7 @@ async function logout() {
                 :to="item.to"
                 class="flex shrink-0 items-center gap-2 rounded-full px-3 py-2 text-sm font-medium text-muted-foreground transition-colors"
                 :class="
-                  route.name === item.routeName
+                  isActive(item.routeName)
                     ? 'text-foreground font-semibold shadow-sm bg-[linear-gradient(135deg,rgba(163,64,196,0.18),rgba(255,107,157,0.18))]'
                     : 'hover:bg-accent hover:text-accent-foreground'
                 "

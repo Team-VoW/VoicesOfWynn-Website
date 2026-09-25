@@ -1,13 +1,10 @@
-using System.Diagnostics;
 using System.Globalization;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace VoW.Api.Services.Tools;
 
 public sealed partial class AudioAnalysisService(IConfiguration configuration, ILogger<AudioAnalysisService> logger) : IAudioAnalysisService
 {
-    private const int ProcessOutputMaxCharacters = 64 * 1024;
     private const double TailDurationToleranceSeconds = 0.05;
 
     private readonly string ffmpegPath = configuration["AudioAnalysis:FFmpegPath"] ?? "ffmpeg";
@@ -195,89 +192,8 @@ public sealed partial class AudioAnalysisService(IConfiguration configuration, I
         return intervals;
     }
 
-    private async Task<ProcessResult> RunProcessAsync(string fileName, IReadOnlyList<string> arguments, CancellationToken cancellationToken)
-    {
-        using var timeoutCts = new CancellationTokenSource(processTimeout);
-        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCts.Token);
-
-        using var process = new Process
-        {
-            StartInfo = new ProcessStartInfo
-            {
-                FileName = fileName,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-            },
-        };
-
-        foreach (var argument in arguments)
-        {
-            process.StartInfo.ArgumentList.Add(argument);
-        }
-
-        var output = new BoundedStringBuilder(ProcessOutputMaxCharacters);
-        var error = new BoundedStringBuilder(ProcessOutputMaxCharacters);
-        process.OutputDataReceived += (_, e) =>
-        {
-            if (e.Data is not null) output.AppendLine(e.Data);
-        };
-        process.ErrorDataReceived += (_, e) =>
-        {
-            if (e.Data is not null) error.AppendLine(e.Data);
-        };
-
-        if (!process.Start())
-        {
-            throw new InvalidOperationException($"Failed to start {fileName}.");
-        }
-
-        process.BeginOutputReadLine();
-        process.BeginErrorReadLine();
-
-        try
-        {
-            await process.WaitForExitAsync(linkedCts.Token);
-        }
-        catch (OperationCanceledException) when (timeoutCts.IsCancellationRequested && !cancellationToken.IsCancellationRequested)
-        {
-            TryKill(process);
-            throw new TimeoutException($"{fileName} exceeded the {processTimeout.TotalSeconds:0.#} second timeout.");
-        }
-        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
-        {
-            TryKill(process);
-            throw;
-        }
-
-        return new ProcessResult(process.ExitCode, output.ToString(), error.ToString());
-    }
-
-    private sealed class BoundedStringBuilder(int maxCharacters)
-    {
-        private readonly StringBuilder builder = new();
-        private readonly object gate = new();
-
-        public void AppendLine(string value)
-        {
-            lock (gate)
-            {
-                builder.AppendLine(value);
-                if (builder.Length > maxCharacters)
-                {
-                    builder.Remove(0, builder.Length - maxCharacters);
-                }
-            }
-        }
-
-        public override string ToString()
-        {
-            lock (gate)
-            {
-                return builder.ToString();
-            }
-        }
-    }
+    private async Task<ExternalProcessResult> RunProcessAsync(string fileName, IReadOnlyList<string> arguments, CancellationToken cancellationToken) =>
+        await ExternalProcess.RunAsync(fileName, arguments, processTimeout, cancellationToken);
 
     private static double GetDouble(IConfiguration configuration, string key, double defaultValue)
     {
@@ -287,12 +203,7 @@ public sealed partial class AudioAnalysisService(IConfiguration configuration, I
             : defaultValue;
     }
 
-    private static string TrimForError(string text)
-    {
-        const int maxLength = 500;
-        var trimmed = text.Trim();
-        return trimmed.Length <= maxLength ? trimmed : trimmed[..maxLength];
-    }
+    private static string TrimForError(string text) => ExternalProcess.TrimForError(text);
 
     private static double? TryParseLastDouble(Regex regex, string text)
     {
@@ -308,35 +219,7 @@ public sealed partial class AudioAnalysisService(IConfiguration configuration, I
         return null;
     }
 
-    private static void TryKill(Process process)
-    {
-        try
-        {
-            if (!process.HasExited)
-            {
-                process.Kill(entireProcessTree: true);
-            }
-        }
-        catch
-        {
-            // Best effort cleanup after cancellation or timeout.
-        }
-    }
-
-    private static void TryDelete(string path)
-    {
-        try
-        {
-            if (File.Exists(path))
-            {
-                File.Delete(path);
-            }
-        }
-        catch
-        {
-            // Temp file cleanup should not mask the analysis result.
-        }
-    }
+    private static void TryDelete(string path) => ExternalProcess.TryDelete(path);
 
     [GeneratedRegex(@"I:\s*(?<value>-?\d+(?:\.\d+)?)\s*LUFS", RegexOptions.CultureInvariant)]
     private static partial Regex IntegratedLufsRegex();
@@ -349,8 +232,6 @@ public sealed partial class AudioAnalysisService(IConfiguration configuration, I
 
     [GeneratedRegex(@"silence_end:\s*(?<value>-?\d+(?:\.\d+)?)", RegexOptions.CultureInvariant)]
     private static partial Regex SilenceEndRegex();
-
-    private sealed record ProcessResult(int ExitCode, string Output, string Error);
 
     private sealed record SilenceInterval(double Start, double End);
 }

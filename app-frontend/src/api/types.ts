@@ -641,3 +641,169 @@ export interface SaveFunFactRequest {
   content: string
   active: boolean
 }
+
+// Casting. Voter-facing shapes never carry another voter's identity or any vote totals.
+
+export type CastingRoundStatus = 'Draft' | 'Open' | 'Closed' | 'Archived'
+export type CastingSource = 'Manual' | 'Ccc' | 'Discord'
+export type CastingImportStatus = 'Idle' | 'Running' | 'Done' | 'Failed'
+
+export interface CastingRoundSummary {
+  id: number
+  name: string
+  description: string | null
+  votingClosesAt: string | null
+  votingOpen: boolean
+  characterCount: number
+  doneCount: number
+  pickCount: number
+}
+
+export interface CastingRoundListResponse {
+  rounds: CastingRoundSummary[]
+}
+
+export interface CastingCharacterSummary {
+  id: number
+  name: string
+  questName: string | null
+  direction: string | null
+  auditionCount: number
+  myPickCount: number
+  done: boolean
+}
+
+export interface CastingRoundDetail {
+  id: number
+  name: string
+  description: string | null
+  votingClosesAt: string | null
+  votingOpen: boolean
+  characters: CastingCharacterSummary[]
+}
+
+export interface CastingAudition {
+  id: number
+  number: number
+  auditioneeName: string
+  audioUrl: string
+  durationSeconds: number | null
+  myVote: boolean
+  myComment: string | null
+  anonymousComments: string[]
+}
+
+export interface CastingAuditionList {
+  characterId: number
+  commentsRevealed: boolean
+  auditions: CastingAudition[]
+}
+
+export interface CastingMyPick {
+  characterId: number
+  auditionId: number
+  number: number
+  auditioneeName: string
+  audioUrl: string
+  /** False for a comment left without a vote. */
+  picked: boolean
+  comment: string | null
+}
+
+export interface CastingMyPicksResponse {
+  picks: CastingMyPick[]
+}
+
+export interface AdminCastingRound {
+  id: number
+  name: string
+  description: string | null
+  status: CastingRoundStatus
+  source: CastingSource
+  sourceRef: string | null
+  votingClosesAt: string | null
+  votingOpen: boolean
+  importStatus: CastingImportStatus
+  importMessage: string | null
+  characterCount: number
+  auditionCount: number
+  createdAt: string
+  updatedAt: string
+}
+
+export interface AdminCastingRoundListResponse {
+  rounds: AdminCastingRound[]
+}
+
+export interface AdminCastingAudition {
+  id: number
+  number: number
+  auditioneeName: string
+  auditioneeUserId: number | null
+  audioUrl: string
+  durationSeconds: number | null
+}
+
+export interface AdminCastingCharacter {
+  id: number
+  name: string
+  questName: string | null
+  direction: string | null
+  winnerAuditionId: number | null
+  auditions: AdminCastingAudition[]
+}
+
+export interface AdminCastingRoundDetail {
+  round: AdminCastingRound
+  characters: AdminCastingCharacter[]
+}
+
+export interface SaveCastingRoundRequest {
+  name: string
+  description: string | null
+  votingClosesAt: string | null
+}
+
+export interface SaveCastingCharacterRequest {
+  name: string
+  questName: string | null
+  direction: string | null
+}
+
+export interface CastingReviewVote {
+  voterName: string
+  /** False for a comment left without a vote. */
+  picked: boolean
+  comment: string | null
+}
+
+export interface CastingReviewAudition {
+  id: number
+  number: number
+  auditioneeName: string
+  audioUrl: string
+  durationSeconds: number | null
+  voteCount: number
+  votes: CastingReviewVote[]
+}
+
+export interface CastingReviewCharacter {
+  id: number
+  name: string
+  questName: string | null
+  auditionCount: number
+  totalVotes: number
+  winnerAuditionId: number | null
+  doneVoters: string[]
+  abstainedVoters: string[]
+  pendingVoters: string[]
+  auditions: CastingReviewAudition[]
+}
+
+export interface CastingReview {
+  roundId: number
+  roundName: string
+  status: CastingRoundStatus
+  eligibleVoterCount: number
+  characters: CastingReviewCharacter[]
+}

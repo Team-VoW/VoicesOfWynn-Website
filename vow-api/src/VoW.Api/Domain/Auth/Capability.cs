@@ -14,5 +14,11 @@ public enum Capability
     /// Project Director and Admin only - CastManager deliberately does not receive it.
     /// Gates the Admin page: analytics aggregation and the mod bootup configuration.
     /// </summary>
-    SystemAdmin
+    SystemAdmin,
+
+    /// <summary>Listening to auditions and voting in open casting rounds.</summary>
+    CastingVote,
+
+    /// <summary>Creating and running casting rounds, and the named vote review.</summary>
+    CastingManage
 }
