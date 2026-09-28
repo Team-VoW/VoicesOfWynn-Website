@@ -15,13 +15,13 @@ public interface ICastingVotingService
 
     Task<CastingAuditionListResponse?> GetAuditionsAsync(int characterId, int userId, CancellationToken cancellationToken);
 
-    Task<CastingResult> VoteAsync(int auditionId, int userId, string? comment, CancellationToken cancellationToken);
+    Task<CastingResult> VoteAsync(int auditionId, int userId, string? comment, CancellationToken cancellationToken, bool commentRequired = false);
 
     Task<CastingResult> RemoveVoteAsync(int auditionId, int userId, CancellationToken cancellationToken);
 
-    Task<CastingResult> SetCommentAsync(int auditionId, int userId, string? comment, CancellationToken cancellationToken);
+    Task<CastingResult> SetCommentAsync(int auditionId, int userId, string? comment, CancellationToken cancellationToken, bool commentRequired = false);
 
-    Task<CastingResult> DeleteCommentAsync(int auditionId, int userId, CancellationToken cancellationToken);
+    Task<CastingResult> DeleteCommentAsync(int auditionId, int userId, CancellationToken cancellationToken, bool commentRequired = false);
 
     Task<CastingResult> ClearVotesAsync(int characterId, int userId, CancellationToken cancellationToken);
 
@@ -168,7 +168,8 @@ public sealed class CastingVotingService(
         int auditionId,
         int userId,
         string? comment,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        bool commentRequired = false)
     {
         var audition = await rounds.GetAuditionAsync(auditionId, cancellationToken);
         if (audition is null)
@@ -183,6 +184,10 @@ public sealed class CastingVotingService(
         }
 
         var trimmed = comment?.Trim();
+        if (commentRequired && string.IsNullOrEmpty(trimmed))
+        {
+            return CastingResult.Invalid("comment", "A comment is required to vote.");
+        }
         await votes.UpsertVoteAsync(auditionId, userId, string.IsNullOrEmpty(trimmed) ? null : trimmed, cancellationToken);
         return CastingResult.Success();
     }
@@ -210,12 +215,13 @@ public sealed class CastingVotingService(
         int auditionId,
         int userId,
         string? comment,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        bool commentRequired = false)
     {
         var trimmed = comment?.Trim();
         if (string.IsNullOrEmpty(trimmed))
         {
-            return await DeleteCommentAsync(auditionId, userId, cancellationToken);
+            return await DeleteCommentAsync(auditionId, userId, cancellationToken, commentRequired);
         }
 
         var check = await CheckCanChangeAuditionAsync(auditionId, userId, cancellationToken);
@@ -228,12 +234,23 @@ public sealed class CastingVotingService(
         return CastingResult.Success();
     }
 
-    public async Task<CastingResult> DeleteCommentAsync(int auditionId, int userId, CancellationToken cancellationToken)
+    public async Task<CastingResult> DeleteCommentAsync(int auditionId, int userId, CancellationToken cancellationToken, bool commentRequired = false)
     {
         var check = await CheckCanChangeAuditionAsync(auditionId, userId, cancellationToken);
         if (!check.Succeeded)
         {
             return check;
+        }
+
+        if (commentRequired)
+        {
+            var audition = await rounds.GetAuditionAsync(auditionId, cancellationToken);
+            var existing = (await votes.GetVotesForCharacterAsync(audition!.CharacterId, cancellationToken))
+                .FirstOrDefault(v => v.AuditionId == auditionId && v.UserId == userId);
+            if (existing?.Picked == true)
+            {
+                return CastingResult.Invalid("comment", "Remove your vote before deleting its required comment.");
+            }
         }
 
         await votes.DeleteCommentAsync(auditionId, userId, cancellationToken);

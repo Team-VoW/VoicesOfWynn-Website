@@ -97,7 +97,7 @@ public sealed class SetCastingWinnerRequest
 }
 
 /// <summary>A voter's pick and/or comment. <c>Picked</c> is false for a comment without a vote.</summary>
-public sealed record CastingReviewVoteResponse(string VoterName, bool Picked, string? Comment);
+public sealed record CastingReviewVoteResponse(string VoterName, bool Picked, string? Comment, bool TrialVoiceManager);
 
 public sealed record CastingReviewAuditionResponse(
     int Id,

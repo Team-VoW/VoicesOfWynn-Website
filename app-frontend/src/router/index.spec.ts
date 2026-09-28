@@ -196,6 +196,13 @@ describe('routing', () => {
     expect((await visit('/admin/casting')).name).toBe('casting')
   })
 
+  it('lets a trial voice manager vote without granting casting management', async () => {
+    signIn([Capabilities.CastingVote, Capabilities.CastingVoteCommentRequired])
+
+    expect((await visit('/casting')).name).toBe('casting')
+    expect((await visit('/admin/casting')).name).toBe('casting')
+  })
+
   it('opens casting management and a round for casting managers', async () => {
     signIn([Capabilities.CastingVote, Capabilities.CastingManage])
 

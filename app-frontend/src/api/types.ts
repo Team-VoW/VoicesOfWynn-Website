@@ -775,6 +775,7 @@ export interface CastingReviewVote {
   /** False for a comment left without a vote. */
   picked: boolean
   comment: string | null
+  trialVoiceManager: boolean
 }
 
 export interface CastingReviewAudition {

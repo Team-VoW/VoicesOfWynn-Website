@@ -12,6 +12,7 @@ public static class CapabilityMapper
     public const string AccountsManageClaim = "accounts.manage";
     public const string SystemAdminClaim = "system.admin";
     public const string CastingVoteClaim = "casting.vote";
+    public const string CastingVoteCommentRequiredClaim = "casting.vote.comment-required";
     public const string CastingManageClaim = "casting.manage";
 
     private static readonly Capability[] AllCapabilities =
@@ -25,6 +26,7 @@ public static class CapabilityMapper
         Capability.AccountsManage,
         Capability.SystemAdmin,
         Capability.CastingVote,
+        Capability.CastingVoteCommentRequired,
         Capability.CastingManage
     ];
 
@@ -81,20 +83,24 @@ public static class CapabilityMapper
         DiscordRoleId.ProjectDirector,
         DiscordRoleId.Admin,
         DiscordRoleId.CastManager,
-        DiscordRoleId.VoiceManager
+        DiscordRoleId.VoiceManager,
+        DiscordRoleId.TrialVoiceManager
     ];
 
     public static IReadOnlyCollection<Capability> Map(IEnumerable<DiscordRoleId> roles)
     {
         var roleSet = roles.ToHashSet();
+        var requiresVoteComment = roleSet.Contains(DiscordRoleId.TrialVoiceManager);
         if (roleSet.Overlaps(AdminRoles))
         {
-            return AllCapabilities;
+            return AllCapabilities.Where(c => c != Capability.CastingVoteCommentRequired || requiresVoteComment).ToArray();
         }
 
         if (roleSet.Contains(DiscordRoleId.CastManager))
         {
-            return CastManagerCapabilities;
+            return requiresVoteComment
+                ? [.. CastManagerCapabilities, Capability.CastingVoteCommentRequired]
+                : CastManagerCapabilities;
         }
 
         var capabilities = new HashSet<Capability>();
@@ -119,6 +125,11 @@ public static class CapabilityMapper
             capabilities.Add(Capability.CastingVote);
         }
 
+        if (requiresVoteComment)
+        {
+            capabilities.Add(Capability.CastingVoteCommentRequired);
+        }
+
         return capabilities;
     }
 
@@ -133,6 +144,7 @@ public static class CapabilityMapper
         Capability.AccountsManage => AccountsManageClaim,
         Capability.SystemAdmin => SystemAdminClaim,
         Capability.CastingVote => CastingVoteClaim,
+        Capability.CastingVoteCommentRequired => CastingVoteCommentRequiredClaim,
         Capability.CastingManage => CastingManageClaim,
         _ => throw new ArgumentOutOfRangeException(nameof(capability), capability, null)
     };

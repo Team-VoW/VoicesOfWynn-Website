@@ -10,6 +10,7 @@ export const Capabilities = {
   AccountsManage: 'accounts.manage',
   SystemAdmin: 'system.admin',
   CastingVote: 'casting.vote',
+  CastingVoteCommentRequired: 'casting.vote.comment-required',
   CastingManage: 'casting.manage',
 } as const
 

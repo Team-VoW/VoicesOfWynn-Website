@@ -197,7 +197,8 @@ async function toggleWinner(auditionId: number) {
               <li
                 v-for="(vote, voteIndex) in audition.votes"
                 :key="voteIndex"
-                class="flex gap-3 rounded-md bg-primary/[0.04] px-3 py-2 text-sm"
+                class="flex gap-3 rounded-md px-3 py-2 text-sm"
+                :class="vote.trialVoiceManager ? 'border border-amber-200 bg-amber-50/70' : 'bg-primary/[0.04]'"
               >
                 <span class="min-w-16 shrink-0 font-medium" :class="vote.picked ? 'text-primary' : 'text-muted-foreground'">
                   {{ vote.voterName }}
@@ -205,6 +206,7 @@ async function toggleWinner(auditionId: number) {
                 <span class="min-w-0 flex-1 break-words" :class="vote.comment ? '' : 'text-muted-foreground'">
                   {{ vote.comment || 'No comment' }}
                 </span>
+                <span v-if="vote.trialVoiceManager" class="shrink-0 text-xs font-medium text-amber-800">Trial Voice Manager</span>
                 <span v-if="!vote.picked" class="shrink-0 text-xs text-muted-foreground">comment only</span>
               </li>
             </ul>

@@ -29,6 +29,7 @@ public sealed class CastingTests
 
     [Theory]
     [InlineData(DiscordRoleId.VoiceManager, true, false)]
+    [InlineData(DiscordRoleId.TrialVoiceManager, true, false)]
     [InlineData(DiscordRoleId.CastManager, true, true)]
     [InlineData(DiscordRoleId.Admin, true, true)]
     [InlineData(DiscordRoleId.ProjectDirector, true, true)]
@@ -40,6 +41,42 @@ public sealed class CastingTests
 
         Assert.Equal(votesExpected, capabilities.Contains(Capability.CastingVote));
         Assert.Equal(managesExpected, capabilities.Contains(Capability.CastingManage));
+    }
+
+    [Fact]
+    public async Task TrialVoiceManagerMustKeepACommentOnEveryVote()
+    {
+        var (_, _, audition) = Seed();
+        var service = Voting();
+
+        Assert.Contains(Capability.CastingVoteCommentRequired, CapabilityMapper.Map([DiscordRoleId.TrialVoiceManager]));
+        Assert.DoesNotContain(Capability.CastingVoteCommentRequired, CapabilityMapper.Map([DiscordRoleId.VoiceManager]));
+        Assert.False((await service.VoteAsync(audition, Bob, "  ", default, commentRequired: true)).Succeeded);
+        Assert.Empty(votes.Votes);
+
+        Assert.True((await service.VoteAsync(audition, Bob, "  Clear delivery  ", default, commentRequired: true)).Succeeded);
+        Assert.Equal("Clear delivery", votes.Votes.Single().Comment);
+        Assert.Contains("comment", (await service.DeleteCommentAsync(audition, Bob, default, commentRequired: true)).Errors.Keys);
+        Assert.Contains("comment", (await service.SetCommentAsync(audition, Bob, "", default, commentRequired: true)).Errors.Keys);
+        Assert.Equal("Clear delivery", votes.Votes.Single().Comment);
+
+        await service.RemoveVoteAsync(audition, Bob, default);
+        Assert.True((await service.DeleteCommentAsync(audition, Bob, default, commentRequired: true)).Succeeded);
+    }
+
+    [Fact]
+    public async Task ReviewIdentifiesTrialVoiceManagerVotes()
+    {
+        var (round, _, audition) = Seed();
+        votes.Users.Add((new CastingVoter(4, "Trial"), DiscordRoleId.TrialVoiceManager));
+        await Voting().VoteAsync(audition, 4, "Thoughtful delivery", default, commentRequired: true);
+
+        var review = await new CastingReviewService(rounds, votes, audio).GetReviewAsync(round, default);
+
+        Assert.Equal(4, review!.EligibleVoterCount);
+        var vote = Assert.Single(review.Characters.Single().Auditions.Single().Votes);
+        Assert.True(vote.TrialVoiceManager);
+        Assert.Equal("Trial", vote.VoterName);
     }
 
     [Fact]

@@ -15,6 +15,7 @@ const props = defineProps<{
   audition: CastingAudition
   /** Voting is open and the voter has not marked the character done. */
   canEdit: boolean
+  commentRequired: boolean
   editing: AuditionEditMode | null
   saving: boolean
 }>()
@@ -114,12 +115,13 @@ watch(
       <label :for="`comment-${audition.id}`" class="text-sm font-medium">
         Comment
         <span class="font-normal text-muted-foreground">
-          {{ editing === 'vote' ? 'Optional. ' : '' }}Other staff see it anonymously.
+          {{ commentRequired && (editing === 'vote' || audition.myVote) ? 'Required. ' : editing === 'vote' ? 'Optional. ' : '' }}Other staff see it anonymously.
         </span>
       </label>
       <textarea
         :id="`comment-${audition.id}`"
         v-model="draft"
+        :required="commentRequired && (editing === 'vote' || audition.myVote)"
         rows="2"
         maxlength="1000"
         placeholder="e.g. Nails the tired warmth in the direction, clean mic, strong last line"
@@ -129,7 +131,7 @@ watch(
         <Button
           type="submit"
           size="sm"
-          :disabled="saving || (editing === 'comment' && !draft.trim() && !audition.myComment)"
+          :disabled="saving || (commentRequired && (editing === 'vote' || audition.myVote) && !draft.trim()) || (editing === 'comment' && !draft.trim() && !audition.myComment)"
         >
           {{ editing === 'vote' ? 'Cast vote' : 'Save comment' }}
         </Button>
@@ -152,7 +154,7 @@ watch(
           {{ audition.myComment ? 'Edit' : 'Add comment' }}
         </button>
         <button
-          v-if="audition.myComment"
+          v-if="audition.myComment && !(commentRequired && audition.myVote)"
           type="button"
           class="cursor-pointer text-muted-foreground hover:text-destructive"
           @click="emit('deleteComment')"

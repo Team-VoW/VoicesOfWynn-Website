@@ -53,10 +53,10 @@ function auditions(overrides: Partial<CastingAuditionList> = {}): CastingAuditio
 
 let wrapper: VueWrapper
 
-async function start(props: Partial<{ character: CastingCharacterSummary; votingOpen: boolean }> = {}) {
+async function start(props: Partial<{ character: CastingCharacterSummary; votingOpen: boolean; commentRequired: boolean }> = {}) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } })
   wrapper = mount(CharacterPanel, {
-    props: { character, votingOpen: true, ...props },
+    props: { character, votingOpen: true, commentRequired: false, ...props },
     global: { plugins: [[VueQueryPlugin, { queryClient: client }]] },
   })
   await flushPromises()
@@ -74,6 +74,22 @@ beforeEach(() => {
 afterEach(() => wrapper?.unmount())
 
 describe('CharacterPanel', () => {
+  it('requires a comment for trial votes and keeps it while the vote is picked', async () => {
+    await start({ commentRequired: true })
+
+    await button('Vote')!.trigger('click')
+    expect(wrapper.text()).toContain('Required.')
+    expect(button('Cast vote')!.attributes('disabled')).toBeDefined()
+    await wrapper.find('textarea').setValue('Fits the direction')
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+
+    expect(fetchMock).toHaveBeenCalledWith('/casting/auditions/11/vote', {
+      method: 'PUT', body: { comment: 'Fits the direction' },
+    })
+    expect(button('Delete')).toBeUndefined()
+  })
+
   it('casts a vote with the comment typed into the inline editor', async () => {
     await start()
 

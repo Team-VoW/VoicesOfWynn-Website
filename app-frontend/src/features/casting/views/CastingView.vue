@@ -18,6 +18,7 @@ const auth = useAuthStore()
 const route = useRoute()
 const router = useRouter()
 const canManage = computed(() => auth.hasCapability(Capabilities.CastingManage))
+const commentRequired = computed(() => auth.hasCapability(Capabilities.CastingVoteCommentRequired))
 
 const { data: roundsData, isPending: roundsPending } = useOpenCastingRounds()
 const openRounds = computed(() => roundsData.value?.rounds ?? [])
@@ -101,8 +102,9 @@ watch(roundId, (id) => {
       <div class="max-w-2xl space-y-1">
         <h1 class="font-display text-2xl">Casting</h1>
         <p class="text-sm text-muted-foreground">
-          Listen to auditions and vote for as many as you like. You can add an optional comment to
-          any vote. Comments are shown to other staff anonymously.
+          Listen to auditions and vote for as many as you like.
+          {{ commentRequired ? 'Each vote needs a comment.' : 'You can add an optional comment to any vote.' }}
+          Comments are shown to other staff anonymously.
         </p>
       </div>
       <div class="flex flex-wrap gap-1 rounded-lg border p-1" role="tablist" aria-label="Casting views">
@@ -198,6 +200,7 @@ watch(roundId, (id) => {
             v-if="selectedCharacter"
             :character="selectedCharacter"
             :voting-open="round.votingOpen"
+            :comment-required="commentRequired"
             @marked-done="advanceFrom"
           />
           <p v-else class="rounded-lg border p-8 text-sm text-muted-foreground">

@@ -60,7 +60,7 @@ public sealed class CastingController(ICastingVotingService votingService) : Con
     [HttpPut("auditions/{auditionId:int}/vote")]
     public async Task<IActionResult> Vote(int auditionId, [FromBody] CastVoteRequest request, CancellationToken cancellationToken) =>
         User.GetUserId() is { } userId
-            ? ToActionResult(await votingService.VoteAsync(auditionId, userId, request.Comment, cancellationToken))
+            ? ToActionResult(await votingService.VoteAsync(auditionId, userId, request.Comment, cancellationToken, CommentRequired))
             : Unauthorized();
 
     [HttpDelete("auditions/{auditionId:int}/vote")]
@@ -72,13 +72,13 @@ public sealed class CastingController(ICastingVotingService votingService) : Con
     [HttpPut("auditions/{auditionId:int}/comment")]
     public async Task<IActionResult> SetComment(int auditionId, [FromBody] SetCommentRequest request, CancellationToken cancellationToken) =>
         User.GetUserId() is { } userId
-            ? ToActionResult(await votingService.SetCommentAsync(auditionId, userId, request.Comment, cancellationToken))
+            ? ToActionResult(await votingService.SetCommentAsync(auditionId, userId, request.Comment, cancellationToken, CommentRequired))
             : Unauthorized();
 
     [HttpDelete("auditions/{auditionId:int}/comment")]
     public async Task<IActionResult> DeleteComment(int auditionId, CancellationToken cancellationToken) =>
         User.GetUserId() is { } userId
-            ? ToActionResult(await votingService.DeleteCommentAsync(auditionId, userId, cancellationToken))
+            ? ToActionResult(await votingService.DeleteCommentAsync(auditionId, userId, cancellationToken, CommentRequired))
             : Unauthorized();
 
     [HttpDelete("characters/{characterId:int}/votes")]
@@ -114,4 +114,6 @@ public sealed class CastingController(ICastingVotingService votingService) : Con
 
         return NoContent();
     }
+
+    private bool CommentRequired => User.HasClaim(CapabilityMapper.ClaimType, CapabilityMapper.CastingVoteCommentRequiredClaim);
 }

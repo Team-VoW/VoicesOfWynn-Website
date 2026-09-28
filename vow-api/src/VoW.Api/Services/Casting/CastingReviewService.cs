@@ -29,6 +29,8 @@ public sealed class CastingReviewService(
         var roundVotes = await votes.GetVotesForRoundAsync(roundId, cancellationToken);
         var done = await votes.GetDoneForRoundAsync(roundId, cancellationToken);
         var eligible = await votes.GetUsersWithRolesAsync(CapabilityMapper.CastingVoterRoles, cancellationToken);
+        var trialVoiceManagerIds = (await votes.GetUsersWithRolesAsync([DiscordRoleId.TrialVoiceManager], cancellationToken))
+            .Select(v => v.UserId).ToHashSet();
 
         // Voters who have since lost their role still show up by name on the votes they cast.
         var names = eligible.ToDictionary(v => v.UserId, v => v.DisplayName);
@@ -66,7 +68,8 @@ public sealed class CastingReviewService(
                         storage.GetReadUrl(a.AudioBlobPath).ToString(),
                         a.DurationSeconds,
                         auditionVotes.Count(v => v.Picked),
-                        auditionVotes.Select(v => new CastingReviewVoteResponse(NameOf(v.UserId), v.Picked, v.Comment)).ToList());
+                        auditionVotes.Select(v => new CastingReviewVoteResponse(
+                            NameOf(v.UserId), v.Picked, v.Comment, trialVoiceManagerIds.Contains(v.UserId))).ToList());
                 })
                 .OrderByDescending(a => a.VoteCount)
                 .ThenBy(a => a.Number)

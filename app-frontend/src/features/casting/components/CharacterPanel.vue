@@ -21,6 +21,7 @@ import AuditionRow, { type AuditionEditMode } from './AuditionRow.vue'
 const props = defineProps<{
   character: CastingCharacterSummary
   votingOpen: boolean
+  commentRequired: boolean
 }>()
 
 const emit = defineEmits<{ markedDone: [characterId: number] }>()
@@ -74,8 +75,10 @@ async function run(action: () => Promise<unknown>) {
 }
 
 function submit(auditionId: number, mode: AuditionEditMode, comment: string) {
-  editing.value = null
   const trimmed = comment.trim()
+  if (mode === 'vote' && props.commentRequired && !trimmed) return
+  if (mode === 'comment' && props.commentRequired && !trimmed && auditions.value.some((a) => a.id === auditionId && a.myVote)) return
+  editing.value = null
   if (mode === 'vote') {
     void run(() => vote.mutateAsync({ characterId: characterId.value, auditionId, comment: trimmed || null }))
   } else if (trimmed) {
@@ -230,6 +233,7 @@ async function toggleDone() {
               :key="audition.id"
               :audition="audition"
               :can-edit="canEdit"
+              :comment-required="commentRequired"
               :editing="editing?.id === audition.id ? editing.mode : null"
               :saving="vote.isPending.value || setComment.isPending.value"
               @edit="(mode) => (editing = { id: audition.id, mode })"

@@ -1,3 +1,26 @@
 databaseChangeLog:
-  - includeAll:
-      path: "website"
+  # Append new migrations here in dependency order. includeAll sorts filenames
+  # alphabetically, placing changelog-10.sql before changelog-2.sql.
+  # Keep existing file paths unchanged: they are part of each changeset's identity.
+  - include:
+      file: website/changelog-1.sql
+  - include:
+      file: website/changelog-2.sql
+  - include:
+      file: website/changelog-3.sql
+  - include:
+      file: website/changelog-4.sql
+  - include:
+      file: website/changelog-5.sql
+  - include:
+      file: website/changelog-6.sql
+  - include:
+      file: website/changelog-7.sql
+  - include:
+      file: website/changelog-8.sql
+  - include:
+      file: website/changelog-9.sql
+  - include:
+      file: website/changelog-10.sql
+  - include:
+      file: website/changelog-11.sql

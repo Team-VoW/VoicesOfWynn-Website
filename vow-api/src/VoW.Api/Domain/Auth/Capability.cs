@@ -19,6 +19,9 @@ public enum Capability
     /// <summary>Listening to auditions and voting in open casting rounds.</summary>
     CastingVote,
 
+    /// <summary>Voting requires a nonblank comment on every picked audition.</summary>
+    CastingVoteCommentRequired,
+
     /// <summary>Creating and running casting rounds, and the named vote review.</summary>
     CastingManage
 }
