@@ -11,6 +11,7 @@ import CharacterPanel from '../components/CharacterPanel.vue'
 import MyVotesGrid from '../components/MyVotesGrid.vue'
 import { formatDate } from '../castingFormat'
 import { useCastingRound, useMyCastingPicks, useOpenCastingRounds } from '../queries'
+import { useAuditionMarks } from '../useAuditionMarks'
 
 type Tab = 'characters' | 'mine' | 'review'
 
@@ -34,6 +35,10 @@ const roundId = computed(() => {
   if (requested !== null && openRounds.value.some((r) => r.id === requested)) return requested
   return openRounds.value[0]?.id ?? null
 })
+const { marks, toggle: toggleMark } = useAuditionMarks(
+  computed(() => auth.userId),
+  roundId,
+)
 
 const tab = computed<Tab>(() => {
   const requested = route.query.tab
@@ -83,14 +88,21 @@ function selectCharacter(id: number) {
 function advanceFrom(characterId: number) {
   const list = characters.value
   const index = list.findIndex((c) => c.id === characterId)
-  const next = [...list.slice(index + 1), ...list.slice(0, index)].find((c) => !c.done && c.id !== characterId)
+  const next = [...list.slice(index + 1), ...list.slice(0, index)].find(
+    (c) => !c.done && c.id !== characterId,
+  )
   if (next) selectCharacter(next.id)
 }
 
 // Keep the URL honest if the requested round is no longer open. The review tab may point at a
 // closed or archived round on purpose, so it is left alone.
 watch(roundId, (id) => {
-  if (tab.value !== 'review' && id !== null && queryNumber('round') !== null && queryNumber('round') !== id) {
+  if (
+    tab.value !== 'review' &&
+    id !== null &&
+    queryNumber('round') !== null &&
+    queryNumber('round') !== id
+  ) {
     navigate({ round: id, character: undefined })
   }
 })
@@ -103,18 +115,30 @@ watch(roundId, (id) => {
         <h1 class="font-display text-2xl">Casting</h1>
         <p class="text-sm text-muted-foreground">
           Listen to auditions and vote for as many as you like.
-          {{ commentRequired ? 'Each vote needs a comment.' : 'You can add an optional comment to any vote.' }}
+          {{
+            commentRequired
+              ? 'Each vote needs a comment.'
+              : 'You can add an optional comment to any vote.'
+          }}
           Comments are shown to other staff anonymously.
         </p>
       </div>
-      <div class="flex flex-wrap gap-1 rounded-lg border p-1" role="tablist" aria-label="Casting views">
+      <div
+        class="flex flex-wrap gap-1 rounded-lg border p-1"
+        role="tablist"
+        aria-label="Casting views"
+      >
         <button
           v-for="item in tabs"
           :key="item.value"
           type="button"
           role="tab"
           class="cursor-pointer rounded-md px-4 py-2 text-sm transition-colors"
-          :class="tab === item.value ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted'"
+          :class="
+            tab === item.value
+              ? 'bg-primary text-primary-foreground'
+              : 'text-muted-foreground hover:bg-muted'
+          "
           :aria-selected="tab === item.value"
           @click="navigate({ tab: item.value === 'characters' ? undefined : item.value })"
         >
@@ -149,9 +173,16 @@ watch(roundId, (id) => {
               :value="roundId ?? undefined"
               aria-label="Casting round"
               class="h-9 max-w-64 rounded-md border border-input bg-background px-3 text-sm font-medium shadow-xs"
-              @change="navigate({ round: ($event.target as HTMLSelectElement).value, character: undefined })"
+              @change="
+                navigate({
+                  round: ($event.target as HTMLSelectElement).value,
+                  character: undefined,
+                })
+              "
             >
-              <option v-for="option in openRounds" :key="option.id" :value="option.id">{{ option.name }}</option>
+              <option v-for="option in openRounds" :key="option.id" :value="option.id">
+                {{ option.name }}
+              </option>
             </select>
             <span v-else class="truncate font-medium">{{ round?.name }}</span>
           </div>
@@ -169,13 +200,19 @@ watch(roundId, (id) => {
           <div v-if="round" class="text-sm text-muted-foreground">
             <template v-if="!round.votingOpen">Voting has closed</template>
             <template v-else-if="round.votingClosesAt">
-              Voting closes <span class="text-foreground">{{ formatDate(round.votingClosesAt) }}</span>
+              Voting closes
+              <span class="text-foreground">{{ formatDate(round.votingClosesAt) }}</span>
             </template>
           </div>
         </div>
-        <p v-if="round?.description" class="text-sm text-muted-foreground">{{ round.description }}</p>
+        <p v-if="round?.description" class="text-sm text-muted-foreground">
+          {{ round.description }}
+        </p>
 
-        <div v-if="roundPending" class="grid gap-5 lg:grid-cols-[minmax(15rem,18rem)_minmax(0,1fr)]">
+        <div
+          v-if="roundPending"
+          class="grid gap-5 lg:grid-cols-[minmax(15rem,18rem)_minmax(0,1fr)]"
+        >
           <Skeleton class="h-96 w-full" />
           <Skeleton class="h-96 w-full" />
         </div>
@@ -194,6 +231,7 @@ watch(roundId, (id) => {
           <CharacterList
             :characters="characters"
             :selected-id="selectedCharacter?.id ?? null"
+            :marks="marks"
             @select="selectCharacter"
           />
           <CharacterPanel
@@ -201,7 +239,9 @@ watch(roundId, (id) => {
             :character="selectedCharacter"
             :voting-open="round.votingOpen"
             :comment-required="commentRequired"
+            :marks="marks"
             @marked-done="advanceFrom"
+            @toggle-mark="toggleMark"
           />
           <p v-else class="rounded-lg border p-8 text-sm text-muted-foreground">
             This round has no characters yet.

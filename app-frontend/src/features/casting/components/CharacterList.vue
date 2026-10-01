@@ -1,21 +1,24 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { Check } from 'lucide-vue-next'
+import { Check, Star } from 'lucide-vue-next'
 import { Input } from '@/components/ui/input'
 import type { CastingCharacterSummary } from '@/api/types'
+import type { AuditionMark } from '../useAuditionMarks'
 
 const props = defineProps<{
   characters: CastingCharacterSummary[]
   selectedId: number | null
+  marks: AuditionMark[]
 }>()
 
 const emit = defineEmits<{ select: [id: number] }>()
 
-type Filter = 'all' | 'todo' | 'done'
+type Filter = 'all' | 'todo' | 'done' | 'saved'
 const filters: { value: Filter; label: string }[] = [
   { value: 'all', label: 'All' },
   { value: 'todo', label: 'To do' },
   { value: 'done', label: 'Done' },
+  { value: 'saved', label: 'Saved' },
 ]
 
 const search = ref('')
@@ -27,6 +30,7 @@ const visible = computed(() => {
     if (needle && !c.name.toLowerCase().includes(needle)) return false
     if (filter.value === 'todo') return !c.done
     if (filter.value === 'done') return c.done
+    if (filter.value === 'saved') return props.marks.some((mark) => mark.characterId === c.id)
     return true
   })
 })
@@ -39,7 +43,7 @@ const visible = computed(() => {
   >
     <div class="space-y-2.5 border-b p-3">
       <Input v-model="search" placeholder="Search characters" aria-label="Search characters" />
-      <div class="grid grid-cols-3 gap-1.5" role="group" aria-label="Filter characters">
+      <div class="grid grid-cols-4 gap-1.5" role="group" aria-label="Filter characters">
         <button
           v-for="option in filters"
           :key="option.value"
@@ -73,7 +77,9 @@ const visible = computed(() => {
         >
           <span
             class="flex size-5 shrink-0 items-center justify-center rounded-full border-[1.5px]"
-            :class="character.done ? 'border-emerald-600 bg-emerald-600 text-white' : 'border-border'"
+            :class="
+              character.done ? 'border-emerald-600 bg-emerald-600 text-white' : 'border-border'
+            "
             :aria-label="character.done ? 'Done' : 'Not done'"
           >
             <Check v-if="character.done" class="size-3" stroke-width="3" />
@@ -90,6 +96,14 @@ const visible = computed(() => {
                 · {{ character.questName }}</template
               >
             </span>
+          </span>
+          <span
+            v-if="marks.some((mark) => mark.characterId === character.id)"
+            class="inline-flex shrink-0 items-center gap-1 text-xs text-primary"
+            :aria-label="`${marks.filter((mark) => mark.characterId === character.id).length} saved auditions`"
+          >
+            <Star class="size-3.5 fill-current" aria-hidden="true" />
+            {{ marks.filter((mark) => mark.characterId === character.id).length }}
           </span>
           <span
             v-if="character.myPickCount > 0"

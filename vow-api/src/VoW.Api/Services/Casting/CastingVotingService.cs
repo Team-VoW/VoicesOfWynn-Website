@@ -15,6 +15,8 @@ public interface ICastingVotingService
 
     Task<CastingAuditionListResponse?> GetAuditionsAsync(int characterId, int userId, CancellationToken cancellationToken);
 
+    Task<Stream?> OpenAudioAsync(int auditionId, CancellationToken cancellationToken);
+
     Task<CastingResult> VoteAsync(int auditionId, int userId, string? comment, CancellationToken cancellationToken, bool commentRequired = false);
 
     Task<CastingResult> RemoveVoteAsync(int auditionId, int userId, CancellationToken cancellationToken);
@@ -38,6 +40,15 @@ public sealed class CastingVotingService(
     ICastingAudioStorage storage,
     TimeProvider timeProvider) : ICastingVotingService
 {
+    public async Task<Stream?> OpenAudioAsync(int auditionId, CancellationToken cancellationToken)
+    {
+        var audition = await rounds.GetAuditionAsync(auditionId, cancellationToken);
+        if (audition is null) return null;
+        var (round, character) = await LoadCharacterAsync(audition.CharacterId, cancellationToken);
+        if (!IsVisible(round) || character is null) return null;
+        return await storage.OpenReadAsync(audition.AudioBlobPath, cancellationToken);
+    }
+
     public async Task<CastingRoundListResponse> GetOpenRoundsAsync(int userId, CancellationToken cancellationToken)
     {
         var openRounds = await rounds.GetRoundsAsync([CastingRoundStatus.Open], cancellationToken);

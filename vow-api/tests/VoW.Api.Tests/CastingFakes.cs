@@ -293,6 +293,9 @@ internal sealed class MemoryCastingAudio : ICastingAudioStorage
 
     public Uri GetReadUrl(string blobPath) => new($"https://blob.test/{blobPath}?sig=x");
 
+    public Task<Stream> OpenReadAsync(string blobPath, CancellationToken cancellationToken) =>
+        Task.FromResult<Stream>(new MemoryStream([1, 2, 3]));
+
     public Task DeleteAsync(string blobPath, CancellationToken cancellationToken)
     {
         Blobs.Remove(blobPath);

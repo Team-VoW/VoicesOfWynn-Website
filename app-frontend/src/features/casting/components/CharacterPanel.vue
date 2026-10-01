@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import type { CastingCharacterSummary } from '@/api/types'
+import type { AuditionMark } from '../useAuditionMarks'
 import { messageFromContentError } from '@/features/content/contentUtils'
 import {
   useCastingAuditions,
@@ -22,9 +23,13 @@ const props = defineProps<{
   character: CastingCharacterSummary
   votingOpen: boolean
   commentRequired: boolean
+  marks: AuditionMark[]
 }>()
 
-const emit = defineEmits<{ markedDone: [characterId: number] }>()
+const emit = defineEmits<{
+  markedDone: [characterId: number]
+  toggleMark: [characterId: number, auditionId: number]
+}>()
 
 const characterId = computed(() => props.character.id)
 const { data, isPending } = useCastingAuditions(characterId)
@@ -37,12 +42,14 @@ const deleteComment = useDeleteComment()
 
 const search = ref('')
 const onlyMine = ref(false)
+const onlyMarked = ref(false)
 const sortByName = ref(false)
 const editing = ref<{ id: number; mode: AuditionEditMode } | null>(null)
 
 watch(characterId, () => {
   search.value = ''
   onlyMine.value = false
+  onlyMarked.value = false
   editing.value = null
 })
 
@@ -53,10 +60,18 @@ const picks = computed(() => auditions.value.filter((a) => a.myVote))
 const rows = computed(() => {
   const needle = search.value.trim().toLowerCase()
   let list = auditions.value.filter(
-    (a) => !needle || a.auditioneeName.toLowerCase().includes(needle) || String(a.number) === needle,
+    (a) =>
+      !needle || a.auditioneeName.toLowerCase().includes(needle) || String(a.number) === needle,
   )
   if (onlyMine.value) list = list.filter((a) => a.myVote)
-  if (sortByName.value) list = [...list].sort((a, b) => a.auditioneeName.localeCompare(b.auditioneeName))
+  if (onlyMarked.value)
+    list = list.filter((a) =>
+      props.marks.some(
+        (mark) => mark.characterId === characterId.value && mark.auditionId === a.id,
+      ),
+    )
+  if (sortByName.value)
+    list = [...list].sort((a, b) => a.auditioneeName.localeCompare(b.auditioneeName))
   return list
 })
 
@@ -77,12 +92,22 @@ async function run(action: () => Promise<unknown>) {
 function submit(auditionId: number, mode: AuditionEditMode, comment: string) {
   const trimmed = comment.trim()
   if (mode === 'vote' && props.commentRequired && !trimmed) return
-  if (mode === 'comment' && props.commentRequired && !trimmed && auditions.value.some((a) => a.id === auditionId && a.myVote)) return
+  if (
+    mode === 'comment' &&
+    props.commentRequired &&
+    !trimmed &&
+    auditions.value.some((a) => a.id === auditionId && a.myVote)
+  )
+    return
   editing.value = null
   if (mode === 'vote') {
-    void run(() => vote.mutateAsync({ characterId: characterId.value, auditionId, comment: trimmed || null }))
+    void run(() =>
+      vote.mutateAsync({ characterId: characterId.value, auditionId, comment: trimmed || null }),
+    )
   } else if (trimmed) {
-    void run(() => setComment.mutateAsync({ characterId: characterId.value, auditionId, comment: trimmed }))
+    void run(() =>
+      setComment.mutateAsync({ characterId: characterId.value, auditionId, comment: trimmed }),
+    )
   } else {
     removeComment(auditionId)
   }
@@ -138,14 +163,27 @@ async function toggleDone() {
         </p>
       </div>
       <div v-if="votingOpen" class="flex flex-col items-end justify-center gap-1.5">
-        <Button v-if="!character.done" type="button" :disabled="setDone.isPending.value" @click="toggleDone">
+        <Button
+          v-if="!character.done"
+          type="button"
+          :disabled="setDone.isPending.value"
+          @click="toggleDone"
+        >
           Mark character as done
         </Button>
-        <Button v-else type="button" variant="outline" :disabled="setDone.isPending.value" @click="toggleDone">
+        <Button
+          v-else
+          type="button"
+          variant="outline"
+          :disabled="setDone.isPending.value"
+          @click="toggleDone"
+        >
           Reopen voting
         </Button>
         <span class="text-xs text-muted-foreground">
-          <template v-if="!character.done">{{ picks.length }} of {{ character.auditionCount }} picked</template>
+          <template v-if="!character.done"
+            >{{ picks.length }} of {{ character.auditionCount }} picked</template
+          >
           <template v-else-if="picks.length > 0">
             {{ picks.length }} pick{{ picks.length === 1 ? '' : 's' }} submitted
           </template>
@@ -172,7 +210,12 @@ async function toggleDone() {
           :key="pick.id"
           class="flex items-center gap-1.5 rounded-full border border-primary/30 bg-background py-1 pr-1.5 pl-3 text-sm text-primary"
         >
-          <button type="button" class="cursor-pointer" :title="`Play #${pick.number}`" @click="playPick(pick.id)">
+          <button
+            type="button"
+            class="cursor-pointer"
+            :title="`Play #${pick.number}`"
+            @click="playPick(pick.id)"
+          >
             #{{ pick.number }} {{ pick.auditioneeName }}
           </button>
           <button
@@ -187,8 +230,8 @@ async function toggleDone() {
         </li>
       </ul>
       <p v-else class="text-sm text-muted-foreground">
-        Nothing picked yet. Hit Vote on any audition below, or leave a comment without voting. If you
-        mark the character done with no picks, it counts as an abstain.
+        Nothing picked yet. Hit Vote on any audition below, or leave a comment without voting. If
+        you mark the character done with no picks, it counts as an abstain.
       </p>
       <p class="mt-3 text-xs text-muted-foreground">{{ revealNote }}</p>
     </div>
@@ -211,6 +254,16 @@ async function toggleDone() {
         >
           Only my picks
         </Button>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          :class="onlyMarked ? 'border-primary/30 bg-primary/10 text-primary' : ''"
+          :aria-pressed="onlyMarked"
+          @click="onlyMarked = !onlyMarked"
+        >
+          Saved ({{ marks.filter((mark) => mark.characterId === characterId).length }})
+        </Button>
         <Button type="button" variant="outline" size="sm" @click="sortByName = !sortByName">
           Sort: {{ sortByName ? 'Name A–Z' : 'Submitted' }}
         </Button>
@@ -222,7 +275,8 @@ async function toggleDone() {
           <div
             class="hidden grid-cols-[2rem_minmax(7rem,1fr)_minmax(10rem,1.6fr)_6.5rem] gap-3 border-b px-4 py-2 text-xs text-muted-foreground sm:grid"
           >
-            <span>#</span><span>Auditionee</span><span>Audio</span><span class="text-right">Vote</span>
+            <span>#</span><span>Auditionee</span><span>Audio</span
+            ><span class="text-right">Vote</span>
           </div>
           <div v-if="isPending" class="space-y-2 p-4">
             <Skeleton v-for="n in 4" :key="n" class="h-10 w-full" />
@@ -236,15 +290,28 @@ async function toggleDone() {
               :comment-required="commentRequired"
               :editing="editing?.id === audition.id ? editing.mode : null"
               :saving="vote.isPending.value || setComment.isPending.value"
+              :marked="
+                marks.some(
+                  (mark) => mark.characterId === characterId && mark.auditionId === audition.id,
+                )
+              "
               @edit="(mode) => (editing = { id: audition.id, mode })"
               @cancel="editing = null"
               @submit="(mode, comment) => submit(audition.id, mode, comment)"
               @unvote="removeVote(audition.id)"
               @delete-comment="removeComment(audition.id)"
+              @toggle-mark="emit('toggleMark', characterId, audition.id)"
             />
           </ul>
-          <p v-if="!isPending && rows.length === 0" class="p-8 text-center text-sm text-muted-foreground">
-            No auditions match.
+          <p
+            v-if="!isPending && rows.length === 0"
+            class="p-8 text-center text-sm text-muted-foreground"
+          >
+            {{
+              onlyMarked
+                ? 'No saved auditions match. Save an audition with its star to find it here.'
+                : 'No auditions match.'
+            }}
           </p>
         </div>
       </div>
@@ -262,10 +329,21 @@ async function toggleDone() {
         </template>
         <template v-else>You marked {{ character.name }} as done.</template>
       </span>
-      <Button v-if="!character.done" type="button" :disabled="setDone.isPending.value" @click="toggleDone">
+      <Button
+        v-if="!character.done"
+        type="button"
+        :disabled="setDone.isPending.value"
+        @click="toggleDone"
+      >
         Mark character as done
       </Button>
-      <Button v-else type="button" variant="outline" :disabled="setDone.isPending.value" @click="toggleDone">
+      <Button
+        v-else
+        type="button"
+        variant="outline"
+        :disabled="setDone.isPending.value"
+        @click="toggleDone"
+      >
         Reopen voting
       </Button>
     </div>

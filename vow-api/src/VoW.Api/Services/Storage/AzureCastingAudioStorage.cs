@@ -48,6 +48,9 @@ public sealed class AzureCastingAudioStorage : ICastingAudioStorage
         return blob.GenerateSasUri(BlobSasPermissions.Read, windowStart + ReadLinkLifetime + TimeSpan.FromHours(1));
     }
 
+    public Task<Stream> OpenReadAsync(string blobPath, CancellationToken cancellationToken) =>
+        containerClient.GetBlobClient(blobPath).OpenReadAsync(cancellationToken: cancellationToken);
+
     public async Task DeleteAsync(string blobPath, CancellationToken cancellationToken)
     {
         var blob = containerClient.GetBlobClient(blobPath);

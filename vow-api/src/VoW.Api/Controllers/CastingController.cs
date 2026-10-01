@@ -57,6 +57,14 @@ public sealed class CastingController(ICastingVotingService votingService) : Con
         return auditions is null ? NotFound() : Ok(auditions);
     }
 
+    [HttpGet("auditions/{auditionId:int}/audio")]
+    public async Task<IActionResult> GetAudio(int auditionId, CancellationToken cancellationToken)
+    {
+        if (User.GetUserId() is null) return Unauthorized();
+        var stream = await votingService.OpenAudioAsync(auditionId, cancellationToken);
+        return stream is null ? NotFound() : File(stream, "audio/mpeg");
+    }
+
     [HttpPut("auditions/{auditionId:int}/vote")]
     public async Task<IActionResult> Vote(int auditionId, [FromBody] CastVoteRequest request, CancellationToken cancellationToken) =>
         User.GetUserId() is { } userId

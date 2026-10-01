@@ -53,10 +53,17 @@ function auditions(overrides: Partial<CastingAuditionList> = {}): CastingAuditio
 
 let wrapper: VueWrapper
 
-async function start(props: Partial<{ character: CastingCharacterSummary; votingOpen: boolean; commentRequired: boolean }> = {}) {
+async function start(
+  props: Partial<{
+    character: CastingCharacterSummary
+    votingOpen: boolean
+    commentRequired: boolean
+    marks: { characterId: number; auditionId: number }[]
+  }> = {},
+) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } })
   wrapper = mount(CharacterPanel, {
-    props: { character, votingOpen: true, commentRequired: false, ...props },
+    props: { character, votingOpen: true, commentRequired: false, marks: [], ...props },
     global: { plugins: [[VueQueryPlugin, { queryClient: client }]] },
   })
   await flushPromises()
@@ -68,12 +75,26 @@ function button(text: string) {
 
 beforeEach(() => {
   fetchMock.mockReset()
-  fetchMock.mockImplementation(async (path) => (path.endsWith('/auditions') ? auditions() : undefined))
+  fetchMock.mockImplementation(async (path) =>
+    path.endsWith('/auditions') ? auditions() : undefined,
+  )
 })
 
 afterEach(() => wrapper?.unmount())
 
 describe('CharacterPanel', () => {
+  it('shows saved auditions through the saved filter and lets staff remove the mark', async () => {
+    await start({ marks: [{ characterId: 3, auditionId: 12 }] })
+
+    await button('Saved (1)')!.trigger('click')
+    expect(wrapper.find('[data-testid="audition-11"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="audition-12"]').exists()).toBe(true)
+    await wrapper
+      .find('[data-testid="audition-12"] button[aria-label^="Remove saved mark"]')
+      .trigger('click')
+    expect(wrapper.emitted('toggleMark')).toEqual([[3, 12]])
+  })
+
   it('requires a comment for trial votes and keeps it while the vote is picked', async () => {
     await start({ commentRequired: true })
 
@@ -85,7 +106,8 @@ describe('CharacterPanel', () => {
     await flushPromises()
 
     expect(fetchMock).toHaveBeenCalledWith('/casting/auditions/11/vote', {
-      method: 'PUT', body: { comment: 'Fits the direction' },
+      method: 'PUT',
+      body: { comment: 'Fits the direction' },
     })
     expect(button('Delete')).toBeUndefined()
   })
@@ -143,7 +165,10 @@ describe('CharacterPanel', () => {
     fetchMock.mockImplementation(async (path) => (path.endsWith('/auditions') ? voted : undefined))
     await start()
 
-    await wrapper.findAll('button').find((b) => b.text().includes('Voted'))!.trigger('click')
+    await wrapper
+      .findAll('button')
+      .find((b) => b.text().includes('Voted'))!
+      .trigger('click')
     await flushPromises()
     expect(fetchMock).toHaveBeenCalledWith('/casting/auditions/11/vote', { method: 'DELETE' })
     expect(wrapper.text()).toContain('Strong last line')
@@ -156,7 +181,9 @@ describe('CharacterPanel', () => {
   it('offers "Mark character as done" below the auditions too', async () => {
     await start()
 
-    const doneButtons = wrapper.findAll('button').filter((b) => b.text() === 'Mark character as done')
+    const doneButtons = wrapper
+      .findAll('button')
+      .filter((b) => b.text() === 'Mark character as done')
     expect(doneButtons).toHaveLength(2)
 
     await doneButtons[1]!.trigger('click')

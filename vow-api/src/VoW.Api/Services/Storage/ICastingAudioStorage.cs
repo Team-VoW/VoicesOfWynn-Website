@@ -7,5 +7,7 @@ public interface ICastingAudioStorage
 
     Uri GetReadUrl(string blobPath);
 
+    Task<Stream> OpenReadAsync(string blobPath, CancellationToken cancellationToken);
+
     Task DeleteAsync(string blobPath, CancellationToken cancellationToken);
 }

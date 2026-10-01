@@ -94,6 +94,20 @@ public sealed class CastingTests
     }
 
     [Fact]
+    public async Task AuditionAudioIsOnlyAvailableWhileItsRoundIsOpen()
+    {
+        var (roundId, _, auditionId) = Seed();
+        var service = Voting();
+
+        await using var stream = await service.OpenAudioAsync(auditionId, default);
+        Assert.NotNull(stream);
+        Assert.Null(await service.OpenAudioAsync(int.MaxValue, default));
+
+        await rounds.SetRoundStatusAsync(roundId, CastingRoundStatus.Closed, default);
+        Assert.Null(await service.OpenAudioAsync(auditionId, default));
+    }
+
+    [Fact]
     public async Task VotingIsRejectedOncePastTheClosingTime()
     {
         var (_, _, audition) = Seed(closesAt: Now.UtcDateTime.AddMinutes(-1));

@@ -119,3 +119,20 @@ export async function apiFetch<T>(path: string, opts: RequestOptions = {}): Prom
   if (res.status === 204) return undefined as T
   return (await res.json()) as T
 }
+
+/** Read an authenticated binary response, including the normal token refresh path. */
+export async function apiFetchBlob(path: string, signal?: AbortSignal): Promise<Blob> {
+  const auth = useAuthStore()
+  const request = (token: string) =>
+    fetch(buildUrl(path), {
+      headers: { Authorization: `Bearer ${token}` },
+      signal,
+    })
+  let response = await request(auth.accessToken)
+  if (response.status === 401 && auth.refreshToken) {
+    const fresh = await refreshAccessToken()
+    if (fresh) response = await request(fresh)
+  }
+  if (!response.ok) throw new ApiError(response.status, `Request failed: ${response.status}`, null)
+  return response.blob()
+}

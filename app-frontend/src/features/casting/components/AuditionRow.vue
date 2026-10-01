@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { Check, MessageSquarePlus } from 'lucide-vue-next'
+import { Check, MessageSquarePlus, Star } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import SeekableAudioPlayer from '@/components/audio/SeekableAudioPlayer.vue'
 import type { CastingAudition } from '@/api/types'
@@ -18,6 +18,7 @@ const props = defineProps<{
   commentRequired: boolean
   editing: AuditionEditMode | null
   saving: boolean
+  marked: boolean
 }>()
 
 const emit = defineEmits<{
@@ -26,10 +27,12 @@ const emit = defineEmits<{
   submit: [mode: AuditionEditMode, comment: string]
   unvote: []
   deleteComment: []
+  toggleMark: []
 }>()
 
 const draft = ref('')
 const commentsOpen = ref(false)
+const playerExpanded = ref(false)
 
 watch(
   () => props.editing,
@@ -53,7 +56,18 @@ watch(
       <span class="text-sm text-muted-foreground tabular-nums">{{ audition.number }}</span>
       <div class="min-w-0">
         <p class="truncate text-sm font-medium">{{ audition.auditioneeName }}</p>
-        <div class="flex flex-wrap gap-x-2 text-xs">
+        <div class="flex flex-wrap items-center gap-x-2 text-xs">
+          <button
+            type="button"
+            class="inline-flex cursor-pointer items-center gap-1 rounded-sm text-muted-foreground hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            :class="marked ? 'text-primary' : ''"
+            :aria-label="`${marked ? 'Remove saved mark from' : 'Save'} audition ${audition.number} by ${audition.auditioneeName}`"
+            :aria-pressed="marked"
+            @click="emit('toggleMark')"
+          >
+            <Star class="size-3.5" :fill="marked ? 'currentColor' : 'none'" aria-hidden="true" />
+            {{ marked ? 'Saved' : 'Save' }}
+          </button>
           <button
             v-if="audition.anonymousComments.length > 0"
             type="button"
@@ -76,12 +90,16 @@ watch(
         </div>
       </div>
       <SeekableAudioPlayer
-        class="order-last col-span-full sm:order-none sm:col-span-1"
+        class="order-last col-span-full sm:col-span-1"
+        :class="playerExpanded ? 'sm:col-span-full sm:row-start-2' : 'sm:order-none'"
         :src="audition.audioUrl"
         :label="`audition ${audition.number} by ${audition.auditioneeName}`"
         :duration-seconds="audition.durationSeconds"
+        :audio-file-path="`/casting/auditions/${audition.id}/audio`"
+        expandable
+        @expanded="playerExpanded = $event"
       />
-      <div class="flex justify-end">
+      <div class="flex justify-end sm:col-start-4 sm:row-start-1">
         <Button
           v-if="audition.myVote"
           type="button"
@@ -115,7 +133,13 @@ watch(
       <label :for="`comment-${audition.id}`" class="text-sm font-medium">
         Comment
         <span class="font-normal text-muted-foreground">
-          {{ commentRequired && (editing === 'vote' || audition.myVote) ? 'Required. ' : editing === 'vote' ? 'Optional. ' : '' }}Other staff see it anonymously.
+          {{
+            commentRequired && (editing === 'vote' || audition.myVote)
+              ? 'Required. '
+              : editing === 'vote'
+                ? 'Optional. '
+                : ''
+          }}Other staff see it anonymously.
         </span>
       </label>
       <textarea
@@ -131,7 +155,11 @@ watch(
         <Button
           type="submit"
           size="sm"
-          :disabled="saving || (commentRequired && (editing === 'vote' || audition.myVote) && !draft.trim()) || (editing === 'comment' && !draft.trim() && !audition.myComment)"
+          :disabled="
+            saving ||
+            (commentRequired && (editing === 'vote' || audition.myVote) && !draft.trim()) ||
+            (editing === 'comment' && !draft.trim() && !audition.myComment)
+          "
         >
           {{ editing === 'vote' ? 'Cast vote' : 'Save comment' }}
         </Button>
@@ -144,13 +172,22 @@ watch(
       class="flex flex-wrap items-baseline gap-x-3 gap-y-1 px-4 pb-3 text-sm sm:flex-nowrap sm:pl-[3.25rem]"
     >
       <span class="shrink-0 font-medium text-primary">
-        Your comment<span v-if="!audition.myVote" class="font-normal text-muted-foreground"> (no vote)</span>
+        Your comment<span v-if="!audition.myVote" class="font-normal text-muted-foreground">
+          (no vote)</span
+        >
       </span>
-      <span class="min-w-0 basis-full break-words sm:basis-auto sm:flex-1" :class="audition.myComment ? '' : 'text-muted-foreground'">
+      <span
+        class="min-w-0 basis-full break-words sm:basis-auto sm:flex-1"
+        :class="audition.myComment ? '' : 'text-muted-foreground'"
+      >
         {{ audition.myComment || 'No comment added.' }}
       </span>
       <span v-if="canEdit" class="flex shrink-0 gap-3 text-xs">
-        <button type="button" class="cursor-pointer text-primary hover:underline" @click="emit('edit', 'comment')">
+        <button
+          type="button"
+          class="cursor-pointer text-primary hover:underline"
+          @click="emit('edit', 'comment')"
+        >
           {{ audition.myComment ? 'Edit' : 'Add comment' }}
         </button>
         <button
