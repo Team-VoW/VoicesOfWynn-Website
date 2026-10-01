@@ -23,6 +23,8 @@ public sealed record CastingCharacterSummaryResponse(
     string Name,
     string? QuestName,
     string? Direction,
+    string? AuditionLines,
+    string? ImageUrl,
     int AuditionCount,
     int MyPickCount,
     bool Done);

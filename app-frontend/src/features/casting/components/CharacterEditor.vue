@@ -7,7 +7,11 @@ import { Input } from '@/components/ui/input'
 import SeekableAudioPlayer from '@/components/audio/SeekableAudioPlayer.vue'
 import type { AdminCastingCharacter, SaveCastingCharacterRequest } from '@/api/types'
 import { messageFromContentError } from '@/features/content/contentUtils'
-import { useDeleteCastingAudition, useDeleteCastingCharacter, useUploadCastingAudition } from '../queries'
+import {
+  useDeleteCastingAudition,
+  useDeleteCastingCharacter,
+  useUploadCastingAudition,
+} from '../queries'
 import CharacterForm from './CharacterForm.vue'
 
 const props = defineProps<{
@@ -16,7 +20,9 @@ const props = defineProps<{
   saving: boolean
 }>()
 
-const emit = defineEmits<{ save: [body: SaveCastingCharacterRequest, done: (error: string) => void] }>()
+const emit = defineEmits<{
+  save: [body: SaveCastingCharacterRequest, done: (error: string) => void]
+}>()
 
 const upload = useUploadCastingAudition()
 const removeAudition = useDeleteCastingAudition()
@@ -89,24 +95,46 @@ async function deleteCharacter() {
       @cancel="editing = false"
     />
     <header v-else class="flex flex-wrap items-start justify-between gap-3">
-      <div class="min-w-0 space-y-1">
-        <div class="flex flex-wrap items-center gap-2">
-          <h3 class="font-semibold">{{ character.name }}</h3>
-          <span
-            v-if="character.questName"
-            class="rounded-full border border-primary/25 px-2 py-0.5 text-xs text-primary"
+      <div class="flex min-w-0 gap-4">
+        <img
+          v-if="character.imageUrl"
+          :src="character.imageUrl"
+          :alt="character.name"
+          class="size-20 shrink-0 rounded-md object-cover"
+        />
+        <div class="min-w-0 space-y-1">
+          <div class="flex flex-wrap items-center gap-2">
+            <h3 class="font-semibold">{{ character.name }}</h3>
+            <span
+              v-if="character.questName"
+              class="rounded-full border border-primary/25 px-2 py-0.5 text-xs text-primary"
+            >
+              {{ character.questName }}
+            </span>
+            <span class="text-xs text-muted-foreground"
+              >{{ character.auditions.length }} auditions</span
+            >
+          </div>
+          <p v-if="character.direction" class="max-w-2xl text-sm text-muted-foreground">
+            {{ character.direction }}
+          </p>
+          <p v-else class="text-sm text-muted-foreground/70 italic">No direction yet.</p>
+          <p
+            v-if="character.auditionLines"
+            class="max-w-2xl whitespace-pre-line text-sm text-muted-foreground"
           >
-            {{ character.questName }}
-          </span>
-          <span class="text-xs text-muted-foreground">{{ character.auditions.length }} auditions</span>
+            {{ character.auditionLines }}
+          </p>
         </div>
-        <p v-if="character.direction" class="max-w-2xl text-sm text-muted-foreground">
-          {{ character.direction }}
-        </p>
-        <p v-else class="text-sm text-muted-foreground/70 italic">No direction yet.</p>
       </div>
       <div class="flex gap-1">
-        <Button type="button" variant="ghost" size="icon-sm" :aria-label="`Edit ${character.name}`" @click="editing = true">
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-sm"
+          :aria-label="`Edit ${character.name}`"
+          @click="editing = true"
+        >
           <Pencil class="size-4" />
         </Button>
         <Button
@@ -119,13 +147,19 @@ async function deleteCharacter() {
           @click="deleteCharacter"
         >
           <Trash2 class="size-4" />
-          <template v-if="confirmDelete">Delete with {{ character.auditions.length }} auditions?</template>
+          <template v-if="confirmDelete"
+            >Delete with {{ character.auditions.length }} auditions?</template
+          >
         </Button>
       </div>
     </header>
 
     <ul v-if="character.auditions.length > 0" class="divide-y rounded-md border">
-      <li v-for="audition in character.auditions" :key="audition.id" class="flex items-center gap-3 px-3 py-2">
+      <li
+        v-for="audition in character.auditions"
+        :key="audition.id"
+        class="flex items-center gap-3 px-3 py-2"
+      >
         <span class="w-6 text-xs text-muted-foreground tabular-nums">{{ audition.number }}</span>
         <span class="w-40 min-w-0 truncate text-sm">
           {{ audition.auditioneeName }}
@@ -171,7 +205,12 @@ async function deleteCharacter() {
         class="max-w-64 text-xs file:mr-2 file:cursor-pointer file:rounded-md file:border file:bg-background file:px-2 file:py-1 file:text-xs"
         @change="file = ($event.target as HTMLInputElement).files?.[0] ?? null"
       />
-      <Button type="submit" size="sm" variant="outline" :disabled="!file || !auditioneeName.trim() || upload.isPending.value">
+      <Button
+        type="submit"
+        size="sm"
+        variant="outline"
+        :disabled="!file || !auditioneeName.trim() || upload.isPending.value"
+      >
         <Upload class="size-4" />
         {{ upload.isPending.value ? 'Uploading…' : 'Add audition' }}
       </Button>

@@ -24,3 +24,5 @@ databaseChangeLog:
       file: website/changelog-10.sql
   - include:
       file: website/changelog-11.sql
+  - include:
+      file: website/changelog-12.sql

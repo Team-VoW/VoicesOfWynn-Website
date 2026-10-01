@@ -30,6 +30,8 @@ public sealed class CastingRoundRepository(IConfiguration configuration) : ICast
         name AS Name,
         quest_name AS QuestName,
         direction AS Direction,
+        audition_lines AS AuditionLines,
+        image_url AS ImageUrl,
         sort_order AS SortOrder,
         winner_audition_id AS WinnerAuditionId
         """;
@@ -281,8 +283,8 @@ public sealed class CastingRoundRepository(IConfiguration configuration) : ICast
         CancellationToken cancellationToken)
     {
         const string sql = """
-            INSERT INTO casting_character (round_id, name, quest_name, direction, sort_order)
-            SELECT @RoundId, @Name, @QuestName, @Direction, COALESCE(MAX(sort_order), 0) + 1
+            INSERT INTO casting_character (round_id, name, quest_name, direction, audition_lines, image_url, sort_order)
+            SELECT @RoundId, @Name, @QuestName, @Direction, @AuditionLines, @ImageUrl, COALESCE(MAX(sort_order), 0) + 1
             FROM casting_character
             WHERE round_id = @RoundId;
             SELECT LAST_INSERT_ID();
@@ -296,7 +298,9 @@ public sealed class CastingRoundRepository(IConfiguration configuration) : ICast
                 RoundId = roundId,
                 details.Name,
                 details.QuestName,
-                details.Direction
+                details.Direction,
+                details.AuditionLines,
+                details.ImageUrl
             }, cancellationToken: cancellationToken));
         }
         catch (MySqlException ex) when (ex.Number == DuplicateKeyError)
@@ -312,7 +316,8 @@ public sealed class CastingRoundRepository(IConfiguration configuration) : ICast
     {
         const string sql = """
             UPDATE casting_character
-            SET name = @Name, quest_name = @QuestName, direction = @Direction
+            SET name = @Name, quest_name = @QuestName, direction = @Direction,
+                audition_lines = @AuditionLines, image_url = @ImageUrl
             WHERE character_id = @CharacterId;
             """;
 
@@ -324,7 +329,9 @@ public sealed class CastingRoundRepository(IConfiguration configuration) : ICast
                 CharacterId = characterId,
                 details.Name,
                 details.QuestName,
-                details.Direction
+                details.Direction,
+                details.AuditionLines,
+                details.ImageUrl
             }, cancellationToken: cancellationToken));
             return true;
         }

@@ -63,10 +63,12 @@ public sealed record CastingCharacter(
     string Name,
     string? QuestName,
     string? Direction,
+    string? AuditionLines,
+    string? ImageUrl,
     int SortOrder,
     int? WinnerAuditionId);
 
-public sealed record CastingCharacterDetails(string Name, string? QuestName, string? Direction);
+public sealed record CastingCharacterDetails(string Name, string? QuestName, string? Direction, string? AuditionLines = null, string? ImageUrl = null);
 
 public sealed record CastingAudition(
     int Id,

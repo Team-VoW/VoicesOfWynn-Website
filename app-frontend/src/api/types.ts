@@ -668,6 +668,8 @@ export interface CastingCharacterSummary {
   name: string
   questName: string | null
   direction: string | null
+  auditionLines: string | null
+  imageUrl: string | null
   auditionCount: number
   myPickCount: number
   done: boolean
@@ -749,6 +751,8 @@ export interface AdminCastingCharacter {
   name: string
   questName: string | null
   direction: string | null
+  auditionLines: string | null
+  imageUrl: string | null
   winnerAuditionId: number | null
   auditions: AdminCastingAudition[]
 }
@@ -768,6 +772,8 @@ export interface SaveCastingCharacterRequest {
   name: string
   questName: string | null
   direction: string | null
+  auditionLines: string | null
+  imageUrl: string | null
 }
 
 export interface CastingReviewVote {

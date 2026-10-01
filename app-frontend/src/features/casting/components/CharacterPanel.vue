@@ -142,25 +142,37 @@ async function toggleDone() {
 <template>
   <section class="flex min-w-0 flex-col gap-4" :aria-label="`Auditions for ${character.name}`">
     <div class="flex flex-wrap justify-between gap-5 rounded-lg border bg-background p-5">
-      <div class="min-w-0 flex-[1_1_20rem] space-y-2">
-        <div class="flex flex-wrap items-center gap-2">
-          <h2 class="text-xl font-semibold">{{ character.name }}</h2>
-          <span
-            v-if="character.questName"
-            class="rounded-full border border-primary/25 px-2.5 py-0.5 text-xs text-primary"
-          >
-            {{ character.questName }}
-          </span>
-          <span
-            v-if="character.done"
-            class="rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs text-emerald-800"
-          >
-            Done
-          </span>
+      <div class="flex min-w-0 flex-[1_1_20rem] gap-4">
+        <img
+          v-if="character.imageUrl"
+          :src="character.imageUrl"
+          :alt="character.name"
+          class="size-24 shrink-0 rounded-lg object-cover"
+        />
+        <div class="min-w-0 space-y-2">
+          <div class="flex flex-wrap items-center gap-2">
+            <h2 class="text-xl font-semibold">{{ character.name }}</h2>
+            <span
+              v-if="character.questName"
+              class="rounded-full border border-primary/25 px-2.5 py-0.5 text-xs text-primary"
+            >
+              {{ character.questName }}
+            </span>
+            <span
+              v-if="character.done"
+              class="rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs text-emerald-800"
+            >
+              Done
+            </span>
+          </div>
+          <p v-if="character.direction" class="max-w-2xl text-sm text-muted-foreground">
+            {{ character.direction }}
+          </p>
+          <div v-if="character.auditionLines" class="max-w-2xl space-y-1 text-sm">
+            <p class="font-medium">Audition lines</p>
+            <p class="whitespace-pre-line text-muted-foreground">{{ character.auditionLines }}</p>
+          </div>
         </div>
-        <p v-if="character.direction" class="max-w-2xl text-sm text-muted-foreground">
-          {{ character.direction }}
-        </p>
       </div>
       <div v-if="votingOpen" class="flex flex-col items-end justify-center gap-1.5">
         <Button

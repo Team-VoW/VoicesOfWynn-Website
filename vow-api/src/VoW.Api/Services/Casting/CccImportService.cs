@@ -18,10 +18,10 @@ public sealed class CccImportService(
     {
         await rounds.SetImportStateAsync(job.RoundId, CastingImportStatus.Running, "Reading submissions from Casting Call Club…", cancellationToken);
 
-        IReadOnlyList<CccSubmission> submissions;
+        CccProject project;
         try
         {
-            submissions = await cccClient.GetUnsortedSubmissionsAsync(job.ProjectUrl, cancellationToken);
+            project = await cccClient.GetProjectAsync(job.ProjectUrl, cancellationToken);
         }
         catch (Exception ex) when (ex is CccException or HttpRequestException or TaskCanceledException && !cancellationToken.IsCancellationRequested)
         {
@@ -29,13 +29,16 @@ public sealed class CccImportService(
             return;
         }
 
+        var submissions = project.Submissions;
+        var roles = project.Roles.GroupBy(role => role.Name, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(group => group.Key, group => group.First(), StringComparer.OrdinalIgnoreCase);
         var added = 0;
         var skipped = 0;
         var failed = new List<string>();
         var processed = 0;
         foreach (var role in submissions.GroupBy(s => s.RoleName))
         {
-            var character = await EnsureCharacterAsync(job.RoundId, role.Key, cancellationToken);
+            var character = await EnsureCharacterAsync(job.RoundId, role.Key, roles.GetValueOrDefault(role.Key), cancellationToken);
             foreach (var submission in role)
             {
                 processed++;
@@ -86,16 +89,23 @@ public sealed class CccImportService(
             cancellationToken);
     }
 
-    private async Task<CastingCharacter> EnsureCharacterAsync(int roundId, string name, CancellationToken cancellationToken)
+    private async Task<CastingCharacter> EnsureCharacterAsync(int roundId, string name, CccRole? role, CancellationToken cancellationToken)
     {
         var trimmed = name.Length > 100 ? name[..100] : name;
         var existing = await rounds.FindCharacterByNameAsync(roundId, trimmed, cancellationToken);
         if (existing is not null)
         {
+            if (role is not null && (existing.AuditionLines is null || existing.ImageUrl is null))
+            {
+                await rounds.UpdateCharacterAsync(existing.Id, new CastingCharacterDetails(
+                    existing.Name, existing.QuestName, existing.Direction,
+                    existing.AuditionLines ?? role.AuditionLines, existing.ImageUrl ?? role.ImageUrl), cancellationToken);
+            }
             return existing;
         }
 
-        var id = await rounds.CreateCharacterAsync(roundId, new CastingCharacterDetails(trimmed, null, null), cancellationToken);
+        var id = await rounds.CreateCharacterAsync(roundId, new CastingCharacterDetails(trimmed, null, null,
+            role?.AuditionLines, role?.ImageUrl), cancellationToken);
         return (id is null ? null : await rounds.GetCharacterAsync(id.Value, cancellationToken))
                ?? await rounds.FindCharacterByNameAsync(roundId, trimmed, cancellationToken)
                ?? throw new InvalidOperationException($"Could not create casting character {trimmed}.");

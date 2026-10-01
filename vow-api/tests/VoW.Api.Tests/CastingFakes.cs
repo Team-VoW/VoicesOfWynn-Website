@@ -23,7 +23,7 @@ internal sealed class MemoryCastingRounds : ICastingRoundRepository
     public int AddCharacter(int roundId, string name = "Theorick")
     {
         var id = Characters.Count + 1;
-        Characters.Add(new CastingCharacter(id, roundId, name, "Detlas", "Weary knight", id, null));
+        Characters.Add(new CastingCharacter(id, roundId, name, "Detlas", "Weary knight", null, null, id, null));
         return id;
     }
 
@@ -121,14 +121,14 @@ internal sealed class MemoryCastingRounds : ICastingRoundRepository
         }
 
         var id = Characters.Count == 0 ? 1 : Characters.Max(c => c.Id) + 1;
-        Characters.Add(new CastingCharacter(id, roundId, details.Name, details.QuestName, details.Direction, id, null));
+        Characters.Add(new CastingCharacter(id, roundId, details.Name, details.QuestName, details.Direction, details.AuditionLines, details.ImageUrl, id, null));
         return Task.FromResult<int?>(id);
     }
 
     public Task<bool> UpdateCharacterAsync(int characterId, CastingCharacterDetails details, CancellationToken cancellationToken)
     {
         var index = Characters.FindIndex(c => c.Id == characterId);
-        Characters[index] = Characters[index] with { Name = details.Name, QuestName = details.QuestName, Direction = details.Direction };
+        Characters[index] = Characters[index] with { Name = details.Name, QuestName = details.QuestName, Direction = details.Direction, AuditionLines = details.AuditionLines, ImageUrl = details.ImageUrl };
         return Task.FromResult(true);
     }
 

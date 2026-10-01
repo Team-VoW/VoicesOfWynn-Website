@@ -101,6 +101,8 @@ public sealed class CastingVotingService(
                 c.Name,
                 c.QuestName,
                 c.Direction,
+                c.AuditionLines,
+                c.ImageUrl,
                 auditions.Count(a => a.CharacterId == c.Id),
                 myVotes.Count(v => v.CharacterId == c.Id && v.Picked),
                 myDone.Contains(c.Id))).ToList());

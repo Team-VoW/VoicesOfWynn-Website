@@ -88,6 +88,8 @@ public sealed class CastingAdminService(
                 c.Name,
                 c.QuestName,
                 c.Direction,
+                c.AuditionLines,
+                c.ImageUrl,
                 c.WinnerAuditionId,
                 auditions.Where(a => a.CharacterId == c.Id)
                     .Select(a => new AdminCastingAuditionResponse(
@@ -396,7 +398,9 @@ public sealed class CastingAdminService(
     private static CastingCharacterDetails ToDetails(SaveCastingCharacterRequest request) => new(
         request.Name.Trim(),
         NullIfBlank(request.QuestName),
-        NullIfBlank(request.Direction));
+        NullIfBlank(request.Direction),
+        NullIfBlank(request.AuditionLines),
+        NullIfBlank(request.ImageUrl));
 
     private static string? NullIfBlank(string? value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 }

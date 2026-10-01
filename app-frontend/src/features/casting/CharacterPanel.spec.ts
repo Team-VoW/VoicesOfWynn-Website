@@ -16,6 +16,8 @@ const character: CastingCharacterSummary = {
   name: 'Theorick',
   questName: 'Detlas',
   direction: 'Weary knight, late 50s.',
+  auditionLines: null,
+  imageUrl: null,
   auditionCount: 2,
   myPickCount: 0,
   done: false,
@@ -83,6 +85,20 @@ beforeEach(() => {
 afterEach(() => wrapper?.unmount())
 
 describe('CharacterPanel', () => {
+  it('shows the CCC picture and audition lines while voting', async () => {
+    await start({
+      character: {
+        ...character,
+        imageUrl: 'https://images.castingcall.club/role_images/theorick.png',
+        auditionLines: 'First line\n\nSecond line',
+      },
+    })
+
+    expect(wrapper.find('img[alt="Theorick"]').attributes('src')).toContain('theorick.png')
+    expect(wrapper.text()).toContain('First line')
+    expect(wrapper.text()).toContain('Second line')
+  })
+
   it('shows saved auditions through the saved filter and lets staff remove the mark', async () => {
     await start({ marks: [{ characterId: 3, auditionId: 12 }] })
 

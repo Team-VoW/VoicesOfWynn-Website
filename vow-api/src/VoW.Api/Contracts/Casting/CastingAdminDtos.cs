@@ -34,6 +34,8 @@ public sealed record AdminCastingCharacterResponse(
     string Name,
     string? QuestName,
     string? Direction,
+    string? AuditionLines,
+    string? ImageUrl,
     int? WinnerAuditionId,
     IReadOnlyList<AdminCastingAuditionResponse> Auditions);
 
@@ -71,6 +73,13 @@ public sealed class SaveCastingCharacterRequest
 
     [StringLength(2000)]
     public string? Direction { get; init; }
+
+    [StringLength(10000)]
+    public string? AuditionLines { get; init; }
+
+    [StringLength(1000)]
+    [RegularExpression(@"^https://\S+$", ErrorMessage = "Picture URL must use HTTPS.")]
+    public string? ImageUrl { get; init; }
 }
 
 public sealed class UploadCastingAuditionRequest

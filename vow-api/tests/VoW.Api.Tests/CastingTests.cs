@@ -94,6 +94,20 @@ public sealed class CastingTests
     }
 
     [Fact]
+    public async Task VotersReceiveSavedCharacterAuditionLinesAndPicture()
+    {
+        var (round, character, _) = Seed();
+        await rounds.UpdateCharacterAsync(character, new CastingCharacterDetails(
+            "Theorick", "Detlas", "Weary knight", "A first line\n\nA second line",
+            "https://images.castingcall.club/role_images/theorick.png"), default);
+
+        var details = await Voting().GetRoundAsync(round, Alice, default);
+
+        Assert.Equal("A first line\n\nA second line", details!.Characters.Single().AuditionLines);
+        Assert.Equal("https://images.castingcall.club/role_images/theorick.png", details.Characters.Single().ImageUrl);
+    }
+
+    [Fact]
     public async Task AuditionAudioIsOnlyAvailableWhileItsRoundIsOpen()
     {
         var (roundId, _, auditionId) = Seed();
@@ -406,6 +420,23 @@ public sealed class CastingTests
         Assert.StartsWith("[", raw);
         Assert.Equal("1234", CccClient.ExtractProjectId("""<a href="/manage/submissions?tab=a&project_id=1234">Manage</a>"""));
         Assert.Null(CccClient.ExtractProjectId("<html></html>"));
+    }
+
+    [Fact]
+    public void CccRolePictureAndAuditionLinesAreParsedFromTheProjectPage()
+    {
+        const string html = """
+            <div id="unmin-1153584">
+              <div><img src="https://images.castingcall.club/role_images/1153584-mayor-alvin.png" alt="Mayor Alvin"></div>
+              <div><ul><li>english</li></ul></div>
+              <ul><li><p>First line {sadly}</p></li><li><p>Second &amp; final line</p></li></ul>
+            </div>
+            """;
+
+        var role = Assert.Single(CccClient.ParseRoles(html));
+        Assert.Equal("Mayor Alvin", role.Name);
+        Assert.Equal("https://images.castingcall.club/role_images/1153584-mayor-alvin.png", role.ImageUrl);
+        Assert.Equal("First line {sadly}\n\nSecond & final line", role.AuditionLines);
     }
 
     [Theory]

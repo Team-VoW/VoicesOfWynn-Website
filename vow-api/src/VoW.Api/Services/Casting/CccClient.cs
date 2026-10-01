@@ -1,10 +1,13 @@
 using System.Net;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using AngleSharp.Html.Parser;
 
 namespace VoW.Api.Services.Casting;
 
 public sealed record CccSubmission(string RoleName, string Username, string AudioUrl);
+public sealed record CccRole(string Name, string? AuditionLines, string? ImageUrl);
+public sealed record CccProject(IReadOnlyList<CccRole> Roles, IReadOnlyList<CccSubmission> Submissions);
 
 public class CccException(string message) : Exception(message);
 
@@ -13,7 +16,7 @@ public sealed class CccAuthException()
 
 public interface ICccClient
 {
-    Task<IReadOnlyList<CccSubmission>> GetUnsortedSubmissionsAsync(string projectUrl, CancellationToken cancellationToken);
+    Task<CccProject> GetProjectAsync(string projectUrl, CancellationToken cancellationToken);
 
     Task<Stream> DownloadAudioAsync(string audioUrl, CancellationToken cancellationToken);
 }
@@ -34,7 +37,7 @@ public sealed partial class CccClient(HttpClient httpClient, IConfiguration conf
         && uri.Scheme == Uri.UriSchemeHttps
         && (uri.Host == CccHost || uri.Host == "castingcall.club");
 
-    public async Task<IReadOnlyList<CccSubmission>> GetUnsortedSubmissionsAsync(
+    public async Task<CccProject> GetProjectAsync(
         string projectUrl,
         CancellationToken cancellationToken)
     {
@@ -49,7 +52,10 @@ public sealed partial class CccClient(HttpClient httpClient, IConfiguration conf
             throw new CccException("CCC_TOKEN is not configured on the API.");
         }
 
-        var projectId = await FindProjectIdAsync(projectUrl, cancellationToken);
+        var html = await GetProjectPageAsync(projectUrl, cancellationToken);
+        var projectId = ExtractProjectId(html)
+            ?? throw new CccException("Could not find the project id on that page. Is it a casting call you own?");
+        var roles = ParseRoles(html);
         var session = await FetchSessionCookieAsync(token, cancellationToken);
         var cookie = $"_ccc_token={token}; _ccc_session={session}";
 
@@ -69,7 +75,7 @@ public sealed partial class CccClient(HttpClient httpClient, IConfiguration conf
             submissions.AddRange(pageSubmissions);
         }
 
-        return submissions;
+        return new CccProject(roles, submissions);
     }
 
     public async Task<Stream> DownloadAudioAsync(string audioUrl, CancellationToken cancellationToken)
@@ -124,7 +130,35 @@ public sealed partial class CccClient(HttpClient httpClient, IConfiguration conf
         return match.Success ? match.Groups["id"].Value : null;
     }
 
-    private async Task<string> FindProjectIdAsync(string projectUrl, CancellationToken cancellationToken)
+    public static IReadOnlyList<CccRole> ParseRoles(string html)
+    {
+        var document = new HtmlParser().ParseDocument(html);
+        var roles = new List<CccRole>();
+        foreach (var role in document.QuerySelectorAll("div[id^='unmin-']"))
+        {
+            var image = role.QuerySelector("img[src*='/role_images/']");
+            var name = image?.GetAttribute("alt")?.Trim()
+                ?? role.QuerySelector(".font-medium.text-lg")?.TextContent.Trim();
+            if (string.IsNullOrEmpty(name)) continue;
+
+            var imageUrl = image?.GetAttribute("src");
+            if (!Uri.TryCreate(imageUrl, UriKind.Absolute, out var imageUri)
+                || imageUri.Scheme != Uri.UriSchemeHttps
+                || imageUri.Host != "images.castingcall.club") imageUrl = null;
+
+            var lines = role.Children.FirstOrDefault(child => child.TagName == "UL")?
+                .QuerySelectorAll("li")
+                .Select(line => line.TextContent.Trim())
+                .Where(line => line.Length > 0)
+                .ToList();
+            var auditionLines = lines?.Count > 0 ? string.Join("\n\n", lines) : null;
+            roles.Add(new CccRole(name, auditionLines is { Length: > 10000 } ? auditionLines[..10000] : auditionLines, imageUrl));
+        }
+
+        return roles;
+    }
+
+    private async Task<string> GetProjectPageAsync(string projectUrl, CancellationToken cancellationToken)
     {
         using var response = await SendFollowingRedirectsAsync(
             new Uri(projectUrl), allowAnyHost: false, HttpCompletionOption.ResponseContentRead, cancellationToken);
@@ -133,9 +167,7 @@ public sealed partial class CccClient(HttpClient httpClient, IConfiguration conf
             throw new CccException($"Opening the casting page failed with status {(int)response.StatusCode}.");
         }
 
-        var html = await response.Content.ReadAsStringAsync(cancellationToken);
-        return ExtractProjectId(html)
-               ?? throw new CccException("Could not find the project id on that page. Is it a casting call you own?");
+        return await response.Content.ReadAsStringAsync(cancellationToken);
     }
 
     private async Task<string> FetchSessionCookieAsync(string token, CancellationToken cancellationToken)
