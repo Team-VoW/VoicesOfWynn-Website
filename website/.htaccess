@@ -27,6 +27,13 @@ RewriteEngine On
 RewriteRule ^downloads$ https://modrinth.com/mod/vow [R=301,L]
 RewriteRule ^submit$ https://owncloud.cesnet.cz/index.php/s/BniTsVDqRMOIAFm [R=301,L]
 
+# The Vue app serves the website while legacy mod clients still use the PHP API.
+# Keep the .NET proxy, old JAR downloads, updater files, hosted assets, and domain validation reachable here.
+RewriteCond %{REQUEST_URI} !^/(api|vow-api|adminer|dynamic|\.well-known)(/|$) [NC]
+RewriteCond %{REQUEST_URI} !^/download/[0-9]+/jar/?$ [NC]
+RewriteCond %{REQUEST_URI} !^/files/updater-data/ [NC]
+RewriteRule ^(.*)$ https://app.voicesofwynn.com/$1 [R=302,L]
+
 RewriteCond %{REQUEST_URI} ^/files/updater-data/.*
 RewriteRule ^.*$ - [NC,L]
 
@@ -42,7 +49,7 @@ RewriteRule \.(css|js|txt|ico|ttf|xml|svg|gif|png|ogg|jpg|webp)$ - [NC,L]
 
 RewriteCond %{REQUEST_URI}::$1 ^(/.+)(.+)::\2$
 RewriteRule ^(.*) - [E=BASE:%1]
-RewriteRule ^(.*)$ %{ENV:BASE}index.php [NC,L]
+RewriteRule ^(.*)$ %{ENV:BASE}index.php [NC,END]
 
 # Use .phtml files as .php files
 AddType application/x-httpd-php .php .phtml
