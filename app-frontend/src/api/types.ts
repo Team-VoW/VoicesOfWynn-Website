@@ -642,7 +642,7 @@ export interface SaveFunFactRequest {
   active: boolean
 }
 
-// Casting. Voter-facing shapes never carry another voter's identity or any vote totals.
+// Casting. Named results are available to voters after a round ends.
 
 export type CastingRoundStatus = 'Draft' | 'Open' | 'Closed' | 'Archived'
 export type CastingSource = 'Manual' | 'Ccc' | 'Discord'
@@ -813,4 +813,10 @@ export interface CastingReview {
   status: CastingRoundStatus
   eligibleVoterCount: number
   characters: CastingReviewCharacter[]
+}
+
+export interface CastingResultRound {
+  id: number
+  name: string
+  status: CastingRoundStatus
 }

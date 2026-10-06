@@ -12,8 +12,10 @@ import {
   getAdminCastingRound,
   getAdminCastingRounds,
   getCastingAuditions,
+  getCastingResultRounds,
   getCastingReview,
   getCastingRound,
+  getFinishedCastingReview,
   getMyCastingPicks,
   getOpenCastingRounds,
   importCccCasting,
@@ -40,6 +42,22 @@ export function useOpenCastingRounds(enabled: MaybeRefOrGetter<boolean> = true) 
     queryKey: ['casting', 'rounds'] as const,
     queryFn: ({ signal }) => getOpenCastingRounds(signal),
     enabled: computed(() => toValue(enabled)),
+  })
+}
+
+export function useCastingResultRounds(enabled: MaybeRefOrGetter<boolean> = true) {
+  return useQuery({
+    queryKey: ['casting', 'results'] as const,
+    queryFn: ({ signal }) => getCastingResultRounds(signal),
+    enabled: computed(() => toValue(enabled)),
+  })
+}
+
+export function useFinishedCastingReview(roundId: MaybeRefOrGetter<number | null>) {
+  return useQuery({
+    queryKey: computed(() => ['casting', 'round', toValue(roundId), 'results'] as const),
+    queryFn: ({ signal }) => getFinishedCastingReview(toValue(roundId)!, signal),
+    enabled: computed(() => toValue(roundId) !== null),
   })
 }
 
@@ -161,10 +179,11 @@ export function useSetCharacterDone() {
 
 // Management
 
-export function useAdminCastingRounds(includeArchived: MaybeRefOrGetter<boolean>) {
+export function useAdminCastingRounds(includeArchived: MaybeRefOrGetter<boolean>, enabled: MaybeRefOrGetter<boolean> = true) {
   return useQuery({
     queryKey: computed(() => ['admin', 'casting', 'rounds', toValue(includeArchived)] as const),
     queryFn: ({ signal }) => getAdminCastingRounds(toValue(includeArchived), signal),
+    enabled: computed(() => toValue(enabled)),
   })
 }
 

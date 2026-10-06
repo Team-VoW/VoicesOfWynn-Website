@@ -3,8 +3,8 @@ using VoW.Api.Domain.Casting;
 
 namespace VoW.Api.Contracts.Casting;
 
-// Everything a voter receives. None of these carry another voter's identity or any vote totals:
-// comments from others arrive as bare strings, and only once the voter has marked the character done.
+// During voting, other voters' comments arrive as bare strings only after the character is done.
+// Named totals and comments are available through the results endpoint after voting ends.
 
 public sealed record CastingRoundSummaryResponse(
     int Id,

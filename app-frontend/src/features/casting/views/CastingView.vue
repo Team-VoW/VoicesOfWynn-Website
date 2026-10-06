@@ -13,7 +13,7 @@ import { formatDate } from '../castingFormat'
 import { useCastingRound, useMyCastingPicks, useOpenCastingRounds } from '../queries'
 import { useAuditionMarks } from '../useAuditionMarks'
 
-type Tab = 'characters' | 'mine' | 'review'
+type Tab = 'characters' | 'mine' | 'results' | 'review'
 
 const auth = useAuthStore()
 const route = useRoute()
@@ -43,6 +43,7 @@ const { marks, toggle: toggleMark } = useAuditionMarks(
 const tab = computed<Tab>(() => {
   const requested = route.query.tab
   if (requested === 'mine') return 'mine'
+  if (requested === 'results') return 'results'
   if (requested === 'review' && canManage.value) return 'review'
   return 'characters'
 })
@@ -71,6 +72,7 @@ const tabs = computed(() => {
   const list: { value: Tab; label: string }[] = [
     { value: 'characters', label: 'Characters' },
     { value: 'mine', label: `My votes · ${totalPicks.value}` },
+    { value: 'results', label: 'Results' },
   ]
   if (canManage.value) list.push({ value: 'review', label: 'Admin review' })
   return list
@@ -94,11 +96,10 @@ function advanceFrom(characterId: number) {
   if (next) selectCharacter(next.id)
 }
 
-// Keep the URL honest if the requested round is no longer open. The review tab may point at a
-// closed or archived round on purpose, so it is left alone.
+// Result and manager review links may point at a finished round.
 watch(roundId, (id) => {
   if (
-    tab.value !== 'review' &&
+    tab.value !== 'review' && tab.value !== 'results' &&
     id !== null &&
     queryNumber('round') !== null &&
     queryNumber('round') !== id
@@ -120,7 +121,7 @@ watch(roundId, (id) => {
               ? 'Each vote needs a comment.'
               : 'You can add an optional comment to any vote.'
           }}
-          Comments are shown to other staff anonymously.
+          Comments are shown anonymously during voting. Names and results are visible to voting staff after it ends.
         </p>
       </div>
       <div
@@ -148,6 +149,7 @@ watch(roundId, (id) => {
     </header>
 
     <AdminReviewPanel v-if="tab === 'review'" :initial-round-id="queryNumber('round') ?? roundId" />
+    <AdminReviewPanel v-else-if="tab === 'results'" :initial-round-id="queryNumber('round')" read-only />
 
     <template v-else>
       <div v-if="roundsPending" class="space-y-3">

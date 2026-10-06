@@ -71,7 +71,7 @@ public sealed class CastingTests
         votes.Users.Add((new CastingVoter(4, "Trial"), DiscordRoleId.TrialVoiceManager));
         await Voting().VoteAsync(audition, 4, "Thoughtful delivery", default, commentRequired: true);
 
-        var review = await new CastingReviewService(rounds, votes, audio).GetReviewAsync(round, default);
+        var review = await Review().GetReviewAsync(round, default);
 
         Assert.Equal(4, review!.EligibleVoterCount);
         var vote = Assert.Single(review.Characters.Single().Auditions.Single().Votes);
@@ -91,6 +91,29 @@ public sealed class CastingTests
 
         Assert.Equal([open], list.Rounds.Select(r => r.Id));
         Assert.Null(await service.GetRoundAsync(closed, Alice, default));
+    }
+
+    [Fact]
+    public async Task NamedResultsAreAvailableOnlyAfterVotingEnds()
+    {
+        var draft = Seed(status: CastingRoundStatus.Draft).Round;
+        var open = Seed().Round;
+        var expired = Seed(closesAt: Now.UtcDateTime.AddSeconds(-1));
+        var closed = Seed(status: CastingRoundStatus.Closed);
+        var archived = Seed(status: CastingRoundStatus.Archived).Round;
+        votes.Votes.Add((closed.Audition, Bob, true, "Strong performance"));
+
+        var review = Review();
+        var visible = await review.GetFinishedRoundsAsync(default);
+
+        Assert.Equal([expired.Round, closed.Round, archived], visible.Select(r => r.Id));
+        Assert.Null(await review.GetFinishedReviewAsync(draft, default));
+        Assert.Null(await review.GetFinishedReviewAsync(open, default));
+        Assert.NotNull(await review.GetFinishedReviewAsync(expired.Round, default));
+        var finished = await review.GetFinishedReviewAsync(closed.Round, default);
+        var vote = Assert.Single(finished!.Characters.Single().Auditions.Single().Votes);
+        Assert.Equal("Bob", vote.VoterName);
+        Assert.Equal("Strong performance", vote.Comment);
     }
 
     [Fact]
@@ -221,7 +244,7 @@ public sealed class CastingTests
         await service.SetDoneAsync(character, Bob, true, default);
         var detail = await service.GetRoundAsync(round, Alice, default);
         var bobsView = (await service.GetAuditionsAsync(character, Bob, default))!.Auditions.Single();
-        var review = await new CastingReviewService(rounds, votes, audio).GetReviewAsync(round, default);
+        var review = await Review().GetReviewAsync(round, default);
 
         Assert.Equal(0, detail!.Characters.Single().MyPickCount);
         Assert.False(bobsView.MyVote);
@@ -330,7 +353,7 @@ public sealed class CastingTests
         await service.SetDoneAsync(character, Alice, true, default);
         await service.SetDoneAsync(character, Carol, true, default);
 
-        var review = await new CastingReviewService(rounds, votes, audio).GetReviewAsync(round, default);
+        var review = await Review().GetReviewAsync(round, default);
 
         var reviewed = review!.Characters.Single();
         Assert.Equal(3, review.EligibleVoterCount);
@@ -458,6 +481,8 @@ public sealed class CastingTests
     }
 
     private CastingVotingService Voting() => new(rounds, votes, audio, time);
+
+    private CastingReviewService Review() => new(rounds, votes, audio, time);
 
     private CastingAuditionIngestService Ingest() => new(rounds, new PassThroughTranscoder(), audio);
 

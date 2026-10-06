@@ -5,6 +5,7 @@ import type {
   CastingAuditionList,
   CastingMyPicksResponse,
   CastingReview,
+  CastingResultRound,
   CastingRoundDetail,
   CastingRoundListResponse,
   CastingRoundStatus,
@@ -20,6 +21,14 @@ export function getOpenCastingRounds(signal?: AbortSignal): Promise<CastingRound
 
 export function getCastingRound(roundId: number, signal?: AbortSignal): Promise<CastingRoundDetail> {
   return apiFetch<CastingRoundDetail>(`/casting/rounds/${roundId}`, { signal })
+}
+
+export function getCastingResultRounds(signal?: AbortSignal): Promise<CastingResultRound[]> {
+  return apiFetch<CastingResultRound[]>('/casting/results', { signal })
+}
+
+export function getFinishedCastingReview(roundId: number, signal?: AbortSignal): Promise<CastingReview> {
+  return apiFetch<CastingReview>(`/casting/rounds/${roundId}/results`, { signal })
 }
 
 export function getMyCastingPicks(roundId: number, signal?: AbortSignal): Promise<CastingMyPicksResponse> {

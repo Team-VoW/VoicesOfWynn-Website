@@ -30,6 +30,8 @@ public sealed class EndpointAuthorizationTests
     [InlineData("POST", "/admin/mod/fun-facts")]
     [InlineData("GET", "/admin/content/npcs/search?q=a")]
     [InlineData("GET", "/casting/rounds")]
+    [InlineData("GET", "/casting/results")]
+    [InlineData("GET", "/casting/rounds/1/results")]
     [InlineData("GET", "/casting/rounds/1")]
     [InlineData("GET", "/casting/characters/1/auditions")]
     [InlineData("PUT", "/casting/auditions/1/vote")]

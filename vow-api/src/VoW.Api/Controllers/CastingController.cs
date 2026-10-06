@@ -6,15 +6,25 @@ using VoW.Api.Services.Casting;
 namespace VoW.Api.Controllers;
 
 /// <summary>
-/// Staff voting on open casting rounds. Responses only ever describe the caller's own votes; other
-/// voters appear as anonymous comment text once the caller has marked the character done.
+/// Staff voting on open casting rounds and named results after voting ends.
 /// </summary>
 [ApiController]
 [RequireCapability(Capability.CastingVote)]
 [Route("casting")]
 [RequestSizeLimit(16384)]
-public sealed class CastingController(ICastingVotingService votingService) : ControllerBase
+public sealed class CastingController(ICastingVotingService votingService, ICastingReviewService reviewService) : ControllerBase
 {
+    [HttpGet("results")]
+    public async Task<ActionResult<IReadOnlyList<CastingResultRoundResponse>>> GetResults(CancellationToken cancellationToken) =>
+        Ok(await reviewService.GetFinishedRoundsAsync(cancellationToken));
+
+    [HttpGet("rounds/{roundId:int}/results")]
+    public async Task<ActionResult<CastingReviewResponse>> GetResults(int roundId, CancellationToken cancellationToken)
+    {
+        var review = await reviewService.GetFinishedReviewAsync(roundId, cancellationToken);
+        return review is null ? NotFound() : Ok(review);
+    }
+
     [HttpGet("rounds")]
     public async Task<ActionResult<CastingRoundListResponse>> GetRounds(CancellationToken cancellationToken) =>
         User.GetUserId() is { } userId

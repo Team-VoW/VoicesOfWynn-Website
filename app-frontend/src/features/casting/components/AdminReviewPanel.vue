@@ -7,25 +7,37 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import SeekableAudioPlayer from '@/components/audio/SeekableAudioPlayer.vue'
 import { messageFromContentError } from '@/features/content/contentUtils'
-import { useAdminCastingRounds, useCastingReview, useSetCastingWinner } from '../queries'
+import { useAdminCastingRounds, useCastingResultRounds, useCastingReview, useFinishedCastingReview, useSetCastingWinner } from '../queries'
 import { statusLabel } from '../castingFormat'
 
-/** Named review of one round. Any round can be reviewed, including closed and archived ones. */
-const props = defineProps<{ initialRoundId: number | null }>()
+/** Managers can review live rounds; other voters see the same details after voting ends. */
+const props = withDefaults(defineProps<{ initialRoundId: number | null; readOnly?: boolean }>(), {
+  readOnly: false,
+})
 
-const { data: roundsData } = useAdminCastingRounds(true)
+const { data: adminRounds } = useAdminCastingRounds(true, computed(() => !props.readOnly))
+const { data: finishedRounds } = useCastingResultRounds(computed(() => props.readOnly))
+const roundOptions = computed(() => props.readOnly ? finishedRounds.value ?? [] : adminRounds.value?.rounds ?? [])
 const roundId = ref<number | null>(props.initialRoundId)
 const selectedCharacterId = ref<number | null>(null)
 
 watch(
-  () => roundsData.value?.rounds,
+  roundOptions,
   (rounds) => {
-    if (roundId.value === null && rounds && rounds.length > 0) roundId.value = rounds[0]!.id
+    if (rounds.length === 0) return
+    if (!rounds.some((round) => round.id === roundId.value)) roundId.value = rounds[0]?.id ?? null
   },
   { immediate: true },
 )
 
-const { data: review, isPending } = useCastingReview(roundId)
+const { data: adminReview, isPending: adminPending } = useCastingReview(
+  computed(() => props.readOnly ? null : roundId.value),
+)
+const { data: finishedReview, isPending: finishedPending } = useFinishedCastingReview(
+  computed(() => props.readOnly ? roundId.value : null),
+)
+const review = computed(() => props.readOnly ? finishedReview.value : adminReview.value)
+const isPending = computed(() => props.readOnly ? finishedPending.value : adminPending.value)
 const setWinner = useSetCastingWinner()
 
 watch(roundId, () => (selectedCharacterId.value = null))
@@ -65,11 +77,11 @@ async function toggleWinner(auditionId: number) {
         v-model="roundId"
         class="h-9 min-w-56 rounded-md border border-input bg-background px-3 text-sm shadow-xs"
       >
-        <option v-for="round in roundsData?.rounds ?? []" :key="round.id" :value="round.id">
-          {{ round.name }} ({{ statusLabel(round.status) }})
+        <option v-for="round in roundOptions" :key="round.id" :value="round.id">
+          {{ round.name }} ({{ readOnly && round.status === 'Open' ? 'Voting ended' : statusLabel(round.status) }})
         </option>
       </select>
-      <Button v-if="roundId !== null" as-child variant="ghost" size="sm">
+      <Button v-if="!readOnly && roundId !== null" as-child variant="ghost" size="sm">
         <RouterLink :to="{ name: 'casting-round-edit', params: { roundId } }">
           <Settings class="size-4" />
           Manage round
@@ -82,7 +94,7 @@ async function toggleWinner(auditionId: number) {
     </div>
 
     <p v-else-if="characters.length === 0" class="rounded-lg border p-6 text-sm text-muted-foreground">
-      This round has no characters yet.
+      {{ roundId === null ? 'No finished castings yet.' : 'This round has no characters yet.' }}
     </p>
 
     <div v-else class="grid items-start gap-5 lg:grid-cols-[minmax(15rem,18rem)_minmax(0,1fr)]">
@@ -91,7 +103,7 @@ async function toggleWinner(auditionId: number) {
         aria-label="Characters"
       >
         <p class="border-b px-4 py-3 text-sm text-muted-foreground">
-          Admin review. Voter names are visible only here.
+          {{ readOnly ? 'Voting has ended. Voter names and comments are visible to staff with voting access.' : 'Manager review. Voter names are visible here during voting.' }}
         </p>
         <ul class="overflow-y-auto p-2">
           <li v-for="character in characters" :key="character.id">
@@ -183,6 +195,7 @@ async function toggleWinner(auditionId: number) {
                 <span class="text-muted-foreground"> vote{{ audition.voteCount === 1 ? '' : 's' }}</span>
               </span>
               <Button
+                v-if="!readOnly"
                 type="button"
                 size="sm"
                 :variant="selected.winnerAuditionId === audition.id ? 'default' : 'outline'"
