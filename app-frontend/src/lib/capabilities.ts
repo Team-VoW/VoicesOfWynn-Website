@@ -6,6 +6,7 @@ export const Capabilities = {
   AnalyticsView: 'analytics.view',
   ToolsScripts: 'tools.scripts',
   ToolsAudioAnalysis: 'tools.audio-analysis',
+  ToolsAudioEdit: 'tools.audio-edit',
   ContentManage: 'content.manage',
   AccountsManage: 'accounts.manage',
   SystemAdmin: 'system.admin',

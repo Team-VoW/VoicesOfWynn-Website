@@ -5,10 +5,16 @@ import { ref } from 'vue'
  * held it. Module scope rather than a per-component ref: the players are siblings that never
  * share a parent, and the legacy site achieved the same thing with a document-level listener.
  */
-const current = ref<HTMLAudioElement | null>(null)
+/** An <audio> element, or anything else that plays (the audio editor's Web Audio source). */
+export interface PlaybackOwner {
+  pause(): void
+  currentTime: number
+}
+
+const current = ref<PlaybackOwner | null>(null)
 
 export function useAudioPlayback() {
-  function claim(element: HTMLAudioElement) {
+  function claim(element: PlaybackOwner) {
     if (current.value && current.value !== element) {
       current.value.pause()
       current.value.currentTime = 0
@@ -16,7 +22,7 @@ export function useAudioPlayback() {
     current.value = element
   }
 
-  function release(element: HTMLAudioElement) {
+  function release(element: PlaybackOwner) {
     if (current.value === element) current.value = null
   }
 

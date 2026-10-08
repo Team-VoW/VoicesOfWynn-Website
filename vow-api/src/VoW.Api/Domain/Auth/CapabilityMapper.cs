@@ -8,6 +8,7 @@ public static class CapabilityMapper
     public const string AnalyticsViewClaim = "analytics.view";
     public const string ToolsScriptsClaim = "tools.scripts";
     public const string ToolsAudioAnalysisClaim = "tools.audio-analysis";
+    public const string ToolsAudioEditClaim = "tools.audio-edit";
     public const string ContentManageClaim = "content.manage";
     public const string AccountsManageClaim = "accounts.manage";
     public const string SystemAdminClaim = "system.admin";
@@ -22,6 +23,7 @@ public static class CapabilityMapper
         Capability.AnalyticsView,
         Capability.ToolsScripts,
         Capability.ToolsAudioAnalysis,
+        Capability.ToolsAudioEdit,
         Capability.ContentManage,
         Capability.AccountsManage,
         Capability.SystemAdmin,
@@ -37,6 +39,7 @@ public static class CapabilityMapper
         Capability.AnalyticsView,
         Capability.ToolsScripts,
         Capability.ToolsAudioAnalysis,
+        Capability.ToolsAudioEdit,
         Capability.ContentManage,
         Capability.CastingVote,
         Capability.CastingManage
@@ -118,6 +121,7 @@ public static class CapabilityMapper
         if (roleSet.Overlaps(SoundEditorRoles))
         {
             capabilities.Add(Capability.ToolsAudioAnalysis);
+            capabilities.Add(Capability.ToolsAudioEdit);
         }
 
         if (roleSet.Overlaps(CastingVoterRoles))
@@ -140,6 +144,7 @@ public static class CapabilityMapper
         Capability.AnalyticsView => AnalyticsViewClaim,
         Capability.ToolsScripts => ToolsScriptsClaim,
         Capability.ToolsAudioAnalysis => ToolsAudioAnalysisClaim,
+        Capability.ToolsAudioEdit => ToolsAudioEditClaim,
         Capability.ContentManage => ContentManageClaim,
         Capability.AccountsManage => AccountsManageClaim,
         Capability.SystemAdmin => SystemAdminClaim,
