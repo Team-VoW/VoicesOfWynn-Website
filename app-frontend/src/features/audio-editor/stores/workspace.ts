@@ -1,5 +1,5 @@
-import { useEventListener, useLocalStorage } from '@vueuse/core'
-import { computed, effectScope, markRaw, reactive, ref, toRaw } from 'vue'
+import { useEventListener, useLocalStorage, watchDebounced } from '@vueuse/core'
+import { computed, effectScope, markRaw, reactive, ref, shallowRef, toRaw } from 'vue'
 import { runAnalysisJob, WORKER_COUNT } from '../lib/analysisClient'
 import { decodeAudioFile } from '../lib/decode'
 import {
@@ -21,27 +21,67 @@ import {
 } from '../lib/editing'
 import {
   describeStep,
-  runCleanupStep,
+  offsetStep,
+  stepProblem,
+  stepRange,
+  stepReach,
   type CleanupKind,
   type CleanupStep,
+  type ProcessStep,
+  type SpectralStep,
 } from '../lib/cleanupSteps'
+import type { FrequencyScale } from '../lib/frequencyScale'
 import type { AudioAnalysis } from '../lib/loudness'
+import {
+  HEAVY_LIMITING_DB,
+  SHORTFALL_LU,
+  type MatchOptions,
+  type PeakControl,
+} from '../lib/matchLoudness'
+import {
+  clampMarkers,
+  cropSplices,
+  nextMarkerName,
+  readMarkers,
+  sortMarkers,
+  spliceMarkers,
+  withMarkers,
+  type Marker,
+  type MarkerData,
+  type Splice,
+} from '../lib/markers'
 import type { NoisePrint } from '../lib/noiseReduction'
 import { planTrim, type TrimPlan } from '../lib/silence'
+import {
+  selectionBounds,
+  type HealDirection,
+  type SpectralMode,
+  type SpectralSelection,
+} from '../lib/spectral'
+import type { SpectrumColors } from '../lib/spectrumColors'
 import { crop, deleteRange, frameCount, type Channels, type FrameRange } from '../lib/operations'
 import { buildPeaks, type PeakPyramid } from '../lib/peaks'
-import type { Spectrogram } from '../lib/spectrogram'
+import { applyPatch, diffPatch, patchBytes, type AudioPatch } from '../lib/undoPatch'
 import { defaultLayout, encodeWav, type WavLayout } from '../lib/wav'
 import { createZip } from '../lib/zip'
 import { SILENCE_THRESHOLD_DB } from '@/features/tools/lib/audioChecks'
 
 interface Snapshot {
   label: string
-  channels: Channels
+  /**
+   * How to get this step's audio back from the audio after it: only the frames the edit changed.
+   * Null for steps that left the audio alone (marker edits).
+   */
+  audio: AudioPatch | null
+  markers: Marker[]
   state: number
   selection: FrameRange | null
+  spectralSelection: SpectralSelection | null
   cursor: number
 }
+
+/** What a drag on the spectral display does; the waveform always selects time. */
+export type SpectralTool = 'time' | 'marquee' | 'lasso' | 'brush' | 'frequency' | 'heal'
 
 export interface EditorDocument {
   id: number
@@ -60,7 +100,6 @@ export interface EditorDocument {
   /** Null while evicted; re-decoded from `file` on demand. */
   channels: Channels | null
   peaks: PeakPyramid | null
-  spectrogram: Spectrogram | null
   analysis: AudioAnalysis | null
   /** The `state` `analysis` was measured on; it lags behind while a new measurement runs. */
   analysisState: number
@@ -71,17 +110,41 @@ export interface EditorDocument {
   state: number
   savedState: number
   selection: FrameRange | null
+  /**
+   * Areas of time × frequency picked on the spectral display. While there is one, `selection` is
+   * the time it spans, so playing and looping play just that stretch.
+   */
+  spectralSelection: SpectralSelection | null
   cursor: number
   view: { start: number; samplesPerPixel: number } | null
   checked: boolean
   /** Silence threshold set on this file; null follows its suggested one. */
   trimThresholdDb: number | null
+  /** In time order. Read from the file the first time it is decoded. */
+  markers: Marker[]
+  markersLoaded: boolean
+  /** The marker picked in the list or on the ruler. */
+  selectedMarkerId: number | null
 }
 
 export interface EditResult {
   channels: Channels
   selection?: FrameRange | null
   cursor?: number
+  /**
+   * How the edit moved audio around, applied in order to the markers. Without it, an edit that
+   * keeps the length leaves them be and one that changes it only drops what falls off the end.
+   */
+  splices?: Splice[]
+}
+
+export interface MarkerExport {
+  markers: Marker[]
+  names: string[]
+  /** `folder` writes into `directory`; `open` adds them to the editor as unsaved files. */
+  target: 'zip' | 'folder' | 'open'
+  directory?: FileSystemDirectoryHandle
+  zipName?: string
 }
 
 /** How far Edit > Zero Crossings looks, and how far snapping may move a dragged edge. */
@@ -89,15 +152,46 @@ const ZERO_CROSSING_REACH_SECONDS = 0.1
 const SNAP_REACH_SECONDS = 0.02
 const UNDO_LIMIT = 50
 const UNDO_BUDGET_BYTES = 512 * 1024 * 1024
+/** Edits on files longer than this let the busy indicator paint before they block the page. */
+const HEAVY_SAMPLES = 2_000_000
+/** Audio either side of a selection a previewed step also processes, so filters settle first. */
+const STEP_PAD_SECONDS = 1
 // Two in flight per worker, so each has the next file read from disk by the time it finishes.
 const LOAD_CONCURRENCY = WORKER_COUNT * 2
+
+/**
+ * `name`, or `name (2).wav` and up when it is taken: `line.mp3` and `line.wav` both save as
+ * `line.wav`, and two same-named files can be open. Case-insensitive, as most file systems are.
+ */
+function uniqueName(name: string, taken: Set<string>) {
+  const stem = name.replace(/\.wav$/, '')
+  let candidate = name
+  for (let n = 2; taken.has(candidate.toLowerCase()); n++) candidate = `${stem} (${n}).wav`
+  taken.add(candidate.toLowerCase())
+  return candidate
+}
 
 export function isDirty(doc: EditorDocument) {
   return doc.state !== doc.savedState
 }
 
-function snapshotBytes(snapshot: Snapshot) {
-  return snapshot.channels.reduce((sum, channel) => sum + channel.byteLength, 0)
+/** Resolves once the browser has painted, so a busy indicator shows before blocking work. */
+function nextPaint() {
+  return new Promise<void>((resolve) => requestAnimationFrame(() => setTimeout(resolve)))
+}
+
+function sameRange(a: FrameRange | null | undefined, b: FrameRange | null | undefined) {
+  return a?.start === b?.start && a?.end === b?.end
+}
+
+interface PreviewRender {
+  docId: number
+  /** The audio the step ran over. */
+  channels: Channels
+  step: ProcessStep
+  selection: FrameRange | null
+  output: Channels
+  clicks: number
 }
 
 function createWorkspace() {
@@ -106,6 +200,7 @@ function createWorkspace() {
   const search = ref('')
   const targetLufs = useLocalStorage('vow.audioEditor.targetLufs', -18)
   const ceilingDbtp = useLocalStorage('vow.audioEditor.ceilingDbtp', -1)
+  const peakControl = useLocalStorage<PeakControl>('vow.audioEditor.peakControl', 'auto')
   const trimSettings = useLocalStorage(
     'vow.audioEditor.trim',
     { keepLeadMs: 50, keepTailMs: 300, showPreview: true },
@@ -122,16 +217,35 @@ function createWorkspace() {
   /** The last captured noise print, used by Noise reduction on any file at the same rate. */
   const noisePrint = ref<NoisePrint | null>(null)
   /** The cleanup step being auditioned: playback runs it over the audio without changing it. */
-  const preview = ref<CleanupStep | null>(null)
+  const preview = ref<ProcessStep | null>(null)
   /** A/B: play the untouched audio while a preview is set. */
   const previewBypass = ref(false)
-  let previewCache: {
-    channels: Channels
-    step: CleanupStep
-    selection: FrameRange | null
-    output: Channels
-  } | null = null
+  const spectralSettings = useLocalStorage(
+    'vow.audioEditor.spectral',
+    {
+      tool: 'time' as SpectralTool,
+      /** Diameter of the brush and the spot healing brush, in screen pixels. */
+      brushSize: 24,
+      /** Percent of the widest feather. */
+      feather: 35,
+      gainDb: -12,
+      healDirection: 'auto' as HealDirection,
+      fftSize: 2048,
+      rangeDb: 84,
+      scale: 'log' as FrequencyScale,
+      colors: 'ocean' as SpectrumColors,
+    },
+    { mergeDefaults: true },
+  )
+  /** The frequency range the spectral display is zoomed to, or null for all of it. */
+  const frequencyView = ref<{ low: number; high: number } | null>(null)
+  /** The previewed step rendered by a worker; playback uses it once it matches the audio. */
+  const previewRender = shallowRef<PreviewRender | null>(null)
+  const previewRendering = ref(false)
+  /** What the editor is busy with, for the indicator over the waveform. */
+  const busy = ref<string | null>(null)
   let nextId = 1
+  let nextMarkerId = 1
   let nextState = 1
   let nextUntitled = 1
 
@@ -153,16 +267,30 @@ function createWorkspace() {
 
   // Loading: a bounded queue so dropping 500 files does not read 500 at once.
   const loadQueue: EditorDocument[] = []
+  const inFlight = new Map<number, Promise<void>>()
   let loading = 0
 
   function pumpLoads() {
     while (loading < LOAD_CONCURRENCY && loadQueue.length > 0) {
       const doc = loadQueue.shift()!
       loading++
-      void initialLoad(doc).finally(() => {
+      const load = initialLoad(doc).finally(() => {
+        inFlight.delete(doc.id)
         loading--
         pumpLoads()
       })
+      inFlight.set(doc.id, load)
+    }
+  }
+
+  /** Waits for the document's first load, starting it now if it is still queued. */
+  async function awaitLoad(doc: EditorDocument) {
+    const queued = loadQueue.indexOf(doc)
+    if (queued >= 0) {
+      loadQueue.splice(queued, 1)
+      await initialLoad(doc)
+    } else {
+      await inFlight.get(doc.id)
     }
   }
 
@@ -185,6 +313,7 @@ function createWorkspace() {
           doc.channelCount = loaded.channelCount
           doc.frames = loaded.frames
           doc.peaks = markRaw(loaded.peaks)
+          adoptMarkers(doc)
           doc.status = 'ready'
         }
         if (doc.state === state) setAnalysis(doc, loaded.analysis)
@@ -203,12 +332,32 @@ function createWorkspace() {
     }
   }
 
-  function addFiles(opened: OpenedFile[]) {
-    const known = new Set(documents.value.map((doc) => doc.path))
+  /**
+   * Opens the files that are not open already. Two files can share a path (same-named files picked
+   * from different folders); their handles tell whether they are the same file on disk.
+   */
+  async function addFiles(opened: OpenedFile[]) {
+    const byPath = new Map<string, (FileSystemFileHandle | null)[]>()
+    for (const doc of documents.value)
+      byPath.set(doc.path, [...(byPath.get(doc.path) ?? []), doc.handle])
+    const fresh: OpenedFile[] = []
+    for (const entry of opened) {
+      const handles = byPath.get(entry.path) ?? []
+      let open = false
+      for (const handle of handles) {
+        open = !handle || !entry.handle || (await handle.isSameEntry(entry.handle))
+        if (open) break
+      }
+      if (open) continue
+      fresh.push(entry)
+      byPath.set(entry.path, [...handles, entry.handle])
+    }
+    return addDocuments(fresh)
+  }
+
+  function addDocuments(opened: OpenedFile[]) {
     const added: EditorDocument[] = []
     for (const entry of opened) {
-      if (known.has(entry.path)) continue
-      known.add(entry.path)
       const state = nextState++
       documents.value.push({
         id: nextId++,
@@ -225,7 +374,6 @@ function createWorkspace() {
         frames: 0,
         channels: null,
         peaks: null,
-        spectrogram: null,
         analysis: null,
         analysisState: 0,
         analyzing: false,
@@ -234,10 +382,14 @@ function createWorkspace() {
         state,
         savedState: state,
         selection: null,
+        spectralSelection: null,
         cursor: 0,
         view: null,
         checked: false,
         trimThresholdDb: null,
+        markers: [],
+        markersLoaded: false,
+        selectedMarkerId: null,
       })
       // Read back through the reactive array so later writes are tracked.
       added.push(documents.value[documents.value.length - 1]!)
@@ -248,16 +400,53 @@ function createWorkspace() {
     return added.length
   }
 
-  async function ensureChannels(doc: EditorDocument): Promise<Channels> {
-    if (doc.channels) return doc.channels
+  /** The markers stored in the file, read once: after that the document's own are the truth. */
+  function adoptMarkers(doc: EditorDocument) {
+    if (doc.markersLoaded || !doc.layout) return
+    doc.markersLoaded = true
+    doc.markers = readMarkers(doc.layout, doc.sampleRate).map((marker) => ({
+      ...marker,
+      id: nextMarkerId++,
+    }))
+  }
+
+  const decoding = new Map<number, Promise<Channels>>()
+
+  /** The document's samples, decoded on first use; one decode at a time per document. */
+  function ensureChannels(doc: EditorDocument): Promise<Channels> {
+    if (doc.channels) return Promise.resolve(doc.channels)
+    let pending = decoding.get(doc.id)
+    if (!pending) {
+      pending = decode(doc).finally(() => decoding.delete(doc.id))
+      decoding.set(doc.id, pending)
+    }
+    return pending
+  }
+
+  /** WAVs are parsed off the page (a 2-hour take would block it for a second); others here. */
+  async function decodeOffPage(doc: EditorDocument) {
+    if (doc.file.name.toLowerCase().endsWith('.wav')) {
+      try {
+        const bytes = await doc.file.arrayBuffer()
+        const decoded = await runAnalysisJob({ kind: 'decode', bytes }, [bytes])
+        return { ...decoded, savesInPlace: true }
+      } catch {
+        // Not a WAV the parser reads: the browser may still decode it below.
+      }
+    }
+    return { ...(await decodeAudioFile(doc.file)), peaks: undefined }
+  }
+
+  async function decode(doc: EditorDocument): Promise<Channels> {
     try {
-      const decoded = await decodeAudioFile(doc.file)
+      const decoded = await decodeOffPage(doc)
       // Another caller may have filled it while this one was decoding.
       if (doc.channels) return doc.channels
       doc.sampleRate = decoded.sampleRate
       doc.layout = markRaw(decoded.layout)
       doc.savesInPlace = decoded.savesInPlace
-      setChannels(doc, decoded.channels)
+      setChannels(doc, decoded.channels, decoded.peaks)
+      adoptMarkers(doc)
       doc.status = 'ready'
       doc.error = null
       return decoded.channels
@@ -268,10 +457,9 @@ function createWorkspace() {
     }
   }
 
-  function setChannels(doc: EditorDocument, channels: Channels) {
+  function setChannels(doc: EditorDocument, channels: Channels, peaks?: PeakPyramid) {
     doc.channels = markRaw(channels)
-    doc.peaks = markRaw(buildPeaks(channels))
-    doc.spectrogram = null
+    doc.peaks = markRaw(peaks ?? buildPeaks(channels))
     doc.channelCount = channels.length
     doc.frames = frameCount(channels)
     doc.cursor = Math.min(doc.cursor, doc.frames)
@@ -288,10 +476,7 @@ function createWorkspace() {
     const index = list.findIndex((doc) => doc.id === activeId.value)
     const keep = new Set([list[index - 1]?.id, list[index]?.id, list[index + 1]?.id])
     for (const doc of documents.value) {
-      if (doc.channels && !keep.has(doc.id) && !isDirty(doc) && !doc.analyzing) {
-        doc.channels = null
-        doc.spectrogram = null
-      }
+      if (doc.channels && !keep.has(doc.id) && !isDirty(doc) && !doc.analyzing) doc.channels = null
     }
   }
 
@@ -317,19 +502,6 @@ function createWorkspace() {
     }
   }
 
-  async function ensureSpectrogram(doc: EditorDocument) {
-    if (doc.spectrogram) return doc.spectrogram
-    const channels = await ensureChannels(doc)
-    const state = doc.state
-    const spectrogram = await runAnalysisJob({
-      kind: 'spectrogram',
-      channels,
-      sampleRate: doc.sampleRate,
-    })
-    if (doc.state === state && doc.channels) doc.spectrogram = markRaw(spectrogram)
-    return spectrogram
-  }
-
   function setActive(id: number) {
     activeId.value = id
     const list = visibleDocuments.value
@@ -347,25 +519,43 @@ function createWorkspace() {
     if (next) setActive(next.id)
   }
 
-  function trimUndoBudget() {
+  /** Memory the undo history holds on to: the audio each step's patch keeps. */
+  function undoBytes() {
     let total = 0
     for (const doc of documents.value)
-      for (const snapshot of [...doc.undo, ...doc.redo]) total += snapshotBytes(snapshot)
-    // Drop the oldest step of the deepest history until it fits.
-    while (total > UNDO_BUDGET_BYTES) {
+      for (const snapshot of doc.undo) total += patchBytes(snapshot.audio)
+    for (const doc of documents.value)
+      for (const snapshot of doc.redo) total += patchBytes(snapshot.audio)
+    return total
+  }
+
+  /**
+   * Drops the oldest step of the deepest history until it fits, but leaves every file its latest
+   * step: one whole-file step of a 2-hour take is over the budget on its own, and it should still
+   * undo. Steps only keep what they changed, so this is reached by whole-file edits of long takes.
+   */
+  function trimUndoBudget() {
+    while (undoBytes() > UNDO_BUDGET_BYTES) {
       const deepest = documents.value.reduce<EditorDocument | null>(
-        (best, doc) => (doc.undo.length > (best?.undo.length ?? 0) ? doc : best),
+        (best, doc) => (doc.undo.length > (best?.undo.length ?? 1) ? doc : best),
         null,
       )
-      const dropped = deepest?.undo.shift()
-      if (!dropped) break
-      total -= snapshotBytes(dropped)
+      if (!deepest) break
+      deepest.undo.shift()
     }
   }
 
-  function pushUndo(doc: EditorDocument, label: string, channels: Channels) {
+  function pushUndo(doc: EditorDocument, label: string, audio: AudioPatch | null) {
     doc.undo.push(
-      markRaw({ label, channels, state: doc.state, selection: doc.selection, cursor: doc.cursor }),
+      markRaw({
+        label,
+        audio: audio && markRaw(audio),
+        markers: doc.markers,
+        state: doc.state,
+        selection: doc.selection,
+        spectralSelection: doc.spectralSelection,
+        cursor: doc.cursor,
+      }),
     )
     if (doc.undo.length > UNDO_LIMIT) doc.undo.shift()
     doc.redo = []
@@ -380,13 +570,41 @@ function createWorkspace() {
     result: EditResult,
     analysis?: AudioAnalysis,
   ) {
-    pushUndo(doc, label, previous)
+    pushUndo(doc, label, diffPatch(previous, result.channels))
+    const before = doc.frames
     setChannels(doc, result.channels)
     doc.state = nextState++
+    if (result.splices)
+      doc.markers = result.splices.reduce(
+        (markers, splice) => spliceMarkers(markers, splice),
+        doc.markers,
+      )
+    else if (doc.frames !== before) doc.markers = clampMarkers(doc.markers, doc.frames)
+    // Audio moved under it: the areas it picked out are somewhere else now.
+    if (doc.frames !== before) doc.spectralSelection = null
     if (result.selection !== undefined) doc.selection = result.selection
     if (result.cursor !== undefined) doc.cursor = Math.min(result.cursor, doc.frames)
     if (analysis) setAnalysis(doc, analysis)
     else void refreshAnalysis(doc)
+  }
+
+  /**
+   * Shows `label` over the waveform while `task` runs. For long files it waits for the indicator to
+   * paint first, since the work blocks the page; the spinner itself keeps turning regardless.
+   */
+  async function withBusy<T>(label: string, heavy: boolean, task: () => Promise<T> | T) {
+    const previous = busy.value
+    busy.value = label
+    try {
+      if (heavy) await nextPaint()
+      return await task()
+    } finally {
+      busy.value = previous
+    }
+  }
+
+  function isHeavy(doc: EditorDocument) {
+    return doc.frames * Math.max(1, doc.channelCount) > HEAVY_SAMPLES
   }
 
   /** Runs `task` over the documents with one in flight per worker, reporting progress. */
@@ -414,36 +632,151 @@ function createWorkspace() {
     edit: (channels: Channels, doc: EditorDocument) => EditResult | Channels | null,
   ) {
     const channels = await ensureChannels(doc)
-    const result = edit(channels, doc)
-    if (!result) return
-    commit(doc, label, channels, Array.isArray(result) ? { channels: result } : result)
+    await withBusy(`${label}…`, isHeavy(doc), () => {
+      const result = edit(channels, doc)
+      if (!result) return
+      commit(doc, label, channels, Array.isArray(result) ? { channels: result } : result)
+    })
   }
 
   /**
-   * What playback should play for the document: its audio, or the previewed step run over it. The
-   * render is cached, so asking again for the same audio, step and selection costs nothing.
+   * Runs a cleanup step or spectral edit in a worker. With a selection (or a spectral area) only it
+   * and a second either side go over, so previewing a de-esser on one word of a long take does not
+   * copy the whole take.
    */
+  async function renderStep(
+    channels: Channels,
+    sampleRate: number,
+    step: ProcessStep,
+    selection: FrameRange | null,
+  ) {
+    const range = stepRange(step, selection)
+    if (!range) {
+      const result = await runAnalysisJob({ kind: 'step', channels, sampleRate, step, selection })
+      return { channels: markRaw(result.channels), clicks: result.clicks }
+    }
+    const frames = frameCount(channels)
+    const pad = stepReach(step, sampleRate, STEP_PAD_SECONDS)
+    const from = Math.max(0, range.start - pad)
+    const to = Math.min(frames, range.end + pad)
+    const slice = channels.map((channel) => channel.slice(from, to))
+    const result = await runAnalysisJob(
+      {
+        kind: 'step',
+        channels: slice,
+        sampleRate,
+        step: offsetStep(step, -from),
+        selection: { start: range.start - from, end: range.end - from },
+      },
+      slice.map((channel) => channel.buffer),
+    )
+    // Soloing an area silences everything else, not just the slice around it.
+    const silent = step.kind === 'spectral' && step.edit.mode === 'isolate'
+    const output = channels.map((channel, index) => {
+      const copy = silent ? new Float32Array(channel.length) : channel.slice()
+      copy.set(result.channels[index]!, from)
+      return copy
+    })
+    return { channels: markRaw(output), clicks: result.clicks }
+  }
+
+  function previewMatches(
+    render: PreviewRender | null,
+    doc: EditorDocument,
+    channels: Channels,
+    step: ProcessStep,
+  ): render is PreviewRender {
+    return (
+      !!render &&
+      render.docId === doc.id &&
+      render.channels === channels &&
+      render.step === step &&
+      sameRange(render.selection, doc.selection)
+    )
+  }
+
+  /** What playback should play: the audio, or the previewed step's render once it is ready. */
   function playbackChannels(doc: EditorDocument, channels: Channels): Channels {
     const step = preview.value
     if (!step || previewBypass.value) return channels
-    const cached = previewCache
-    if (
-      cached &&
-      cached.channels === channels &&
-      cached.step === step &&
-      cached.selection?.start === doc.selection?.start &&
-      cached.selection?.end === doc.selection?.end
-    )
-      return cached.output
-    let output: Channels
+    const render = previewRender.value
+    return previewMatches(render, doc, channels, step) ? render.output : channels
+  }
+
+  let previewLoop = false
+
+  /** Renders the previewed step for the open file, again whenever it moved on meanwhile. */
+  async function renderPreview() {
+    if (previewLoop) return
+    previewLoop = true
     try {
-      output = markRaw(runCleanupStep(channels, doc.sampleRate, step, doc.selection).channels)
-    } catch {
-      // A noise print at another rate: the panel says so; play the audio as it is.
-      output = channels
+      for (;;) {
+        const doc = activeDocument.value
+        const step = preview.value
+        const channels = doc?.channels
+        if (!doc || !step || !channels || previewMatches(previewRender.value, doc, channels, step))
+          break
+        previewRendering.value = true
+        const selection = doc.selection
+        let render: PreviewRender
+        try {
+          const result = await renderStep(channels, doc.sampleRate, step, selection)
+          render = {
+            docId: doc.id,
+            channels,
+            step,
+            selection,
+            output: result.channels,
+            clicks: result.clicks,
+          }
+        } catch {
+          // A noise print at another rate: the panel says so; play the audio as it is.
+          render = { docId: doc.id, channels, step, selection, output: channels, clicks: 0 }
+        }
+        previewRender.value = markRaw(render)
+      }
+    } finally {
+      previewRendering.value = false
+      previewLoop = false
     }
-    previewCache = { channels, step, selection: doc.selection, output }
-    return output
+  }
+
+  watchDebounced(
+    () => [
+      preview.value,
+      activeDocument.value?.channels,
+      activeDocument.value?.selection?.start,
+      activeDocument.value?.selection?.end,
+    ],
+    () => {
+      if (!preview.value) previewRender.value = null
+      else void renderPreview()
+    },
+    { debounce: 150 },
+  )
+
+  /**
+   * Applies a cleanup step to the selection (or file) as one undo step. Reuses the preview's
+   * render when it is of this very audio and step, so what was heard is exactly what is applied.
+   */
+  async function applyStep(
+    doc: EditorDocument,
+    step: ProcessStep,
+    label: (clicks: number) => string,
+  ) {
+    const channels = await ensureChannels(doc)
+    return withBusy(`${describeStep(step)}…`, false, async () => {
+      const render = previewRender.value
+      const result = previewMatches(render, doc, channels, step)
+        ? render
+        : await renderStep(channels, doc.sampleRate, step, doc.selection)
+      if (step.kind === 'clicks' && result.clicks === 0) return 0
+      // Edited while the worker ran: the result would overwrite that edit.
+      if (doc.channels !== channels) throw new Error('The file changed while this was running.')
+      if (isHeavy(doc)) await nextPaint()
+      commit(doc, label(result.clicks), channels, { channels: result.channels })
+      return result.clicks
+    })
   }
 
   /** Copy: the selection, or the whole file when nothing is selected. */
@@ -464,6 +797,7 @@ function createWorkspace() {
       channels: deleteRange(channels, selection),
       selection: null,
       cursor: selection.start,
+      splices: [{ start: selection.start, removed: selection.end - selection.start, inserted: 0 }],
     }))
   }
 
@@ -475,10 +809,12 @@ function createWorkspace() {
       const pasted = conformClip(clip, channels.length, target.sampleRate)
       const start = target.selection?.start ?? target.cursor
       const length = frameCount(pasted)
+      const removed = target.selection ? target.selection.end - target.selection.start : 0
       return {
         channels: pasteInsert(channels, pasted, target.cursor, target.selection),
         selection: length > 0 ? { start, end: start + length } : null,
         cursor: start,
+        splices: [{ start, removed, inserted: length }],
       }
     })
   }
@@ -515,6 +851,8 @@ function createWorkspace() {
 
   /** Sets the selection and cursor, moving them to zero crossings when snapping is on. */
   function select(doc: EditorDocument, selection: FrameRange | null, cursor: number) {
+    // Picking another stretch of time drops the spectral areas; moving only the cursor keeps them.
+    if (!sameRange(selection, doc.selection)) doc.spectralSelection = null
     const channels = doc.channels
     if (snapToZeroCrossings.value && channels) {
       const reach = Math.round(doc.sampleRate * SNAP_REACH_SECONDS)
@@ -538,7 +876,9 @@ function createWorkspace() {
     let name = `Untitled ${nextUntitled++}.wav`
     while (known.has(name)) name = `Untitled ${nextUntitled++}.wav`
     const bytes = encodeWav(channels, sampleRate, defaultLayout(channels.length, 'float'))
-    addFiles([{ file: new File([bytes], name, { type: 'audio/wav' }), handle: null, path: name }])
+    addDocuments([
+      { file: new File([bytes], name, { type: 'audio/wav' }), handle: null, path: name },
+    ])
     const created = documents.value.find((doc) => doc.path === name)
     if (!created) return
     // Never on disk, so it counts as unsaved until it is.
@@ -553,22 +893,30 @@ function createWorkspace() {
   }
 
   function restore(doc: EditorDocument, from: Snapshot[], to: Snapshot[]) {
-    const snapshot = from.pop()
-    if (!snapshot || !doc.channels) return
+    const snapshot = from.at(-1)
+    if (!snapshot) return
+    // Evicted samples: keep the step for when they are back rather than dropping it.
+    if (snapshot.audio && !doc.channels) return
+    from.pop()
+    const patched = snapshot.audio ? applyPatch(doc.channels!, snapshot.audio) : null
     to.push(
       markRaw({
         label: snapshot.label,
-        channels: doc.channels,
+        audio: patched && markRaw(patched.redo),
+        markers: doc.markers,
         state: doc.state,
         selection: doc.selection,
+        spectralSelection: doc.spectralSelection,
         cursor: doc.cursor,
       }),
     )
-    setChannels(doc, snapshot.channels)
+    if (patched) setChannels(doc, patched.channels)
+    doc.markers = snapshot.markers
     doc.state = snapshot.state
     doc.selection = snapshot.selection
+    doc.spectralSelection = snapshot.spectralSelection
     doc.cursor = snapshot.cursor
-    void refreshAnalysis(doc)
+    if (patched) void refreshAnalysis(doc)
   }
 
   function undo(doc: EditorDocument) {
@@ -579,10 +927,17 @@ function createWorkspace() {
     restore(doc, doc.redo, doc.undo)
   }
 
+  /** The file as it would be written: its audio, its metadata chunks and its markers. */
   async function encode(doc: EditorDocument) {
     const channels = await ensureChannels(doc)
-    const layout = doc.layout ?? defaultLayout(channels.length)
-    return new Blob([encodeWav(channels, doc.sampleRate, layout)], { type: 'audio/wav' })
+    return withBusy(`Encoding ${doc.name}…`, isHeavy(doc), () => {
+      const layout = withMarkers(
+        doc.layout ?? defaultLayout(channels.length),
+        doc.markers,
+        doc.sampleRate,
+      )
+      return new Blob([encodeWav(channels, doc.sampleRate, layout)], { type: 'audio/wav' })
+    })
   }
 
   function markSaved(doc: EditorDocument, blob: Blob) {
@@ -621,10 +976,11 @@ function createWorkspace() {
   /** `markAsSaved` is for Save all's fallback; a plain export leaves the originals unsaved. */
   async function zipDocuments(docs: EditorDocument[], markAsSaved: boolean) {
     const entries = []
+    const taken = new Set<string>()
     for (const doc of docs) {
       const blob = await encode(doc)
       entries.push({
-        name: withWavExtension(doc.path),
+        name: uniqueName(withWavExtension(doc.path), taken),
         data: new Uint8Array(await blob.arrayBuffer()),
       })
       if (markAsSaved) markSaved(doc, blob)
@@ -657,7 +1013,8 @@ function createWorkspace() {
     await forEachInParallel(
       docs,
       async (doc) => {
-        // Still loading or being measured: that run fills in its analysis.
+        if (doc.status === 'loading') await awaitLoad(doc)
+        // Being measured already: that run fills in its analysis.
         if (doc.analysis || doc.analyzing || doc.status !== 'ready') return
         if (!doc.channels) await initialLoad(doc)
         else await refreshAnalysis(doc)
@@ -704,11 +1061,17 @@ function createWorkspace() {
         })
         // Edited while the worker ran: the result would overwrite that edit.
         if (!result.plan || doc.state !== state) return
+        const { start, end } = result.plan.keep
         commit(
           doc,
           `Trim silence below ${Math.round(result.thresholdDb)} dB`,
           channels,
-          { channels: result.channels, selection: null, cursor: 0 },
+          {
+            channels: result.channels,
+            selection: null,
+            cursor: 0,
+            splices: cropSplices(doc.frames, { start, end }),
+          },
           result.analysis,
         )
         trimmed++
@@ -720,11 +1083,13 @@ function createWorkspace() {
 
   async function matchAll(
     docs: EditorDocument[],
-    target: number,
-    ceiling: number,
+    options: MatchOptions,
     onProgress?: (done: number) => void,
   ) {
     let limited = 0
+    /** Files the limiter had to flatten hard, and files that could not reach the target. */
+    const heavy: string[] = []
+    const short: { name: string; lufs: number }[] = []
     await forEachInParallel(
       docs,
       async (doc) => {
@@ -741,24 +1106,26 @@ function createWorkspace() {
           kind: 'match',
           channels,
           sampleRate: doc.sampleRate,
-          targetLufs: target,
-          ceilingDbtp: ceiling,
+          options: { ...options },
           before,
         })
         if (doc.state !== state) return
         if (result.gainDb !== 0 || result.limited)
           commit(
             doc,
-            `Match loudness to ${target} LUFS`,
+            `Match loudness to ${options.targetLufs} LUFS`,
             channels,
             { channels: result.channels },
             result.after,
           )
         if (result.limited) limited++
+        if (result.limitingDb > HEAVY_LIMITING_DB) heavy.push(doc.name)
+        if (result.after.integratedLufs < options.targetLufs - SHORTFALL_LU)
+          short.push({ name: doc.name, lufs: result.after.integratedLufs })
       },
       onProgress,
     )
-    return { limited }
+    return { limited, heavy, short }
   }
 
   /** Runs the steps over whole files on the worker pool, each file as one undo step. */
@@ -790,6 +1157,224 @@ function createWorkspace() {
       onProgress,
     )
     return { processed, skipped }
+  }
+
+  /**
+   * Replaces the markers as one undo step. `before` is what undo goes back to.
+   */
+  function setMarkers(doc: EditorDocument, label: string, markers: Marker[], before = doc.markers) {
+    doc.markers = before
+    pushUndo(doc, label, null)
+    doc.markers = sortMarkers(markers)
+    doc.state = nextState++
+  }
+
+  /**
+   * Ctrl+B: a range marker over the selection, or a cue marker at the cursor without one, like
+   * Audition's Add Marker. Returns the new marker.
+   */
+  function addMarker(doc: EditorDocument, data?: Partial<MarkerData>) {
+    const selection = doc.selection
+    const marker: Marker = {
+      id: nextMarkerId++,
+      name: data?.name ?? nextMarkerName(doc.markers),
+      start: data?.start ?? selection?.start ?? doc.cursor,
+      length: data?.length ?? (selection ? selection.end - selection.start : 0),
+      comment: data?.comment ?? '',
+      guid: null,
+    }
+    setMarkers(doc, marker.length > 0 ? 'Add range marker' : 'Add marker', [...doc.markers, marker])
+    doc.selectedMarkerId = marker.id
+    return marker
+  }
+
+  function updateMarker(
+    doc: EditorDocument,
+    id: number,
+    patch: Partial<MarkerData>,
+    label: string,
+  ) {
+    const index = doc.markers.findIndex((marker) => marker.id === id)
+    if (index < 0) return
+    const next = doc.markers.slice()
+    next[index] = { ...next[index]!, ...patch }
+    setMarkers(doc, label, next)
+  }
+
+  function removeMarkers(doc: EditorDocument, ids: number[]) {
+    const removing = new Set(ids)
+    const kept = doc.markers.filter((marker) => !removing.has(marker.id))
+    if (kept.length === doc.markers.length) return
+    setMarkers(doc, removing.size === 1 ? 'Delete marker' : `Delete ${removing.size} markers`, kept)
+    if (doc.selectedMarkerId !== null && removing.has(doc.selectedMarkerId))
+      doc.selectedMarkerId = null
+  }
+
+  /** Marks a marker as the one being worked on (in the list and on the ruler) without selecting it. */
+  function highlightMarker(doc: EditorDocument, id: number) {
+    doc.selectedMarkerId = id
+  }
+
+  /** Splits a range in two at `frame`; the second half is named after the first. */
+  function splitMarker(doc: EditorDocument, id: number, frame: number) {
+    const marker = doc.markers.find((entry) => entry.id === id)
+    if (!marker || frame <= marker.start || frame >= marker.start + marker.length) return
+    const second: Marker = {
+      ...marker,
+      id: nextMarkerId++,
+      name: `${marker.name} (2)`,
+      start: frame,
+      length: marker.start + marker.length - frame,
+      guid: null,
+    }
+    setMarkers(doc, 'Split marker', [
+      ...doc.markers.filter((entry) => entry.id !== id),
+      { ...marker, length: frame - marker.start },
+      second,
+    ])
+  }
+
+  /** Joins markers into the first one in time, spanning from the earliest start to the latest end. */
+  function mergeMarkers(doc: EditorDocument, ids: number[]) {
+    const merging = sortMarkers(doc.markers.filter((marker) => ids.includes(marker.id)))
+    const first = merging[0]
+    if (!first || merging.length < 2) return
+    const end = Math.max(...merging.map((marker) => marker.start + marker.length))
+    const merged: Marker = {
+      ...first,
+      length: end - first.start,
+      comment: merging
+        .map((marker) => marker.comment)
+        .filter(Boolean)
+        .join(' '),
+    }
+    setMarkers(doc, `Merge ${merging.length} markers`, [
+      ...doc.markers.filter((marker) => !ids.includes(marker.id)),
+      merged,
+    ])
+    doc.selectedMarkerId = first.id
+  }
+
+  /** Picks a marker: selects its range (or puts the cursor on it) and keeps it in view. */
+  function selectMarker(doc: EditorDocument, id: number) {
+    const marker = doc.markers.find((entry) => entry.id === id)
+    if (!marker) return
+    doc.selectedMarkerId = id
+    doc.spectralSelection = null
+    doc.selection =
+      marker.length > 0 ? { start: marker.start, end: marker.start + marker.length } : null
+    doc.cursor = marker.start
+  }
+
+  /**
+   * Writes each range out as a WAV of its own, in the source's format and without the take's
+   * metadata. Names are given by the caller, in the same order as the markers.
+   */
+  async function exportMarkers(doc: EditorDocument, options: MarkerExport) {
+    const channels = await ensureChannels(doc)
+    const format = doc.layout ?? defaultLayout(channels.length)
+    const files: File[] = []
+    try {
+      for (const [index, marker] of options.markers.entries()) {
+        busy.value = `Exporting ${index + 1} / ${options.markers.length}…`
+        // Let the indicator move every few files; each one is quick on its own.
+        if (index % 8 === 0) await nextPaint()
+        const range = {
+          start: marker.start,
+          end: Math.min(doc.frames, marker.start + marker.length),
+        }
+        const layout = defaultLayout(channels.length, format.format, format.bitDepth)
+        const bytes = encodeWav(crop(channels, range), doc.sampleRate, layout)
+        const file = new File([bytes], options.names[index]!, { type: 'audio/wav' })
+        if (options.target === 'folder') {
+          const handle = await options.directory!.getFileHandle(file.name, { create: true })
+          await writeFile(handle, file)
+        } else {
+          files.push(file)
+        }
+      }
+      if (options.target === 'zip') {
+        busy.value = 'Building ZIP…'
+        await nextPaint()
+        const entries = await Promise.all(
+          files.map(async (file) => ({
+            name: file.name,
+            data: new Uint8Array(await file.arrayBuffer()),
+          })),
+        )
+        download(options.zipName ?? 'markers.zip', createZip(entries))
+      } else if (options.target === 'open' && files.length > 0) {
+        addDocuments(files.map((file) => ({ file, handle: null, path: file.name })))
+        // Never on disk, so they count as unsaved until they are.
+        for (const entry of documents.value.slice(-files.length)) entry.savedState = 0
+      }
+    } finally {
+      busy.value = null
+    }
+    return options.markers.length
+  }
+
+  /**
+   * Sets the spectral selection. The time selection follows the span of its areas, so Space plays
+   * them and the status bar times them; clearing it leaves the time selection be.
+   */
+  function setSpectralSelection(doc: EditorDocument, selection: SpectralSelection | null) {
+    const bounds = selectionBounds(selection)
+    if (!selection || !bounds) {
+      doc.spectralSelection = null
+      return
+    }
+    doc.spectralSelection = markRaw(selection)
+    const start = Math.max(0, Math.min(doc.frames, Math.floor(bounds.start)))
+    const end = Math.max(0, Math.min(doc.frames, Math.ceil(bounds.end)))
+    doc.selection = end > start ? { start, end } : null
+    doc.cursor = start
+  }
+
+  /** A spectral edit of `selection` with the panel's settings, or null with nothing selected. */
+  function spectralStep(
+    mode: SpectralMode,
+    selection: SpectralSelection | null,
+  ): SpectralStep | null {
+    if (!selection || !selectionBounds(selection)) return null
+    const settings = spectralSettings.value
+    return markRaw<SpectralStep>({
+      kind: 'spectral',
+      edit: {
+        selection,
+        mode,
+        gainDb: settings.gainDb,
+        feather: settings.feather / 100,
+        direction: settings.healDirection,
+        fftSize: settings.fftSize,
+      },
+    })
+  }
+
+  /** Applies a spectral edit to the spectral selection (or `selection`) as one undo step. */
+  async function applySpectral(
+    doc: EditorDocument,
+    mode: SpectralMode,
+    selection = doc.spectralSelection,
+  ) {
+    const step = spectralStep(mode, selection)
+    if (!step) return false
+    const problem = stepProblem(step, doc.sampleRate)
+    if (problem) throw new Error(problem)
+    await applyStep(doc, step, () => describeStep(step))
+    return true
+  }
+
+  /** Copies just the spectral selection, everything around it silenced, into a new file. */
+  async function extractSpectral(doc: EditorDocument) {
+    const step = spectralStep('isolate', doc.spectralSelection)
+    const range = step && stepRange(step, null)
+    if (!step || !range) return
+    const channels = await ensureChannels(doc)
+    await withBusy('Extracting…', false, async () => {
+      const result = await renderStep(channels, doc.sampleRate, step, null)
+      createDocument(crop(result.channels, range), doc.sampleRate)
+    })
   }
 
   function close(doc: EditorDocument) {
@@ -848,9 +1433,9 @@ function createWorkspace() {
     batchDocuments,
     targetLufs,
     ceilingDbtp,
+    peakControl,
     addFiles,
     ensureChannels,
-    ensureSpectrogram,
     setActive,
     step,
     apply,
@@ -865,7 +1450,20 @@ function createWorkspace() {
     noisePrint,
     preview,
     previewBypass,
+    previewRender,
+    previewRendering,
     playbackChannels,
+    applyStep,
+    busy,
+    setMarkers,
+    addMarker,
+    updateMarker,
+    removeMarkers,
+    selectMarker,
+    highlightMarker,
+    splitMarker,
+    mergeMarkers,
+    exportMarkers,
     cleanupAll,
     mixPasteSettings,
     snapToZeroCrossings,
@@ -876,6 +1474,12 @@ function createWorkspace() {
     copyToNew,
     adjustSelectionToZeroCrossings,
     select,
+    spectralSettings,
+    frequencyView,
+    setSpectralSelection,
+    spectralStep,
+    applySpectral,
+    extractSpectral,
     trimSettings,
     trimThresholdFor,
     setTrimThreshold,
@@ -898,3 +1502,7 @@ export function useAudioWorkspace() {
   workspace ??= effectScope(true).run(createWorkspace)!
   return workspace
 }
+
+// Hot-swapping this module would leave components split between the old workspace and a new empty
+// one, each with its own loads and workers in flight, so an edit here reloads the page instead.
+if (import.meta.hot) import.meta.hot.accept(() => window.location.reload())

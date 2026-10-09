@@ -2,15 +2,7 @@
 // the Audio check page, plus 4x oversampled true peak and the head/tail silence that page checks.
 
 import { SILENCE_THRESHOLD_DB } from '@/features/tools/lib/audioChecks'
-import {
-  type Channels,
-  dbToGain,
-  frameCount,
-  gain,
-  gainToDb,
-  samplePeak,
-  soundBounds,
-} from './operations'
+import { type Channels, frameCount, gainToDb, samplePeak, soundBounds } from './operations'
 import { profileSilence, type SilenceProfile } from './silence'
 
 interface Biquad {
@@ -55,22 +47,36 @@ function kWeighting(sampleRate: number): [Biquad, Biquad] {
   return [shelf, highPass]
 }
 
-function filter(input: ArrayLike<number>, { b0, b1, b2, a1, a2 }: Biquad) {
-  const output = new Float64Array(input.length)
+/**
+ * Squared K-weighted signal summed over each `step`-frame block (the last one partial), with both
+ * stages run as one stream: a full-length buffer per stage would be 2.5 GB for a 2-hour take.
+ */
+function weightedEnergy(channel: Float32Array, sampleRate: number, step: number) {
+  const [s, h] = kWeighting(sampleRate)
+  const energy = new Float64Array(Math.ceil(channel.length / step))
   let x1 = 0,
     x2 = 0,
+    m1 = 0,
+    m2 = 0,
     y1 = 0,
     y2 = 0
-  for (let i = 0; i < input.length; i++) {
-    const x = input[i]!
-    const y = b0 * x + b1 * x1 + b2 * x2 - a1 * y1 - a2 * y2
-    output[i] = y
-    x2 = x1
-    x1 = x
-    y2 = y1
-    y1 = y
+  for (let block = 0; block < energy.length; block++) {
+    let sum = 0
+    for (let i = block * step, end = Math.min(channel.length, i + step); i < end; i++) {
+      const x = channel[i]!
+      const m = s.b0 * x + s.b1 * x1 + s.b2 * x2 - s.a1 * m1 - s.a2 * m2
+      const y = h.b0 * m + h.b1 * m1 + h.b2 * m2 - h.a1 * y1 - h.a2 * y2
+      sum += y * y
+      x2 = x1
+      x1 = x
+      m2 = m1
+      m1 = m
+      y2 = y1
+      y1 = y
+    }
+    energy[block] = sum
   }
-  return output
+  return energy
 }
 
 const ABSOLUTE_GATE = -70
@@ -91,28 +97,21 @@ export function integratedLoudness(channels: Channels, sampleRate: number) {
   const frames = frameCount(channels)
   const step = Math.round(sampleRate * 0.1)
   const subBlocks = Math.floor(frames / step)
-  const [shelf, highPass] = kWeighting(sampleRate)
 
   if (subBlocks < 4) {
     if (frames === 0) return -Infinity
     let power = 0
-    for (const channel of channels) {
-      const weighted = filter(filter(channel, shelf), highPass)
-      for (let i = 0; i < frames; i++) power += weighted[i]! * weighted[i]!
-    }
+    for (const channel of channels)
+      power += weightedEnergy(channel, sampleRate, frames).reduce((sum, value) => sum + value, 0)
     const lufs = powerToLufs(power / frames)
     return lufs > ABSOLUTE_GATE ? lufs : -Infinity
   }
 
-  // Mean square of each 100 ms sub-block, summed over channels (all weighted 1.0: mono/stereo).
+  // Energy of each 100 ms sub-block, summed over channels (all weighted 1.0: mono/stereo).
   const energy = new Float64Array(subBlocks)
   for (const channel of channels) {
-    const weighted = filter(filter(channel, shelf), highPass)
-    for (let block = 0; block < subBlocks; block++) {
-      let sum = 0
-      for (let i = block * step, end = i + step; i < end; i++) sum += weighted[i]! * weighted[i]!
-      energy[block]! += sum
-    }
+    const weighted = weightedEnergy(channel, sampleRate, step)
+    for (let block = 0; block < subBlocks; block++) energy[block]! += weighted[block]!
   }
 
   // 400 ms gating blocks with 75% overlap.
@@ -162,13 +161,15 @@ const PHASES: Float64Array[] = (() => {
 })()
 
 /** Largest gain any branch can apply: bounds an interpolated value by its loudest input sample. */
-const MAX_BRANCH_GAIN = Math.max(
+export const MAX_BRANCH_GAIN = Math.max(
   ...PHASES.map((branch) => branch.reduce((sum, value) => sum + Math.abs(value), 0)),
 )
 const HALF = TAPS_PER_PHASE / 2
+/** How many frames either side of a frame its oversampled peak reads. */
+export const TRUE_PEAK_REACH = HALF
 
 /** Highest absolute value of the 4x oversampled signal around one frame. */
-function oversampledPeakAt(channel: Float32Array, frame: number) {
+export function oversampledPeakAt(channel: Float32Array, frame: number) {
   let peak = Math.abs(channel[frame]!)
   const interior = frame - HALF + 1 >= 0 && frame + HALF < channel.length
   for (const branch of PHASES) {
@@ -189,7 +190,7 @@ function oversampledPeakAt(channel: Float32Array, frame: number) {
 
 /**
  * The highest absolute value of the 4x oversampled signal around each frame, across channels.
- * Feeds the limiter's gain computer, which needs every frame.
+ * The exhaustive reference the block-skipping meters are checked against.
  */
 export function truePeakEnvelope(channels: Channels) {
   const frames = frameCount(channels)
@@ -203,30 +204,46 @@ export function truePeakEnvelope(channels: Channels) {
   return envelope
 }
 
-const BLOCK = 16
+/** Frames per block of `peakBlocks`; a frame's oversampled peak reads at most its neighbours. */
+export const PEAK_BLOCK = 16
 
 /**
- * Same result as the maximum of the envelope, much faster: an interpolated value can never exceed
- * the loudest sample feeding it times the branch gain, so any block whose neighbourhood cannot beat
- * the peak found so far is skipped without filtering. Voice lines are mostly quiet relative to
- * their peak, so only a few percent of the samples get oversampled.
+ * Loudest sample of each PEAK_BLOCK-frame block across channels. An interpolated value can never
+ * exceed the loudest sample feeding it times MAX_BRANCH_GAIN, so a block whose neighbourhood stays
+ * under a level needs no oversampling to know its true peak does too.
+ */
+export function peakBlocks(channels: Channels) {
+  const frames = frameCount(channels)
+  const blocks = new Float32Array(Math.ceil(frames / PEAK_BLOCK))
+  for (const channel of channels) {
+    for (let i = 0; i < frames; i++) {
+      const magnitude = Math.abs(channel[i]!)
+      const block = (i / PEAK_BLOCK) | 0
+      if (magnitude > blocks[block]!) blocks[block] = magnitude
+    }
+  }
+  return blocks
+}
+
+/** The loudest sample a frame in `block` can read when oversampled. */
+export function nearbyPeak(blocks: Float32Array, block: number) {
+  return Math.max(blocks[block]!, blocks[block - 1] ?? 0, blocks[block + 1] ?? 0)
+}
+
+/**
+ * Same result as the maximum of the envelope, much faster: any block whose neighbourhood cannot
+ * beat the peak found so far is skipped without filtering. Voice lines are mostly quiet relative
+ * to their peak, so only a few percent of the samples get oversampled.
  */
 export function truePeak(channels: Channels) {
   let best = samplePeak(channels)
-  for (const channel of channels) {
-    const blocks = Math.ceil(channel.length / BLOCK)
-    const blockMax = new Float32Array(blocks)
-    for (let i = 0; i < channel.length; i++) {
-      const magnitude = Math.abs(channel[i]!)
-      const block = (i / BLOCK) | 0
-      if (magnitude > blockMax[block]!) blockMax[block] = magnitude
-    }
-    for (let block = 0; block < blocks; block++) {
-      // A frame in this block reads samples from at most the neighbouring blocks.
-      const nearby = Math.max(blockMax[block]!, blockMax[block - 1] ?? 0, blockMax[block + 1] ?? 0)
-      if (nearby * MAX_BRANCH_GAIN <= best) continue
-      const end = Math.min(channel.length, (block + 1) * BLOCK)
-      for (let frame = block * BLOCK; frame < end; frame++) {
+  const blocks = peakBlocks(channels)
+  const frames = frameCount(channels)
+  for (let block = 0; block < blocks.length; block++) {
+    if (nearbyPeak(blocks, block) * MAX_BRANCH_GAIN <= best) continue
+    const end = Math.min(frames, (block + 1) * PEAK_BLOCK)
+    for (const channel of channels) {
+      for (let frame = block * PEAK_BLOCK; frame < end; frame++) {
         const peak = oversampledPeakAt(channel, frame)
         if (peak > best) best = peak
       }
@@ -258,136 +275,4 @@ export function analyze(channels: Channels, sampleRate: number): AudioAnalysis {
     trailingSilenceSeconds: bounds ? (frames - bounds.end) / sampleRate : frames / sampleRate,
     durationSeconds: frames / sampleRate,
   }
-}
-
-/**
- * Lookahead brickwall limiter on the true-peak envelope. The gain curve is a running minimum over
- * ±lookahead, smoothed by a release filter and then a moving average of the lookahead length, which
- * keeps it at or below the required gain on every frame while starting to duck before the peak.
- */
-export function limit(channels: Channels, sampleRate: number, ceilingDb: number) {
-  const frames = frameCount(channels)
-  const ceiling = dbToGain(ceilingDb)
-  const envelope = truePeakEnvelope(channels)
-  const required = new Float32Array(frames)
-  for (let i = 0; i < frames; i++) required[i] = envelope[i]! > ceiling ? ceiling / envelope[i]! : 1
-
-  const lookahead = Math.max(1, Math.round(sampleRate * 0.0015))
-  // Running minimum over [i - lookahead, i + lookahead] with a monotonic deque: O(n) instead of
-  // rescanning the whole window for every frame.
-  const held = new Float32Array(frames)
-  const deque = new Int32Array(frames)
-  let head = 0
-  let tail = 0
-  for (let j = 0; j < frames + lookahead; j++) {
-    if (j < frames) {
-      while (tail > head && required[deque[tail - 1]!]! >= required[j]!) tail--
-      deque[tail++] = j
-    }
-    const i = j - lookahead
-    if (i < 0) continue
-    while (deque[head]! < i - lookahead) head++
-    held[i] = Math.min(1, required[deque[head]!]!)
-  }
-
-  const release = 1 - Math.exp(-1 / (sampleRate * 0.05))
-  const smoothed = new Float32Array(frames)
-  let level = 1
-  for (let i = 0; i < frames; i++) {
-    level = held[i]! < level ? held[i]! : level + (held[i]! - level) * release
-    smoothed[i] = level
-  }
-
-  const window = Math.max(1, Math.floor(lookahead / 2))
-  const curve = new Float32Array(frames)
-  let sum = 0
-  let count = 0
-  for (let i = 0; i < Math.min(frames, window + 1); i++) {
-    sum += smoothed[i]!
-    count++
-  }
-  for (let i = 0; i < frames; i++) {
-    curve[i] = sum / count
-    const leaving = i - window
-    const entering = i + window + 1
-    if (leaving >= 0) {
-      sum -= smoothed[leaving]!
-      count--
-    }
-    if (entering < frames) {
-      sum += smoothed[entering]!
-      count++
-    }
-  }
-
-  return channels.map((channel) => {
-    const output = new Float32Array(frames)
-    for (let i = 0; i < frames; i++) output[i] = channel[i]! * curve[i]!
-    return output
-  })
-}
-
-export interface LoudnessMatch {
-  channels: Channels
-  before: AudioAnalysis
-  after: AudioAnalysis
-  gainDb: number
-  limited: boolean
-}
-
-/** Limits repeatedly, a little lower each time, until the true peak sits under the ceiling. */
-function limitUnder(channels: Channels, sampleRate: number, ceilingDbtp: number) {
-  let output = channels
-  // The limiter tracks a filtered peak estimate, so it can land a hair over; retry a little lower.
-  // Strictly under: the Audio check fails anything above the ceiling, even by 0.005 dB.
-  for (let attempt = 0; attempt < 4 && truePeak(output) > ceilingDbtp; attempt++)
-    output = limit(output, sampleRate, ceilingDbtp - 0.1 * (attempt + 1))
-  return output
-}
-
-/**
- * What Match loudness will do to a measured file: the plain gain it needs, and whether that gain
- * would push the true peak past the ceiling so the limiter has to step in. Null when silent.
- */
-export function planMatch(analysis: AudioAnalysis, targetLufs: number, ceilingDbtp: number) {
-  if (!Number.isFinite(analysis.integratedLufs)) return null
-  const gainDb = targetLufs - analysis.integratedLufs
-  const peakAfterDbtp = analysis.truePeakDbtp + gainDb
-  return { gainDb, peakAfterDbtp, needsLimiting: peakAfterDbtp > ceilingDbtp }
-}
-
-/**
- * Audition's Match Loudness: gain to the target, then limit only if that pushed the true peak over
- * the ceiling. Limiting removes loudness, so the gain is raised and the line limited again until
- * it lands on the target (or stops getting closer). `after` reports what actually came out.
- */
-export function matchLoudness(
-  channels: Channels,
-  sampleRate: number,
-  targetLufs: number,
-  ceilingDbtp: number,
-  before: AudioAnalysis = analyze(channels, sampleRate),
-): LoudnessMatch {
-  if (!Number.isFinite(before.integratedLufs))
-    return {
-      channels: channels.map((c) => c.slice()),
-      before,
-      after: before,
-      gainDb: 0,
-      limited: false,
-    }
-
-  let gainDb = targetLufs - before.integratedLufs
-  let output: Channels = gain(channels, gainDb)
-  let limited = false
-  for (let pass = 0; pass < 4 && truePeak(output) > ceilingDbtp; pass++) {
-    output = limitUnder(output, sampleRate, ceilingDbtp)
-    limited = true
-    const shortfall = targetLufs - integratedLoudness(output, sampleRate)
-    if (shortfall < 0.1) break
-    gainDb += shortfall
-    output = gain(channels, gainDb)
-  }
-  if (truePeak(output) > ceilingDbtp) output = limitUnder(output, sampleRate, ceilingDbtp)
-  return { channels: output, before, after: analyze(output, sampleRate), gainDb, limited }
 }

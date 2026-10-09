@@ -56,6 +56,12 @@ describe('profileSilence', () => {
     expect(profile.suggestedThresholdDb).toBe(-50)
   })
 
+  it('never suggests below -50 dB, even under very quiet speech', () => {
+    const quiet = Float32Array.from(tone(1, -70))
+
+    expect(profileSilence([quiet], RATE).suggestedThresholdDb).toBe(-50)
+  })
+
   it('suggests 10 dB above a floor that sits close to -50 dB', () => {
     expect(profileSilence([line(-55)], RATE).suggestedThresholdDb).toBeCloseTo(-45, 0)
   })

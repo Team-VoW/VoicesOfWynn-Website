@@ -18,15 +18,21 @@ import {
   ZoomIn,
   ZoomOut,
 } from 'lucide-vue-next'
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, provide, ref, watch } from 'vue'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import CleanupPanel from '../components/CleanupPanel.vue'
 import CloseFilesDialog from '../components/CloseFilesDialog.vue'
 import EffectsPanel from '../components/EffectsPanel.vue'
 import FileListPanel from '../components/FileListPanel.vue'
+import MarkerExportDialog from '../components/MarkerExportDialog.vue'
+import MarkerPropertiesDialog from '../components/MarkerPropertiesDialog.vue'
+import MarkersPanel from '../components/MarkersPanel.vue'
+import { MARKER_ACTIONS } from '../composables/markerActions'
 import MatchLoudnessPanel from '../components/MatchLoudnessPanel.vue'
+import ScrubNumber from '../components/ScrubNumber.vue'
 import SilencePanel from '../components/SilencePanel.vue'
+import SpectralToolbar from '../components/SpectralToolbar.vue'
 import StatusBar from '../components/StatusBar.vue'
 import WaveformView from '../components/WaveformView.vue'
 import { useEditorPlayback } from '../composables/useEditorPlayback'
@@ -43,10 +49,17 @@ import {
   readDirectory,
   type OpenedFile,
 } from '../lib/fileAccess'
-import { CLEANUP_NAMES } from '../lib/cleanupSteps'
+import { stepName } from '../lib/cleanupSteps'
+import type { Marker } from '../lib/markers'
 import { deleteRange } from '../lib/operations'
+import type { SpectralSelection } from '../lib/spectral'
 import { recallFolder, rememberFolder } from '../lib/recentFolder'
-import { isDirty, useAudioWorkspace, type EditorDocument } from '../stores/workspace'
+import {
+  isDirty,
+  useAudioWorkspace,
+  type EditorDocument,
+  type SpectralTool,
+} from '../stores/workspace'
 
 const workspace = useAudioWorkspace()
 const playback = useEditorPlayback()
@@ -74,6 +87,8 @@ const tab = useLocalStorage<'effects' | 'cleanup' | 'loudness' | 'silence'>(
   'vow.audioEditor.tab',
   'effects',
 )
+// Spectral editing moved onto the spectrogram itself; that tab is gone.
+if (!['effects', 'cleanup', 'loudness', 'silence'].includes(tab.value)) tab.value = 'effects'
 const showShortcuts = ref(false)
 const dragDepth = ref(0)
 const recentFolder = ref<FileSystemDirectoryHandle | null>(null)
@@ -82,18 +97,24 @@ const writesInPlace = canWriteInPlace()
 const doc = computed(() => workspace.activeDocument)
 const lastUndo = computed(() => doc.value?.undo.at(-1)?.label)
 const lastRedo = computed(() => doc.value?.redo.at(-1)?.label)
-const previewDisplay = usePreviewDisplay(doc, views)
+const previewDisplay = usePreviewDisplay(doc)
+const showMarkerExport = ref(false)
+const markersPanel = ref<InstanceType<typeof MarkersPanel> | null>(null)
+/** The marker whose properties dialog is open. */
+const editingMarkerId = ref<number | null>(null)
+const busyLabel = computed(
+  () => workspace.busy ?? (workspace.previewRendering ? 'Rendering preview…' : null),
+)
 const previewLabel = computed(() => {
   const step = workspace.preview
   if (!step) return null
-  const name = CLEANUP_NAMES[step.kind]
+  const name = stepName(step)
   return workspace.previewBypass ? `Original · B for ${name}` : `${name} preview · B for original`
 })
 /** While the Silence tab is open, shade what Trim silence would cut. */
 const cutPreview = computed(() => {
   const current = doc.value
   if (!current || tab.value !== 'silence' || !workspace.trimSettings.showPreview) return null
-  void current.state
   const plan = workspace.trimPlanFor(current)
   if (!plan || (plan.removedLeadSeconds === 0 && plan.removedTailSeconds === 0)) return null
   return plan.keep
@@ -103,12 +124,12 @@ function reportError(error: unknown, fallback: string) {
   toast.error(error instanceof Error ? error.message : fallback)
 }
 
-function open(files: OpenedFile[]) {
+async function open(files: OpenedFile[]) {
   if (files.length === 0) {
     toast.warning('No audio files found there.')
     return
   }
-  const added = workspace.addFiles(files)
+  const added = await workspace.addFiles(files)
   if (added < files.length) toast.info(`${files.length - added} file(s) were already open.`)
 }
 
@@ -120,7 +141,7 @@ async function openFolder() {
   try {
     const picked = await pickDirectory()
     if (!picked) return
-    open(picked.files)
+    await open(picked.files)
     await rememberFolder(picked.directory)
     recentFolder.value = picked.directory
   } catch (error) {
@@ -135,7 +156,7 @@ async function openFiles() {
   }
   try {
     const files = await pickFiles()
-    if (files) open(files)
+    if (files) await open(files)
   } catch (error) {
     reportError(error, 'The files could not be opened.')
   }
@@ -146,7 +167,7 @@ async function reopenFolder() {
   if (!directory) return
   try {
     if (!(await ensureWritable(directory))) return
-    open(await readDirectory(directory))
+    await open(await readDirectory(directory))
   } catch (error) {
     reportError(error, 'The folder could not be reopened.')
   }
@@ -154,7 +175,7 @@ async function reopenFolder() {
 
 function onInputChange(event: Event) {
   const input = event.target as HTMLInputElement
-  open(fromFileList(Array.from(input.files ?? [])))
+  void open(fromFileList(Array.from(input.files ?? [])))
   input.value = ''
 }
 
@@ -162,7 +183,7 @@ async function onDrop(event: DragEvent) {
   dragDepth.value = 0
   if (!event.dataTransfer) return
   try {
-    open(await fromDataTransfer(event.dataTransfer))
+    await open(await fromDataTransfer(event.dataTransfer))
   } catch (error) {
     reportError(error, 'The dropped files could not be opened.')
   }
@@ -224,24 +245,77 @@ async function togglePlay(loop = false) {
   }
 }
 
+/** Runs a spectral edit from the keyboard or the spot healing brush. */
+function spectralEdit(mode: 'delete' | 'heal', selection?: SpectralSelection) {
+  const current = doc.value
+  if (!current || current.status !== 'ready') return
+  playback.stop()
+  void workspace
+    .applySpectral(current, mode, selection)
+    .catch((error) => reportError(error, mode === 'heal' ? 'Heal failed.' : 'Delete failed.'))
+}
+
 function deleteSelection() {
   const current = doc.value
   const selection = current?.selection
   if (!current || !selection) return
+  // With areas picked on the spectrogram, Delete silences those rather than cutting time.
+  if (current.spectralSelection) {
+    spectralEdit('delete')
+    return
+  }
   playback.stop()
   void workspace
     .apply(current, 'Delete', (channels) => ({
       channels: deleteRange(channels, selection),
       selection: null,
       cursor: selection.start,
+      splices: [{ start: selection.start, removed: selection.end - selection.start, inserted: 0 }],
     }))
     .catch((error) => reportError(error, 'Delete failed.'))
 }
 
 function onSelect(selection: { start: number; end: number } | null, cursor: number) {
   if (!doc.value) return
+  if (selection !== doc.value.selection) workspace.setSpectralSelection(doc.value, null)
   doc.value.selection = selection
   doc.value.cursor = cursor
+}
+
+/** Picking a spectral tool brings the spectral display up if it is hidden. */
+function setSpectralTool(tool: SpectralTool) {
+  workspace.spectralSettings.tool = tool
+  if (tool !== 'time' && !views.value.spectral) views.value = { ...views.value, spectral: true }
+}
+
+function addMarker() {
+  const current = doc.value
+  if (current?.status === 'ready') workspace.addMarker(current)
+}
+
+function revealMarker(marker: Marker) {
+  waveform.value?.reveal(marker.start, marker.start + marker.length)
+}
+
+provide(MARKER_ACTIONS, {
+  play: (marker) => {
+    const current = doc.value
+    if (!current) return
+    workspace.selectMarker(current, marker.id)
+    playback.stop()
+    void togglePlay(false)
+  },
+  reveal: (marker, zoom) => {
+    const end = marker.start + Math.max(marker.length, 1)
+    if (zoom) waveform.value?.zoomTo(marker.start, end)
+    else waveform.value?.reveal(marker.start, end)
+  },
+  rename: (marker) => void markersPanel.value?.startRename(marker),
+  edit: (marker) => (editingMarkerId.value = marker.id),
+})
+
+function onMarkerSelect(id: number) {
+  if (doc.value) workspace.selectMarker(doc.value, id)
 }
 
 /** Clicks and drags on the waveform go through the workspace so they can snap to zero crossings. */
@@ -300,6 +374,10 @@ useEditorShortcuts({
   toggleBypass: () => {
     if (workspace.preview) workspace.previewBypass = !workspace.previewBypass
   },
+  addMarker,
+  spectralTool: setSpectralTool,
+  currentSpectralTool: () => workspace.spectralSettings.tool,
+  heal: () => doc.value?.spectralSelection && spectralEdit('heal'),
 })
 
 // While playing, follow what should be heard: a preview's new settings, the A/B switch, or an
@@ -309,6 +387,7 @@ watchThrottled(
     [
       workspace.preview,
       workspace.previewBypass,
+      workspace.previewRender,
       doc.value?.channels,
       doc.value?.selection?.start,
       doc.value?.selection?.end,
@@ -321,18 +400,17 @@ watchThrottled(
   { throttle: 60, trailing: true },
 )
 
-// Switching files stops playback, and the spectral view needs its image built.
+// Switching files stops playback; the open file needs its samples to edit and draw.
 watch(
   () => workspace.activeId,
   () => playback.stop(),
 )
 watch(
-  () => [doc.value?.id, doc.value?.state, views.value.spectral] as const,
+  () => [doc.value?.id, doc.value?.state] as const,
   () => {
     const current = doc.value
     if (!current || current.status === 'error') return
     void workspace.ensureChannels(current).catch(() => {})
-    if (views.value.spectral) void workspace.ensureSpectrogram(current).catch(() => {})
   },
   { immediate: true },
 )
@@ -470,6 +548,27 @@ onMounted(async () => {
         </div>
       </div>
 
+      <div v-if="views.spectral" class="flex items-center gap-2">
+        <SpectralToolbar
+          :model-value="workspace.spectralSettings.tool"
+          @update:model-value="setSpectralTool"
+        />
+        <label
+          v-if="['brush', 'heal'].includes(workspace.spectralSettings.tool)"
+          class="flex items-center gap-1.5 text-xs text-muted-foreground"
+        >
+          Size
+          <ScrubNumber
+            v-model="workspace.spectralSettings.brushSize"
+            label="Brush size"
+            :min="4"
+            :max="200"
+            unit="px"
+            title="Diameter of the brush and the spot healing brush"
+          />
+        </label>
+      </div>
+
       <div class="ml-auto flex items-center gap-1">
         <Button
           size="sm"
@@ -548,9 +647,18 @@ onMounted(async () => {
 
     <div
       v-else
-      class="grid min-h-0 flex-1 gap-3 lg:grid-cols-[minmax(200px,260px)_minmax(0,1fr)_320px]"
+      class="grid min-h-0 flex-1 gap-3 lg:grid-cols-[minmax(220px,280px)_minmax(0,1fr)_320px]"
     >
-      <FileListPanel class="max-h-72 lg:max-h-none" @close="close" />
+      <div class="flex min-h-0 flex-col gap-3">
+        <FileListPanel class="max-h-72 min-h-0 flex-1 lg:max-h-none" @close="close" />
+        <MarkersPanel
+          ref="markersPanel"
+          :doc="doc"
+          class="max-h-72 lg:max-h-none"
+          @reveal="revealMarker"
+          @export="showMarkerExport = true"
+        />
+      </div>
 
       <section class="flex min-h-[320px] min-w-0 flex-col gap-2" aria-label="Waveform editor">
         <template v-if="doc">
@@ -562,8 +670,15 @@ onMounted(async () => {
             :cut-preview="cutPreview"
             :preview="previewDisplay"
             :preview-label="previewLabel"
+            :busy="busyLabel"
             @select="onWaveformSelect"
             @view="(view) => doc && (doc.view = view)"
+            @marker-select="onMarkerSelect"
+            @markers-commit="
+              (label, markers, before) => doc && workspace.setMarkers(doc, label, markers, before)
+            "
+            @spectral-select="(selection) => doc && workspace.setSpectralSelection(doc, selection)"
+            @spot-heal="(selection) => spectralEdit('heal', selection)"
           />
           <StatusBar :doc="doc" :playhead="playback.position.value" />
         </template>
@@ -624,6 +739,8 @@ onMounted(async () => {
     </div>
 
     <CloseFilesDialog v-model="closing" />
+    <MarkerExportDialog v-model="showMarkerExport" :doc="doc" />
+    <MarkerPropertiesDialog v-model="editingMarkerId" :doc="doc" />
 
     <input
       ref="fileInput"

@@ -15,6 +15,7 @@ import {
   type Channels,
   type FadeCurve,
 } from '../lib/operations'
+import { cropSplices } from '../lib/markers'
 import { useAudioWorkspace, type EditorDocument, type EditResult } from '../stores/workspace'
 
 const props = defineProps<{ doc: EditorDocument }>()
@@ -84,16 +85,18 @@ function deleteSelection() {
     channels: deleteRange(channels, selection),
     selection: null,
     cursor: selection.start,
+    splices: [{ start: selection.start, removed: selection.end - selection.start, inserted: 0 }],
   }))
 }
 
 function cropToSelection() {
   const selection = props.doc.selection
   if (!selection) return
-  void run('Crop', (channels) => ({
+  void run('Crop', (channels, doc) => ({
     channels: crop(channels, selection),
     selection: null,
     cursor: 0,
+    splices: cropSplices(doc.frames, selection),
   }))
 }
 
@@ -108,6 +111,7 @@ function addSilence() {
   void run(`Insert ${settings.value.silenceMs} ms silence`, (channels, doc) => ({
     channels: insertSilence(channels, doc.cursor, frames),
     selection: { start: doc.cursor, end: doc.cursor + frames },
+    splices: [{ start: doc.cursor, removed: 0, inserted: frames }],
   }))
 }
 

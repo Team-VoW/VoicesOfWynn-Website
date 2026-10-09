@@ -4,7 +4,13 @@ import { computed, ref } from 'vue'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import { LOUDNESS_PRESETS } from '@/features/tools/lib/audioChecks'
-import { planMatch } from '../lib/loudness'
+import { formatDb } from '../lib/format'
+import {
+  HEAVY_LIMITING_DB,
+  planMatch,
+  type MatchOptions,
+  type PeakControl,
+} from '../lib/matchLoudness'
 import { useAudioWorkspace } from '../stores/workspace'
 import MatchLoudnessRow from './MatchLoudnessRow.vue'
 
@@ -39,39 +45,69 @@ function analyzeAll() {
   void withProgress('Analyzing', docs.length, (tick) => workspace.analyzeAll(docs, tick))
 }
 
+const options = computed<MatchOptions>(() => ({
+  targetLufs: workspace.targetLufs,
+  ceilingDbtp: workspace.ceilingDbtp,
+  peakControl: workspace.peakControl,
+}))
+
+const PEAK_CONTROLS: { id: PeakControl; label: string; title: string }[] = [
+  {
+    id: 'auto',
+    label: 'Auto',
+    title:
+      'When the peaks have to come down more than a little, a gentle 3:1 compressor eases the loud syllables down first and the limiter only trims what is left. Sounds natural even on hard pushes.',
+  },
+  {
+    id: 'limit',
+    label: 'Limiter only',
+    title:
+      'A true-peak limiter alone, like Audition. Clean on lines that only go a few dB over; on lines pushed hard it flattens the loud syllables.',
+  },
+]
+
 async function matchAll(saveAfter: boolean) {
   const docs = workspace.batchDocuments
   await withProgress('Matching', docs.length, async (tick) => {
-    const { limited } = await workspace.matchAll(
-      docs,
-      workspace.targetLufs,
-      workspace.ceilingDbtp,
-      tick,
-    )
-    const note = limited
-      ? ` ${limited} needed limiting to stay under ${workspace.ceilingDbtp} dBTP.`
-      : ''
+    const { limited, heavy, short } = await workspace.matchAll(docs, options.value, tick)
+    const notes = [
+      limited ? `${limited} needed their peaks held under ${workspace.ceilingDbtp} dBTP.` : '',
+      short.length
+        ? `${short.length} could not reach ${workspace.targetLufs} LUFS without crushing them: ${short
+            .map((entry) => `${entry.name} (${formatDb(entry.lufs, 'LUFS')})`)
+            .join(', ')}.`
+        : '',
+      heavy.length
+        ? `${heavy.length} needed over ${HEAVY_LIMITING_DB} dB of limiting, so give them a listen: ${heavy.join(', ')}.`
+        : '',
+    ]
+      .filter(Boolean)
+      .join(' ')
+    const warn = short.length > 0 || heavy.length > 0
     if (!saveAfter) {
-      toast.success(`Matched ${docs.length} file(s) to ${workspace.targetLufs} LUFS.${note}`)
+      const message = `Matched ${docs.length} file(s) to ${workspace.targetLufs} LUFS. ${notes}`
+      if (warn) toast.warning(message, { duration: 15000 })
+      else toast.success(message)
       return
     }
     const { written, zipped } = await workspace.saveAll(docs)
-    toast.success(
-      `Matched ${docs.length} file(s).${note} Saved ${written} over the originals${zipped ? `, ${zipped} in a ZIP download` : ''}.`,
-    )
+    const message = `Matched ${docs.length} file(s). ${notes} Saved ${written} over the originals${zipped ? `, ${zipped} in a ZIP download` : ''}.`
+    if (warn) toast.warning(message, { duration: 15000 })
+    else toast.success(message)
   })
 }
 
-/** How many of the files will need the limiter at the current target, for the table's legend. */
-const limiterCount = computed(() => {
+/** Files that need their peaks held down at the current target, and the most any needs. */
+const peakSummary = computed(() => {
   let count = 0
-  for (const doc of workspace.batchDocuments)
-    if (
-      doc.analysis &&
-      planMatch(doc.analysis, workspace.targetLufs, workspace.ceilingDbtp)?.needsLimiting
-    )
-      count++
-  return count
+  let most = 0
+  for (const doc of workspace.batchDocuments) {
+    const plan = doc.analysis && planMatch(doc.analysis, options.value)
+    if (!plan?.needsLimiting) continue
+    count++
+    most = Math.max(most, plan.reductionDb)
+  }
+  return { count, most }
 })
 
 const field =
@@ -130,6 +166,32 @@ const field =
         />
         <span class="text-xs text-muted-foreground">dBTP</span>
       </div>
+      <div class="flex items-center gap-2">
+        <span id="match-peaks" class="w-24 text-xs text-muted-foreground">Peaks</span>
+        <div
+          class="grid flex-1 grid-cols-2 gap-1 rounded-md border bg-background p-1"
+          role="radiogroup"
+          aria-labelledby="match-peaks"
+        >
+          <button
+            v-for="control in PEAK_CONTROLS"
+            :key="control.id"
+            type="button"
+            role="radio"
+            :aria-checked="workspace.peakControl === control.id"
+            :title="control.title"
+            class="rounded px-2 py-0.5 text-xs font-medium transition-colors"
+            :class="
+              workspace.peakControl === control.id
+                ? 'bg-primary text-primary-foreground'
+                : 'text-muted-foreground hover:bg-accent hover:text-foreground'
+            "
+            @click="workspace.peakControl = control.id"
+          >
+            {{ control.label }}
+          </button>
+        </div>
+      </div>
     </section>
 
     <section class="space-y-2">
@@ -175,11 +237,12 @@ const field =
     </section>
 
     <p
-      v-if="limiterCount"
+      v-if="peakSummary.count"
       class="-mb-2 text-xs text-amber-700 dark:text-amber-400"
-      :title="`Reaching ${workspace.targetLufs} LUFS would push their peaks past ${workspace.ceilingDbtp} dBTP, so the limiter holds them down.`"
+      :title="`Reaching ${workspace.targetLufs} LUFS pushes their peaks past ${workspace.ceilingDbtp} dBTP, by up to ${peakSummary.most.toFixed(1)} dB before the extra gain that holding them down costs.`"
     >
-      ⚑ {{ limiterCount }} of {{ workspace.batchDocuments.length }} need the limiter
+      ⚑ {{ peakSummary.count }} of {{ workspace.batchDocuments.length }} need their peaks held down
+      <template v-if="workspace.peakControl === 'auto'">(Auto compresses the hard ones)</template>
     </p>
     <div class="relative min-h-0 flex-1 overflow-auto rounded-md border">
       <table class="w-full text-xs tabular-nums">
@@ -190,7 +253,7 @@ const field =
             <th class="px-2 py-1.5 text-right font-medium">Peak</th>
             <th
               class="px-2 py-1.5 text-right font-medium"
-              title="Gain Match loudness will apply to reach the target"
+              title="Gain Match loudness will apply to reach the target. ⚑ marks files whose peaks must come down."
             >
               Change
             </th>

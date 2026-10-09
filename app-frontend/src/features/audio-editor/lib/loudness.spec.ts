@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { analyze, integratedLoudness, matchLoudness, truePeak, truePeakEnvelope } from './loudness'
+import { analyze, integratedLoudness, truePeak, truePeakEnvelope } from './loudness'
 import { dbToGain } from './operations'
 
 const RATE = 48000
@@ -78,33 +78,5 @@ describe('loudness', () => {
 
     expect(result.leadingSilenceSeconds).toBeCloseTo(0.2, 2)
     expect(result.trailingSilenceSeconds).toBeCloseTo(0.3, 2)
-  })
-})
-
-describe('matchLoudness', () => {
-  it('gains a quiet line up to the target', () => {
-    const result = matchLoudness([tone(5, -30, 440)], RATE, -18, -1)
-
-    expect(result.limited).toBe(false)
-    expect(result.gainDb).toBeGreaterThan(0)
-    expect(result.after.integratedLufs).toBeCloseTo(-18, 1)
-  })
-
-  it('limits instead of letting the true peak through the ceiling', () => {
-    // A click on a quiet bed: reaching -13 LUFS would put the click far above 0 dBTP.
-    const signal = tone(5, -30, 440)
-    for (let i = RATE * 2; i < RATE * 2 + 10; i++) signal[i] = 0.5
-
-    const result = matchLoudness([signal], RATE, -13, -1)
-
-    expect(result.limited).toBe(true)
-    expect(result.after.truePeakDbtp).toBeLessThanOrEqual(-1)
-    expect(result.after.integratedLufs).toBeCloseTo(-13, 0)
-  })
-
-  it('leaves silence alone', () => {
-    const result = matchLoudness([new Float32Array(RATE)], RATE, -18, -1)
-
-    expect(result.gainDb).toBe(0)
   })
 })

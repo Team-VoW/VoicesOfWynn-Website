@@ -61,8 +61,25 @@ function percentile(sorted: Float32Array, fraction: number) {
   return sorted[Math.min(sorted.length - 1, Math.floor(fraction * sorted.length))]!
 }
 
-/** RMS level in dB of each 10 ms window, the loudest channel winning. */
+const levelCache = new WeakMap<
+  Channels,
+  { sampleRate: number; levels: Float32Array; size: number }
+>()
+
+/**
+ * RMS level in dB of each 10 ms window, the loudest channel winning. Remembered per buffer (audio
+ * is never changed in place), so the Silence tab does not re-read a 2-hour take on every redraw.
+ * Callers must not write to the returned levels.
+ */
 export function windowLevels(channels: Channels, sampleRate: number) {
+  const cached = levelCache.get(channels)
+  if (cached?.sampleRate === sampleRate) return cached
+  const result = { sampleRate, ...measureWindows(channels, sampleRate) }
+  levelCache.set(channels, result)
+  return result
+}
+
+function measureWindows(channels: Channels, sampleRate: number) {
   const size = Math.max(1, Math.round(sampleRate * WINDOW_SECONDS))
   const frames = frameCount(channels)
   const count = Math.ceil(frames / size)
@@ -119,11 +136,13 @@ export function profileSilence(channels: Channels, sampleRate: number): SilenceP
   const candidates = [startDb, endDb].filter((level): level is number => level !== null)
   const noiseFloorDb = candidates.length ? Math.min(...candidates) : null
 
-  const suggestedThresholdDb = Math.min(
-    noiseFloorDb === null
-      ? LOWEST_THRESHOLD_DB
-      : Math.max(noiseFloorDb + ABOVE_FLOOR_DB, LOWEST_THRESHOLD_DB),
-    speechDb - BELOW_SPEECH_DB,
+  // Raised over a noisy room, capped under the speech, and never below the VoW rule.
+  const suggestedThresholdDb = Math.max(
+    Math.min(
+      noiseFloorDb === null ? LOWEST_THRESHOLD_DB : noiseFloorDb + ABOVE_FLOOR_DB,
+      speechDb - BELOW_SPEECH_DB,
+    ),
+    LOWEST_THRESHOLD_DB,
   )
   return { noiseFloorDb, startDb, endDb, speechDb, suggestedThresholdDb }
 }

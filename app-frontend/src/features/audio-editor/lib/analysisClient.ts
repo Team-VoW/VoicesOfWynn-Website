@@ -1,10 +1,16 @@
 import { runJob, type AnalysisJob, type AnalysisResults } from './analysisJobs'
 
-type Pending = { resolve: (value: unknown) => void; reject: (error: Error) => void }
+type Pending = {
+  job: AnalysisJob
+  resolve: (value: unknown) => void
+  reject: (error: Error) => void
+}
 
 interface PoolWorker {
   worker: Worker
   pending: Map<number, Pending>
+  /** Set by its first reply: until then an error means the worker never got going. */
+  started: boolean
 }
 
 let pool: PoolWorker[] | null = null
@@ -21,10 +27,12 @@ function createWorker(): PoolWorker {
   const entry: PoolWorker = {
     worker: new Worker(new URL('./analysis.worker.ts', import.meta.url), { type: 'module' }),
     pending: new Map(),
+    started: false,
   }
   entry.worker.onmessage = (
     event: MessageEvent<{ id: number; result?: unknown; error?: string }>,
   ) => {
+    entry.started = true
     const job = entry.pending.get(event.data.id)
     if (!job) return
     entry.pending.delete(event.data.id)
@@ -33,13 +41,45 @@ function createWorker(): PoolWorker {
   }
   entry.worker.onerror = (event) => {
     event.preventDefault()
-    for (const job of entry.pending.values()) job.reject(new Error('The analysis worker crashed.'))
-    entry.pending.clear()
-    entry.worker.terminate()
+    if (!entry.started) {
+      // It never ran a job (no module workers, the script failed to load): respawning would only
+      // fail again, so every job from here on runs on the page instead.
+      poolFailed = true
+      const workers = pool ?? [entry]
+      pool = null
+      for (const failed of workers) abandon(failed, true)
+      return
+    }
+    abandon(entry, false)
     // Replace the crashed worker so the pool keeps its size.
-    if (pool) pool[pool.indexOf(entry)] = createWorker()
+    const index = pool?.indexOf(entry) ?? -1
+    if (pool && index >= 0) pool[index] = createWorker()
   }
   return entry
+}
+
+/** Stops the worker, rerunning its jobs on the page when asked and their input is still here. */
+function abandon(entry: PoolWorker, rerun: boolean) {
+  entry.worker.terminate()
+  for (const { job, resolve, reject } of entry.pending.values()) {
+    // A file's bytes went to the worker with the job and are gone from this side.
+    const bytesGone = 'bytes' in job && job.bytes.byteLength === 0
+    if (rerun && !bytesGone) runInThread(job).then(resolve, reject)
+    else reject(new Error('The analysis worker crashed.'))
+  }
+  entry.pending.clear()
+}
+
+function runInThread(job: AnalysisJob) {
+  return new Promise<unknown>((resolve, reject) => {
+    setTimeout(() => {
+      try {
+        resolve(runJob(job).result)
+      } catch (error) {
+        reject(error instanceof Error ? error : new Error(String(error)))
+      }
+    })
+  })
 }
 
 function getPool() {
@@ -63,23 +103,13 @@ export function runAnalysisJob<K extends AnalysisJob['kind']>(
   transfer: Transferable[] = [],
 ): Promise<AnalysisResults[K]> {
   const workers = getPool()
-  if (!workers) {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        try {
-          resolve(runJob(job).result as AnalysisResults[K])
-        } catch (error) {
-          reject(error instanceof Error ? error : new Error(String(error)))
-        }
-      })
-    })
-  }
+  if (!workers) return runInThread(job) as Promise<AnalysisResults[K]>
   const target = workers.reduce((least, entry) =>
     entry.pending.size < least.pending.size ? entry : least,
   )
   const id = nextId++
   return new Promise((resolve, reject) => {
-    target.pending.set(id, { resolve: resolve as (value: unknown) => void, reject })
+    target.pending.set(id, { job, resolve: resolve as (value: unknown) => void, reject })
     target.worker.postMessage({ id, job }, transfer)
   })
 }

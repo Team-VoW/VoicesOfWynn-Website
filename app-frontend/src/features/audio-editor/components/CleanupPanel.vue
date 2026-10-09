@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useLocalStorage } from '@vueuse/core'
+import { refDebounced, useLocalStorage } from '@vueuse/core'
 import { Headphones, Loader2, Save, Trash2, X } from 'lucide-vue-next'
 import { computed, markRaw, onBeforeUnmount, ref, watch, watchEffect, type ComputedRef } from 'vue'
 import { toast } from 'vue-sonner'
@@ -9,14 +9,16 @@ import {
   CLEANUP_NAMES,
   CLEANUP_ORDER,
   describeStep,
-  runCleanupStep,
   stepProblem,
   type CleanupKind,
   type CleanupStep,
 } from '../lib/cleanupSteps'
-import { sibilancePeakDb, staticReduction, type EqBand } from '../lib/filters'
+import { runAnalysisJob } from '../lib/analysisClient'
+import { staticReduction, type EqBand } from '../lib/filters'
 import { formatDb } from '../lib/format'
 import { captureNoisePrint } from '../lib/noiseReduction'
+import { crop } from '../lib/operations'
+import { peakInRange } from '../lib/peaks'
 import { useAudioWorkspace, type EditorDocument } from '../stores/workspace'
 import CleanupSection from './CleanupSection.vue'
 import EqCurve from './EqCurve.vue'
@@ -138,7 +140,16 @@ watchEffect(() => {
   workspace.preview = step && !stepProblem(step, props.doc.sampleRate) ? markRaw(step) : null
 })
 watch(previewKind, () => (workspace.previewBypass = false))
+// A spectral edit on the spectrogram started its own preview: this one is off.
+watch(
+  () => workspace.preview,
+  (step) => {
+    const kind = previewKind.value
+    if (kind && step && step !== steps[kind].value) previewKind.value = null
+  },
+)
 onBeforeUnmount(() => {
+  if (!previewKind.value) return
   workspace.preview = null
   workspace.previewBypass = false
 })
@@ -158,15 +169,14 @@ async function apply(kind: CleanupKind) {
   try {
     const problem = stepProblem(step, doc.sampleRate)
     if (problem) throw new Error(problem)
-    const channels = await workspace.ensureChannels(doc)
-    const result = runCleanupStep(channels, doc.sampleRate, step, doc.selection)
-    if (kind === 'clicks' && result.clicks === 0) {
+    const clicks = await workspace.applyStep(doc, step, (count) =>
+      kind === 'clicks' ? `Remove ${count} click(s)` : describeStep(step),
+    )
+    if (kind === 'clicks' && clicks === 0) {
       toast.info(`No clicks found in the ${scope.value}.`)
       return
     }
-    const label = kind === 'clicks' ? `Remove ${result.clicks} click(s)` : describeStep(step)
-    await workspace.apply(doc, label, () => result.channels)
-    if (kind === 'clicks') toast.success(`Repaired ${result.clicks} click(s).`)
+    if (kind === 'clicks') toast.success(`Repaired ${clicks} click(s).`)
     // It is in the audio now; previewing it on top would play it twice.
     if (previewKind.value === kind) previewKind.value = null
   } catch (error) {
@@ -188,31 +198,60 @@ async function captureNoise() {
   }
 }
 
-// Readouts that tell the person where to set things. Cheap for a voice line (one pass each).
-const sibilancePeak = computed(() => {
-  void props.doc.state
-  const channels = props.doc.channels
-  return channels ? sibilancePeakDb(channels, props.doc.sampleRate, settings.value.deEssHz) : null
+// Readouts that tell the person where to set things. They follow the audio (a new array on every
+// edit), not `state`, which marker edits bump too. Cheap for a voice line (one pass each); on a
+// long take the full-pass ones only measure a selection of reasonable length.
+const READOUT_MAX_SECONDS = 120
+
+/** The selection once it settles: dropping a marker or dragging a selection never waits on these. */
+const settledSelection = refDebounced(
+  computed(() => props.doc.selection),
+  200,
+)
+
+/** The stretch the full-pass readouts measure, or null when too long to measure on the page. */
+const readoutRange = computed(() => {
+  const range = settledSelection.value ?? { start: 0, end: props.doc.frames }
+  return range.end - range.start <= READOUT_MAX_SECONDS * props.doc.sampleRate ? range : null
 })
 
+// Measured in a worker: a full pass of filtering, about 100 ms per 30 s of audio.
+const sibilancePeak = ref<number | null>(null)
+watch(
+  () => [props.doc.channels, readoutRange.value, settings.value.deEssHz] as const,
+  async ([channels, range, frequency]) => {
+    sibilancePeak.value = null
+    if (!channels || !range) return
+    const slice = crop(channels, range)
+    const peak = await runAnalysisJob(
+      { kind: 'sibilance', channels: slice, sampleRate: props.doc.sampleRate, frequency },
+      slice.map((channel) => channel.buffer),
+    )
+    // Still the audio and settings it was measured for.
+    if (
+      props.doc.channels === channels &&
+      readoutRange.value === range &&
+      settings.value.deEssHz === frequency
+    )
+      sibilancePeak.value = peak
+  },
+  { immediate: true },
+)
+
 const spectrum = computed(() => {
-  void props.doc.state
   const channels = props.doc.channels
   return channels
-    ? markRaw(averageSpectrum(channels, props.doc.sampleRate, props.doc.selection))
+    ? markRaw(averageSpectrum(channels, props.doc.sampleRate, settledSelection.value))
     : null
 })
 
 const compressorReadout = computed(() => {
-  void props.doc.state
-  const channels = props.doc.channels
+  const peaks = props.doc.peaks
   const step = steps.compress.value
-  if (!channels || step?.kind !== 'compress') return null
-  const start = props.doc.selection?.start ?? 0
-  const end = props.doc.selection?.end ?? props.doc.frames
-  let peak = 0
-  for (const channel of channels)
-    for (let i = start; i < end; i++) peak = Math.max(peak, Math.abs(channel[i]!))
+  if (!peaks || step?.kind !== 'compress') return null
+  // From the waveform's peak summary rather than a pass over every sample.
+  const selection = settledSelection.value
+  const peak = peakInRange(peaks, selection?.start ?? 0, selection?.end ?? props.doc.frames)
   const peakDb = 20 * Math.log10(peak + 1e-12)
   return { peakDb, reductionDb: staticReduction(peakDb, step.options) }
 })
@@ -605,7 +644,12 @@ const hint = 'text-xs text-muted-foreground'
         />
       </div>
       <div class="flex items-center gap-2">
-        <p :class="hint">Sibilance peaks at {{ formatDb(sibilancePeak, 'dB', 0) }}</p>
+        <p :class="hint">
+          <template v-if="sibilancePeak !== null">
+            Sibilance peaks at {{ formatDb(sibilancePeak, 'dB', 0) }}
+          </template>
+          <template v-else-if="doc.channels">Select up to 2 min to measure sibilance</template>
+        </p>
         <Button size="sm" variant="outline" class="ml-auto" @click="apply('deEss')">De-ess</Button>
       </div>
     </CleanupSection>

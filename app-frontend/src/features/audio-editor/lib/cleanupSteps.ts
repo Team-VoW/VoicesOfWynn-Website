@@ -14,6 +14,15 @@ import {
 } from './filters'
 import { reduceNoise, type NoisePrint, type NoiseReductionOptions } from './noiseReduction'
 import { blendRange, type Channels, type FrameRange } from './operations'
+import {
+  offsetSelection,
+  selectionBounds,
+  spectralEdit,
+  spectralProblem,
+  spectralReach,
+  type SpectralEdit,
+  type SpectralMode,
+} from './spectral'
 
 export type CleanupStep =
   | { kind: 'highPass'; frequency: number; slope: 12 | 24 | 48 }
@@ -25,6 +34,24 @@ export type CleanupStep =
   | { kind: 'compress'; options: CompressorOptions }
 
 export type CleanupKind = CleanupStep['kind']
+
+/** An edit of an area of the spectrogram. It carries its own area, so it ignores the selection. */
+export type SpectralStep = { kind: 'spectral'; edit: SpectralEdit }
+
+/** Anything that can be previewed and applied: a cleanup step or a spectral edit. */
+export type ProcessStep = CleanupStep | SpectralStep
+
+export const SPECTRAL_NAMES: Record<SpectralMode, string> = {
+  gain: 'Spectral gain',
+  delete: 'Spectral delete',
+  heal: 'Heal',
+  isolate: 'Selection solo',
+}
+
+/** What to call the step on screen, without its settings. */
+export function stepName(step: ProcessStep) {
+  return step.kind === 'spectral' ? SPECTRAL_NAMES[step.edit.mode] : CLEANUP_NAMES[step.kind]
+}
 
 /** The order the panel lists them in, which is also the order a batch chain runs them. */
 export const CLEANUP_ORDER: CleanupKind[] = [
@@ -52,8 +79,15 @@ const BLEND_MS = 10
 /** Mouth clicks are shorter than this; anything longer is a consonant. */
 const MAX_CLICK_MS = 2
 
-export function describeStep(step: CleanupStep) {
+export function describeStep(step: ProcessStep) {
   switch (step.kind) {
+    case 'spectral': {
+      const { mode, gainDb } = step.edit
+      if (mode === 'gain') return `Spectral gain ${gainDb > 0 ? '+' : ''}${gainDb} dB`
+      if (mode === 'delete') return 'Delete spectral selection'
+      if (mode === 'heal') return 'Heal'
+      return 'Isolate spectral selection'
+    }
     case 'highPass':
       return `High-pass ${step.frequency} Hz`
     case 'hum':
@@ -72,7 +106,8 @@ export function describeStep(step: CleanupStep) {
 }
 
 /** Why a step cannot run on audio at this rate, or null when it can. */
-export function stepProblem(step: CleanupStep, sampleRate: number) {
+export function stepProblem(step: ProcessStep, sampleRate: number) {
+  if (step.kind === 'spectral') return spectralProblem(step.edit, sampleRate)
   if (step.kind === 'noise' && step.print.sampleRate !== sampleRate)
     return `The noise print is from a ${step.print.sampleRate} Hz file; this one is ${sampleRate} Hz.`
   return null
@@ -105,9 +140,11 @@ function processWhole(channels: Channels, sampleRate: number, step: CleanupStep)
 export function runCleanupStep(
   channels: Channels,
   sampleRate: number,
-  step: CleanupStep,
+  step: ProcessStep,
   selection?: FrameRange | null,
 ): { channels: Channels; clicks: number } {
+  if (step.kind === 'spectral')
+    return { channels: spectralEdit(channels, sampleRate, step.edit), clicks: 0 }
   if (step.kind === 'clicks') {
     return removeClicks(
       channels,
@@ -132,4 +169,29 @@ export function runCleanupChain(channels: Channels, sampleRate: number, steps: C
     else output = runCleanupStep(output, sampleRate, step).channels
   }
   return { channels: output, skipped }
+}
+
+/**
+ * The frames a step changes, for running it on just that stretch of a long file: a spectral edit's
+ * own area, otherwise the selection (null meaning the whole file).
+ */
+export function stepRange(step: ProcessStep, selection: FrameRange | null): FrameRange | null {
+  if (step.kind !== 'spectral') return selection
+  const bounds = selectionBounds(step.edit.selection)
+  return bounds ? { start: Math.floor(bounds.start), end: Math.ceil(bounds.end) } : selection
+}
+
+/** Frames either side of `stepRange` the step reads, so filters and windows settle first. */
+export function stepReach(step: ProcessStep, sampleRate: number, padSeconds: number) {
+  const pad = Math.round(padSeconds * sampleRate)
+  return step.kind === 'spectral' ? Math.max(pad, spectralReach(step.edit)) : pad
+}
+
+/** The step as it applies to audio starting `frames` later, for running it on a slice. */
+export function offsetStep<T extends ProcessStep>(step: T, frames: number): T {
+  if (step.kind !== 'spectral' || frames === 0) return step
+  return {
+    ...step,
+    edit: { ...step.edit, selection: offsetSelection(step.edit.selection, frames) },
+  }
 }

@@ -9,6 +9,7 @@ import {
   TRAILING_SILENCE_LIMIT,
 } from '@/features/tools/lib/audioChecks'
 import { formatDb } from '../lib/format'
+import { cropSplices } from '../lib/markers'
 import {
   applyTrim,
   describeLoudEdges,
@@ -101,7 +102,6 @@ const overridden = computed(() => doc.value?.trimThresholdDb != null)
 // Recomputed as the threshold or padding moves; cheap (10 ms windows) and only for this file.
 const plan = computed(() => {
   if (!doc.value) return null
-  void doc.value.state
   return workspace.trimPlanFor(doc.value)
 })
 const cutsSomething = computed(
@@ -126,7 +126,12 @@ async function trim() {
         keepTailSeconds: trimSettings.value.keepTailMs / 1000,
       })
       if (!cut || (cut.removedLeadSeconds === 0 && cut.removedTailSeconds === 0)) return null
-      return { channels: applyTrim(channels, current.sampleRate, cut), selection: null, cursor: 0 }
+      return {
+        channels: applyTrim(channels, current.sampleRate, cut),
+        selection: null,
+        cursor: 0,
+        splices: cropSplices(current.frames, cut.keep),
+      }
     })
   } catch (error) {
     toast.error(error instanceof Error ? error.message : `${label} failed.`)

@@ -30,20 +30,20 @@ const format = computed(() => {
 
 // Loudness of just the selection, like Audition's Amplitude Statistics on a range.
 watchDebounced(
-  () => [props.doc.id, props.doc.state, props.doc.selection?.start, props.doc.selection?.end],
+  () => [props.doc.id, props.doc.channels, props.doc.selection?.start, props.doc.selection?.end],
   async () => {
     const { doc } = props
     const selection = doc.selection
     selectionAnalysis.value = null
     if (!selection || !doc.channels || selection.end - selection.start < doc.sampleRate * 0.4)
       return
-    const state = doc.state
+    const channels = doc.channels
     const result = await runAnalysisJob({
       kind: 'analyze',
       channels: doc.channels.map((channel) => channel.slice(selection.start, selection.end)),
       sampleRate: doc.sampleRate,
     })
-    if (doc.state === state && doc.selection === selection) selectionAnalysis.value = result
+    if (doc.channels === channels && doc.selection === selection) selectionAnalysis.value = result
   },
   { debounce: 250, immediate: true },
 )

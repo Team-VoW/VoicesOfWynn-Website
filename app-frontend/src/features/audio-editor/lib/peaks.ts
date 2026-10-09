@@ -62,6 +62,24 @@ export function buildPeaks(channels: Channels): PeakPyramid {
   return levels
 }
 
+/**
+ * The largest absolute sample in [start, end), read from the finest level, so a long selection
+ * costs one bucket per 64 frames. Buckets on the edges count whole: it can overshoot by a few
+ * samples' worth, never undershoot.
+ */
+export function peakInRange(pyramid: PeakPyramid, start: number, end: number) {
+  const level = pyramid[0]
+  if (!level) return 0
+  const first = Math.max(0, Math.floor(start / level.samplesPerBucket))
+  let peak = 0
+  for (const channel of level.channels) {
+    const last = Math.min(channel.length / 2, Math.ceil(end / level.samplesPerBucket))
+    for (let bucket = first; bucket < last; bucket++)
+      peak = Math.max(peak, -channel[bucket * 2]!, channel[bucket * 2 + 1]!)
+  }
+  return peak
+}
+
 /** The coarsest level that still has at least one bucket per pixel. */
 export function pickLevel(pyramid: PeakPyramid, samplesPerPixel: number) {
   let chosen: PeakLevel | null = null
