@@ -101,9 +101,7 @@ function normalizeName(value: string): string {
 }
 
 function removeInlineTags(line: string): string {
-  return line
-    .replace(/<name>/g, 'soldier')
-    .replace(/<[^>]*>/g, '')
+  return line.replace(/<name>/g, 'soldier').replace(/<[^>]*>/g, '')
 }
 
 function getAudioFileNameWithoutExtension(fileName: string): string {
@@ -113,7 +111,7 @@ function getAudioFileNameWithoutExtension(fileName: string): string {
 export function parseScriptText(
   rawText: string,
   questName: string,
-  options: ParseScriptOptions = {}
+  options: ParseScriptOptions = {},
 ): ParsedScriptResult {
   const shouldStripLineInformation = options.stripLineInformation ?? true
   const lines = cleanScriptLines(rawText, shouldStripLineInformation)
@@ -123,9 +121,8 @@ export function parseScriptText(
   const voiceLines = lines.map((line) => {
     const speaker = getSpeakerName(stripLineInformation(line))
     const baseFileName = `${normalizedQuestName}-${normalizeName(speaker)}`
-    const dialogueNumber = generatedNames.filter((fileName) =>
-      fileName.includes(`${baseFileName}-`)
-    ).length + 1
+    const dialogueNumber =
+      generatedNames.filter((fileName) => fileName.includes(`${baseFileName}-`)).length + 1
     const fileName = `${baseFileName}-${dialogueNumber}`
 
     generatedNames.push(fileName)
@@ -147,20 +144,22 @@ export function parseScriptText(
 
 export function formatGeneratedOutput(
   voiceLines: ParsedVoiceLine[],
-  options: FormatGeneratedOutputOptions = {}
+  options: FormatGeneratedOutputOptions = {},
 ): string {
   const includeFileNames = options.includeFileNames ?? true
 
   return voiceLines
-    .map((line) => includeFileNames ? `${line.cleanedLine} | ${line.fileName}` : line.cleanedLine)
+    .map((line) => (includeFileNames ? `${line.cleanedLine} | ${line.fileName}` : line.cleanedLine))
     .join('\n')
 }
 
 export function generateCodeLines(rawText: string, questName: string): GeneratedCodeLine[] {
-  return parseScriptText(rawText, questName, { stripLineInformation: true }).voiceLines.map((line) => ({
-    line: removeInlineTags(line.cleanedLine).trim(),
-    file: line.fileName.replace(/\[played\]/gi, '').trim(),
-  }))
+  return parseScriptText(rawText, questName, { stripLineInformation: true }).voiceLines.map(
+    (line) => ({
+      line: removeInlineTags(line.cleanedLine).trim(),
+      file: line.fileName.replace(/\[played\]/gi, '').trim(),
+    }),
+  )
 }
 
 export function generateCodeJsonOutput(rawText: string, questName: string): string {
@@ -168,7 +167,9 @@ export function generateCodeJsonOutput(rawText: string, questName: string): stri
 }
 
 export function getExpectedAudioFileNames(rawText: string, questName: string): string[] {
-  return parseScriptText(rawText, questName, { stripLineInformation: true }).voiceLines.map((line) => line.fileName)
+  return parseScriptText(rawText, questName, { stripLineInformation: true }).voiceLines.map(
+    (line) => line.fileName,
+  )
 }
 
 export function getSelectedAudioFileNames(files: File[]): SelectedAudioFileNames {
@@ -198,7 +199,10 @@ export function getSelectedAudioFileNames(files: File[]): SelectedAudioFileNames
   }
 }
 
-export function compareAudioFiles(expectedFileNames: string[], actualFileNames: string[]): AudioFileComparison {
+export function compareAudioFiles(
+  expectedFileNames: string[],
+  actualFileNames: string[],
+): AudioFileComparison {
   const expectedSet = new Set(expectedFileNames.map((fileName) => fileName.toLowerCase()))
   const actualSet = new Set(actualFileNames.map((fileName) => fileName.toLowerCase()))
 

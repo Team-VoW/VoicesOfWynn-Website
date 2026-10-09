@@ -101,6 +101,20 @@ public sealed class CapabilityMapperTests
         Assert.DoesNotContain(Capability.SystemAdmin, CapabilityMapper.Map([role]));
     }
 
+    [Theory]
+    [InlineData(DiscordRoleId.SoundEditor, true)]
+    [InlineData(DiscordRoleId.TrialSoundEditor, true)]
+    [InlineData(DiscordRoleId.CastManager, true)]
+    [InlineData(DiscordRoleId.Admin, true)]
+    [InlineData(DiscordRoleId.ProjectDirector, true)]
+    [InlineData(DiscordRoleId.Writer, false)]
+    [InlineData(DiscordRoleId.VoiceManager, false)]
+    [InlineData(DiscordRoleId.Moderator, false)]
+    public void OnlySoundEditorsAndManagersGetTheAudioEditor(DiscordRoleId role, bool expected)
+    {
+        Assert.Equal(expected, CapabilityMapper.Map([role]).Contains(Capability.ToolsAudioEdit));
+    }
+
     [Fact]
     public void EveryCapabilityHasAClaimValue()
     {

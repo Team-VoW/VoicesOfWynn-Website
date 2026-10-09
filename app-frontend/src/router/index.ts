@@ -132,6 +132,12 @@ const router = createRouter({
           meta: { capability: Capabilities.ToolsAudioAnalysis },
         },
         {
+          path: 'tools/audio-editor',
+          name: 'audio-editor',
+          component: () => import('@/features/audio-editor/views/AudioEditorView.vue'),
+          meta: { capability: Capabilities.ToolsAudioEdit },
+        },
+        {
           path: 'admin/content',
           name: 'content',
           component: () => import('@/features/content/views/ContentManageView.vue'),

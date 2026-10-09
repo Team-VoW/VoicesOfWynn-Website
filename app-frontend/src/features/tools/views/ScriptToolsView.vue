@@ -78,7 +78,9 @@ const outputSummary = computed(() => {
 const codeLines = computed(() => generateCodeLines(rawScriptText.value, questName.value))
 const codeJsonOutput = computed(() => generateCodeJsonOutput(rawScriptText.value, questName.value))
 const codeOutputSummary = computed(() =>
-  codeLines.value.length === 0 ? 'No JSON generated yet.' : `${codeLines.value.length} JSON entries ready.`,
+  codeLines.value.length === 0
+    ? 'No JSON generated yet.'
+    : `${codeLines.value.length} JSON entries ready.`,
 )
 
 const audioComparison = computed(() =>
@@ -88,19 +90,22 @@ const audioComparison = computed(() =>
   ),
 )
 
-const audioCheckPassed = computed(() =>
-  audioComparison.value.expectedCount > 0 &&
-  audioComparison.value.actualCount > 0 &&
-  audioComparison.value.missingFileNames.length === 0 &&
-  audioComparison.value.extraFileNames.length === 0,
+const audioCheckPassed = computed(
+  () =>
+    audioComparison.value.expectedCount > 0 &&
+    audioComparison.value.actualCount > 0 &&
+    audioComparison.value.missingFileNames.length === 0 &&
+    audioComparison.value.extraFileNames.length === 0,
 )
 
 const audioCheckStatus = computed(() => {
   if (audioComparison.value.expectedCount === 0) {
     return 'Add a script file first so the checker knows which audio files to expect.'
   }
-  if (audioComparison.value.actualCount === 0) return 'No .ogg or .wav files were found in the selection.'
-  if (audioCheckPassed.value) return 'All generated filenames are present and no extra audio files were found.'
+  if (audioComparison.value.actualCount === 0)
+    return 'No .ogg or .wav files were found in the selection.'
+  if (audioCheckPassed.value)
+    return 'All generated filenames are present and no extra audio files were found.'
   return `${audioComparison.value.missingFileNames.length} missing and ${audioComparison.value.extraFileNames.length} extra audio filenames found.`
 })
 
@@ -188,7 +193,8 @@ function regenerateVoiceLines() {
   sourceLineCount.value = result.sourceLineCount
   skippedLineCount.value = result.skippedLineCount
 
-  if (selectedNpc.value !== null && !npcOptions.value.includes(selectedNpc.value)) selectedNpc.value = null
+  if (selectedNpc.value !== null && !npcOptions.value.includes(selectedNpc.value))
+    selectedNpc.value = null
 }
 
 function handleRegenerate() {
@@ -202,7 +208,9 @@ function handleStripLineInformationChange() {
 }
 
 async function copyOutput() {
-  await copyText(formatGeneratedOutput(filteredVoiceLines.value, { includeFileNames: generateFileNames.value }))
+  await copyText(
+    formatGeneratedOutput(filteredVoiceLines.value, { includeFileNames: generateFileNames.value }),
+  )
 }
 
 async function copyCodeJson() {
@@ -262,7 +270,9 @@ function setMessage(text: string, tone: 'error' | 'success' | 'neutral') {
             >
               <FileText class="mx-auto size-10 text-primary" />
               <p class="mt-3 text-sm font-medium">Drag script .txt files here</p>
-              <p class="mt-1 text-xs text-muted-foreground">Multiple files are combined in selection order.</p>
+              <p class="mt-1 text-xs text-muted-foreground">
+                Multiple files are combined in selection order.
+              </p>
               <input
                 ref="fileInput"
                 type="file"
@@ -270,7 +280,7 @@ function setMessage(text: string, tone: 'error' | 'success' | 'neutral') {
                 multiple
                 class="hidden"
                 @change="handleFileInput"
-              >
+              />
               <Button class="mt-4" @click="fileInput?.click()">
                 <Upload class="size-4" />
                 Choose files
@@ -299,7 +309,11 @@ function setMessage(text: string, tone: 'error' | 'success' | 'neutral') {
             <div class="flex flex-col gap-2 sm:items-end">
               <div class="flex flex-wrap gap-4 text-sm">
                 <label class="inline-flex items-center gap-2">
-                  <input v-model="generateFileNames" type="checkbox" class="size-4 rounded border-input">
+                  <input
+                    v-model="generateFileNames"
+                    type="checkbox"
+                    class="size-4 rounded border-input"
+                  />
                   Generate file names
                   <Tooltip>
                     <TooltipTrigger as-child>
@@ -312,7 +326,8 @@ function setMessage(text: string, tone: 'error' | 'success' | 'neutral') {
                       </button>
                     </TooltipTrigger>
                     <TooltipContent side="top" class="max-w-72">
-                      Shows generated filenames in the preview and includes them when copying output.
+                      Shows generated filenames in the preview and includes them when copying
+                      output.
                     </TooltipContent>
                   </Tooltip>
                 </label>
@@ -322,7 +337,7 @@ function setMessage(text: string, tone: 'error' | 'success' | 'neutral') {
                     type="checkbox"
                     class="size-4 rounded border-input"
                     @change="handleStripLineInformationChange"
-                  >
+                  />
                   Strip information
                   <Tooltip>
                     <TooltipTrigger as-child>
@@ -335,7 +350,8 @@ function setMessage(text: string, tone: 'error' | 'success' | 'neutral') {
                       </button>
                     </TooltipTrigger>
                     <TooltipContent side="top" class="max-w-80">
-                      Removes inline notes in braces, trailing // comments, and character-change markers from generated dialogue.
+                      Removes inline notes in braces, trailing // comments, and character-change
+                      markers from generated dialogue.
                     </TooltipContent>
                   </Tooltip>
                 </label>
@@ -352,7 +368,10 @@ function setMessage(text: string, tone: 'error' | 'success' | 'neutral') {
             </div>
           </CardHeader>
           <CardContent class="space-y-4">
-            <div v-if="voiceLines.length === 0" class="rounded-md border border-dashed p-8 text-center text-sm text-muted-foreground">
+            <div
+              v-if="voiceLines.length === 0"
+              class="rounded-md border border-dashed p-8 text-center text-sm text-muted-foreground"
+            >
               Add a quest name and drop a script file to generate voice lines.
             </div>
 
@@ -376,7 +395,10 @@ function setMessage(text: string, tone: 'error' | 'success' | 'neutral') {
                 </Button>
               </div>
 
-              <div v-if="filteredVoiceLines.length === 0" class="rounded-md border border-dashed p-8 text-center text-sm text-muted-foreground">
+              <div
+                v-if="filteredVoiceLines.length === 0"
+                class="rounded-md border border-dashed p-8 text-center text-sm text-muted-foreground"
+              >
                 No generated lines match the selected NPC.
               </div>
 
@@ -388,11 +410,18 @@ function setMessage(text: string, tone: 'error' | 'success' | 'neutral') {
                   :class="generateFileNames ? 'lg:grid-cols-[minmax(0,1fr)_260px]' : ''"
                 >
                   <div class="min-w-0">
-                    <p class="text-xs font-medium text-muted-foreground">#{{ index + 1 }} · {{ line.speaker }}</p>
+                    <p class="text-xs font-medium text-muted-foreground">
+                      #{{ index + 1 }} · {{ line.speaker }}
+                    </p>
                     <p class="mt-1 break-words text-sm">{{ line.cleanedLine }}</p>
                   </div>
-                  <div v-if="generateFileNames" class="flex min-w-0 items-start gap-2 lg:justify-end">
-                    <code class="min-w-0 flex-1 rounded-md bg-muted px-2 py-1.5 text-xs lg:text-right">
+                  <div
+                    v-if="generateFileNames"
+                    class="flex min-w-0 items-start gap-2 lg:justify-end"
+                  >
+                    <code
+                      class="min-w-0 flex-1 rounded-md bg-muted px-2 py-1.5 text-xs lg:text-right"
+                    >
                       {{ line.fileName }}
                     </code>
                     <Button
@@ -417,10 +446,13 @@ function setMessage(text: string, tone: 'error' | 'success' | 'neutral') {
                 <Music class="size-4 text-primary" />
                 File checker
               </CardTitle>
-              <CardDescription class="mt-1">Compare generated filenames with selected local audio files.</CardDescription>
+              <CardDescription class="mt-1"
+                >Compare generated filenames with selected local audio files.</CardDescription
+              >
             </div>
             <p class="text-sm text-muted-foreground">
-              {{ audioComparison.missingFileNames.length }} missing, {{ audioComparison.extraFileNames.length }} extra
+              {{ audioComparison.missingFileNames.length }} missing,
+              {{ audioComparison.extraFileNames.length }} extra
             </p>
           </CardHeader>
           <CardContent class="space-y-5">
@@ -435,7 +467,14 @@ function setMessage(text: string, tone: 'error' | 'success' | 'neutral') {
               <FolderOpen class="mx-auto size-9 text-primary" />
               <p class="mt-3 text-sm font-medium">Select an audio folder or audio files</p>
               <p class="mt-1 text-xs text-muted-foreground">Only filenames are used.</p>
-              <input ref="audioFolderInput" type="file" webkitdirectory multiple class="hidden" @change="handleAudioInput">
+              <input
+                ref="audioFolderInput"
+                type="file"
+                webkitdirectory
+                multiple
+                class="hidden"
+                @change="handleAudioInput"
+              />
               <input
                 ref="audioFilesInput"
                 type="file"
@@ -443,7 +482,7 @@ function setMessage(text: string, tone: 'error' | 'success' | 'neutral') {
                 multiple
                 class="hidden"
                 @change="handleAudioInput"
-              >
+              />
               <div class="mt-4 flex flex-col justify-center gap-2 sm:flex-row">
                 <Button @click="audioFolderInput?.click()">
                   <FolderOpen class="size-4" />
@@ -468,13 +507,19 @@ function setMessage(text: string, tone: 'error' | 'success' | 'neutral') {
                 </div>
                 <div class="rounded-md border bg-muted/30 p-3">
                   <p class="text-xs font-medium uppercase text-muted-foreground">Matched</p>
-                  <p class="mt-1 text-lg font-semibold">{{ audioComparison.matchedFileNames.length }}</p>
+                  <p class="mt-1 text-lg font-semibold">
+                    {{ audioComparison.matchedFileNames.length }}
+                  </p>
                 </div>
               </div>
 
               <div
                 class="flex items-center gap-2 rounded-md border p-3 text-sm"
-                :class="audioCheckPassed ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : 'border-amber-200 bg-amber-50 text-amber-800'"
+                :class="
+                  audioCheckPassed
+                    ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
+                    : 'border-amber-200 bg-amber-50 text-amber-800'
+                "
               >
                 <CheckCircle2 v-if="audioCheckPassed" class="size-4 shrink-0" />
                 <AlertTriangle v-else class="size-4 shrink-0" />
@@ -496,7 +541,10 @@ function setMessage(text: string, tone: 'error' | 'success' | 'neutral') {
                     </Button>
                   </div>
                   <div class="max-h-72 overflow-auto p-3">
-                    <p v-if="audioComparison.missingFileNames.length === 0" class="text-sm text-muted-foreground">
+                    <p
+                      v-if="audioComparison.missingFileNames.length === 0"
+                      class="text-sm text-muted-foreground"
+                    >
                       No missing files.
                     </p>
                     <code
@@ -524,7 +572,10 @@ function setMessage(text: string, tone: 'error' | 'success' | 'neutral') {
                     </Button>
                   </div>
                   <div class="max-h-72 overflow-auto p-3">
-                    <p v-if="audioComparison.extraFileNames.length === 0" class="text-sm text-muted-foreground">
+                    <p
+                      v-if="audioComparison.extraFileNames.length === 0"
+                      class="text-sm text-muted-foreground"
+                    >
                       No extra files.
                     </p>
                     <code
@@ -539,7 +590,13 @@ function setMessage(text: string, tone: 'error' | 'success' | 'neutral') {
                 </div>
               </div>
 
-              <div v-if="audioFileNames.duplicateFileNames.length > 0 || audioFileNames.skippedFiles.length > 0" class="space-y-1 text-xs text-muted-foreground">
+              <div
+                v-if="
+                  audioFileNames.duplicateFileNames.length > 0 ||
+                  audioFileNames.skippedFiles.length > 0
+                "
+                class="space-y-1 text-xs text-muted-foreground"
+              >
                 <p v-if="audioFileNames.duplicateFileNames.length > 0">
                   Duplicate selected names: {{ audioFileNames.duplicateFileNames.join(', ') }}
                 </p>
@@ -562,25 +619,37 @@ function setMessage(text: string, tone: 'error' | 'success' | 'neutral') {
               <Code2 class="size-5 shrink-0 text-primary" />
               <span class="min-w-0">
                 <span class="block text-sm font-medium">Advanced: Code JSON</span>
-                <span class="mt-1 block text-xs text-muted-foreground">{{ codeOutputSummary }}</span>
+                <span class="mt-1 block text-xs text-muted-foreground">{{
+                  codeOutputSummary
+                }}</span>
               </span>
             </span>
-            <ChevronDown class="size-5 shrink-0 text-muted-foreground transition-transform" :class="{ 'rotate-180': isCodeOutputOpen }" />
+            <ChevronDown
+              class="size-5 shrink-0 text-muted-foreground transition-transform"
+              :class="{ 'rotate-180': isCodeOutputOpen }"
+            />
           </button>
 
           <CardContent v-if="isCodeOutputOpen" class="border-t pt-5">
-            <div v-if="codeLines.length === 0" class="rounded-md border border-dashed p-6 text-center text-sm text-muted-foreground">
+            <div
+              v-if="codeLines.length === 0"
+              class="rounded-md border border-dashed p-6 text-center text-sm text-muted-foreground"
+            >
               Add a quest name and drop a script file to generate code JSON.
             </div>
             <div v-else class="space-y-4">
               <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <p class="text-sm text-muted-foreground">Copies an array of line/file objects using stripped script text.</p>
+                <p class="text-sm text-muted-foreground">
+                  Copies an array of line/file objects using stripped script text.
+                </p>
                 <Button variant="outline" size="sm" @click="copyCodeJson">
                   <Clipboard class="size-4" />
                   Copy JSON
                 </Button>
               </div>
-              <pre class="max-h-[420px] overflow-auto rounded-md bg-foreground p-4 text-xs leading-relaxed text-background"><code>{{ codeJsonOutput }}</code></pre>
+              <pre
+                class="max-h-[420px] overflow-auto rounded-md bg-foreground p-4 text-xs leading-relaxed text-background"
+              ><code>{{ codeJsonOutput }}</code></pre>
             </div>
           </CardContent>
         </Card>
@@ -595,21 +664,40 @@ function setMessage(text: string, tone: 'error' | 'success' | 'neutral') {
           <CardContent class="space-y-4 text-sm text-muted-foreground">
             <section>
               <h2 class="font-medium text-foreground">Voice lines</h2>
-              <p class="mt-1">Standard lines use <code class="rounded bg-muted px-1">Speaker: dialogue</code>.</p>
+              <p class="mt-1">
+                Standard lines use <code class="rounded bg-muted px-1">Speaker: dialogue</code>.
+              </p>
             </section>
             <section>
               <h2 class="font-medium text-foreground">Character changes</h2>
-              <p class="mt-1">Use <code class="rounded bg-muted px-1">/$ New Speaker</code> when a line should be assigned to another character.</p>
+              <p class="mt-1">
+                Use <code class="rounded bg-muted px-1">/$ New Speaker</code> when a line should be
+                assigned to another character.
+              </p>
             </section>
             <section>
               <h2 class="font-medium text-foreground">Ignored text</h2>
-              <p class="mt-1">Empty lines and lines starting with <code class="rounded bg-muted px-1">//</code> or <code class="rounded bg-muted px-1">---</code> are skipped.</p>
-              <p class="mt-1">Inline emotion or delivery notes should be written in curly braces, like <code class="rounded bg-muted px-1">{angry}</code>. When Strip information is enabled, those notes are removed from the generated dialogue.</p>
-              <p class="mt-1">Standalone instruction lines containing <code class="rounded bg-muted px-1">Emotions will</code> are skipped because they describe the script format rather than a voice line.</p>
+              <p class="mt-1">
+                Empty lines and lines starting with <code class="rounded bg-muted px-1">//</code> or
+                <code class="rounded bg-muted px-1">---</code> are skipped.
+              </p>
+              <p class="mt-1">
+                Inline emotion or delivery notes should be written in curly braces, like
+                <code class="rounded bg-muted px-1">{angry}</code>. When Strip information is
+                enabled, those notes are removed from the generated dialogue.
+              </p>
+              <p class="mt-1">
+                Standalone instruction lines containing
+                <code class="rounded bg-muted px-1">Emotions will</code> are skipped because they
+                describe the script format rather than a voice line.
+              </p>
             </section>
             <section>
               <h2 class="font-medium text-foreground">Filenames</h2>
-              <p class="mt-1">Names use <code class="rounded bg-muted px-1">quest-speaker-number</code> with non-alphanumeric characters removed.</p>
+              <p class="mt-1">
+                Names use <code class="rounded bg-muted px-1">quest-speaker-number</code> with
+                non-alphanumeric characters removed.
+              </p>
             </section>
           </CardContent>
         </Card>

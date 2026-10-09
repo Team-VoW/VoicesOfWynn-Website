@@ -1,12 +1,17 @@
 <script setup lang="ts">
+import { useLocalStorage } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import {
   AudioLines,
+  AudioWaveform,
   ChartLine,
   FileText,
   LayoutDashboard,
+  LogOut,
   Megaphone,
   Mic,
+  PanelLeftClose,
+  PanelLeftOpen,
   ScrollText,
   Shield,
   User,
@@ -15,7 +20,7 @@ import {
 import { computed } from 'vue'
 import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
 import { Button } from '@/components/ui/button'
-import { TooltipProvider } from '@/components/ui/tooltip'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Capabilities, type Capability } from '@/lib/capabilities'
 import { queryClient } from '@/lib/queryClient'
 import { useAuthStore } from '@/stores/auth'
@@ -28,6 +33,8 @@ const route = useRoute()
 const router = useRouter()
 
 useSilentRefresh()
+
+const sidebarCollapsed = useLocalStorage('vow.sidebarCollapsed', false)
 
 const navItems: {
   label: string
@@ -76,6 +83,13 @@ const navItems: {
     routeName: 'audio-tools',
     capability: Capabilities.ToolsAudioAnalysis,
     icon: AudioLines,
+  },
+  {
+    label: 'Audio editor',
+    to: '/tools/audio-editor',
+    routeName: 'audio-editor',
+    capability: Capabilities.ToolsAudioEdit,
+    icon: AudioWaveform,
   },
   {
     label: 'Casting',
@@ -145,37 +159,101 @@ async function logout() {
     <div class="min-h-screen bg-background text-foreground">
       <div class="flex min-h-screen">
         <aside
-          class="sticky top-0 hidden h-screen w-64 shrink-0 border-r border-[--brand-violet]/15 md:flex md:flex-col"
+          class="sticky top-0 hidden h-screen shrink-0 border-r border-[--brand-violet]/15 transition-[width] duration-200 md:flex md:flex-col"
+          :class="sidebarCollapsed ? 'w-16' : 'w-64'"
           style="background: var(--brand-gradient-soft)"
         >
-          <RouterLink :to="{ name: 'home' }" class="flex items-center gap-3 px-5 py-5">
-            <img src="/wynnvplogo.svg" alt="Voices of Wynn logo" class="size-9 shrink-0" />
-            <span class="font-display text-base tracking-wide">Voices of Wynn</span>
-          </RouterLink>
-          <nav class="flex flex-1 flex-col gap-1 overflow-y-auto px-3 py-2">
-            <RouterLink
-              v-for="item in visibleNavItems"
-              :key="item.routeName"
-              :to="item.to"
-              class="relative flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-white/60 hover:text-foreground"
-              :class="
-                isActive(item.routeName)
-                  ? 'bg-white/75 text-foreground font-semibold shadow-sm before:absolute before:left-0 before:top-1.5 before:bottom-1.5 before:w-1 before:rounded-full before:bg-[linear-gradient(180deg,#a340c4,#ff6b9d)]'
-                  : ''
-              "
-            >
-              <component :is="item.icon" class="size-4" aria-hidden="true" />
-              <span class="flex-1">{{ item.label }}</span>
-              <span
-                v-if="item.routeName === 'casting' && castingTodo > 0"
-                class="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary"
-                :aria-label="`${castingTodo} characters left to vote on`"
-              >
-                {{ castingTodo }}
+          <div
+            class="flex items-center py-5"
+            :class="sidebarCollapsed ? 'flex-col gap-3 px-2' : 'gap-2 pl-5 pr-2'"
+          >
+            <RouterLink :to="{ name: 'home' }" class="flex min-w-0 flex-1 items-center gap-3">
+              <img src="/wynnvplogo.svg" alt="Voices of Wynn logo" class="size-9 shrink-0" />
+              <span v-if="!sidebarCollapsed" class="truncate font-display text-base tracking-wide">
+                Voices of Wynn
               </span>
             </RouterLink>
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              class="shrink-0 text-muted-foreground"
+              :aria-label="sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+              :aria-expanded="!sidebarCollapsed"
+              @click="sidebarCollapsed = !sidebarCollapsed"
+            >
+              <component :is="sidebarCollapsed ? PanelLeftOpen : PanelLeftClose" class="size-4" />
+            </Button>
+          </div>
+          <nav
+            class="flex flex-1 flex-col gap-1 overflow-y-auto py-2"
+            :class="sidebarCollapsed ? 'px-2' : 'px-3'"
+          >
+            <Tooltip
+              v-for="item in visibleNavItems"
+              :key="item.routeName"
+              :disabled="!sidebarCollapsed"
+              :delay-duration="100"
+            >
+              <TooltipTrigger as-child>
+                <RouterLink
+                  :to="item.to"
+                  :aria-label="sidebarCollapsed ? item.label : undefined"
+                  class="relative flex items-center gap-3 rounded-md py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-white/60 hover:text-foreground"
+                  :class="[
+                    sidebarCollapsed ? 'justify-center px-0' : 'px-3',
+                    isActive(item.routeName)
+                      ? 'bg-white/75 text-foreground font-semibold shadow-sm before:absolute before:left-0 before:top-1.5 before:bottom-1.5 before:w-1 before:rounded-full before:bg-[linear-gradient(180deg,#a340c4,#ff6b9d)]'
+                      : '',
+                  ]"
+                >
+                  <component :is="item.icon" class="size-4 shrink-0" aria-hidden="true" />
+                  <template v-if="!sidebarCollapsed">
+                    <span class="flex-1 truncate">{{ item.label }}</span>
+                    <span
+                      v-if="item.routeName === 'casting' && castingTodo > 0"
+                      class="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary"
+                      :aria-label="`${castingTodo} characters left to vote on`"
+                    >
+                      {{ castingTodo }}
+                    </span>
+                  </template>
+                  <span
+                    v-else-if="item.routeName === 'casting' && castingTodo > 0"
+                    class="absolute right-1.5 top-1 size-2 rounded-full bg-primary"
+                    :aria-label="`${castingTodo} characters left to vote on`"
+                  />
+                </RouterLink>
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                {{ item.label }}
+                <template v-if="item.routeName === 'casting' && castingTodo > 0">
+                  ({{ castingTodo }})
+                </template>
+              </TooltipContent>
+            </Tooltip>
           </nav>
-          <div class="border-t border-[--brand-violet]/15 px-5 py-4 text-sm">
+          <div
+            v-if="sidebarCollapsed"
+            class="flex justify-center border-t border-[--brand-violet]/15 px-2 py-4"
+          >
+            <Tooltip :delay-duration="100">
+              <TooltipTrigger as-child>
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  class="text-muted-foreground"
+                  aria-label="Logout"
+                  @click="logout"
+                >
+                  <LogOut class="size-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                <template v-if="displayName">{{ displayName }} · </template>Logout
+              </TooltipContent>
+            </Tooltip>
+          </div>
+          <div v-else class="border-t border-[--brand-violet]/15 px-5 py-4 text-sm">
             <p v-if="displayName" class="truncate text-muted-foreground">{{ displayName }}</p>
             <Button variant="ghost" size="sm" class="mt-2 px-0" @click="logout">Logout</Button>
           </div>

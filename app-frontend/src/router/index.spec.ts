@@ -220,6 +220,28 @@ describe('routing', () => {
     expect(route.name).toBe('reports')
   })
 
+  it('opens the audio editor for sound editors', async () => {
+    signIn([Capabilities.ToolsAudioAnalysis, Capabilities.ToolsAudioEdit])
+
+    expect((await visit('/tools/audio-editor')).name).toBe('audio-editor')
+  })
+
+  it('keeps staff without the audio editor capability out of it', async () => {
+    signIn([Capabilities.ReportsView, Capabilities.ToolsScripts])
+
+    const route = await visit('/tools/audio-editor')
+
+    expect(route.name).toBe('reports')
+  })
+
+  it('sends a trial sound editor to the audio editor instead of the profile', async () => {
+    signIn([Capabilities.ToolsAudioAnalysis, Capabilities.ToolsAudioEdit])
+
+    const route = await visit('/admin/accounts')
+
+    expect(route.name).toBe('audio-editor')
+  })
+
   it('holds accounts that must change their password on the profile page', async () => {
     signIn([Capabilities.ReportsView], true)
 

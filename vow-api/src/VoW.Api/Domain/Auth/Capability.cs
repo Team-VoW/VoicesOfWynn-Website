@@ -7,6 +7,10 @@ public enum Capability
     AnalyticsView,
     ToolsScripts,
     ToolsAudioAnalysis,
+
+    /// <summary>The in-browser audio editor. Sound editors (trial included), Cast Manager and admins.</summary>
+    ToolsAudioEdit,
+
     ContentManage,
     AccountsManage,
 

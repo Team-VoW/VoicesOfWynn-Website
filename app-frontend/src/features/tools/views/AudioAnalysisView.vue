@@ -15,13 +15,17 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { analyzeAudio, type AudioAnalysisItem } from '@/api/tools'
 import { ApiError } from '@/api/client'
+import {
+  LEADING_SILENCE_LIMIT,
+  TRAILING_SILENCE_LIMIT,
+  TRUE_PEAK_LIMIT,
+  lufsVerdict,
+  validateAudioFileName,
+  type LufsVerdict,
+} from '@/features/tools/lib/audioChecks'
+import { runAnalysisJob, WORKER_COUNT } from '@/features/audio-editor/lib/analysisClient'
+import { loudEdges } from '@/features/audio-editor/lib/silence'
 
-const LEADING_SILENCE_LIMIT = 0.1
-const TRAILING_SILENCE_LIMIT = 0.4
-const TRUE_PEAK_LIMIT = -1
-const AUDIO_FILE_NAME_PATTERN = /^[a-z0-9]+-[a-z0-9]+-[1-9][0-9]*\.wav$/
-const AUDIO_FILE_NAME_ERROR =
-  'Filename must be questname-npcname-number.wav with only lowercase letters, numbers, exactly two hyphens, and no leading zeros in the number.'
 const AUDACITY_MACRO_BASE_URL = `${import.meta.env.BASE_URL}audacity-macros/`
 
 interface Row {
@@ -29,6 +33,8 @@ interface Row {
   fileName: string
   status: 'analyzing' | 'done' | 'error'
   result?: AudioAnalysisItem
+  /** Level of a steady sound the line starts or ends on, when it is louder than -50 dB. */
+  edgeSoundDb?: number
 }
 
 interface AudacityMacro {
@@ -186,6 +192,7 @@ async function submit(allFiles: File[]) {
   }))
   rows.value = [...pendingRows, ...rows.value]
   isAnalyzing.value = true
+  void checkEdges(wavs, pendingRows)
 
   try {
     const response = await analyzeAudio(wavs)
@@ -240,26 +247,33 @@ async function submit(allFiles: File[]) {
   }
 }
 
+/**
+ * ffmpeg's silence detection calls anything over -50 dB sound, so a line that starts on room noise
+ * or a held breath reports almost no silence and passes. Measured here in the browser, in the
+ * audio editor's workers, alongside the server's check.
+ */
+async function checkEdges(files: File[], pending: Row[]) {
+  // A few files in flight per worker, so dropping hundreds does not read them all into memory.
+  let next = 0
+  const lane = async () => {
+    while (next < files.length) {
+      const index = next++
+      try {
+        const bytes = await files[index]!.arrayBuffer()
+        const silence = await runAnalysisJob({ kind: 'silence', bytes }, [bytes])
+        const row = rows.value.find((entry) => entry.id === pending[index]?.id)
+        const edges = loudEdges(silence)
+        if (row && edges.length > 0) row.edgeSoundDb = Math.max(...edges.map((edge) => edge.db))
+      } catch {
+        // Not a WAV this parser reads: the server's numbers stand on their own.
+      }
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(WORKER_COUNT * 2, files.length) }, lane))
+}
+
 function clearAll() {
   rows.value = []
-}
-
-interface LufsVerdict {
-  label: string
-  tone: 'danger' | 'warning' | 'success' | 'info'
-}
-
-function lufsVerdict(lufs: number): LufsVerdict {
-  if (lufs < -25)
-    return { label: 'very quiet — review unless intentionally subtle', tone: 'danger' }
-  if (lufs < -22) return { label: 'whispering — on the quiet side', tone: 'info' }
-  if (lufs < -20) return { label: 'whispering — perfect (~-23)', tone: 'success' }
-  if (lufs < -19) return { label: 'speaking — a touch quiet', tone: 'info' }
-  if (lufs < -17) return { label: 'speaking — perfect (~-18)', tone: 'success' }
-  if (lufs < -16) return { label: 'speaking — a bit louder', tone: 'info' }
-  if (lufs < -14) return { label: 'speaking — LOUD, watch headroom', tone: 'warning' }
-  if (lufs < -12) return { label: 'shouting — perfect (~-13)', tone: 'success' }
-  return { label: 'very loud — likely too hot for shouting', tone: 'warning' }
 }
 
 function formatLufs(value: number) {
@@ -278,10 +292,6 @@ function formatChannelMode(value: AudioAnalysisItem['channelMode']) {
   if (value === 'mono') return 'Mono'
   if (value === 'stereo') return 'Stereo'
   return 'Unknown'
-}
-
-function validateAudioFileName(fileName: string) {
-  return AUDIO_FILE_NAME_PATTERN.test(fileName) ? null : AUDIO_FILE_NAME_ERROR
 }
 
 function audacityMacroHref(fileName: string) {
@@ -464,8 +474,8 @@ const toneClass: Record<LufsVerdict['tone'], string> = {
                   row.result.leadingSilenceSeconds === null
                     ? 'border-border bg-muted/30 text-foreground'
                     : leadingOverLimit(row.result.leadingSilenceSeconds)
-                    ? toneClass.danger
-                    : toneClass.success
+                      ? toneClass.danger
+                      : toneClass.success
                 "
               >
                 <div class="text-xs uppercase tracking-wide opacity-70">Leading silence</div>
@@ -495,8 +505,8 @@ const toneClass: Record<LufsVerdict['tone'], string> = {
                   row.result.trailingSilenceSeconds === null
                     ? 'border-border bg-muted/30 text-foreground'
                     : trailingOverLimit(row.result.trailingSilenceSeconds)
-                    ? toneClass.danger
-                    : toneClass.success
+                      ? toneClass.danger
+                      : toneClass.success
                 "
               >
                 <div class="text-xs uppercase tracking-wide opacity-70">Trailing silence</div>
@@ -519,6 +529,18 @@ const toneClass: Record<LufsVerdict['tone'], string> = {
                   >
                 </div>
               </div>
+            </div>
+
+            <div
+              v-if="row.status === 'done' && row.edgeSoundDb !== undefined"
+              class="mt-3 flex items-start gap-2 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900"
+            >
+              <AlertTriangle class="mt-0.5 size-4 shrink-0" />
+              <span>
+                Starts or ends on a steady {{ Math.round(row.edgeSoundDb) }} dB sound — room noise
+                or a held breath. Anything over −50 dB counts as sound here, so the silence figures
+                above can't flag it. Listen to the edges, or trim it in the audio editor.
+              </span>
             </div>
 
             <div
