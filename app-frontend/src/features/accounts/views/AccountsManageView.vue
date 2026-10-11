@@ -47,6 +47,7 @@ const selectedUserId = ref<number | null>(null)
 const dialogOpen = ref(false)
 const cropOpen = ref(false)
 const cropSource = ref<File | null>(null)
+const avatarRevision = ref(0)
 const avatarInputRef = ref<HTMLInputElement | null>(null)
 const temporaryPassword = ref('')
 const formError = ref('')
@@ -83,6 +84,11 @@ const {
   error: searchError,
 } = useAccountsSearch(searchParams)
 const { data: selectedAccount, isLoading: detailLoading } = useAccount(selectedUserId)
+const selectedAvatarUrl = computed(() => {
+  const url = selectedAccount.value?.avatarUrl ?? ''
+  if (!url || !avatarRevision.value) return url
+  return `${url}${url.includes('?') ? '&' : '?'}v=${avatarRevision.value}`
+})
 
 const updateAccountMutation = useUpdateAccount()
 const updateRolesMutation = useUpdateAccountRoles()
@@ -480,8 +486,8 @@ function toggleRole(roleId: number, checked: boolean) {
             <div class="grid gap-5 md:grid-cols-[11rem_1fr]">
               <div class="space-y-3">
                 <img
-                  :key="selectedAccount.avatarUrl"
-                  :src="selectedAccount.avatarUrl"
+                  :key="selectedAvatarUrl"
+                  :src="selectedAvatarUrl"
                   alt="Profile picture"
                   class="size-40 rounded-md border bg-muted object-cover md:size-44"
                   @error="onAvatarError($event, selectedAccount.defaultAvatarUrl)"
@@ -746,6 +752,7 @@ function toggleRole(roleId: number, checked: boolean) {
       v-model:open="cropOpen"
       :source="cropSource"
       :user-id="selectedUserId"
+      @uploaded="avatarRevision = Date.now()"
     />
   </div>
 </template>

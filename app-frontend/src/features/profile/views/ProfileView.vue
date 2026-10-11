@@ -29,6 +29,7 @@ import {
 const auth = useAuthStore()
 const cropOpen = ref(false)
 const cropSource = ref<File | null>(null)
+const avatarRevision = ref(0)
 const avatarInputRef = ref<HTMLInputElement | null>(null)
 const isAvatarDropActive = ref(false)
 const formError = ref('')
@@ -66,6 +67,11 @@ const passwordForm = reactive({
 })
 
 const { data: profile, isLoading, isError, error } = useSelfProfile()
+const avatarUrl = computed(() => {
+  const url = profile.value?.avatarUrl ?? ''
+  if (!url || !avatarRevision.value) return url
+  return `${url}${url.includes('?') ? '&' : '?'}v=${avatarRevision.value}`
+})
 const updateMutation = useUpdateSelfProfile()
 const passwordMutation = useSetSelfPassword()
 const clearAvatarMutation = useClearSelfAvatar()
@@ -247,7 +253,7 @@ function onAvatarDrop(event: DragEvent) {
             @drop.prevent="onAvatarDrop"
           >
             <ProfileAvatar
-              :src="profile.avatarUrl"
+              :src="avatarUrl"
               :fallback-src="profile.defaultAvatarUrl"
               size="xl"
             />
@@ -413,7 +419,13 @@ function onAvatarDrop(event: DragEvent) {
       </div>
     </section>
 
-    <AccountAvatarCropDialog v-model:open="cropOpen" :source="cropSource" :user-id="null" self />
+    <AccountAvatarCropDialog
+      v-model:open="cropOpen"
+      :source="cropSource"
+      :user-id="null"
+      self
+      @uploaded="avatarRevision = Date.now()"
+    />
 
     <DialogRoot :open="passwordDialogOpen" @update:open="setPasswordDialogOpen">
       <DialogPortal>

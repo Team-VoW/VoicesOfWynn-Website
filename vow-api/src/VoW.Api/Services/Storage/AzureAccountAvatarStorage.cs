@@ -8,7 +8,8 @@ public sealed class AzureAccountAvatarStorage : IAccountAvatarStorage
 {
     private const string AvatarKeyPrefix = "avatars/";
     private const string WebpImageContentType = "image/webp";
-    private const string ImageCacheControl = "public, max-age=3600";
+    // Avatar uploads replace the same blob key, so clients must revalidate it.
+    private const string ImageCacheControl = "public, no-cache";
 
     private readonly BlobContainerClient containerClient;
 
