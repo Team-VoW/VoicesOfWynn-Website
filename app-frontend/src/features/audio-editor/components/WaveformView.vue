@@ -789,6 +789,8 @@ type Drag =
   | { kind: 'select'; anchor: number; downX: number; moved: boolean; extend: boolean }
   | { kind: 'edge'; fixed: number }
   | { kind: 'overview' }
+  /** Middle-button drag: the audio follows the pointer, like a hand tool. */
+  | { kind: 'pan'; grabX: number; grabStart: number }
   | { kind: 'ruler' }
   | { kind: 'split' }
   | {
@@ -978,7 +980,15 @@ function panOverview(x: number) {
 }
 
 function onPointerDown(event: PointerEvent) {
-  if (event.button !== 0 || !props.doc.frames) return
+  if (!props.doc.frames) return
+  if (event.button === 1) {
+    if (drag) return
+    canvas.value!.setPointerCapture(event.pointerId)
+    drag = { kind: 'pan', grabX: localPoint(event).x, grabStart: view.value.start }
+    hoverCursor.value = 'grabbing'
+    return
+  }
+  if (event.button !== 0) return
   canvas.value!.setPointerCapture(event.pointerId)
   const { x, y } = localPoint(event)
   if (y >= size.value.height - OVERVIEW) {
@@ -1075,6 +1085,11 @@ function draggedMarker(state: Extract<Drag, { kind: 'marker' }>, frame: number):
 function onPointerMove(event: PointerEvent) {
   const { x, y } = localPoint(event)
   hoverSpectral.value = inSpectral(y) ? { x, y } : null
+  if (drag?.kind === 'pan') {
+    const spp = view.value.samplesPerPixel
+    setView(drag.grabStart - (x - drag.grabX) * spp, spp)
+    return
+  }
   if (drag?.kind === 'spectral') {
     updateSpectralDrag(drag, x, y)
     return
@@ -1123,6 +1138,11 @@ function onPointerMove(event: PointerEvent) {
 }
 
 function onPointerUp(event: PointerEvent) {
+  if (drag?.kind === 'pan') {
+    drag = null
+    onPointerMove(event)
+    return
+  }
   if (drag?.kind === 'spectral') {
     const state = drag
     const lassoTooSmall = state.tool === 'lasso' && state.points.length < 3
@@ -1299,6 +1319,7 @@ const hoverTitle = computed(() => {
         :title="hoverTitle"
         :aria-label="`Waveform of ${doc.name}, ${formatTime(doc.frames / (doc.sampleRate || 1), 2)} long, ${doc.markers.length} marker(s)`"
         @pointerdown="onPointerDown"
+        @mousedown.middle.prevent
         @pointermove="onPointerMove"
         @pointerup="onPointerUp"
         @pointercancel="onPointerUp"
